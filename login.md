@@ -3,7 +3,7 @@
 App: https://app.server.greylo.de  
 Passwort für alle Konten: `testpasswort-123`
 
-Registrierungscode: `2b256a11a114`
+Registrierungscode: `2b256a11a114` -> Nach der Registrierung wird ein Code zugeschickt ✅
 
 | Nr. | Name | E-Mail | Passwort | Profilbild |
 |---:|---|---|---|---|
