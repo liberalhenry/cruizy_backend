@@ -13,6 +13,7 @@ import { getFile, type Store } from '../../lib/files.js';
 import { body, ipKey, params } from '../../lib/http.js';
 import { hit } from '../../lib/rate.js';
 import { discord } from '../../services/discord.js';
+import { appVersion } from '../../lib/version.js';
 import { STAFF_COOKIE, afterHashLock, createStaffSession, hashCasesToday, requireStaff, HASH_CASES_PER_DAY } from './core.js';
 import queueRoutes from './queue.js';
 import reportRoutes from './reports.js';
@@ -26,6 +27,7 @@ import ticketRoutes from './tickets.js';
 import overviewRoutes from './overview.js';
 import teamRoutes from './team.js';
 import idcheckRoutes from './idcheck.js';
+import updateRoutes from './updates.js';
 
 export function modImgUrl(store: Store, file: string, staffId: string) {
   return `/mod-api/img/${sealToken({ k: 'mod', s: store, f: file, st: staffId, e: Date.now() + 5 * 60_000 })}`;
@@ -89,6 +91,7 @@ export default async function modRoutes(app: FastifyInstance) {
         hashLimit: HASH_CASES_PER_DAY,
         hashLocked: afterHashLock(),
         mode: env().OPERATION_MODE,
+        version: appVersion(),
       };
     });
 
@@ -120,5 +123,6 @@ export default async function modRoutes(app: FastifyInstance) {
     await mod.register(overviewRoutes);
     await mod.register(teamRoutes);
     await mod.register(idcheckRoutes);
+    await mod.register(updateRoutes);
   });
 }

@@ -2059,6 +2059,22 @@
   "s": "ENTWURF",
   "t": "und"
  },
+ "UI-UPDATE-KEIN-UPDATER": {
+  "s": "ENTWURF",
+  "t": "Der Dienst „updater“ antwortet nicht. Läuft er? (docker compose ps)"
+ },
+ "UI-UPDATE-LAEUFT": {
+  "s": "ENTWURF",
+  "t": "Es läuft schon eine Aktualisierung."
+ },
+ "UI-UPDATE-SCHON": {
+  "s": "ENTWURF",
+  "t": "Diese Version ist schon installiert."
+ },
+ "UI-UPDATE-UNBEKANNT": {
+  "s": "ENTWURF",
+  "t": "Diese Version gibt es nicht als Release."
+ },
  "UI-VERFALL-NICHT-DU": {
   "s": "ENTWURF",
   "t": "Nur wer das Verschwinden eingeschaltet hat, kann es ausschalten."

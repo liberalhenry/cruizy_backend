@@ -31,6 +31,8 @@ COPY backend/package.json ./
 COPY shared/texts /app/shared/texts
 # Logo für die HTML-Mails (Issue #9)
 COPY shared/brand /app/shared/brand
+# Versionsstand nach SemVer (Issue #5) — der Updater prüft ihn nach dem Start
+COPY VERSION /app/VERSION
 RUN mkdir -p /data && chown node:node /data
 USER node
 EXPOSE 3000

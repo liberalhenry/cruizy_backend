@@ -1,9 +1,15 @@
 #!/usr/bin/env bash
-# Aktualisieren: neuen Stand holen, sichern, neu bauen, starten. Migrationen laufen beim Start.
+# Aktualisieren von Hand auf ein Release — derselbe Ablauf wie der Knopf im Werkzeug
+# (Sicherung, Gesundheitsprüfung, Rückfall bei Fehler).
+#   bash deploy/update.sh          → neuestes Release (höchster Tag vX.Y.Z)
+#   bash deploy/update.sh 1.2.3    → bestimmte Version
 set -euo pipefail
 cd "$(dirname "$0")/.."
-git pull --ff-only
-bash deploy/backup.sh
-docker compose up -d --build
-docker image prune -f
-docker compose ps
+VERSION="${1:-}"
+if [[ -z "$VERSION" ]]; then
+  git fetch --tags --force origin
+  VERSION="$(git tag -l 'v*' --sort=-v:refname | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | head -1 | sed 's/^v//')"
+  [[ -n "$VERSION" ]] || { echo "Kein Release gefunden."; exit 1; }
+fi
+cp deploy/update-run.sh /tmp/cruizy-update-run.sh   # das Skript ändert sich beim Auschecken
+exec bash /tmp/cruizy-update-run.sh "$VERSION"

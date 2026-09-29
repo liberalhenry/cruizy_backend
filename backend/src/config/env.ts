@@ -111,6 +111,14 @@ const schema = z.object({
   DISCORD_WEBHOOK_ALTERSPRUEFUNG: z.string().default(''),
   DISCORD_WEBHOOK_SYSTEM: z.string().default(''),
 
+  /* Aktualisierung per Knopf (Issue #5): Quelle der Releases, Token nur für private Repositorys */
+  UPDATE_REPO: z
+    .string()
+    .default('')
+    .transform((v) => v.trim() || 'liberalhenry/cruizy_backend')
+    .pipe(z.string().regex(/^[\w.-]+\/[\w.-]+$/, 'UPDATE_REPO: Form besitzer/repository')),
+  GITHUB_TOKEN: z.string().default(''),
+
   LOG_LEVEL: z.string().default('info'),
 });
 

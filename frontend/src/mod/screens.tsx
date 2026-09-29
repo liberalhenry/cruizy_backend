@@ -6,6 +6,7 @@ import { fmtDate, t } from '../lib/texts';
 import { Card, Logo, Reason, useAction } from './common';
 import { MeinZugang, Team } from './team';
 import { Ausweise } from './ausweis';
+import { Aktualisierung } from './updates';
 
 export interface Staff {
   staff: { id: string; name: string; role: 'MOD' | 'BETRIEB'; founder: boolean };
@@ -14,9 +15,10 @@ export interface Staff {
   hashLimit: number;
   hashLocked: boolean;
   mode: 'test' | 'live';
+  version?: string;
 }
 
-type Screen = 'uebersicht' | 'warteschlange' | 'meldungen' | 'hash' | 'freigaben' | 'sperren' | 'widerspruch' | 'protokoll' | 'orte' | 'einreichungen' | 'art18' | 'vorgaenge' | 'verwaltung' | 'team' | 'zugang' | 'ausweis';
+type Screen = 'uebersicht' | 'warteschlange' | 'meldungen' | 'hash' | 'freigaben' | 'sperren' | 'widerspruch' | 'protokoll' | 'orte' | 'einreichungen' | 'art18' | 'vorgaenge' | 'verwaltung' | 'team' | 'zugang' | 'ausweis' | 'updates';
 
 const NAV: { key: Screen; label: string; betrieb?: boolean; owner?: boolean }[] = [
   { key: 'uebersicht', label: 'Tagesübersicht' },
@@ -34,6 +36,7 @@ const NAV: { key: Screen; label: string; betrieb?: boolean; owner?: boolean }[] 
   { key: 'protokoll', label: 'Zugriffsprotokoll' },
   { key: 'verwaltung', label: 'Verwaltung', betrieb: true },
   { key: 'team', label: 'Team', owner: true },
+  { key: 'updates', label: 'Aktualisierung', owner: true },
   { key: 'zugang', label: 'Mein Zugang' },
 ];
 
@@ -62,6 +65,7 @@ export function Screens({ me, onLogout, reloadMe }: { me: Staff; onLogout: () =>
             {me.staff.founder ? ' · Owner' : ''}
           </p>
           {me.mode === 'test' && <p className="text-xs text-warn mt-1">Testbetrieb — nur erfundene Daten</p>}
+          {me.version && <p className="text-xs muted mt-1 font-mono">v{me.version}</p>}
         </div>
         <nav className="flex md:flex-col overflow-x-auto">
           {NAV.filter((n) => (!n.betrieb || isBetrieb) && (!n.owner || me.staff.founder)).map((n) => (
@@ -91,6 +95,7 @@ export function Screens({ me, onLogout, reloadMe }: { me: Staff; onLogout: () =>
         {screen === 'team' && me.staff.founder && <Team meId={me.staff.id} />}
         {screen === 'zugang' && <MeinZugang />}
         {screen === 'ausweis' && <Ausweise />}
+        {screen === 'updates' && me.staff.founder && <Aktualisierung />}
       </main>
     </div>
   );
