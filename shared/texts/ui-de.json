@@ -431,6 +431,14 @@
   "s": "ENTWURF",
   "t": "Widerrufen"
  },
+ "UI-DAUER-GESPEICHERT": {
+  "s": "ENTWURF",
+  "t": "Gespeichert — gilt bis {zeit}."
+ },
+ "UI-DAUER-TAGE": {
+  "s": "ENTWURF",
+  "t": "{tage} Tage"
+ },
  "UI-DEIN-FOTO": {
   "s": "ENTWURF",
   "t": "dein Foto"
@@ -1934,6 +1942,22 @@
  "UI-TAG-SO": {
   "s": "ENTWURF",
   "t": "So"
+ },
+ "UI-TEAM-KENNUNG-VERGEBEN": {
+  "s": "ENTWURF",
+  "t": "Diese Kennung ist schon vergeben."
+ },
+ "UI-TEAM-LETZTER-OWNER": {
+  "s": "ENTWURF",
+  "t": "Es muss immer mindestens ein aktiver Owner bleiben."
+ },
+ "UI-TEAM-NICHT-SELBST": {
+  "s": "ENTWURF",
+  "t": "Den eigenen Zugang kannst du hier nicht sperren oder löschen."
+ },
+ "UI-TEAM-PASSWORT-GLEICH": {
+  "s": "ENTWURF",
+  "t": "Das neue Passwort muss sich vom alten unterscheiden."
  },
  "UI-TESTBETRIEB-EINLADUNG": {
   "s": "ENTWURF",

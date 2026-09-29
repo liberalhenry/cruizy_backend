@@ -3,6 +3,8 @@ import { useEffect, useState, type ReactNode } from 'react';
 import { Banner, Sheet, TextArea, Toggle, useAsync } from '../components/ui';
 import { api, errText } from '../lib/api';
 import { fmtDate, t } from '../lib/texts';
+import { Card, Reason, useAction } from './common';
+import { MeinZugang, Team } from './team';
 
 export interface Staff {
   staff: { id: string; name: string; role: 'MOD' | 'BETRIEB'; founder: boolean };
@@ -13,9 +15,9 @@ export interface Staff {
   mode: 'test' | 'live';
 }
 
-type Screen = 'uebersicht' | 'warteschlange' | 'meldungen' | 'hash' | 'freigaben' | 'sperren' | 'widerspruch' | 'protokoll' | 'orte' | 'einreichungen' | 'art18' | 'vorgaenge' | 'verwaltung';
+type Screen = 'uebersicht' | 'warteschlange' | 'meldungen' | 'hash' | 'freigaben' | 'sperren' | 'widerspruch' | 'protokoll' | 'orte' | 'einreichungen' | 'art18' | 'vorgaenge' | 'verwaltung' | 'team' | 'zugang';
 
-const NAV: { key: Screen; label: string; betrieb?: boolean }[] = [
+const NAV: { key: Screen; label: string; betrieb?: boolean; owner?: boolean }[] = [
   { key: 'uebersicht', label: 'Tagesübersicht' },
   { key: 'warteschlange', label: 'Warteschlange Zone 1' },
   { key: 'meldungen', label: 'Meldungen' },
@@ -29,62 +31,13 @@ const NAV: { key: Screen; label: string; betrieb?: boolean }[] = [
   { key: 'art18', label: 'Art. 18 DSA' },
   { key: 'protokoll', label: 'Zugriffsprotokoll' },
   { key: 'verwaltung', label: 'Verwaltung', betrieb: true },
+  { key: 'team', label: 'Team', owner: true },
+  { key: 'zugang', label: 'Mein Zugang' },
 ];
 
 function Ampel({ v }: { v: string }) {
   const c = v === 'rot' ? 'bg-gefahr' : v === 'gelb' ? 'bg-warn' : 'bg-gut';
   return <span className={`inline-block w-3 h-3 rounded-full ${c}`} aria-label={`Ampel ${v}`} />;
-}
-
-function useAction() {
-  const [err, setErr] = useState<string | null>(null);
-  const [ok, setOk] = useState<string | null>(null);
-  const run = async (fn: () => Promise<unknown>, success?: string) => {
-    setErr(null);
-    setOk(null);
-    try {
-      const r = await fn();
-      if (success) setOk(success);
-      return r;
-    } catch (e) {
-      setErr(errText(e));
-      return null;
-    }
-  };
-  const box = (
-    <>
-      {err && (
-        <div className="my-2">
-          <Banner kind="error">{err}</Banner>
-        </div>
-      )}
-      {ok && (
-        <div className="my-2">
-          <Banner kind="ok">{ok}</Banner>
-        </div>
-      )}
-    </>
-  );
-  return { run, box };
-}
-
-/** Grund-Eingabe: ohne Begründung wird nichts ausgeführt (M60). */
-function Reason({ value, onChange, label = 'Begründung (wird protokolliert)', min = 1 }: { value: string; onChange: (v: string) => void; label?: string; min?: number }) {
-  return <TextArea label={label} value={value} onChange={(e) => onChange(e.target.value)} hint={min > 1 ? `mindestens ${min} Zeichen` : undefined} />;
-}
-
-function Card({ title, children, right }: { title?: ReactNode; children: ReactNode; right?: ReactNode }) {
-  return (
-    <section className="card p-4 mb-4">
-      {(title || right) && (
-        <div className="flex items-center gap-2 mb-3">
-          <h2 className="font-semibold flex-1">{title}</h2>
-          {right}
-        </div>
-      )}
-      {children}
-    </section>
-  );
 }
 
 const EMERGENCY = (
@@ -103,12 +56,12 @@ export function Screens({ me, onLogout, reloadMe }: { me: Staff; onLogout: () =>
           <p className="font-semibold">{me.staff.name}</p>
           <p className="text-xs muted">
             {me.staff.role}
-            {me.staff.founder ? ' · Gründer' : ''}
+            {me.staff.founder ? ' · Owner' : ''}
           </p>
           {me.mode === 'test' && <p className="text-xs text-warn mt-1">Testbetrieb — nur erfundene Daten</p>}
         </div>
         <nav className="flex md:flex-col overflow-x-auto">
-          {NAV.filter((n) => !n.betrieb || isBetrieb).map((n) => (
+          {NAV.filter((n) => (!n.betrieb || isBetrieb) && (!n.owner || me.staff.founder)).map((n) => (
             <button key={n.key} className={`text-left px-4 py-2.5 text-sm whitespace-nowrap ${screen === n.key ? 'bg-flaeche2 text-akzent' : ''}`} onClick={() => setScreen(n.key)}>
               {n.label}
             </button>
@@ -132,6 +85,8 @@ export function Screens({ me, onLogout, reloadMe }: { me: Staff; onLogout: () =>
         {screen === 'art18' && <Art18 isBetrieb={isBetrieb} />}
         {screen === 'vorgaenge' && <Vorgaenge />}
         {screen === 'verwaltung' && isBetrieb && <Verwaltung />}
+        {screen === 'team' && me.staff.founder && <Team meId={me.staff.id} />}
+        {screen === 'zugang' && <MeinZugang />}
       </main>
     </div>
   );

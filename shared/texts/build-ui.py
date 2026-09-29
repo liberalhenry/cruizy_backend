@@ -15,6 +15,8 @@ T = {
   'UI-TESTBETRIEB-EINLADUNG': 'Wir sind gerade im Testbetrieb. Zum Registrieren brauchst du einen Einladungscode.',
   'UI-TESTBETRIEB-HINWEIS': 'Testbetrieb — bitte nur erfundene Angaben und keine echten Fotos von dir.',
   'UI-WARTEFRIST': 'Die Wartefrist läuft noch.',
+  'UI-DAUER-TAGE': '{tage} Tage',
+  'UI-DAUER-GESPEICHERT': 'Gespeichert — gilt bis {zeit}.',
 
   # ───── Anmeldung, Codes ─────
   'UI-ANMELDUNG-FALSCH': 'Anmeldedaten stimmen nicht.',
@@ -125,6 +127,10 @@ T = {
   # ───── Moderationswerkzeug ─────
   'UI-MOD-ANMELDEN': 'Bitte melde dich an.',
   'UI-MOD-RECHT': 'Dafür hat deine Rolle keine Berechtigung.',
+  'UI-TEAM-LETZTER-OWNER': 'Es muss immer mindestens ein aktiver Owner bleiben.',
+  'UI-TEAM-KENNUNG-VERGEBEN': 'Diese Kennung ist schon vergeben.',
+  'UI-TEAM-NICHT-SELBST': 'Den eigenen Zugang kannst du hier nicht sperren oder löschen.',
+  'UI-TEAM-PASSWORT-GLEICH': 'Das neue Passwort muss sich vom alten unterscheiden.',
   'UI-MOD-GRUND': 'Ohne Begründung wird nichts ausgeführt.',
   'UI-MOD-ZWEITE-PERSON': 'Dafür braucht es die Freigabe einer zweiten Person.',
   'UI-MOD-EIGENER-ANTRAG': 'Den eigenen Antrag kann niemand selbst freigeben.',

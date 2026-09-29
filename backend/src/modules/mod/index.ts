@@ -23,6 +23,7 @@ import placeRoutes from './places.js';
 import art18Routes from './art18.js';
 import ticketRoutes from './tickets.js';
 import overviewRoutes from './overview.js';
+import teamRoutes from './team.js';
 
 export function modImgUrl(store: Store, file: string, staffId: string) {
   return `/mod-api/img/${sealToken({ k: 'mod', s: store, f: file, st: staffId, e: Date.now() + 5 * 60_000 })}`;
@@ -98,5 +99,6 @@ export default async function modRoutes(app: FastifyInstance) {
     await mod.register(art18Routes);
     await mod.register(ticketRoutes);
     await mod.register(overviewRoutes);
+    await mod.register(teamRoutes);
   });
 }
