@@ -1,0 +1,35 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+  -webkit-tap-highlight-color: transparent;
+}
+html, body, #root { min-height: 100%; }
+body {
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  /* folgt der Systemschriftgröße (S63.05) */
+  font-size: 100%;
+  -webkit-font-smoothing: antialiased;
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: 0ms !important; animation-duration: 0ms !important; }
+}
+.safe-top { padding-top: env(safe-area-inset-top); }
+.safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
+:focus-visible { outline: 2px solid #5aa9ff; outline-offset: 2px; }
+
+@layer components {
+  .btn { @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 min-h-tap font-medium transition disabled:opacity-50 disabled:cursor-not-allowed; }
+  .btn-primary { @apply btn bg-akzent text-grund hover:bg-[#7cbcff]; }
+  .btn-secondary { @apply btn bg-flaeche2 text-text border border-linie hover:bg-[#2a3040]; }
+  .btn-ghost { @apply btn text-akzent hover:bg-flaeche2; }
+  .btn-danger { @apply btn bg-gefahr/15 text-gefahr border border-gefahr/40; }
+  .card { @apply rounded-xl2 bg-flaeche border border-linie; }
+  .input { @apply w-full rounded-xl bg-flaeche2 border border-linie px-3 min-h-tap text-text placeholder:text-leise focus:border-akzent outline-none; }
+  .label { @apply block text-sm text-leise mb-1; }
+  .chip { @apply inline-flex items-center gap-1 rounded-full border border-linie bg-flaeche2 px-3 py-1 text-sm; }
+  .row { @apply flex items-center justify-between gap-3 px-4 min-h-[52px] border-b border-linie last:border-b-0 w-full text-left; }
+  .muted { @apply text-leise; }
+}

@@ -32,17 +32,17 @@ export async function readUpload(req: FastifyRequest): Promise<{ buffer: Buffer;
 export async function ownPhotos(accountId: string) {
   const rows = await q(
     `SELECT id, position, status, blurred, rejection_reason, rejection_area, hash_state, decided_auto, created_at
-       FROM photos WHERE account_id = $1 AND status <> 'blocked' ORDER BY position, created_at`,
+       FROM photos WHERE account_id = $1 ORDER BY position, created_at`,
     [accountId],
   );
   return rows.map((r) => ({
     id: r.id,
     position: r.position,
-    // Ein Hash-Treffer erscheint hier gar nicht (AK-F10-04, ST-FEH-17: bewusst kein Text)
-    status: r.status as 'checking' | 'queued' | 'approved' | 'rejected',
+    // Ein Hash-Treffer sieht aus wie „in Prüfung“ — ohne Text, ohne Bild (AK-F10-04, ST-FEH-17)
+    status: (r.status === 'blocked' ? 'queued' : r.status) as 'checking' | 'queued' | 'approved' | 'rejected',
     blurred: r.blurred,
     rejection: r.status === 'rejected' ? { reason: r.rejection_reason, area: r.rejection_area, auto: r.decided_auto } : null,
-    url: imgUrl('own', r.id, accountId),
+    url: r.status === 'blocked' ? null : imgUrl('own', r.id, accountId),
   }));
 }
 

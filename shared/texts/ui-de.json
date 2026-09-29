@@ -1,4 +1,52 @@
 {
+ "UI-ABO-FREI-1": {
+  "s": "ENTWURF",
+  "t": "Blockieren und Melden"
+ },
+ "UI-ABO-FREI-2": {
+  "s": "ENTWURF",
+  "t": "Zonen mit Ersatzpunkt"
+ },
+ "UI-ABO-FREI-3": {
+  "s": "ENTWURF",
+  "t": "Check-in vor dem Treffen"
+ },
+ "UI-ABO-FREI-4": {
+  "s": "ENTWURF",
+  "t": "Schnell verstecken"
+ },
+ "UI-ABO-FREI-5": {
+  "s": "ENTWURF",
+  "t": "Deine Daten herunterladen und löschen"
+ },
+ "UI-ABO-KOSTENLOS-BLEIBT": {
+  "s": "ENTWURF",
+  "t": "Kostenlos bleibt"
+ },
+ "UI-ABO-NOCH-NICHT": {
+  "s": "ENTWURF",
+  "t": "Das Abo startet später. Bis dahin ist alles kostenlos."
+ },
+ "UI-ABSICHT-ERNEUERN": {
+  "s": "ENTWURF",
+  "t": "„{absicht}“ erneuern"
+ },
+ "UI-ALBUM-ANGEBOTEN": {
+  "s": "ENTWURF",
+  "t": "Album angeboten"
+ },
+ "UI-ALBUM-BEENDET": {
+  "s": "ENTWURF",
+  "t": "Freigabe beendet — wirkt nur nach vorn."
+ },
+ "UI-ALBUM-FREIGABEN": {
+  "s": "ENTWURF",
+  "t": "Freigaben"
+ },
+ "UI-ALBUM-HINZU": {
+  "s": "ENTWURF",
+  "t": "Bild hinzufügen"
+ },
  "UI-ALBUM-LEER": {
   "s": "ENTWURF",
   "t": "Dein Album ist noch leer."
@@ -7,9 +55,57 @@
   "s": "ENTWURF",
   "t": "Dein Album hat höchstens {max} Bilder."
  },
+ "UI-ALBUM-MEINS": {
+  "s": "ENTWURF",
+  "t": "Mein privates Album"
+ },
  "UI-ALBUM-NICHT-JETZT": {
   "s": "ENTWURF",
   "t": "Ein Album kannst du erst anbieten, wenn Bilder in diesem Gespräch erlaubt sind."
+ },
+ "UI-ALBUM-NICHT-MEHR-ZEIGEN": {
+  "s": "ENTWURF",
+  "t": "Nicht mehr zeigen"
+ },
+ "UI-ALBUM-OEFFNEN": {
+  "s": "ENTWURF",
+  "t": "Album öffnen"
+ },
+ "UI-ALBUM-STATUS-ACCEPTED": {
+  "s": "ENTWURF",
+  "t": "angenommen"
+ },
+ "UI-ALBUM-STATUS-DECLINED": {
+  "s": "ENTWURF",
+  "t": "abgelehnt"
+ },
+ "UI-ALBUM-STATUS-ENDED": {
+  "s": "ENTWURF",
+  "t": "beendet"
+ },
+ "UI-ALBUM-STATUS-GESCHLOSSEN": {
+  "s": "ENTWURF",
+  "t": "geschlossen"
+ },
+ "UI-ALBUM-STATUS-OFFERED": {
+  "s": "ENTWURF",
+  "t": "wartet auf Antwort"
+ },
+ "UI-ALBUM-TITEL": {
+  "s": "ENTWURF",
+  "t": "Privates Album"
+ },
+ "UI-ALTER-AENDERN": {
+  "s": "ENTWURF",
+  "t": "Ändern"
+ },
+ "UI-ALTER-NOCH-AKTUELL": {
+  "s": "ENTWURF",
+  "t": "Stimmt dein Alter noch? Bei dir steht {alter}."
+ },
+ "UI-ALTER-STIMMT": {
+  "s": "ENTWURF",
+  "t": "Stimmt"
  },
  "UI-ALTER-UNTER-18": {
   "s": "ENTWURF",
@@ -19,17 +115,213 @@
   "s": "ENTWURF",
   "t": "Anmeldedaten stimmen nicht."
  },
+ "UI-APP-ERLEDIGT": {
+  "s": "ENTWURF",
+  "t": "erledigt"
+ },
+ "UI-APP-GEPRUEFT": {
+  "s": "ENTWURF",
+  "t": "geprüft"
+ },
+ "UI-APP-HAUPTNAVIGATION": {
+  "s": "ENTWURF",
+  "t": "Hauptnavigation"
+ },
+ "UI-APP-KOPIEREN": {
+  "s": "ENTWURF",
+  "t": "Kopieren"
+ },
+ "UI-APP-LAEDT": {
+  "s": "ENTWURF",
+  "t": "Lädt …"
+ },
+ "UI-APP-LOESCHEN": {
+  "s": "ENTWURF",
+  "t": "Löschen"
+ },
+ "UI-APP-MEHR": {
+  "s": "ENTWURF",
+  "t": "Mehr"
+ },
+ "UI-APP-MENUE": {
+  "s": "ENTWURF",
+  "t": "Menü"
+ },
+ "UI-APP-NEU": {
+  "s": "ENTWURF",
+  "t": "{zahl} neu"
+ },
+ "UI-APP-NICHT-JETZT": {
+  "s": "ENTWURF",
+  "t": "Nicht jetzt"
+ },
+ "UI-APP-OFFEN": {
+  "s": "ENTWURF",
+  "t": "offen"
+ },
+ "UI-APP-PROFIL": {
+  "s": "ENTWURF",
+  "t": "Profil"
+ },
+ "UI-APP-SCHLIESSEN": {
+  "s": "ENTWURF",
+  "t": "Schließen"
+ },
+ "UI-APP-SENDEN": {
+  "s": "ENTWURF",
+  "t": "Senden"
+ },
+ "UI-APP-SPAETER": {
+  "s": "ENTWURF",
+  "t": "Später"
+ },
+ "UI-APP-SPEICHERN": {
+  "s": "ENTWURF",
+  "t": "Speichern"
+ },
+ "UI-APP-SPEICHERN-DATEI": {
+  "s": "ENTWURF",
+  "t": "Als Datei speichern"
+ },
+ "UI-APP-ZURUECK": {
+  "s": "ENTWURF",
+  "t": "Zurück"
+ },
  "UI-APPLE-AUS": {
   "s": "ENTWURF",
   "t": "Anmelden mit Apple ist gerade nicht verfügbar."
+ },
+ "UI-BLOCKIERT-BIS": {
+  "s": "ENTWURF",
+  "t": "rücknehmbar bis {datum}"
+ },
+ "UI-BLOCKIERT-ENDGUELTIG": {
+  "s": "ENTWURF",
+  "t": "endgültig"
+ },
+ "UI-BLOCKIERT-LEER": {
+  "s": "ENTWURF",
+  "t": "Du hast niemanden blockiert."
+ },
+ "UI-CHAT-ABLEHNEN": {
+  "s": "ENTWURF",
+  "t": "Ablehnen"
+ },
+ "UI-CHAT-ALBUM": {
+  "s": "ENTWURF",
+  "t": "Privates Album"
+ },
+ "UI-CHAT-ALBUM-TEILEN": {
+  "s": "ENTWURF",
+  "t": "Privates Album teilen"
+ },
+ "UI-CHAT-BILD": {
+  "s": "ENTWURF",
+  "t": "Bild"
+ },
+ "UI-CHAT-BILD-SENDEN": {
+  "s": "ENTWURF",
+  "t": "Bild senden"
+ },
+ "UI-CHAT-DU": {
+  "s": "ENTWURF",
+  "t": "Du"
+ },
+ "UI-CHAT-GESICHT-AUS": {
+  "s": "ENTWURF",
+  "t": "Gesicht wieder unkenntlich"
+ },
+ "UI-CHAT-NACHRICHT": {
+  "s": "ENTWURF",
+  "t": "Nachricht"
+ },
+ "UI-CHAT-ORT": {
+  "s": "ENTWURF",
+  "t": "Treffpunkt"
+ },
+ "UI-CHAT-SENDEN": {
+  "s": "ENTWURF",
+  "t": "Senden"
+ },
+ "UI-CHAT-VERFALL-AUS": {
+  "s": "ENTWURF",
+  "t": "Verschwindende Nachrichten ausschalten"
+ },
+ "UI-CHAT-VERSCHWINDET": {
+  "s": "ENTWURF",
+  "t": "verschwindet"
+ },
+ "UI-CHAT-ZULASSEN": {
+  "s": "ENTWURF",
+  "t": "Zulassen"
+ },
+ "UI-CHATS-ARCHIV": {
+  "s": "ENTWURF",
+  "t": "Archiv"
+ },
+ "UI-CHATS-NICHT-MEHR-DA": {
+  "s": "ENTWURF",
+  "t": "Profil nicht mehr verfügbar"
+ },
+ "UI-CHATS-WAS-SIND-ANFRAGEN": {
+  "s": "ENTWURF",
+  "t": "Was sind Anfragen?"
+ },
+ "UI-CHATS-ZUM-RASTER": {
+  "s": "ENTWURF",
+  "t": "Zum Raster"
+ },
+ "UI-CHECKIN-BEENDEN": {
+  "s": "ENTWURF",
+  "t": "Check-in beenden"
+ },
+ "UI-CHECKIN-BEGINN": {
+  "s": "ENTWURF",
+  "t": "Beginn"
+ },
+ "UI-CHECKIN-BENACHRICHTIGEN": {
+  "s": "ENTWURF",
+  "t": "Meine Vertrauenspersonen benachrichtigen"
  },
  "UI-CHECKIN-FRAGE-TEXT": {
   "s": "ENTWURF",
   "t": "Alles in Ordnung? Tipp auf „Mir geht’s gut“."
  },
+ "UI-CHECKIN-KONTAKT": {
+  "s": "ENTWURF",
+  "t": "E-Mail-Adresse oder Telefonnummer"
+ },
+ "UI-CHECKIN-LAEUFT": {
+  "s": "ENTWURF",
+  "t": "Dein Check-in läuft. Wir fragen:"
+ },
  "UI-CHECKIN-MAIL-BETREFF": {
   "s": "ENTWURF",
   "t": "Nachricht"
+ },
+ "UI-CHECKIN-NACHRICHT": {
+  "s": "ENTWURF",
+  "t": "Nachricht an deine Vertrauenspersonen"
+ },
+ "UI-CHECKIN-NACHRICHT-HINWEIS": {
+  "s": "ENTWURF",
+  "t": "Schreib, wo du bist und mit wem. Unser Name steht nicht darin."
+ },
+ "UI-CHECKIN-NICHTS": {
+  "s": "ENTWURF",
+  "t": "Nichts tun"
+ },
+ "UI-CHECKIN-OPFERTELEFON": {
+  "s": "ENTWURF",
+  "t": "Hilfetelefon für Betroffene: {nummer}"
+ },
+ "UI-CHECKIN-SPAETER": {
+  "s": "ENTWURF",
+  "t": "Beginnt später"
+ },
+ "UI-CHECKIN-WEITERGEREICHT": {
+  "s": "ENTWURF",
+  "t": "Die Nachricht an deine Vertrauenspersonen ist unterwegs."
  },
  "UI-CHECKIN-WEITERREICHEN": {
   "s": "ENTWURF",
@@ -50,6 +342,94 @@
  "UI-CODE-WARTEN": {
   "s": "ENTWURF",
   "t": "Bitte warte kurz, bevor du einen neuen Code anforderst."
+ },
+ "UI-DATEN-ALBUM": {
+  "s": "ENTWURF",
+  "t": "Privates Album"
+ },
+ "UI-DATEN-ALBUM-ERKL": {
+  "s": "ENTWURF",
+  "t": "{zahl} Bilder."
+ },
+ "UI-DATEN-EINWILLIGUNG": {
+  "s": "ENTWURF",
+  "t": "Einwilligung"
+ },
+ "UI-DATEN-EINWILLIGUNG-ART9": {
+  "s": "ENTWURF",
+  "t": "Einwilligung nach Art. 9 DSGVO"
+ },
+ "UI-DATEN-EINWILLIGUNGEN": {
+  "s": "ENTWURF",
+  "t": "Einwilligungen"
+ },
+ "UI-DATEN-EXPORT-PASSWORT": {
+  "s": "ENTWURF",
+  "t": "Passwort für die Datei"
+ },
+ "UI-DATEN-EXPORT-PASSWORT-ERKL": {
+  "s": "ENTWURF",
+  "t": "Mindestens 8 Zeichen. Damit öffnest du die verschlüsselte ZIP-Datei."
+ },
+ "UI-DATEN-GESPEICHERT": {
+  "s": "ENTWURF",
+  "t": "Was gespeichert ist"
+ },
+ "UI-DATEN-HERUNTERLADEN": {
+  "s": "ENTWURF",
+  "t": "Herunterladen"
+ },
+ "UI-DATEN-KONTO": {
+  "s": "ENTWURF",
+  "t": "Konto"
+ },
+ "UI-DATEN-KONTO-ERKL": {
+  "s": "ENTWURF",
+  "t": "Angelegt am {datum}. Adresse oder Nummer nur verschlüsselt."
+ },
+ "UI-DATEN-MELDUNGEN": {
+  "s": "ENTWURF",
+  "t": "Meldungen"
+ },
+ "UI-DATEN-MELDUNGEN-ERKL": {
+  "s": "ENTWURF",
+  "t": "{zahl} Meldungen von dir."
+ },
+ "UI-DATEN-NACHRICHTEN": {
+  "s": "ENTWURF",
+  "t": "Nachrichten"
+ },
+ "UI-DATEN-NACHRICHTEN-ERKL": {
+  "s": "ENTWURF",
+  "t": "{gespraeche} Gespräche, {nachrichten} eigene Nachrichten — verschlüsselt."
+ },
+ "UI-DATEN-PROFIL": {
+  "s": "ENTWURF",
+  "t": "Profil"
+ },
+ "UI-DATEN-PROFIL-ERKL": {
+  "s": "ENTWURF",
+  "t": "Name, Absicht, Angaben, {zahl} Fotos."
+ },
+ "UI-DATEN-STANDORT": {
+  "s": "ENTWURF",
+  "t": "Standortstufe"
+ },
+ "UI-DATEN-STANDORT-ERKL": {
+  "s": "ENTWURF",
+  "t": "Stufe „{stufe}“. Gespeichert ist nur eine Rasterzelle, nie ein Verlauf."
+ },
+ "UI-DATEN-WIDERRUF-FOLGE": {
+  "s": "ENTWURF",
+  "t": "Ohne diese Einwilligung lässt sich das Konto nicht fortführen. Es wird dann wie bei einer Löschung nach {tage} Tagen gelöscht."
+ },
+ "UI-DATEN-WIDERRUFEN": {
+  "s": "ENTWURF",
+  "t": "widerrufen am {datum}"
+ },
+ "UI-DATEN-WIDERRUFEN-KNOPF": {
+  "s": "ENTWURF",
+  "t": "Widerrufen"
  },
  "UI-DEIN-FOTO": {
   "s": "ENTWURF",
@@ -75,6 +455,42 @@
   "s": "ENTWURF",
   "t": "Bitte prüf deine Eingabe."
  },
+ "UI-EINST-KONTO": {
+  "s": "ENTWURF",
+  "t": "Konto"
+ },
+ "UI-EINST-MITTEILUNGEN": {
+  "s": "ENTWURF",
+  "t": "Mitteilungen"
+ },
+ "UI-EINST-PUSH-NICHT-MOEGLICH": {
+  "s": "ENTWURF",
+  "t": "Dieser Browser kann keine Mitteilungen empfangen."
+ },
+ "UI-EINST-RUHE-BIS": {
+  "s": "ENTWURF",
+  "t": "Ruhezeit bis"
+ },
+ "UI-EINST-RUHE-VON": {
+  "s": "ENTWURF",
+  "t": "Ruhezeit von"
+ },
+ "UI-EINW-ABGELEHNT": {
+  "s": "ENTWURF",
+  "t": "Ohne Einwilligung ist kein Konto möglich. Wir haben deine Anmeldedaten gelöscht."
+ },
+ "UI-EINW-KONTROLLE": {
+  "s": "ENTWURF",
+  "t": "Ich willige ein."
+ },
+ "UI-EINW-NICHT": {
+  "s": "ENTWURF",
+  "t": "Nicht einwilligen"
+ },
+ "UI-EINW-TITEL": {
+  "s": "ENTWURF",
+  "t": "Bevor wir etwas speichern"
+ },
  "UI-EINWILLIGUNG-FEHLT": {
   "s": "ENTWURF",
   "t": "Bevor es weitergeht, brauchen wir deine Einwilligung."
@@ -82,6 +498,14 @@
  "UI-EINWILLIGUNG-NEU": {
   "s": "ENTWURF",
   "t": "Der Text der Einwilligung hat sich geändert. Bitte lies ihn noch einmal."
+ },
+ "UI-EIS-ANDERE": {
+  "s": "ENTWURF",
+  "t": "Andere Vorschläge"
+ },
+ "UI-EIS-TITEL": {
+  "s": "ENTWURF",
+  "t": "Ein Einstieg"
  },
  "UI-ENTSCHEIDUNG-AN-BEHOERDE": {
   "s": "ENTWURF",
@@ -111,9 +535,33 @@
   "s": "ENTWURF",
   "t": "Diese Veranstaltung ist abgesagt."
  },
+ "UI-EREIGNIS-GRUPPE": {
+  "s": "ENTWURF",
+  "t": "Gruppe zum Treffen"
+ },
+ "UI-EREIGNIS-GRUPPE-AB": {
+  "s": "ENTWURF",
+  "t": "Die Gruppe öffnet am {zeit}."
+ },
  "UI-EREIGNIS-VORBEI": {
   "s": "ENTWURF",
   "t": "Diese Veranstaltung ist vorbei."
+ },
+ "UI-EREIGNIS-ZUR-GRUPPE": {
+  "s": "ENTWURF",
+  "t": "Zur Gruppe"
+ },
+ "UI-EREIGNIS-ZURUECKNEHMEN": {
+  "s": "ENTWURF",
+  "t": "Zusage zurücknehmen"
+ },
+ "UI-EREIGNIS-ZUSAGEN": {
+  "s": "ENTWURF",
+  "t": "{zahl} Zusagen"
+ },
+ "UI-EREIGNIS-ZUSAGEN-TITEL": {
+  "s": "ENTWURF",
+  "t": "Zusagen"
  },
  "UI-EXPORT-FEHLER": {
   "s": "ENTWURF",
@@ -279,13 +727,121 @@
   "s": "ENTWURF",
   "t": "Wie erreiche ich einen Menschen?"
  },
+ "UI-FILTER": {
+  "s": "ENTWURF",
+  "t": "Filter"
+ },
+ "UI-FILTER-ABSICHT": {
+  "s": "ENTWURF",
+  "t": "Absicht"
+ },
+ "UI-FILTER-ALLE-ENTFERNEN": {
+  "s": "ENTWURF",
+  "t": "Alle Filter entfernen"
+ },
+ "UI-FILTER-ALTER": {
+  "s": "ENTWURF",
+  "t": "Alter"
+ },
+ "UI-FILTER-ALTER-AN": {
+  "s": "ENTWURF",
+  "t": "Nach Alter filtern"
+ },
+ "UI-FILTER-ANZEIGEN": {
+  "s": "ENTWURF",
+  "t": "Anzeigen"
+ },
+ "UI-FILTER-BIS": {
+  "s": "ENTWURF",
+  "t": "bis"
+ },
+ "UI-FILTER-ENTFERNEN": {
+  "s": "ENTWURF",
+  "t": "Filter entfernen"
+ },
+ "UI-FILTER-ENTFERNUNG": {
+  "s": "ENTWURF",
+  "t": "Entfernung"
+ },
+ "UI-FILTER-HOECHSTENS-ZWEI": {
+  "s": "ENTWURF",
+  "t": "Höchstens zwei gleichzeitig."
+ },
+ "UI-FILTER-TREFFER": {
+  "s": "ENTWURF",
+  "t": "{zahl} Profile"
+ },
+ "UI-FILTER-VON": {
+  "s": "ENTWURF",
+  "t": "von"
+ },
  "UI-FOTO-ABGELEHNT-TITEL": {
   "s": "ENTWURF",
   "t": "Dein Foto wurde nicht freigegeben"
  },
+ "UI-FOTO-ANDERES": {
+  "s": "ENTWURF",
+  "t": "Anderes Foto"
+ },
+ "UI-FOTO-EINSPRUCH": {
+  "s": "ENTWURF",
+  "t": "Einspruch einlegen"
+ },
+ "UI-FOTO-EINSPRUCH-TEXT": {
+  "s": "ENTWURF",
+  "t": "Warum sollte das Foto doch gezeigt werden?"
+ },
+ "UI-FOTO-HINZU": {
+  "s": "ENTWURF",
+  "t": "Foto hinzufügen"
+ },
+ "UI-FOTO-HOCH": {
+  "s": "ENTWURF",
+  "t": "Nach oben"
+ },
+ "UI-FOTO-HOCHLADEN": {
+  "s": "ENTWURF",
+  "t": "Hochladen"
+ },
+ "UI-FOTO-LINKS": {
+  "s": "ENTWURF",
+  "t": "Nach links"
+ },
+ "UI-FOTO-NACH-HINTEN": {
+  "s": "ENTWURF",
+  "t": "Nach hinten"
+ },
+ "UI-FOTO-NACH-VORNE": {
+  "s": "ENTWURF",
+  "t": "Nach vorne"
+ },
+ "UI-FOTO-RECHTS": {
+  "s": "ENTWURF",
+  "t": "Nach rechts"
+ },
+ "UI-FOTO-RUNTER": {
+  "s": "ENTWURF",
+  "t": "Nach unten"
+ },
+ "UI-FOTO-SICHTBAR": {
+  "s": "ENTWURF",
+  "t": "Sichtbar"
+ },
+ "UI-FOTO-ZEIGEN": {
+  "s": "ENTWURF",
+  "t": "Fotos im Profil zeigen"
+ },
+ "UI-FOTO-ZUSCHNITT": {
+  "s": "ENTWURF",
+  "t": "Zuschnitt"
+ },
  "UI-FOTOPRUEFUNG-EINWILLIGUNG": {
   "s": "ENTWURF",
   "t": "Für die Fotoprüfung brauchen wir deine ausdrückliche Zustimmung."
+ },
+ "UI-FOTOPRUEFUNG-EINWILLIGUNG-TEXT": {
+  "s": "ENTWURF",
+  "t": "Ich willige ein, dass mein Selfie mit meinen Profilfotos verglichen wird. Das Selfie wird danach gelöscht."
  },
  "UI-FOTOPRUEFUNG-FOTO": {
   "s": "ENTWURF",
@@ -306,6 +862,66 @@
  "UI-GAST-PAUSE": {
   "s": "ENTWURF",
   "t": "Die Vorschau ist für heute vorbei. Registrier dich, um weiterzumachen."
+ },
+ "UI-GAST-STADT": {
+  "s": "ENTWURF",
+  "t": "Oder wähl eine Stadt:"
+ },
+ "UI-GAST-STADT-HINWEIS": {
+  "s": "ENTWURF",
+  "t": ""
+ },
+ "UI-GRUPPE-SCHLIESST": {
+  "s": "ENTWURF",
+  "t": "Die Gruppe verschwindet am {zeit}."
+ },
+ "UI-HEUTE-DU": {
+  "s": "ENTWURF",
+  "t": "Du (ungefähr)"
+ },
+ "UI-HEUTE-JETZT": {
+  "s": "ENTWURF",
+  "t": "Jetzt und heute Abend"
+ },
+ "UI-HEUTE-KARTE": {
+  "s": "ENTWURF",
+  "t": "Karte"
+ },
+ "UI-HEUTE-LISTE": {
+  "s": "ENTWURF",
+  "t": "Liste"
+ },
+ "UI-HEUTE-OFFEN": {
+  "s": "ENTWURF",
+  "t": "Orte, die heute geöffnet haben"
+ },
+ "UI-HEUTE-SCHEMATISCH": {
+  "s": "ENTWURF",
+  "t": "Schematische Karte, etwa {km} km um dich. Personen nur als grobe Gruppe."
+ },
+ "UI-HEUTE-WOCHE": {
+  "s": "ENTWURF",
+  "t": "Diese Woche"
+ },
+ "UI-HILFE-ANTWORTEN": {
+  "s": "ENTWURF",
+  "t": "Antworten"
+ },
+ "UI-HILFE-FALLNUMMER": {
+  "s": "ENTWURF",
+  "t": "Fallnummer"
+ },
+ "UI-HILFE-MEINE": {
+  "s": "ENTWURF",
+  "t": "Deine Anfragen"
+ },
+ "UI-HILFE-NACHSEHEN": {
+  "s": "ENTWURF",
+  "t": "Nachsehen"
+ },
+ "UI-HILFE-STAND": {
+  "s": "ENTWURF",
+  "t": "Stand eines Vorgangs"
  },
  "UI-HLF-KAT-1": {
   "s": "ENTWURF",
@@ -347,17 +963,177 @@
   "s": "ENTWURF",
   "t": "Presse, Behörde, rechtliche Anfrage"
  },
+ "UI-HOME-SCHRITT-1": {
+  "s": "ENTWURF",
+  "t": "Tippe unten in Safari auf „Teilen“ (Quadrat mit Pfeil)."
+ },
+ "UI-HOME-SCHRITT-2": {
+  "s": "ENTWURF",
+  "t": "Wähle „Zum Home-Bildschirm“."
+ },
+ "UI-HOME-SCHRITT-3": {
+  "s": "ENTWURF",
+  "t": "Tippe auf „Hinzufügen“ und öffne die App ab jetzt von dort."
+ },
+ "UI-ICH-ABMELDEN": {
+  "s": "ENTWURF",
+  "t": "Abmelden"
+ },
+ "UI-ICH-ABO": {
+  "s": "ENTWURF",
+  "t": "Abo"
+ },
+ "UI-ICH-ANTWORT-GEWUENSCHT": {
+  "s": "ENTWURF",
+  "t": "Ich möchte eine Antwort"
+ },
+ "UI-ICH-ANTWORT-HINWEIS": {
+  "s": "ENTWURF",
+  "t": "Nur dann speichern wir, von welchem Konto die Rückmeldung kommt."
+ },
+ "UI-ICH-DANKE": {
+  "s": "ENTWURF",
+  "t": "Danke!"
+ },
+ "UI-ICH-EINSTELLUNGEN": {
+  "s": "ENTWURF",
+  "t": "Einstellungen"
+ },
+ "UI-ICH-MERKLISTE": {
+  "s": "ENTWURF",
+  "t": "Merkliste"
+ },
+ "UI-ICH-PROFIL": {
+  "s": "ENTWURF",
+  "t": "Mein Profil"
+ },
+ "UI-ICH-RECHTLICHES": {
+  "s": "ENTWURF",
+  "t": "Rechtliches"
+ },
+ "UI-ICH-RUECKMELDUNG": {
+  "s": "ENTWURF",
+  "t": "Was sollen wir besser machen?"
+ },
  "UI-KEIN-UNKENNTLICHES-FOTO": {
   "s": "ENTWURF",
   "t": "Du hast kein unkenntlich gemachtes Foto, das sich freischalten ließe."
+ },
+ "UI-KONTO-ANMELDEN": {
+  "s": "ENTWURF",
+  "t": "Anmelden"
+ },
+ "UI-KONTO-ANZEIGEN": {
+  "s": "ENTWURF",
+  "t": "Zeigen"
+ },
+ "UI-KONTO-CODE": {
+  "s": "ENTWURF",
+  "t": "Code"
+ },
+ "UI-KONTO-CODE-GESENDET": {
+  "s": "ENTWURF",
+  "t": "Wir haben dir einen Code geschickt. Gib ihn hier ein."
+ },
+ "UI-KONTO-CODE-SENDEN": {
+  "s": "ENTWURF",
+  "t": "Code schicken"
  },
  "UI-KONTO-EINGESCHRAENKT": {
   "s": "ENTWURF",
   "t": "Dein Konto ist eingeschränkt. Du kannst lesen, aber nichts senden."
  },
+ "UI-KONTO-EINLADUNG": {
+  "s": "ENTWURF",
+  "t": "Einladungscode"
+ },
+ "UI-KONTO-EMAIL": {
+  "s": "ENTWURF",
+  "t": "E-Mail-Adresse"
+ },
+ "UI-KONTO-EMAIL-ODER-NUMMER": {
+  "s": "ENTWURF",
+  "t": "E-Mail-Adresse oder Telefonnummer"
+ },
+ "UI-KONTO-GERAETECODE": {
+  "s": "ENTWURF",
+  "t": "Neues Gerät: Wir haben dir einen Code per SMS geschickt."
+ },
  "UI-KONTO-GESPERRT": {
   "s": "ENTWURF",
   "t": "Dein Konto ist gesperrt. In deinen Mitteilungen steht, warum — und wie du widersprechen kannst."
+ },
+ "UI-KONTO-LINK-SENDEN": {
+  "s": "ENTWURF",
+  "t": "Link schicken"
+ },
+ "UI-KONTO-NEU-SENDEN": {
+  "s": "ENTWURF",
+  "t": "Code nicht bekommen? Neu senden"
+ },
+ "UI-KONTO-NEU-SENDEN-IN": {
+  "s": "ENTWURF",
+  "t": "Neu senden in {s} Sekunden"
+ },
+ "UI-KONTO-NOCH-KEINS": {
+  "s": "ENTWURF",
+  "t": "Noch kein Konto? Konto anlegen"
+ },
+ "UI-KONTO-NUMMER": {
+  "s": "ENTWURF",
+  "t": "Telefonnummer"
+ },
+ "UI-KONTO-PASSWORT": {
+  "s": "ENTWURF",
+  "t": "Passwort"
+ },
+ "UI-KONTO-PASSWORT-AENDERN": {
+  "s": "ENTWURF",
+  "t": "Passwort ändern"
+ },
+ "UI-KONTO-PASSWORT-ALT": {
+  "s": "ENTWURF",
+  "t": "Bisheriges Passwort"
+ },
+ "UI-KONTO-PASSWORT-GEAENDERT": {
+  "s": "ENTWURF",
+  "t": "Passwort geändert. Andere Geräte sind abgemeldet."
+ },
+ "UI-KONTO-PASSWORT-NEU": {
+  "s": "ENTWURF",
+  "t": "Neues Passwort"
+ },
+ "UI-KONTO-SCHON-KONTO": {
+  "s": "ENTWURF",
+  "t": "Ich habe schon ein Konto"
+ },
+ "UI-KONTO-SICHERN": {
+  "s": "ENTWURF",
+  "t": "Zugang sichern"
+ },
+ "UI-KONTO-SICHERN-ERKL": {
+  "s": "ENTWURF",
+  "t": "Wiederherstellungscode, zweiter Weg, Vertrauenspersonen, Passwort"
+ },
+ "UI-KONTO-VERBERGEN": {
+  "s": "ENTWURF",
+  "t": "Verbergen"
+ },
+ "UI-KONTO-VERGESSEN": {
+  "s": "ENTWURF",
+  "t": "Passwort vergessen"
+ },
+ "UI-KONTO-VERGESSEN-GESENDET": {
+  "s": "ENTWURF",
+  "t": "Wenn es ein Konto mit dieser Angabe gibt, haben wir dir einen Link oder Code geschickt."
+ },
+ "UI-KONTO-WARUM-NICHT-GOOGLE": {
+  "s": "ENTWURF",
+  "t": "Warum nicht Google oder Facebook?"
+ },
+ "UI-KONTO-WIEDERHERSTELLEN": {
+  "s": "ENTWURF",
+  "t": "Konto wiederherstellen"
  },
  "UI-LINK-UNGUELTIG": {
   "s": "ENTWURF",
@@ -403,9 +1179,17 @@
   "s": "ENTWURF",
   "t": "Deine Einreichung"
  },
+ "UI-MEL-CSAM": {
+  "s": "ENTWURF",
+  "t": "Darstellung von sexuellem Kindesmissbrauch"
+ },
  "UI-MEL-INTIM": {
   "s": "ENTWURF",
   "t": "Intime Bilder ohne Einwilligung"
+ },
+ "UI-MELDEN-AUSWAHL": {
+  "s": "ENTWURF",
+  "t": "Welche Nachrichten oder Bilder?"
  },
  "UI-MELDEN-INHALT-WEG": {
   "s": "ENTWURF",
@@ -419,9 +1203,33 @@
   "s": "ENTWURF",
   "t": "Deine Meldung {fallnummer}"
  },
+ "UI-MELDUNGEN-BETRIFFT-DICH": {
+  "s": "ENTWURF",
+  "t": "Entscheidungen, die dich betreffen"
+ },
+ "UI-MELDUNGEN-EIGENE": {
+  "s": "ENTWURF",
+  "t": "Deine Meldungen"
+ },
+ "UI-MELDUNGEN-LEER": {
+  "s": "ENTWURF",
+  "t": "Du hast noch nichts gemeldet."
+ },
+ "UI-MELDUNGEN-TITEL": {
+  "s": "ENTWURF",
+  "t": "Meine Meldungen"
+ },
+ "UI-MELDUNGEN-WIDERSPRUECHE": {
+  "s": "ENTWURF",
+  "t": "Einsprüche und Widersprüche"
+ },
  "UI-MERKMALE-MAX": {
   "s": "ENTWURF",
   "t": "Du kannst höchstens {max} Merkmale wählen."
+ },
+ "UI-MITTEILUNG-UNGELESEN": {
+  "s": "ENTWURF",
+  "t": "ungelesen"
  },
  "UI-MOD-ABGLEICH-FEHLT": {
   "s": "ENTWURF",
@@ -531,6 +1339,50 @@
   "s": "ENTWURF",
   "t": "Dafür braucht es die Freigabe einer zweiten Person."
  },
+ "UI-MODZEIT-EINSPRUCH": {
+  "s": "ENTWURF",
+  "t": "Einspruch gegen ein abgelehntes Foto: Antwort binnen {stunden} Stunden."
+ },
+ "UI-MODZEIT-GRAU": {
+  "s": "ENTWURF",
+  "t": "Unklare Fotos prüft ein Mensch: tagsüber ({von}–{bis} Uhr) binnen {tag} Stunden, spätestens nach {gesamt} Stunden."
+ },
+ "UI-MODZEIT-HASH-AN": {
+  "s": "ENTWURF",
+  "t": "Der Abgleich mit bekannten Missbrauchsdarstellungen ist eingeschaltet."
+ },
+ "UI-MODZEIT-HASH-AUS": {
+  "s": "ENTWURF",
+  "t": "Der Abgleich mit bekannten Missbrauchsdarstellungen ist noch nicht eingeschaltet — deshalb läuft nur ein Testbetrieb mit erfundenen Daten."
+ },
+ "UI-MODZEIT-KETTE": {
+  "s": "ENTWURF",
+  "t": "Automatische Prüfung eines Profilfotos: meist unter {sekunden} Sekunden."
+ },
+ "UI-MODZEIT-MELDUNG": {
+  "s": "ENTWURF",
+  "t": "Meldungen entscheiden wir binnen {stunden} Stunden."
+ },
+ "UI-MODZEIT-WIDERSPRUCH": {
+  "s": "ENTWURF",
+  "t": "Widerspruch gegen andere Entscheidungen: Antwort binnen {stunden} Stunden."
+ },
+ "UI-NAEHE-SORTIERT": {
+  "s": "ENTWURF",
+  "t": "Sortiert nach: {sortierung}"
+ },
+ "UI-NAEHE-STADT-WAEHLEN": {
+  "s": "ENTWURF",
+  "t": "Stadt wählen"
+ },
+ "UI-NAEHE-STAND": {
+  "s": "ENTWURF",
+  "t": "Stand: {uhrzeit}"
+ },
+ "UI-NAEHE-WOCHENAKTIVE": {
+  "s": "ENTWURF",
+  "t": "Diese Woche aktiv"
+ },
  "UI-NAME-UNGUELTIG": {
   "s": "ENTWURF",
   "t": "Der Name darf höchstens {max} Zeichen lang sein und keine Links oder Nummern enthalten."
@@ -547,13 +1399,321 @@
   "s": "ENTWURF",
   "t": "Diese Nummer können wir nicht verwenden."
  },
+ "UI-OEFF-MELDEN-CSAM-ANONYM": {
+  "s": "ENTWURF",
+  "t": "Bei Verdacht auf Missbrauchsdarstellungen darfst du Name und Adresse weglassen."
+ },
+ "UI-OEFF-MELDEN-DANKE": {
+  "s": "ENTWURF",
+  "t": "Danke. Deine Meldung hat die Nummer {fallnummer}."
+ },
+ "UI-OEFF-MELDEN-GUTER-GLAUBE": {
+  "s": "ENTWURF",
+  "t": "Ich bin in gutem Glauben davon überzeugt, dass die Angaben richtig und vollständig sind."
+ },
+ "UI-OEFF-MELDEN-NAME": {
+  "s": "ENTWURF",
+  "t": "Dein Name"
+ },
+ "UI-OEFF-MELDEN-TEXT": {
+  "s": "ENTWURF",
+  "t": "Du brauchst kein Konto, um einen Inhalt zu melden. Ein Mensch prüft jede Meldung."
+ },
+ "UI-OEFF-MELDEN-TITEL": {
+  "s": "ENTWURF",
+  "t": "Etwas melden (ohne Konto)"
+ },
+ "UI-OEFF-MELDEN-WARUM": {
+  "s": "ENTWURF",
+  "t": "Warum ist das rechtswidrig oder verstößt gegen die Regeln?"
+ },
+ "UI-OEFF-MELDEN-WO": {
+  "s": "ENTWURF",
+  "t": "Wo ist der Inhalt?"
+ },
+ "UI-OEFF-MELDEN-WO-ERKL": {
+  "s": "ENTWURF",
+  "t": "Profilname, Stadt, Ort oder eine andere genaue Beschreibung."
+ },
+ "UI-OEFF-MODZEITEN-TITEL": {
+  "s": "ENTWURF",
+  "t": "Wie schnell wir prüfen"
+ },
+ "UI-ORT-ADRESSE": {
+  "s": "ENTWURF",
+  "t": "Adresse"
+ },
+ "UI-ORT-ANFRAGE-GESENDET": {
+  "s": "ENTWURF",
+  "t": "Danke. Deine Anfrage hat die Nummer {nummer}. Bitte bestätige zuerst den Link in der Mail."
+ },
+ "UI-ORT-ART-BAR": {
+  "s": "ENTWURF",
+  "t": "Bar"
+ },
+ "UI-ORT-ART-BERATUNG": {
+  "s": "ENTWURF",
+  "t": "Beratung"
+ },
+ "UI-ORT-ART-CAFE": {
+  "s": "ENTWURF",
+  "t": "Café"
+ },
+ "UI-ORT-ART-CLUB": {
+  "s": "ENTWURF",
+  "t": "Club"
+ },
+ "UI-ORT-ART-KULTUR": {
+  "s": "ENTWURF",
+  "t": "Kultur"
+ },
+ "UI-ORT-ART-RESTAURANT": {
+  "s": "ENTWURF",
+  "t": "Restaurant"
+ },
+ "UI-ORT-ART-SAUNA": {
+  "s": "ENTWURF",
+  "t": "Sauna"
+ },
+ "UI-ORT-ART-SPORT": {
+  "s": "ENTWURF",
+  "t": "Sport"
+ },
+ "UI-ORT-BEANSPRUCHEN": {
+  "s": "ENTWURF",
+  "t": "Ich betreibe diesen Ort"
+ },
+ "UI-ORT-BEANSPRUCHEN-ERKL": {
+  "s": "ENTWURF",
+  "t": "Ein Mensch prüft das, in der Regel binnen 24 Stunden. Danach trägt der Eintrag das Kennzeichen „vom Ort bestätigt“."
+ },
+ "UI-ORT-BESTAETIGT": {
+  "s": "ENTWURF",
+  "t": "vom Ort bestätigt"
+ },
+ "UI-ORT-BESTAETIGT-MAIL": {
+  "s": "ENTWURF",
+  "t": "Adresse bestätigt. Die Anfrage {nummer} wird jetzt geprüft, in der Regel binnen {stunden} Stunden."
+ },
+ "UI-ORT-DEIN-ORT": {
+  "s": "ENTWURF",
+  "t": "Ist das dein Ort? Hier bestätigen"
+ },
+ "UI-ORT-EMAIL-ERKL": {
+  "s": "ENTWURF",
+  "t": "Am besten eine Adresse mit der Domain des Ortes. Wir schicken einen Bestätigungslink."
+ },
+ "UI-ORT-ENTFERNEN": {
+  "s": "ENTWURF",
+  "t": "Bitte entfernen"
+ },
+ "UI-ORT-ENTFERNEN-ERKL": {
+  "s": "ENTWURF",
+  "t": "Der Eintrag wird entfernt und nicht wieder aufgenommen."
+ },
+ "UI-ORT-EREIGNISSE": {
+  "s": "ENTWURF",
+  "t": "Kommende Ereignisse"
+ },
+ "UI-ORT-GESCHLOSSEN": {
+  "s": "ENTWURF",
+  "t": "geschlossen"
+ },
+ "UI-ORT-HEUTE-OFFEN": {
+  "s": "ENTWURF",
+  "t": "Heute geöffnet: {zeiten}"
+ },
+ "UI-ORT-HEUTE-OFFEN-KURZ": {
+  "s": "ENTWURF",
+  "t": "heute geöffnet"
+ },
+ "UI-ORT-HEUTE-ZU": {
+  "s": "ENTWURF",
+  "t": "Heute geschlossen"
+ },
+ "UI-ORT-KARTEN-APP": {
+  "s": "ENTWURF",
+  "t": "In Karten-App öffnen"
+ },
+ "UI-ORT-NACHWEIS": {
+  "s": "ENTWURF",
+  "t": "Wie können wir das prüfen? (freiwillig)"
+ },
+ "UI-ORT-NAECHSTES": {
+  "s": "ENTWURF",
+  "t": "Als Nächstes: {titel}, {zeit}"
+ },
+ "UI-ORT-OEFFNUNGSZEITEN": {
+  "s": "ENTWURF",
+  "t": "Öffnungszeiten"
+ },
+ "UI-ORT-QUELLE": {
+  "s": "ENTWURF",
+  "t": "Quelle: {quelle}, Stand {datum}"
+ },
+ "UI-ORT-ROLLE": {
+  "s": "ENTWURF",
+  "t": "Rolle (z. B. Inhaber)"
+ },
+ "UI-ORT-WERKZEUGKONTO": {
+  "s": "ENTWURF",
+  "t": "Eintrag über ein Werkzeugkonto des Ortes"
+ },
+ "UI-ORT-ZEITEN-UNBEKANNT": {
+  "s": "ENTWURF",
+  "t": "Öffnungszeiten unbekannt"
+ },
  "UI-PASSWORT-KURZ": {
   "s": "ENTWURF",
   "t": "Das Passwort braucht mindestens {zahl} Zeichen."
  },
+ "UI-PIN-FALSCH": {
+  "s": "ENTWURF",
+  "t": "Das hat nicht geklappt."
+ },
+ "UI-PROFIL-ALLE-WENN-LEER": {
+  "s": "ENTWURF",
+  "t": "Nichts gewählt heißt: alle."
+ },
+ "UI-PROFIL-ALTER": {
+  "s": "ENTWURF",
+  "t": "Alter (freiwillig)"
+ },
+ "UI-PROFIL-ALTER-ERKL": {
+  "s": "ENTWURF",
+  "t": "Nur die Zahl, kein Geburtsdatum."
+ },
+ "UI-PROFIL-ALTERSPRUEFUNG": {
+  "s": "ENTWURF",
+  "t": "Altersprüfung"
+ },
+ "UI-PROFIL-ANSEHEN": {
+  "s": "ENTWURF",
+  "t": "Ansehen"
+ },
+ "UI-PROFIL-ANTWORTQUOTE": {
+  "s": "ENTWURF",
+  "t": "Antwortquote zeigen"
+ },
+ "UI-PROFIL-BEARBEITEN": {
+  "s": "ENTWURF",
+  "t": "Bearbeiten"
+ },
+ "UI-PROFIL-DU": {
+  "s": "ENTWURF",
+  "t": "Das bist du"
+ },
+ "UI-PROFIL-EIGENE-BESCHREIBUNG": {
+  "s": "ENTWURF",
+  "t": "Eigene Beschreibung"
+ },
+ "UI-PROFIL-FARBE": {
+  "s": "ENTWURF",
+  "t": "Farbe der Initiale"
+ },
  "UI-PROFIL-FEHLT": {
   "s": "ENTWURF",
   "t": "Leg zuerst dein Profil an."
+ },
+ "UI-PROFIL-FOTO-VON": {
+  "s": "ENTWURF",
+  "t": "{n} von {von}"
+ },
+ "UI-PROFIL-FOTO-WEITER": {
+  "s": "ENTWURF",
+  "t": "Nächstes Foto"
+ },
+ "UI-PROFIL-FOTO-ZURUECK": {
+  "s": "ENTWURF",
+  "t": "Voriges Foto"
+ },
+ "UI-PROFIL-FOTOS": {
+  "s": "ENTWURF",
+  "t": "Fotos"
+ },
+ "UI-PROFIL-FREITEXT": {
+  "s": "ENTWURF",
+  "t": "Über mich"
+ },
+ "UI-PROFIL-INTERESSEN": {
+  "s": "ENTWURF",
+  "t": "Interessen"
+ },
+ "UI-PROFIL-NAME": {
+  "s": "ENTWURF",
+  "t": "Name"
+ },
+ "UI-PROFIL-NICHT-MERKEN": {
+  "s": "ENTWURF",
+  "t": "Nicht mehr merken"
+ },
+ "UI-PROFIL-SCHREIBEN": {
+  "s": "ENTWURF",
+  "t": "Schreiben"
+ },
+ "UI-PROFIL-SO-SEHEN-DICH": {
+  "s": "ENTWURF",
+  "t": "So sehen dich andere"
+ },
+ "UI-PROFIL-WEG": {
+  "s": "ENTWURF",
+  "t": "Dieses Profil gibt es nicht mehr."
+ },
+ "UI-PRUEFUNG-ATTRAPPE": {
+  "s": "ENTWURF",
+  "t": "Testbetrieb: Es ist noch kein Prüfpartner angebunden. Die Prüfung wird nur nachgestellt."
+ },
+ "UI-PRUEFUNG-LAEUFT": {
+  "s": "ENTWURF",
+  "t": "Die Prüfung läuft noch …"
+ },
+ "UI-PRUEFUNG-NACHRICHT-SENDEN": {
+  "s": "ENTWURF",
+  "t": "Weiter zur Nachricht"
+ },
+ "UI-PRUEFUNG-STARTEN": {
+  "s": "ENTWURF",
+  "t": "Prüfung starten"
+ },
+ "UI-PRUEFUNG-WARUM": {
+  "s": "ENTWURF",
+  "t": "Warum?"
+ },
+ "UI-RECHT-BEDINGUNGEN": {
+  "s": "ENTWURF",
+  "t": "Nutzungsbedingungen"
+ },
+ "UI-RECHT-BEDINGUNGEN-TEXT": {
+  "s": "ENTWURF",
+  "t": "[Nutzungsbedingungen — Entwurf in der Rechtsprüfung. Kurzfassung: die vier Sätze des Community-Vertrags.]"
+ },
+ "UI-RECHT-DATENSCHUTZ": {
+  "s": "ENTWURF",
+  "t": "Datenschutzerklärung"
+ },
+ "UI-RECHT-DATENSCHUTZ-TEXT": {
+  "s": "ENTWURF",
+  "t": "[Datenschutzerklärung — Entwurf in der Rechtsprüfung. Verantwortlicher, Zwecke, Rechtsgrundlagen (Art. 9 Abs. 2 lit. a DSGVO), Empfänger, Speicherfristen, Rechte.]"
+ },
+ "UI-RECHT-ENTWURF": {
+  "s": "ENTWURF",
+  "t": "Entwurf — der verbindliche Text kommt vom Anwalt, bevor echte Menschen die App nutzen."
+ },
+ "UI-RECHT-IMPRESSUM": {
+  "s": "ENTWURF",
+  "t": "Impressum"
+ },
+ "UI-RECHT-IMPRESSUM-TEXT": {
+  "s": "ENTWURF",
+  "t": "[Angaben nach § 5 DDG: Anbieter, Anschrift, Vertretung, Kontakt, Registereintrag — vor dem Start einzutragen]"
+ },
+ "UI-RECHT-KONTAKTSTELLEN": {
+  "s": "ENTWURF",
+  "t": "Kontaktstellen (Art. 11 und 12 DSA)"
+ },
+ "UI-RECHT-KONTAKTSTELLEN-TEXT": {
+  "s": "ENTWURF",
+  "t": "Kontaktstelle für Behörden (Art. 11 DSA) und für Nutzerinnen und Nutzer (Art. 12 DSA): über „Hilfe und Kontakt“. Sprachen: Deutsch, Englisch. [Adresse vor dem Start einzutragen]"
  },
  "UI-RUECKMELDUNG-ANTWORT": {
   "s": "ENTWURF",
@@ -575,9 +1735,69 @@
   "s": "ENTWURF",
   "t": "Dieser Schlüssel wird mit anderen Geräten geteilt. Wir brauchen einen, der nur auf diesem Gerät liegt."
  },
+ "UI-SCHRITT": {
+  "s": "ENTWURF",
+  "t": "{n} von {von}"
+ },
+ "UI-SIC-DIESES-GESPRAECH": {
+  "s": "ENTWURF",
+  "t": "Dieses Gespräch"
+ },
+ "UI-SIC-GESPRAECH-BLOCKIEREN": {
+  "s": "ENTWURF",
+  "t": "Blockieren"
+ },
+ "UI-SIC-GESPRAECH-MELDEN": {
+  "s": "ENTWURF",
+  "t": "Dieses Gespräch melden"
+ },
+ "UI-SIC-STANDORT": {
+  "s": "ENTWURF",
+  "t": "Standort und Zonen"
+ },
+ "UI-SIC-WAS-WIR-PRUEFEN": {
+  "s": "ENTWURF",
+  "t": "Was wir prüfen — und was nicht"
+ },
+ "UI-SORT-ABSICHT": {
+  "s": "ENTWURF",
+  "t": "Passende Absicht"
+ },
+ "UI-SORT-ABSICHT-ERKL": {
+  "s": "ENTWURF",
+  "t": "Wer gerade dasselbe sucht wie du, steht zuerst."
+ },
+ "UI-SORT-ANTWORTQUOTE": {
+  "s": "ENTWURF",
+  "t": "Antwortquote"
+ },
+ "UI-SORT-ANTWORTQUOTE-ERKL": {
+  "s": "ENTWURF",
+  "t": "Wer oft auf erste Nachrichten antwortet, steht weiter oben."
+ },
  "UI-SORT-AQ-AUS": {
   "s": "ENTWURF",
   "t": "Diese Sortierung gibt es nur, wenn deine eigene Antwortquote eingeschaltet ist."
+ },
+ "UI-SORT-NAEHE": {
+  "s": "ENTWURF",
+  "t": "Nähe"
+ },
+ "UI-SORT-NAEHE-ERKL": {
+  "s": "ENTWURF",
+  "t": "Nach Entfernungsstufe, innerhalb der Stufe nach Aktivität, dann zufällig."
+ },
+ "UI-SORT-NEU": {
+  "s": "ENTWURF",
+  "t": "Neu hier"
+ },
+ "UI-SORT-NEU-ERKL": {
+  "s": "ENTWURF",
+  "t": "Wer neu ist, steht zuerst."
+ },
+ "UI-SORT-TITEL": {
+  "s": "ENTWURF",
+  "t": "Sortieren nach"
  },
  "UI-SPERRE-AB": {
   "s": "ENTWURF",
@@ -599,9 +1819,121 @@
   "s": "ENTWURF",
   "t": "Eine Entscheidung zu deinem Konto"
  },
+ "UI-STANDORT-ANDERE-SEHEN": {
+  "s": "ENTWURF",
+  "t": "Andere sehen nur: unter 1 km · 1–3 km · 3–10 km · über 10 km."
+ },
+ "UI-STANDORT-STADT": {
+  "s": "ENTWURF",
+  "t": "Stadt ohne Standort"
+ },
+ "UI-STANDORT-STADT-ERKL": {
+  "s": "ENTWURF",
+  "t": "Ohne Standort zeigen wir Profile aus dieser Stadt — ohne Entfernungen."
+ },
+ "UI-STUFE-AUS": {
+  "s": "ENTWURF",
+  "t": "aus"
+ },
+ "UI-STUFE-AUS-ERKL": {
+  "s": "ENTWURF",
+  "t": "Kein Standort. Du erscheinst nicht im Raster und nicht auf der Karte."
+ },
+ "UI-STUFE-GROB": {
+  "s": "ENTWURF",
+  "t": "ungefähr"
+ },
+ "UI-STUFE-GROB-ERKL": {
+  "s": "ENTWURF",
+  "t": "Gerundet auf etwa 2 km. Voreinstellung."
+ },
+ "UI-STUFE-NAH": {
+  "s": "ENTWURF",
+  "t": "genauer"
+ },
+ "UI-STUFE-NAH-ERKL": {
+  "s": "ENTWURF",
+  "t": "Gerundet auf etwa 500 m."
+ },
+ "UI-STUFE2-BESTAETIGEN": {
+  "s": "ENTWURF",
+  "t": "Mit dem Gerät bestätigen"
+ },
+ "UI-STUFE2-NICHT-MOEGLICH": {
+  "s": "ENTWURF",
+  "t": "Dieser Browser kann keinen gerätegebundenen Schlüssel anlegen."
+ },
+ "UI-STUFE2-SCHLUESSEL": {
+  "s": "ENTWURF",
+  "t": "Bestätige dich jetzt mit einem Schlüssel, der nur auf diesem Gerät liegt (Fingerabdruck, Gesicht oder Geräte-PIN)."
+ },
  "UI-STUFE2-SCHON": {
   "s": "ENTWURF",
   "t": "Diese Prüfung hast du schon bestanden."
+ },
+ "UI-SYS-": {
+  "s": "ENTWURF",
+  "t": ""
+ },
+ "UI-SYS-GESICHT-AN": {
+  "s": "ENTWURF",
+  "t": "{name} zeigt das Gesicht in diesem Gespräch."
+ },
+ "UI-SYS-GESICHT-AUS": {
+  "s": "ENTWURF",
+  "t": "{name} zeigt das Gesicht wieder unkenntlich."
+ },
+ "UI-SYS-VERFALL-AN": {
+  "s": "ENTWURF",
+  "t": "{name} hat verschwindende Nachrichten eingeschaltet."
+ },
+ "UI-SYS-VERFALL-AUS": {
+  "s": "ENTWURF",
+  "t": "{name} hat verschwindende Nachrichten ausgeschaltet."
+ },
+ "UI-SYS-WIEDER-GEOEFFNET": {
+  "s": "ENTWURF",
+  "t": "{name} hat das Gespräch wieder geöffnet."
+ },
+ "UI-TAB-CHATS": {
+  "s": "ENTWURF",
+  "t": "Chats"
+ },
+ "UI-TAB-ICH": {
+  "s": "ENTWURF",
+  "t": "Ich"
+ },
+ "UI-TAB-NAEHE": {
+  "s": "ENTWURF",
+  "t": "Nähe"
+ },
+ "UI-TAG-DI": {
+  "s": "ENTWURF",
+  "t": "Di"
+ },
+ "UI-TAG-DO": {
+  "s": "ENTWURF",
+  "t": "Do"
+ },
+ "UI-TAG-FR": {
+  "s": "ENTWURF",
+  "t": "Fr"
+ },
+ "UI-TAG-MI": {
+  "s": "ENTWURF",
+  "t": "Mi"
+ },
+ "UI-TAG-MO": {
+  "s": "ENTWURF",
+  "t": "Mo"
+ },
+ "UI-TAG-SA": {
+  "s": "ENTWURF",
+  "t": "Sa"
+ },
+ "UI-TAG-SO": {
+  "s": "ENTWURF",
+  "t": "So"
  },
  "UI-TESTBETRIEB-EINLADUNG": {
   "s": "ENTWURF",
@@ -615,9 +1947,53 @@
   "s": "ENTWURF",
   "t": "Das geht erst, wenn ihr beide geschrieben habt."
  },
+ "UI-TREFFPUNKT-VORSCHLAGEN": {
+  "s": "ENTWURF",
+  "t": "Im Chat vorschlagen"
+ },
+ "UI-UND": {
+  "s": "ENTWURF",
+  "t": "und"
+ },
  "UI-VERFALL-NICHT-DU": {
   "s": "ENTWURF",
   "t": "Nur wer das Verschwinden eingeschaltet hat, kann es ausschalten."
+ },
+ "UI-VERSTECKEN-JETZT": {
+  "s": "ENTWURF",
+  "t": "Jetzt verstecken"
+ },
+ "UI-VERSTECKEN-PIN-GESETZT": {
+  "s": "ENTWURF",
+  "t": "PIN gesetzt."
+ },
+ "UI-VERSTECKEN-VORSCHAU": {
+  "s": "ENTWURF",
+  "t": "Das erscheint nach dem Verstecken:"
+ },
+ "UI-VERSTECKEN-WEB-GRENZE": {
+  "s": "ENTWURF",
+  "t": "Die Web-App kann ihr Symbol auf dem Home-Bildschirm nicht nachträglich ändern und kein Tippen auf die Geräterückseite erkennen. Was hier steht, ist alles, was sie kann."
+ },
+ "UI-VERSTECKT-1": {
+  "s": "ENTWURF",
+  "t": "Milch"
+ },
+ "UI-VERSTECKT-2": {
+  "s": "ENTWURF",
+  "t": "Brot"
+ },
+ "UI-VERSTECKT-3": {
+  "s": "ENTWURF",
+  "t": "Kaffee"
+ },
+ "UI-VERSTECKT-ENTSPERREN": {
+  "s": "ENTWURF",
+  "t": "Weitere Optionen"
+ },
+ "UI-VERSTECKT-TITEL": {
+  "s": "ENTWURF",
+  "t": "Einkaufsliste"
  },
  "UI-WARTEFRIST": {
   "s": "ENTWURF",
@@ -627,9 +2003,85 @@
   "s": "ENTWURF",
   "t": "Du kannst innerhalb der Frist widersprechen. Ein anderer Mensch als der, der entschieden hat, prüft das. Außerdem steht dir die außergerichtliche Streitbeilegung und der Rechtsweg offen."
  },
+ "UI-WHR-ABGEBROCHEN": {
+  "s": "ENTWURF",
+  "t": "Die Wiederherstellung ist abgebrochen."
+ },
+ "UI-WHR-BEENDET": {
+  "s": "ENTWURF",
+  "t": "Diese Wiederherstellung ist beendet."
+ },
+ "UI-WHR-BEREIT": {
+  "s": "ENTWURF",
+  "t": "Die Wartefrist ist vorbei. Leg jetzt ein neues Passwort fest."
+ },
+ "UI-WHR-CODE-TITEL": {
+  "s": "ENTWURF",
+  "t": "Wiederherstellungscode"
+ },
+ "UI-WHR-DAS-WAR-ICH-NICHT": {
+  "s": "ENTWURF",
+  "t": "Das war ich nicht"
+ },
+ "UI-WHR-GESICHERT": {
+  "s": "ENTWURF",
+  "t": "Ich habe den Code gesichert."
+ },
+ "UI-WHR-JA": {
+  "s": "ENTWURF",
+  "t": "Ja, habe ich"
+ },
+ "UI-WHR-MIT-CODE": {
+  "s": "ENTWURF",
+  "t": "Mit meinem Wiederherstellungscode"
+ },
+ "UI-WHR-MIT-SCHLUESSEL": {
+  "s": "ENTWURF",
+  "t": "Mit dem Schlüssel einer Vertrauensperson"
+ },
+ "UI-WHR-NEU-ERZEUGEN": {
+  "s": "ENTWURF",
+  "t": "Neuen Code erzeugen"
+ },
+ "UI-WHR-NEU-ZEIGEN": {
+  "s": "ENTWURF",
+  "t": "Neuen Code zeigen"
+ },
+ "UI-WHR-SCHLUESSEL": {
+  "s": "ENTWURF",
+  "t": "Schlüssel der Vertrauensperson"
+ },
+ "UI-WHR-SCHLUESSEL-ENTFERNEN": {
+  "s": "ENTWURF",
+  "t": "Schlüssel ungültig machen"
+ },
+ "UI-WHR-SCHLUESSEL-ERZEUGEN": {
+  "s": "ENTWURF",
+  "t": "Schlüssel erzeugen"
+ },
+ "UI-WHR-SCHLUESSEL-NEU": {
+  "s": "ENTWURF",
+  "t": "Neuen Schlüssel erzeugen (der alte gilt dann nicht mehr)"
+ },
+ "UI-WHR-SCHLUESSEL-WEITERGEBEN": {
+  "s": "ENTWURF",
+  "t": "Gib diesen Schlüssel einer Person, der du vertraust. Er wird nur jetzt angezeigt."
+ },
  "UI-WHR-TITEL": {
   "s": "ENTWURF",
   "t": "Wiederherstellung deines Kontos"
+ },
+ "UI-WHR-VERTRAUEN": {
+  "s": "ENTWURF",
+  "t": "Vertrauenspersonen"
+ },
+ "UI-WHR-WARTET": {
+  "s": "ENTWURF",
+  "t": "Wiederherstellung läuft. Aus Sicherheitsgründen geht es erst ab {datum} weiter. Bis dahin kann sie abgebrochen werden."
+ },
+ "UI-WHR-ZWEITER-WEG": {
+  "s": "ENTWURF",
+  "t": "Zweiter Weg"
  },
  "UI-WIDERSPRUCH-ABGEMILDERT": {
   "s": "ENTWURF",
@@ -651,6 +2103,10 @@
   "s": "ENTWURF",
   "t": "Du kannst innerhalb von {stunden} Stunden widersprechen — unter „Ich“ → „Mitteilungen“."
  },
+ "UI-WIDERSPRUCH-FRIST-BIS": {
+  "s": "ENTWURF",
+  "t": "Antwort bis {datum}"
+ },
  "UI-WIDERSPRUCH-HASH-WEG": {
   "s": "ENTWURF",
   "t": "Zu dieser Entscheidung können wir keine Einzelheiten nennen. Der Weg dagegen führt über die zuständige Behörde."
@@ -663,9 +2119,65 @@
   "s": "ENTWURF",
   "t": "Hinweis: Die Person, die über deinen Widerspruch entschieden hat, hat die ursprüngliche Entscheidung mit freigegeben. Wir sind zurzeit nur zu zweit."
  },
+ "UI-WIDERSPRUCH-TEXT": {
+  "s": "ENTWURF",
+  "t": "Was sollen wir noch einmal prüfen?"
+ },
+ "UI-ZONE": {
+  "s": "ENTWURF",
+  "t": "Zone"
+ },
+ "UI-ZONE-ANDERER-PUNKT": {
+  "s": "ENTWURF",
+  "t": "Anderer Punkt"
+ },
+ "UI-ZONE-ANLEGEN": {
+  "s": "ENTWURF",
+  "t": "Zone anlegen"
+ },
+ "UI-ZONE-ERSATZ-ABSTAND": {
+  "s": "ENTWURF",
+  "t": "Ersatzpunkt etwa {km} km von der Mitte"
+ },
+ "UI-ZONE-ERSATZPUNKT": {
+  "s": "ENTWURF",
+  "t": "Ersatzpunkt"
+ },
+ "UI-ZONE-GERADE-ERSATZ": {
+  "s": "ENTWURF",
+  "t": "Du bist gerade in einer Zone: andere sehen den Ersatzpunkt."
+ },
+ "UI-ZONE-GERADE-UNSICHTBAR": {
+  "s": "ENTWURF",
+  "t": "Du bist gerade in einer Zone und unsichtbar."
+ },
+ "UI-ZONE-HIER": {
+  "s": "ENTWURF",
+  "t": "Mittelpunkt: mein jetziger Ort"
+ },
+ "UI-ZONE-MITTE-ERKL": {
+  "s": "ENTWURF",
+  "t": "Die Mitte wird nur als Rasterzelle gespeichert, verschlüsselt."
+ },
+ "UI-ZONE-MITTE-GESETZT": {
+  "s": "ENTWURF",
+  "t": "Mittelpunkt gesetzt."
+ },
+ "UI-ZONE-NAME": {
+  "s": "ENTWURF",
+  "t": "Name der Zone (freiwillig)"
+ },
  "UI-ZONE-RADIUS": {
   "s": "ENTWURF",
   "t": "Der Radius muss zwischen {min} und {max} km liegen."
+ },
+ "UI-ZONE-RADIUS-LABEL": {
+  "s": "ENTWURF",
+  "t": "Radius: {km} km"
+ },
+ "UI-ZONE-UNSICHTBAR": {
+  "s": "ENTWURF",
+  "t": "Unsichtbar"
  },
  "UI-ZONEN-MAX": {
   "s": "ENTWURF",
