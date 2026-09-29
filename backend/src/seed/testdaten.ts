@@ -56,7 +56,7 @@ async function testImage(seed: number): Promise<Buffer> {
     </linearGradient></defs>
     <rect width="720" height="945" fill="url(#g)"/>
     <circle cx="${200 + (seed * 37) % 320}" cy="${260 + (seed * 53) % 420}" r="${80 + (seed % 5) * 20}" fill="rgba(255,255,255,0.25)"/>
-    <text x="40" y="900" font-family="sans-serif" font-size="42" fill="rgba(255,255,255,0.7)">TESTBILD ${seed}</text>
+    <rect x="40" y="880" width="${120 + (seed % 7) * 40}" height="24" rx="12" fill="rgba(255,255,255,0.5)"/>
   </svg>`;
   return sharp(Buffer.from(svg)).jpeg({ quality: 85 }).toBuffer();
 }

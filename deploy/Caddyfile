@@ -1,0 +1,71 @@
+# Caddy: TLS (Let's Encrypt), statische Oberflächen, Weiterleitung an die API.
+# Keine Zugriffsprotokolle mit Netzadressen (Datenminimierung).
+{
+	email {$ACME_EMAIL:technik@example.invalid}
+	servers {
+		trusted_proxies static private_ranges
+	}
+}
+
+(sicherheit) {
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options nosniff
+		X-Frame-Options DENY
+		Referrer-Policy no-referrer
+		Permissions-Policy "geolocation=(self), camera=(self), microphone=(), payment=(), usb=(), interest-cohort=()"
+		Cross-Origin-Opener-Policy same-origin
+		Content-Security-Policy "default-src 'self'; img-src 'self' data: blob: {$MAP_TILE_ORIGIN}; connect-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self'; worker-src 'self'; manifest-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'; object-src 'none'"
+		-Server
+	}
+	log {
+		output discard
+	}
+	encode zstd gzip
+}
+
+# Die App
+{$APP_ADDRESS} {
+	import sicherheit
+	@api path /api/*
+	handle @api {
+		reverse_proxy api:3000 {
+			flush_interval -1
+		}
+	}
+	# Das Werkzeug antwortet nur unter seiner eigenen Adresse (M00)
+	handle /mod-api/* {
+		respond 404
+	}
+	handle /mod.html {
+		respond 404
+	}
+	@unveraenderlich path /assets/*
+	header @unveraenderlich Cache-Control "public, max-age=31536000, immutable"
+	@frisch path /sw.js /index.html /manifest*.webmanifest
+	header @frisch Cache-Control "no-cache"
+	handle {
+		root * /srv
+		try_files {path} /index.html
+		file_server
+	}
+}
+
+# Das Moderationswerkzeug — eigene Adresse, nicht verlinkt
+{$MOD_ADDRESS} {
+	import sicherheit
+	handle /mod-api/* {
+		reverse_proxy api:3000
+	}
+	handle /api/* {
+		respond 404
+	}
+	@unveraenderlich path /assets/*
+	header @unveraenderlich Cache-Control "public, max-age=31536000, immutable"
+	handle {
+		root * /srv
+		@seite not path /assets/*
+		rewrite @seite /mod.html
+		file_server
+	}
+}

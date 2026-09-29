@@ -9,3 +9,4 @@ backend/data/
 data/
 .DS_Store
 frontend/dist/
+backups/

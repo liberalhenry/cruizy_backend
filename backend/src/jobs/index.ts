@@ -1,16 +1,16 @@
 /**
  * Hintergrundaufträge — Fristen, Verfall, Löschungen, Berechnungen.
  *
- * Ein Taktgeber prüft alle 15 Sekunden, welcher Auftrag fällig ist. Jeder Auftrag
- * läuft höchstens einmal gleichzeitig (Sperre im Prozess und Beratungssperre in der
- * Datenbank), der letzte Lauf steht in job_runs — ein Neustart holt Fälliges nach.
+ * Ein Taktgeber prüft alle 15 Sekunden, welcher Auftrag fällig ist, und führt die
+ * fälligen nacheinander aus (ein Server-Prozess). Der letzte Lauf steht in job_runs —
+ * ein Neustart holt Fälliges nach.
  *
  * Was hier NICHT gelöscht wird: das Zugriffsprotokoll (unveränderlich, mindestens
  * P-PROTOKOLL-DAUER), gesicherte Dateien aus Hash-Fällen (Löschen entscheidet die Behörde),
  * das Kennzahlenarchiv (unveränderlich).
  */
 import { p, setOverrides } from '../config/params.js';
-import { db, one, q } from '../db/pool.js';
+import { one, q } from '../db/pool.js';
 import { deleteFile } from '../lib/files.js';
 import { localParts } from '../lib/time.js';
 import { t } from '../lib/texts.js';
@@ -287,35 +287,35 @@ const JOBS: Job[] = [
 ];
 
 const lastRun = new Map<string, number>();
-const running = new Set<string>();
+let ticking = false;
 let timer: NodeJS.Timeout | null = null;
 
+/**
+ * Fällige Aufträge laufen NACHEINANDER. So belegt der Taktgeber höchstens eine
+ * Verbindung zusätzlich, und die Anfragen der Nutzer behalten den Rest des Pools.
+ * (Gleichzeitige Aufträge mit gehaltener Sperrverbindung können den Pool leerlaufen lassen.)
+ */
 async function tick() {
-  for (const job of JOBS) {
-    if (running.has(job.name)) continue;
-    const last = lastRun.get(job.name) ?? 0;
-    if (Date.now() - last < job.everyS() * 1000) continue;
-    running.add(job.name);
-    lastRun.set(job.name, Date.now());
-    runOne(job).finally(() => running.delete(job.name));
+  if (ticking) return;
+  ticking = true;
+  try {
+    for (const job of JOBS) {
+      const last = lastRun.get(job.name) ?? 0;
+      if (Date.now() - last < job.everyS() * 1000) continue;
+      lastRun.set(job.name, Date.now());
+      await runOne(job);
+    }
+  } finally {
+    ticking = false;
   }
 }
 
 async function runOne(job: Job) {
-  const client = await db().connect();
   try {
-    const lock = await client.query(`SELECT pg_try_advisory_lock(hashtext($1)) AS ok`, [`job:${job.name}`]);
-    if (!lock.rows[0].ok) return;
-    try {
-      await job.run();
-      await client.query(`INSERT INTO job_runs (name, last_run) VALUES ($1, now()) ON CONFLICT (name) DO UPDATE SET last_run = now()`, [job.name]);
-    } finally {
-      await client.query(`SELECT pg_advisory_unlock(hashtext($1))`, [`job:${job.name}`]);
-    }
+    await job.run();
+    await q(`INSERT INTO job_runs (name, last_run) VALUES ($1, now()) ON CONFLICT (name) DO UPDATE SET last_run = now()`, [job.name]);
   } catch (e) {
     console.error(`Auftrag ${job.name} fehlgeschlagen:`, (e as Error).message);
-  } finally {
-    client.release();
   }
 }
 
@@ -326,7 +326,8 @@ export async function startJobs() {
   for (const j of JOBS) if (j.everyS() <= 10 * MIN) lastRun.delete(j.name);
   timer = setInterval(() => tick().catch(() => {}), 15_000);
   timer.unref();
-  await tick();
+  // der erste Durchlauf blockiert den Start nicht
+  tick().catch(() => {});
 }
 
 export function stopJobs() {

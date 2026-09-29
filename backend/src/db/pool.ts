@@ -10,7 +10,7 @@ export function db(): pg.Pool {
   if (!pool) {
     pool = new pg.Pool({
       connectionString: env().DATABASE_URL,
-      max: 10,
+      max: 20,
       idleTimeoutMillis: 30_000,
     });
     pool.on('error', (err) => {

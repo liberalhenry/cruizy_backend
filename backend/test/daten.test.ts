@@ -129,6 +129,19 @@ describe('Bildauslieferung', () => {
 });
 
 describe('Hintergrundaufträge', () => {
+  it('jeder Auftrag läuft ohne Fehler durch, auch alle nacheinander', async () => {
+    for (const j of JOBS) await expect(j.run(), j.name).resolves.not.toThrow();
+  });
+
+  it('der Taktgeber blockiert keine Anfragen, während Aufträge laufen', async () => {
+    const { startJobs, stopJobs } = await import('../src/jobs/index.js');
+    await startJobs();
+    const m = await member();
+    const r = await m.c.get('/api/profile/me');
+    expect(r.status).toBe(200);
+    stopJobs();
+  });
+
   it('Absicht läuft still ab (F15)', async () => {
     const m = await member();
     await m.c.put('/api/profile/intention', { key: 'abend' });

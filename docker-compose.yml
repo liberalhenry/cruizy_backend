@@ -1,0 +1,95 @@
+# Alles auf einem Hetzner-VPS (4 GB RAM, 2 Kerne): Datenbank, API, Caddy.
+# Start:  docker compose up -d --build     (Einstellungen in .env, Vorlage .env.example)
+name: cruizy
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: cruizy
+      POSTGRES_USER: cruizy
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD fehlt in .env}
+      POSTGRES_INITDB_ARGS: --data-checksums
+    # auf 4 GB RAM abgestimmt — die Datenbank bekommt etwa ein Viertel
+    command:
+      - postgres
+      - -c
+      - shared_buffers=256MB
+      - -c
+      - effective_cache_size=1GB
+      - -c
+      - work_mem=8MB
+      - -c
+      - maintenance_work_mem=64MB
+      - -c
+      - max_connections=40
+      - -c
+      - wal_compression=on
+      - -c
+      - log_min_duration_statement=2000
+      - -c
+      - log_connections=off
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cruizy -d cruizy"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    shm_size: 256mb
+    mem_limit: 1200m
+    networks: [intern]
+
+  api:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    image: cruizy-api:latest
+    init: true
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DATABASE_URL: postgres://cruizy:${POSTGRES_PASSWORD}@db:5432/cruizy
+      DATA_DIR: /data
+      TRUST_PROXY: "true"
+      NODE_ENV: production
+    volumes:
+      - media-data:/data
+    depends_on:
+      db:
+        condition: service_healthy
+    mem_limit: 1200m
+    networks: [intern]
+
+  web:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    image: cruizy-web:latest
+    restart: unless-stopped
+    environment:
+      APP_ADDRESS: ${APP_ADDRESS:?APP_ADDRESS fehlt in .env}
+      MOD_ADDRESS: ${MOD_ADDRESS:?MOD_ADDRESS fehlt in .env}
+      ACME_EMAIL: ${ACME_EMAIL:-}
+      MAP_TILE_ORIGIN: ${MAP_TILE_ORIGIN:-}
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on:
+      - api
+    mem_limit: 256m
+    networks: [intern]
+
+volumes:
+  db-data:
+  media-data:
+  caddy-data:
+  caddy-config:
+
+networks:
+  intern:
