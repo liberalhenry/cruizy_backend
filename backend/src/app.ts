@@ -6,6 +6,7 @@ import { ZodError } from 'zod';
 import { env } from './config/env.js';
 import { p } from './config/params.js';
 import { AppError } from './lib/errors.js';
+import { discord } from './services/discord.js';
 
 import authRoutes from './modules/auth.js';
 import guestRoutes from './modules/guest.js';
@@ -92,6 +93,8 @@ export async function buildApp(): Promise<FastifyInstance> {
     const er = err as Error;
     if (e.NODE_ENV === 'test' && process.env.TEST_SHOW_ERRORS) console.error(er);
     req.log.error({ err: { message: er.message, stack: er.stack } }, 'Serverfehler');
+    // Issue #6: nur Methode, Routenmuster und Fehlerart — keine Meldungstexte, keine Parameter
+    discord('system', { title: 'Serverfehler (500)', level: 'danger', fields: [{ name: 'Route', value: `${req.method} ${req.routeOptions?.url ?? '?'}` }, { name: 'Art', value: er.name ?? 'Error' }] });
     return reply.status(500).send({ fehler: 'ST-FEH-02', vars: {}, code: 'server' });
   });
 

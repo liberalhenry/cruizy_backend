@@ -17,6 +17,7 @@ import { nextNumber } from '../lib/numbers.js';
 import { hit } from '../lib/rate.js';
 import { t } from '../lib/texts.js';
 import { sendMail } from '../providers/mail.js';
+import { discord } from '../services/discord.js';
 import { runHashCheck } from '../providers/checks.js';
 import { readUpload } from './photos.js';
 
@@ -89,6 +90,15 @@ export default async function helpRoutes(app: FastifyInstance) {
       // FV-92: Betreff nur die Fallnummer
       await sendMail({ to: email, subject: t('ST-HLF-24', { fallnummer: number }), text: t('UI-MAIL-HILFE-EINGANG', { fallnummer: number }) });
     }
+    discord('meldungen', {
+      title: `Neue Anfrage ${number}`,
+      level: b.category === 1 ? 'danger' : 'info',
+      fields: [
+        { name: 'Kategorie', value: String(b.category) },
+        { name: 'Bereich', value: pot },
+        { name: 'Konto', value: loggedIn ? 'ja' : 'nein' },
+      ],
+    });
     // AK-F75-01: Fallnummer sofort
     return { id: row!.id, number, datenschutz: pot === 'datenschutz' };
   });

@@ -15,6 +15,7 @@ import { runPhotoChain, regeneratePublic } from '../services/photo-chain.js';
 import { imgUrl } from '../services/media-tokens.js';
 import { nextNumber } from '../lib/numbers.js';
 import { encStr } from '../lib/crypto.js';
+import { discord } from '../services/discord.js';
 
 export async function readUpload(req: FastifyRequest): Promise<{ buffer: Buffer; fields: Record<string, string> }> {
   const part = await req.file();
@@ -148,6 +149,7 @@ export default async function photoRoutes(app: FastifyInstance) {
         p('P-FRIST-EINSPRUCH-BILD'),
       ],
     );
+    discord('meldungen', { title: `Neuer Einspruch ${number}`, level: 'info', fields: [{ name: 'Art', value: 'abgelehntes Profilfoto' }] });
     return { number, hours: Math.round(p('P-FRIST-EINSPRUCH-BILD') / 3600) };
   });
 }

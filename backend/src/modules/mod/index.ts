@@ -12,6 +12,7 @@ import { AppError, bad, tooMany } from '../../lib/errors.js';
 import { getFile, type Store } from '../../lib/files.js';
 import { body, ipKey, params } from '../../lib/http.js';
 import { hit } from '../../lib/rate.js';
+import { discord } from '../../services/discord.js';
 import { STAFF_COOKIE, afterHashLock, createStaffSession, hashCasesToday, requireStaff, HASH_CASES_PER_DAY } from './core.js';
 import queueRoutes from './queue.js';
 import reportRoutes from './reports.js';
@@ -42,15 +43,28 @@ export default async function modRoutes(app: FastifyInstance) {
 
     mod.post('/mod-api/login', async (req, reply) => {
       const b = body(req, z.object({ login: z.string().max(100), password: z.string().max(500), totp: z.string().max(10) }));
-      if (!hit('mod-login', ipKey(req), 10, 3600_000)) throw tooMany();
+      if (!hit('mod-login', ipKey(req), 10, 3600_000)) {
+        discord('sicherheit', { title: 'Werkzeug: zu viele Anmeldeversuche', level: 'danger', description: 'Anmeldungen von dieser Netzadresse sind für eine Stunde gesperrt.' });
+        throw tooMany();
+      }
       const st = await one(`SELECT * FROM staff WHERE login = $1 AND disabled_at IS NULL`, [b.login.trim().toLowerCase()]);
       const pwOk = await verifyPassword(st?.password_hash, b.password);
-      if (!st || !pwOk) throw bad('UI-ANMELDUNG-FALSCH', {}, 'anmeldung_falsch');
+      // Issue #6: fehlgeschlagene Anmeldungen melden — die eingegebene Kennung nur, wenn es sie gibt
+      const failed = (why: string) =>
+        discord('sicherheit', { title: 'Werkzeug: Anmeldung fehlgeschlagen', level: 'warn', fields: [{ name: 'Grund', value: why }, { name: 'Zugang', value: st ? st.name : 'unbekannte Kennung' }] });
+      if (!st || !pwOk) {
+        failed(st ? 'Passwort falsch' : 'Kennung unbekannt oder gesperrt');
+        throw bad('UI-ANMELDUNG-FALSCH', {}, 'anmeldung_falsch');
+      }
       // M00.01: zweiter Faktor immer, ohne Ausnahme
       const secret = decrypt('totp', st.totp_secret_enc, `staff:${st.id}`).toString();
       const totp = new OTPAuth.TOTP({ secret: OTPAuth.Secret.fromBase32(secret), digits: 6, period: 30 });
-      if (totp.validate({ token: b.totp.replace(/\s/g, ''), window: 1 }) === null) throw bad('UI-ANMELDUNG-FALSCH', {}, 'anmeldung_falsch');
+      if (totp.validate({ token: b.totp.replace(/\s/g, ''), window: 1 }) === null) {
+        failed('zweiter Faktor falsch');
+        throw bad('UI-ANMELDUNG-FALSCH', {}, 'anmeldung_falsch');
+      }
       await createStaffSession(st.id, reply);
+      discord('team', { title: 'Werkzeug: angemeldet', level: 'ok', fields: [{ name: 'Person', value: st.name }, { name: 'Rolle', value: `${st.role}${st.founder ? ' · Owner' : ''}` }] });
       return { ok: true };
     });
 

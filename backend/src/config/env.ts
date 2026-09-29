@@ -89,6 +89,19 @@ const schema = z.object({
   MAP_TILE_URL: z.string().default(''),
   MAP_ATTRIBUTION: z.string().default(''),
 
+  /*
+   * Discord-Webhooks (Issue #6): je Kategorie ein Kanal. Leer = Kategorie aus bzw. DEFAULT.
+   * Gesendet werden nie personenbezogene Daten von Nutzern (siehe services/discord.ts).
+   */
+  DISCORD_WEBHOOK_DEFAULT: z.string().default(''),
+  DISCORD_WEBHOOK_MODERATION: z.string().default(''),
+  DISCORD_WEBHOOK_MELDUNGEN: z.string().default(''),
+  DISCORD_WEBHOOK_SICHERHEIT: z.string().default(''),
+  DISCORD_WEBHOOK_TEAM: z.string().default(''),
+  DISCORD_WEBHOOK_KONTEN: z.string().default(''),
+  DISCORD_WEBHOOK_ALTERSPRUEFUNG: z.string().default(''),
+  DISCORD_WEBHOOK_SYSTEM: z.string().default(''),
+
   LOG_LEVEL: z.string().default('info'),
 });
 

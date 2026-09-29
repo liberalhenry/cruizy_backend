@@ -14,6 +14,7 @@ import { db, one, q, tx, type Queryable } from '../../db/pool.js';
 import { decrypt, encrypt, randomToken, tokenHash } from '../../lib/crypto.js';
 import { AppError } from '../../lib/errors.js';
 import { localParts } from '../../lib/time.js';
+import { actionLabel, discord } from '../../services/discord.js';
 
 export const STAFF_COOKIE = 'msid';
 export const MAX_SESSION_S = 12 * 3600;
@@ -103,10 +104,21 @@ export async function logged<T>(
   fn: (c: Queryable) => Promise<T>,
   special = false,
 ): Promise<T> {
-  return tx(async (c) => {
+  const result = await tx(async (c) => {
     await logAccess(c, staff.id, caseRef, action, reason, special);
     return fn(c);
   });
+  // erst nach dem Festschreiben melden — ohne Begründungstext (Issue #6)
+  discord(caseRef.startsWith('team:') ? 'team' : 'moderation', {
+    title: actionLabel(action),
+    level: special ? 'warn' : 'info',
+    fields: [
+      { name: 'Vorgang', value: caseRef },
+      { name: 'Person', value: staff.name },
+      ...(special ? [{ name: 'Besondere Handlung', value: 'ja' }] : []),
+    ],
+  });
+  return result;
 }
 
 export async function hashCasesToday(staffId: string): Promise<number> {

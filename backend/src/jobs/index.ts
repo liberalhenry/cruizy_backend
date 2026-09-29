@@ -24,6 +24,7 @@ import { purgeEventGroups, remindEvents } from '../modules/events.js';
 import { computeClusters } from '../modules/places.js';
 import { finalizeBlock } from '../modules/safety.js';
 import { weeklySummary } from '../modules/mod/log.js';
+import { discord } from '../services/discord.js';
 
 interface Job {
   name: string;
@@ -148,6 +149,9 @@ async function runDeletions() {
   for (const r of due) await deleteAccountNow(r.id);
   const minors = await q(`SELECT id FROM accounts WHERE minor_locked_at IS NOT NULL AND minor_delete_at IS NOT NULL AND minor_delete_at <= now() LIMIT 50`);
   for (const r of minors) await deleteAccountNow(r.id);
+  if (due.length + minors.length) {
+    discord('konten', { title: 'Konten endgültig gelöscht', level: 'info', fields: [{ name: 'nach Karenz', value: String(due.length) }, { name: 'nicht volljährig', value: String(minors.length) }] });
+  }
 }
 
 /** Nachlauf-Ablage (FV-97): nach P-LOESCH-NACHLAUF gelöscht, außer sie hängt an einem Meldefall. */
@@ -316,6 +320,7 @@ async function runOne(job: Job) {
     await q(`INSERT INTO job_runs (name, last_run) VALUES ($1, now()) ON CONFLICT (name) DO UPDATE SET last_run = now()`, [job.name]);
   } catch (e) {
     console.error(`Auftrag ${job.name} fehlgeschlagen:`, (e as Error).message);
+    discord('system', { title: `Hintergrundauftrag fehlgeschlagen: ${job.name}`, level: 'danger', description: (e as Error).name });
   }
 }
 

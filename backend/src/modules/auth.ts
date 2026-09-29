@@ -48,6 +48,7 @@ import { t } from '../lib/texts.js';
 import { checkCode, issueCode, lastCodeAt, mailCode, mayMail, smsCode } from '../services/codes.js';
 import { createNotice } from '../services/notify.js';
 import { sendMail } from '../providers/mail.js';
+import { discord } from '../services/discord.js';
 import { sendPush } from '../services/push.js';
 import { sendSms } from '../providers/sms.js';
 import { metric } from '../services/metrics.js';
@@ -480,6 +481,8 @@ export default async function authRoutes(app: FastifyInstance) {
       }
     });
     await metric(a.id, 'user_created');
+    // Issue #6: nur, dass es ein neues Konto gibt, und über welchen Weg
+    discord('konten', { title: 'Neues Konto', level: 'ok', fields: [{ name: 'Weg', value: a.primaryMethod }] });
     // AK-Z09-01: der Code wird genau einmal angezeigt und nur als Prüfwert gespeichert
     return { ok: true, recoveryCode: code, next: 'profil' };
   });

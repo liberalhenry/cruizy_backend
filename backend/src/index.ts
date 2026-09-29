@@ -9,6 +9,8 @@ import { buildApp } from './app.js';
 import { startJobs, stopJobs } from './jobs/index.js';
 import { initPush } from './services/push.js';
 import { startupProblems, testModeProblems } from './startup.js';
+import { discord } from './services/discord.js';
+import { appVersion } from './lib/version.js';
 
 async function main() {
   const e = env();
@@ -29,6 +31,15 @@ async function main() {
   const app = await buildApp();
   await app.listen({ port: e.PORT, host: e.HOST });
   await startJobs();
+  discord('system', {
+    title: 'Server gestartet',
+    level: 'ok',
+    fields: [
+      { name: 'Version', value: appVersion() },
+      { name: 'Betrieb', value: e.OPERATION_MODE },
+      ...(problems.length ? [{ name: 'Offen für den Echtbetrieb', value: String(problems.length), inline: true }] : []),
+    ],
+  });
 
   const shutdown = async (sig: string) => {
     console.log(`${sig} — fahre herunter`);
