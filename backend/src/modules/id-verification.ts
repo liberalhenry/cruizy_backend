@@ -64,7 +64,8 @@ export default async function idVerificationRoutes(app: FastifyInstance) {
     }
 
     // Beim ersten Versuch ohne jedes erkannte Datum: lieber neu fotografieren lassen
-    if (!result.source && attempts < 2) return { state: 'retry', hint: 'UI-AUSWEIS-NOCHMAL' };
+    // (fehlt die Texterkennung auf dem Server, hilft ein neues Foto nicht — dann gleich an das Team)
+    if (!result.source && !result.ocrUnavailable && attempts < 2) return { state: 'retry', hint: 'UI-AUSWEIS-NOCHMAL' };
 
     const files = await Promise.all(images.map((img) => putFile('idcheck', img)));
     const number = await tx(async (c) => {

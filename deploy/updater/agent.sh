@@ -64,7 +64,11 @@ SQL
     *) status=fehlgeschlagen ;;
   esac
   err=""
-  [[ "$rc" != 0 ]] && err="$(grep -v '^\s*$' "$file" | tail -n 25)"
+  if [[ "$rc" != 0 ]]; then
+    # Ursache zuerst (die ersten Zeilen ab dem ersten Fehler), dann das Ende des Laufs
+    err="$(grep -m1 -A 12 -E 'unhealthy|Zeitüberschreitung|Laufende Version|nicht abrufbar|fehlgeschlagen|Ungültige Version|VERSION im Release' "$file")"
+    err="${err}"$'\n…\n'"$(grep -v '^\s*$' "$file" | tail -n 3)"
+  fi
   # Die Datenbank kann während des Neustarts kurz weg sein — bis zu 5 Minuten nachfassen
   for _ in $(seq 1 60); do
     if sql -v id="$id" -v st="$status" -v log="$(tail -c 60000 "$file")" -v err="$err" -v c="$(git rev-parse HEAD)" >/dev/null 2>&1 <<'SQL'

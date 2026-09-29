@@ -28,6 +28,8 @@ export interface IdCheckResult {
   note: string;
   /** nur für Tests und die Protokollierung: Alter in Jahren, nie das Datum */
   age?: number;
+  /** Texterkennung fehlt auf dem Server — dann gleich an das Team */
+  ocrUnavailable?: boolean;
 }
 
 // ───────────────────────── Datumsrechnung ─────────────────────────
@@ -285,7 +287,7 @@ export async function readDocument(image: Buffer): Promise<string> {
 }
 
 export async function checkIdImages(images: Buffer[], now = new Date()): Promise<IdCheckResult> {
-  if (!(await ocrAvailable())) return { verdict: 'unsure', source: null, note: 'Texterkennung auf dem Server nicht verfügbar' };
+  if (!(await ocrAvailable())) return { verdict: 'unsure', source: null, note: 'Texterkennung auf dem Server nicht verfügbar', ocrUnavailable: true };
   const texts: string[] = [];
   for (const img of images) texts.push(await readDocument(img));
   // der Text bleibt hier — zurück geht nur das Ergebnis

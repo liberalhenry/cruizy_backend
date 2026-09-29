@@ -350,7 +350,17 @@ export function PruefungAusweis() {
 
   const picker = (label: string, file: File | null, set: (f: File | null) => void, required: boolean) => (
     <label className="card p-4 flex items-center gap-3 cursor-pointer">
-      <input type="file" accept="image/*" capture="environment" className="sr-only" onChange={(e) => set(e.target.files?.[0] ?? null)} />
+      <input
+        type="file"
+        accept="image/*"
+        capture="environment"
+        className="sr-only"
+        onChange={(e) => {
+          set(e.target.files?.[0] ?? null);
+          // leeren, damit dieselbe Datei nach „Bitte noch einmal“ wieder gewählt werden kann
+          e.target.value = '';
+        }}
+      />
       <span className={`w-10 h-10 rounded-full grid place-items-center ${file ? 'bg-gut text-grund' : 'bg-flaeche2'}`} aria-hidden>
         {file ? '✓' : '+'}
       </span>
