@@ -12,6 +12,7 @@ export function applyTestEnv() {
   process.env.COOKIE_SECURE = '0';
   process.env.CLASSIFIER = 'mock-allow';
   process.env.HASH_PROVIDER = 'mock';
+  process.env.AGE_PROVIDER ??= 'mock';
   process.env.APP_URL = 'http://localhost:5173';
   process.env.MOD_URL = 'http://localhost:5174';
   process.env.DATA_DIR ??= mkdtempSync(join(tmpdir(), 'cruizy-test-'));

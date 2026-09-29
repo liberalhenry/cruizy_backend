@@ -17,6 +17,7 @@ import mediaRoutes from './modules/media.js';
 import locationRoutes from './modules/location.js';
 import discoveryRoutes from './modules/discovery.js';
 import verificationRoutes from './modules/verification.js';
+import idVerificationRoutes from './modules/id-verification.js';
 import chatRoutes from './modules/chat.js';
 import albumRoutes from './modules/album.js';
 import safetyRoutes from './modules/safety.js';
@@ -109,6 +110,7 @@ export async function buildApp(): Promise<FastifyInstance> {
   await app.register(locationRoutes);
   await app.register(discoveryRoutes);
   await app.register(verificationRoutes);
+  await app.register(idVerificationRoutes);
   await app.register(chatRoutes);
   await app.register(albumRoutes);
   await app.register(safetyRoutes);

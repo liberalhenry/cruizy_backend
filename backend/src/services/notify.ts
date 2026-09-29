@@ -20,7 +20,8 @@ export type NoticeKind =
   | 'hilfe_antwort'
   | 'rueckmeldung_antwort'
   | 'sicherheit'
-  | 'ort';
+  | 'ort'
+  | 'alterspruefung';
 
 export async function createNotice(
   accountId: string,

@@ -14,6 +14,10 @@ RUN npx tsc -p tsconfig.json \
  && npm prune --omit=dev --no-audit --no-fund
 
 FROM node:22-bookworm-slim
+# Texterkennung für die Altersprüfung per Ausweis (Issue #7) — läuft lokal, nichts geht an Dritte
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends tesseract-ocr tesseract-ocr-deu tesseract-ocr-eng \
+ && rm -rf /var/lib/apt/lists/*
 ENV NODE_ENV=production \
     TEXTS_DIR=/app/shared/texts \
     DATA_DIR=/data \

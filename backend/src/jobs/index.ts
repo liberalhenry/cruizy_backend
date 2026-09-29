@@ -24,6 +24,7 @@ import { purgeEventGroups, remindEvents } from '../modules/events.js';
 import { computeClusters } from '../modules/places.js';
 import { finalizeBlock } from '../modules/safety.js';
 import { weeklySummary } from '../modules/mod/log.js';
+import { closeReview } from '../modules/mod/idcheck.js';
 import { discord } from '../services/discord.js';
 
 interface Job {
@@ -141,6 +142,12 @@ export async function computeResponseBands() {
 async function purgeProvisional() {
   const rows = await q(`SELECT id FROM accounts WHERE status = 'provisional' AND created_at < now() - make_interval(secs => $1) LIMIT 200`, [p('P-KONTO-VORLAEUFIG')]);
   for (const r of rows) await deleteAccountNow(r.id, { vault: false });
+}
+
+/** Issue #7: unentschiedene Ausweisprüfungen — spätestens nach P-AUSWEIS-AUFBEWAHRUNG sind die Bilder weg. */
+async function expireIdReviews() {
+  const rows = await q(`SELECT id FROM id_reviews WHERE decided_at IS NULL AND created_at < now() - make_interval(secs => $1) LIMIT 100`, [p('P-AUSWEIS-AUFBEWAHRUNG')]);
+  for (const r of rows) await closeReview(r.id, 'abgelaufen', null);
 }
 
 /** Löschung nach der Karenz (F68) und nach FV-17 (nicht volljährig). */
@@ -283,6 +290,7 @@ const JOBS: Job[] = [
   { name: 'event_groups', everyS: () => HOUR, run: purgeEventGroups },
   { name: 'housekeeping', everyS: () => HOUR, run: housekeeping },
   { name: 'retention', everyS: () => 6 * HOUR, run: retention },
+  { name: 'id_reviews', everyS: () => HOUR, run: expireIdReviews },
   { name: 'photo_chains', everyS: () => 5 * MIN, run: resumePhotoChains },
   { name: 'pending_hashes', everyS: () => 6 * HOUR, run: pendingHashes },
   { name: 'metrics_archive', everyS: () => 6 * HOUR, run: archiveMonth },

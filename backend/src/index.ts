@@ -27,6 +27,10 @@ async function main() {
     console.log('TESTBETRIEB — nur erfundene Daten zulässig.' + (notes.length ? '\n  · ' + notes.join('\n  · ') : ''));
   }
 
+  if (e.AGE_PROVIDER === 'ausweis') {
+    const { ocrAvailable } = await import('./services/id-check.js');
+    if (!(await ocrAvailable())) console.warn('Texterkennung (tesseract) fehlt — jede Ausweisprüfung geht an das Team.');
+  }
   await initPush();
   const app = await buildApp();
   await app.listen({ port: e.PORT, host: e.HOST });

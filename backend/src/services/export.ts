@@ -38,6 +38,7 @@ export const EXPORT_SECTIONS: Record<string, string> = {
   consents: 'einwilligungen',
   recovery_attempts: 'wiederherstellung',
   verification_sessions: 'pruefungen',
+  id_reviews: 'pruefungen (Ausweis: nur Zeitpunkt und Ergebnis; Bilder werden mit der Entscheidung gelöscht)',
   webauthn_credentials: 'schluessel',
   webauthn_challenges: 'nicht exportiert: kurzlebige Anfrage',
   profiles: 'profil',

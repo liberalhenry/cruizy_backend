@@ -72,7 +72,11 @@ const schema = z.object({
   VAPID_SUBJECT: z.string().default('mailto:technik@example.invalid'),
 
   /* Prüfpartner Altersprüfung (F04, Z-03) und Fotoprüfung (F06) */
-  AGE_PROVIDER: z.enum(['mock']).default('mock'),
+  /**
+   * ausweis = Ausweisbild, Auswertung des Geburtsdatums auf dem eigenen Server, unsicher → Team (Issue #7).
+   * mock    = Attrappe eines Prüfpartners, nur im Testbetrieb.
+   */
+  AGE_PROVIDER: z.enum(['ausweis', 'mock']).default('ausweis'),
   AGE_WEBHOOK_SECRET: z.string().default(''),
 
   /* Prüfkette (M-02) */

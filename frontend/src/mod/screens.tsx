@@ -5,6 +5,7 @@ import { api, errText } from '../lib/api';
 import { fmtDate, t } from '../lib/texts';
 import { Card, Logo, Reason, useAction } from './common';
 import { MeinZugang, Team } from './team';
+import { Ausweise } from './ausweis';
 
 export interface Staff {
   staff: { id: string; name: string; role: 'MOD' | 'BETRIEB'; founder: boolean };
@@ -15,13 +16,14 @@ export interface Staff {
   mode: 'test' | 'live';
 }
 
-type Screen = 'uebersicht' | 'warteschlange' | 'meldungen' | 'hash' | 'freigaben' | 'sperren' | 'widerspruch' | 'protokoll' | 'orte' | 'einreichungen' | 'art18' | 'vorgaenge' | 'verwaltung' | 'team' | 'zugang';
+type Screen = 'uebersicht' | 'warteschlange' | 'meldungen' | 'hash' | 'freigaben' | 'sperren' | 'widerspruch' | 'protokoll' | 'orte' | 'einreichungen' | 'art18' | 'vorgaenge' | 'verwaltung' | 'team' | 'zugang' | 'ausweis';
 
 const NAV: { key: Screen; label: string; betrieb?: boolean; owner?: boolean }[] = [
   { key: 'uebersicht', label: 'Tagesübersicht' },
   { key: 'warteschlange', label: 'Warteschlange Zone 1' },
   { key: 'meldungen', label: 'Meldungen' },
   { key: 'hash', label: 'Hash-Treffer' },
+  { key: 'ausweis', label: 'Altersprüfung' },
   { key: 'freigaben', label: 'Zweite Person' },
   { key: 'sperren', label: 'Sperren' },
   { key: 'widerspruch', label: 'Einspruch/Widerspruch' },
@@ -88,6 +90,7 @@ export function Screens({ me, onLogout, reloadMe }: { me: Staff; onLogout: () =>
         {screen === 'verwaltung' && isBetrieb && <Verwaltung />}
         {screen === 'team' && me.staff.founder && <Team meId={me.staff.id} />}
         {screen === 'zugang' && <MeinZugang />}
+        {screen === 'ausweis' && <Ausweise />}
       </main>
     </div>
   );

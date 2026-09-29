@@ -25,6 +25,7 @@ import art18Routes from './art18.js';
 import ticketRoutes from './tickets.js';
 import overviewRoutes from './overview.js';
 import teamRoutes from './team.js';
+import idcheckRoutes from './idcheck.js';
 
 export function modImgUrl(store: Store, file: string, staffId: string) {
   return `/mod-api/img/${sealToken({ k: 'mod', s: store, f: file, st: staffId, e: Date.now() + 5 * 60_000 })}`;
@@ -97,10 +98,14 @@ export default async function modRoutes(app: FastifyInstance) {
       const tok = openToken<{ k: string; s: Store; f: string; st: string; e: number }>(token);
       if (!tok || tok.k !== 'mod' || tok.st !== s.id || tok.e < Date.now()) return reply.status(404).send();
       // Zone 2 ist für das Werkzeug nicht lesbar — nur Kopien im Fall („sealed“) und Zone 1 (AK-M01-04/05)
-      if (!['sealed', 'zone1-original', 'tickets'].includes(tok.s)) return reply.status(404).send();
+      // „idcheck“: Ausweisbilder einer offenen Altersprüfung (Issue #7)
+      if (!['sealed', 'zone1-original', 'tickets', 'idcheck'].includes(tok.s)) return reply.status(404).send();
+      // gelöscht (z. B. Ausweisbild nach der Entscheidung) → nicht mehr vorhanden
+      const data = await getFile(tok.s, tok.f).catch(() => null);
+      if (!data) return reply.status(404).send();
       reply.header('content-type', 'image/jpeg');
       reply.header('cache-control', 'no-store');
-      return reply.send(await getFile(tok.s, tok.f));
+      return reply.send(data);
     });
 
     await mod.register(queueRoutes);
@@ -114,5 +119,6 @@ export default async function modRoutes(app: FastifyInstance) {
     await mod.register(ticketRoutes);
     await mod.register(overviewRoutes);
     await mod.register(teamRoutes);
+    await mod.register(idcheckRoutes);
   });
 }

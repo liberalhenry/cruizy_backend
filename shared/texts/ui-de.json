@@ -191,6 +191,66 @@
   "s": "ENTWURF",
   "t": "Anmelden mit Apple ist gerade nicht verfügbar."
  },
+ "UI-AUSWEIS-ERKL": {
+  "s": "ENTWURF",
+  "t": "Wir schauen nur auf dein Geburtsdatum. Name, Foto, Adresse und Ausweisnummer darfst du abdecken — wir brauchen sie nicht und speichern sie nicht."
+ },
+ "UI-AUSWEIS-ERKL-2": {
+  "s": "ENTWURF",
+  "t": "Ist das Datum sicher lesbar, bist du sofort fertig und wir behalten kein Bild. Sonst prüft ein Mensch aus unserem Team und löscht die Bilder danach."
+ },
+ "UI-AUSWEIS-HINTEN": {
+  "s": "ENTWURF",
+  "t": "Rückseite (freiwillig — die drei Zeilen unten helfen beim Lesen)"
+ },
+ "UI-AUSWEIS-LAEUFT": {
+  "s": "ENTWURF",
+  "t": "Dein Ausweis liegt gerade bei uns zur Prüfung. Du bekommst eine Mitteilung, sobald wir fertig sind."
+ },
+ "UI-AUSWEIS-LAEUFT-JETZT": {
+  "s": "ENTWURF",
+  "t": "Wir lesen das Datum …"
+ },
+ "UI-AUSWEIS-NOCHMAL": {
+  "s": "ENTWURF",
+  "t": "Wir konnten auf dem Foto kein Geburtsdatum finden. Bitte fotografiere den Ausweis noch einmal: ganz im Bild, scharf, ohne Spiegelung."
+ },
+ "UI-AUSWEIS-OK": {
+  "s": "ENTWURF",
+  "t": "Dein Alter ist bestätigt. Die Bilder deines Ausweises haben wir gelöscht."
+ },
+ "UI-AUSWEIS-PRUEFUNG": {
+  "s": "ENTWURF",
+  "t": "Ein Mensch aus unserem Team schaut sich das Geburtsdatum an — meist innerhalb von {stunden} Stunden. Du bekommst eine Mitteilung. Danach löschen wir die Bilder."
+ },
+ "UI-AUSWEIS-SENDEN": {
+  "s": "ENTWURF",
+  "t": "Prüfen"
+ },
+ "UI-AUSWEIS-TITEL": {
+  "s": "ENTWURF",
+  "t": "Altersprüfung"
+ },
+ "UI-AUSWEIS-UEBERSCHRIFT": {
+  "s": "ENTWURF",
+  "t": "Ausweis fotografieren"
+ },
+ "UI-AUSWEIS-UNLESBAR": {
+  "s": "ENTWURF",
+  "t": "Wir konnten das Geburtsdatum auf deinem Ausweis nicht sicher lesen. Die Bilder haben wir gelöscht. Bitte versuch es noch einmal — gut ausgeleuchtet, ohne Spiegelung."
+ },
+ "UI-AUSWEIS-VORNE": {
+  "s": "ENTWURF",
+  "t": "Vorderseite (mit Geburtsdatum)"
+ },
+ "UI-AUSWEIS-WARUM": {
+  "s": "ENTWURF",
+  "t": "Hier dürfen nur Volljährige sein. Wir lesen auf dem Foto deines Ausweises nur das Geburtsdatum — auf unserem eigenen Server, ohne andere Firmen. Gespeichert wird nur „geprüft ja/nein“, der Zeitpunkt und der Weg."
+ },
+ "UI-AUSWEIS-WEG": {
+  "s": "ENTWURF",
+  "t": "Mit einem Foto deines Ausweises"
+ },
  "UI-BLOCKIERT-BIS": {
   "s": "ENTWURF",
   "t": "rücknehmbar bis {datum}"
@@ -593,7 +653,7 @@
  },
  "UI-FAQ-03-A": {
   "s": "ENTWURF",
-  "t": "Weil hier nur Volljährige sein dürfen. Wir speichern davon nur „geprüft ja/nein“, den Zeitpunkt und den Weg — kein Ausweisbild, kein Geburtsdatum."
+  "t": "Weil hier nur Volljährige sein dürfen. Wir speichern davon nur „geprüft ja/nein“, den Zeitpunkt und den Weg — kein Geburtsdatum. Ein Foto deines Ausweises behalten wir nur, solange ein Mensch aus unserem Team es prüfen muss; danach löschen wir es."
  },
  "UI-FAQ-03-F": {
   "s": "ENTWURF",
