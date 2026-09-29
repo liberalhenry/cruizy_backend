@@ -1,0 +1,682 @@
+{
+ "UI-ALBUM-LEER": {
+  "s": "ENTWURF",
+  "t": "Dein Album ist noch leer."
+ },
+ "UI-ALBUM-MAX": {
+  "s": "ENTWURF",
+  "t": "Dein Album hat höchstens {max} Bilder."
+ },
+ "UI-ALBUM-NICHT-JETZT": {
+  "s": "ENTWURF",
+  "t": "Ein Album kannst du erst anbieten, wenn Bilder in diesem Gespräch erlaubt sind."
+ },
+ "UI-ALTER-UNTER-18": {
+  "s": "ENTWURF",
+  "t": "Bevor du weitermachen kannst, brauchen wir eine Altersprüfung."
+ },
+ "UI-ANMELDUNG-FALSCH": {
+  "s": "ENTWURF",
+  "t": "Anmeldedaten stimmen nicht."
+ },
+ "UI-APPLE-AUS": {
+  "s": "ENTWURF",
+  "t": "Anmelden mit Apple ist gerade nicht verfügbar."
+ },
+ "UI-CHECKIN-FRAGE-TEXT": {
+  "s": "ENTWURF",
+  "t": "Alles in Ordnung? Tipp auf „Mir geht’s gut“."
+ },
+ "UI-CHECKIN-MAIL-BETREFF": {
+  "s": "ENTWURF",
+  "t": "Nachricht"
+ },
+ "UI-CHECKIN-WEITERREICHEN": {
+  "s": "ENTWURF",
+  "t": "Bitte öffnen"
+ },
+ "UI-CHECKIN-ZEIT": {
+  "s": "ENTWURF",
+  "t": "Der Beginn muss zwischen jetzt und den nächsten 24 Stunden liegen."
+ },
+ "UI-CODE-FALSCH": {
+  "s": "ENTWURF",
+  "t": "Der Code stimmt nicht."
+ },
+ "UI-CODE-NEU": {
+  "s": "ENTWURF",
+  "t": "Der Code ist abgelaufen. Lass dir einen neuen schicken."
+ },
+ "UI-CODE-WARTEN": {
+  "s": "ENTWURF",
+  "t": "Bitte warte kurz, bevor du einen neuen Code anforderst."
+ },
+ "UI-DEIN-FOTO": {
+  "s": "ENTWURF",
+  "t": "dein Foto"
+ },
+ "UI-DEIN-KONTO-EINGESCHRAENKT": {
+  "s": "ENTWURF",
+  "t": "dein Konto (du kannst lesen, aber nichts senden)"
+ },
+ "UI-DEIN-KONTO-GESPERRT": {
+  "s": "ENTWURF",
+  "t": "dein Konto"
+ },
+ "UI-DIE-PERSON": {
+  "s": "ENTWURF",
+  "t": "die Person"
+ },
+ "UI-EINEN-INHALT": {
+  "s": "ENTWURF",
+  "t": "einen Inhalt von dir"
+ },
+ "UI-EINGABE-PRUEFEN": {
+  "s": "ENTWURF",
+  "t": "Bitte prüf deine Eingabe."
+ },
+ "UI-EINWILLIGUNG-FEHLT": {
+  "s": "ENTWURF",
+  "t": "Bevor es weitergeht, brauchen wir deine Einwilligung."
+ },
+ "UI-EINWILLIGUNG-NEU": {
+  "s": "ENTWURF",
+  "t": "Der Text der Einwilligung hat sich geändert. Bitte lies ihn noch einmal."
+ },
+ "UI-ENTSCHEIDUNG-AN-BEHOERDE": {
+  "s": "ENTWURF",
+  "t": "an die zuständige Behörde weitergegeben"
+ },
+ "UI-ENTSCHEIDUNG-BETROFFEN": {
+  "s": "ENTWURF",
+  "t": "Eine Entscheidung zu deinem Konto"
+ },
+ "UI-ENTSCHEIDUNG-BLEIBT": {
+  "s": "ENTWURF",
+  "t": "kein Verstoß"
+ },
+ "UI-ENTSCHEIDUNG-EINGESCHRAENKT": {
+  "s": "ENTWURF",
+  "t": "Konto eingeschränkt"
+ },
+ "UI-ENTSCHEIDUNG-GESPERRT": {
+  "s": "ENTWURF",
+  "t": "Konto gesperrt"
+ },
+ "UI-ENTSCHEIDUNG-INHALT-ENTFERNT": {
+  "s": "ENTWURF",
+  "t": "Inhalt entfernt"
+ },
+ "UI-EREIGNIS-ABGESAGT": {
+  "s": "ENTWURF",
+  "t": "Diese Veranstaltung ist abgesagt."
+ },
+ "UI-EREIGNIS-VORBEI": {
+  "s": "ENTWURF",
+  "t": "Diese Veranstaltung ist vorbei."
+ },
+ "UI-EXPORT-FEHLER": {
+  "s": "ENTWURF",
+  "t": "Deine Datenkopie ließ sich nicht erstellen. Bitte fordere sie noch einmal an."
+ },
+ "UI-FAQ-01-A": {
+  "s": "ENTWURF",
+  "t": "Auf der Anmeldeseite unter „Passwort vergessen“ schicken wir dir einen Code an deine bestätigte Adresse oder Nummer. Hast du beides nicht mehr, hilft dein Wiederherstellungscode oder der Weg über eine Vertrauensperson."
+ },
+ "UI-FAQ-01-F": {
+  "s": "ENTWURF",
+  "t": "Ich komme nicht mehr in mein Konto — was kann ich tun?"
+ },
+ "UI-FAQ-02-A": {
+  "s": "ENTWURF",
+  "t": "Solange du angemeldet bist, kannst du unter „Ich“ → „Konto“ einen neuen Code erzeugen. Der alte gilt dann nicht mehr."
+ },
+ "UI-FAQ-02-F": {
+  "s": "ENTWURF",
+  "t": "Ich habe meinen Wiederherstellungscode verloren."
+ },
+ "UI-FAQ-03-A": {
+  "s": "ENTWURF",
+  "t": "Weil hier nur Volljährige sein dürfen. Wir speichern davon nur „geprüft ja/nein“, den Zeitpunkt und den Weg — kein Ausweisbild, kein Geburtsdatum."
+ },
+ "UI-FAQ-03-F": {
+  "s": "ENTWURF",
+  "t": "Warum muss ich mein Alter prüfen lassen, bevor ich schreiben kann?"
+ },
+ "UI-FAQ-04-A": {
+  "s": "ENTWURF",
+  "t": "Die Prüfung macht ein Prüfpartner. Wir erhalten nur das Ergebnis. Was der Partner speichert und wie lange, steht in unserer Datenschutzerklärung."
+ },
+ "UI-FAQ-04-F": {
+  "s": "ENTWURF",
+  "t": "Was passiert mit meinem Selfie bei der Altersprüfung?"
+ },
+ "UI-FAQ-05-A": {
+  "s": "ENTWURF",
+  "t": "Wer dich blockiert hat oder wen du blockiert hast, erscheint nicht. Manche Personen sind nur für bestimmte Gruppen sichtbar oder gerade unsichtbar."
+ },
+ "UI-FAQ-05-F": {
+  "s": "ENTWURF",
+  "t": "Warum sehe ich manche Profile nicht?"
+ },
+ "UI-FAQ-06-A": {
+  "s": "ENTWURF",
+  "t": "Nie genau. Wir runden auf ein Raster (ungefähr 2 km oder 500 m, je nach Einstellung) und zeigen anderen nur eine Entfernungsstufe, keine Meter."
+ },
+ "UI-FAQ-06-F": {
+  "s": "ENTWURF",
+  "t": "Wie genau wird mein Standort angezeigt?"
+ },
+ "UI-FAQ-07-A": {
+  "s": "ENTWURF",
+  "t": "Eine Zone ist ein Bereich, etwa um deine Wohnung. Darin zeigen wir statt deines Ortes einen Ersatzpunkt. Die Zahl der Zonen steht in den Einstellungen."
+ },
+ "UI-FAQ-07-F": {
+  "s": "ENTWURF",
+  "t": "Was ist eine Zone, und wie viele sind kostenlos?"
+ },
+ "UI-FAQ-08-A": {
+  "s": "ENTWURF",
+  "t": "Mit dem schnellen Ausblenden: dreimal schnell auf den Titel oben tippen oder zweimal Escape drücken. Die App wechselt sofort auf eine neutrale Seite."
+ },
+ "UI-FAQ-08-F": {
+  "s": "ENTWURF",
+  "t": "Wie verstecke ich die App auf meinem Gerät?"
+ },
+ "UI-FAQ-09-A": {
+  "s": "ENTWURF",
+  "t": "Im Profil oder Gespräch unter „Blockieren“. Die Person erhält keine Nachricht — sie sieht dich nur nicht mehr. Eine Weile lang kannst du es zurücknehmen."
+ },
+ "UI-FAQ-09-F": {
+  "s": "ENTWURF",
+  "t": "Wie blockiere ich jemanden, und was sieht die Person davon?"
+ },
+ "UI-FAQ-10-A": {
+  "s": "ENTWURF",
+  "t": "Ein Mensch prüft die Meldung, in der Regel innerhalb von 24 Stunden. Das Ergebnis steht in deinen Mitteilungen. Wer gemeldet hat, sagen wir niemandem."
+ },
+ "UI-FAQ-10-F": {
+  "s": "ENTWURF",
+  "t": "Ich habe jemanden gemeldet — wie geht es weiter?"
+ },
+ "UI-FAQ-11-A": {
+  "s": "ENTWURF",
+  "t": "Solange das Gespräch besteht. Beendete Gespräche liegen 24 Stunden im Archiv und sind danach bei beiden gelöscht. Verschwindende Nachrichten gehen schon früher."
+ },
+ "UI-FAQ-11-F": {
+  "s": "ENTWURF",
+  "t": "Wie lange bleiben meine Nachrichten gespeichert?"
+ },
+ "UI-FAQ-12-A": {
+  "s": "ENTWURF",
+  "t": "Unter „Ich“ → „Meine Daten“. Du hast danach 30 Tage Zeit, es dir anders zu überlegen. Dann löschen wir alles, bis auf das, was wir gesetzlich aufbewahren müssen."
+ },
+ "UI-FAQ-12-F": {
+  "s": "ENTWURF",
+  "t": "Wie lösche ich mein Konto, und was passiert dann mit meinen Daten?"
+ },
+ "UI-FAQ-13-A": {
+  "s": "ENTWURF",
+  "t": "Unter „Ich“ → „Meine Daten“ → „Kopie anfordern“. Du bekommst eine verschlüsselte ZIP-Datei mit einem Passwort, das nur du kennst."
+ },
+ "UI-FAQ-13-F": {
+  "s": "ENTWURF",
+  "t": "Wie bekomme ich eine Kopie meiner Daten?"
+ },
+ "UI-FAQ-14-A": {
+  "s": "ENTWURF",
+  "t": "Schreib uns mit der Kategorie „Zahlung und Abo“ — mit dem ungefähren Zeitpunkt. Zahlungsdaten brauchen wir nicht."
+ },
+ "UI-FAQ-14-F": {
+  "s": "ENTWURF",
+  "t": "Meine Zahlung ist nicht angekommen."
+ },
+ "UI-FAQ-15-A": {
+  "s": "ENTWURF",
+  "t": "Dort, wo du es abgeschlossen hast. Im Web unter „Ich“ → „Abo“, mit zwei Klicks."
+ },
+ "UI-FAQ-15-F": {
+  "s": "ENTWURF",
+  "t": "Wie kündige ich mein Abo?"
+ },
+ "UI-FAQ-16-A": {
+  "s": "ENTWURF",
+  "t": "Alles, was mit Sicherheit zu tun hat, bleibt kostenlos: Blockieren, Melden, Zonen, Check-in, Ausblenden. Das Abo bringt Komfort, keine Sicherheit."
+ },
+ "UI-FAQ-16-F": {
+  "s": "ENTWURF",
+  "t": "Was genau ist im Abo enthalten — und was bleibt kostenlos?"
+ },
+ "UI-FAQ-17-A": {
+  "s": "ENTWURF",
+  "t": "Der Grund steht in deinen Mitteilungen, oft mit der markierten Stelle. Du kannst innerhalb von 48 Stunden Einspruch einlegen — ein Mensch prüft das."
+ },
+ "UI-FAQ-17-F": {
+  "s": "ENTWURF",
+  "t": "Warum wurde mein Foto abgelehnt?"
+ },
+ "UI-FAQ-18-A": {
+  "s": "ENTWURF",
+  "t": "Der Grund steht in deinen Mitteilungen. Dort kannst du widersprechen. Es entscheidet dann jemand anderes als die Person, die eingeschränkt hat."
+ },
+ "UI-FAQ-18-F": {
+  "s": "ENTWURF",
+  "t": "Mein Konto wurde eingeschränkt — warum, und was kann ich tun?"
+ },
+ "UI-FAQ-19-A": {
+  "s": "ENTWURF",
+  "t": "Über „Schreib uns“ mit der Kategorie „Ein Ort oder eine Veranstaltung“."
+ },
+ "UI-FAQ-19-F": {
+  "s": "ENTWURF",
+  "t": "Wie melde ich einen Ort oder eine Veranstaltung?"
+ },
+ "UI-FAQ-20-A": {
+  "s": "ENTWURF",
+  "t": "Über „Schreib uns“ unten auf dieser Seite. Ein Mensch liest jede Nachricht."
+ },
+ "UI-FAQ-20-F": {
+  "s": "ENTWURF",
+  "t": "Wie erreiche ich einen Menschen?"
+ },
+ "UI-FOTO-ABGELEHNT-TITEL": {
+  "s": "ENTWURF",
+  "t": "Dein Foto wurde nicht freigegeben"
+ },
+ "UI-FOTOPRUEFUNG-EINWILLIGUNG": {
+  "s": "ENTWURF",
+  "t": "Für die Fotoprüfung brauchen wir deine ausdrückliche Zustimmung."
+ },
+ "UI-FOTOPRUEFUNG-FOTO": {
+  "s": "ENTWURF",
+  "t": "Wähl zuerst ein Foto aus deinem Profil."
+ },
+ "UI-FOTOPRUEFUNG-VERSUCHE": {
+  "s": "ENTWURF",
+  "t": "Du hast die Fotoprüfung heute schon oft versucht. Morgen geht es wieder."
+ },
+ "UI-FOTOS-MAX": {
+  "s": "ENTWURF",
+  "t": "Mehr als acht Fotos gehen nicht."
+ },
+ "UI-GAST-NETZ": {
+  "s": "ENTWURF",
+  "t": "Von diesem Netz aus wurde die Vorschau heute schon oft geöffnet."
+ },
+ "UI-GAST-PAUSE": {
+  "s": "ENTWURF",
+  "t": "Die Vorschau ist für heute vorbei. Registrier dich, um weiterzumachen."
+ },
+ "UI-HLF-KAT-1": {
+  "s": "ENTWURF",
+  "t": "Jemand ist in Gefahr"
+ },
+ "UI-HLF-KAT-10": {
+  "s": "ENTWURF",
+  "t": "Etwas anderes"
+ },
+ "UI-HLF-KAT-2": {
+  "s": "ENTWURF",
+  "t": "Belästigung, Drohung, verbotener Inhalt"
+ },
+ "UI-HLF-KAT-3": {
+  "s": "ENTWURF",
+  "t": "Ich komme nicht in mein Konto"
+ },
+ "UI-HLF-KAT-4": {
+  "s": "ENTWURF",
+  "t": "Zahlung und Abo"
+ },
+ "UI-HLF-KAT-5": {
+  "s": "ENTWURF",
+  "t": "Etwas funktioniert nicht"
+ },
+ "UI-HLF-KAT-6": {
+  "s": "ENTWURF",
+  "t": "Meine Daten — Auskunft, Löschung, Export, Widerspruch"
+ },
+ "UI-HLF-KAT-7": {
+  "s": "ENTWURF",
+  "t": "Mein Konto wurde eingeschränkt"
+ },
+ "UI-HLF-KAT-8": {
+  "s": "ENTWURF",
+  "t": "Ein Ort oder eine Veranstaltung"
+ },
+ "UI-HLF-KAT-9": {
+  "s": "ENTWURF",
+  "t": "Presse, Behörde, rechtliche Anfrage"
+ },
+ "UI-KEIN-UNKENNTLICHES-FOTO": {
+  "s": "ENTWURF",
+  "t": "Du hast kein unkenntlich gemachtes Foto, das sich freischalten ließe."
+ },
+ "UI-KONTO-EINGESCHRAENKT": {
+  "s": "ENTWURF",
+  "t": "Dein Konto ist eingeschränkt. Du kannst lesen, aber nichts senden."
+ },
+ "UI-KONTO-GESPERRT": {
+  "s": "ENTWURF",
+  "t": "Dein Konto ist gesperrt. In deinen Mitteilungen steht, warum — und wie du widersprechen kannst."
+ },
+ "UI-LINK-UNGUELTIG": {
+  "s": "ENTWURF",
+  "t": "Dieser Link ist nicht mehr gültig."
+ },
+ "UI-MAIL-ANTWORT-EINLEITUNG": {
+  "s": "ENTWURF",
+  "t": "Hier ist unsere Antwort zu deinem Fall {fallnummer}."
+ },
+ "UI-MAIL-HILFE-EINGANG": {
+  "s": "ENTWURF",
+  "t": "Wir haben deine Nachricht unter der Fallnummer {fallnummer} erhalten. Ein Mensch liest sie und antwortet dir an diese Adresse."
+ },
+ "UI-MAIL-MELDUNG-EINGANG": {
+  "s": "ENTWURF",
+  "t": "Wir haben deine Nachricht unter der Fallnummer {fallnummer} erhalten. Wir melden uns, sobald entschieden ist."
+ },
+ "UI-MAIL-ORT-ABGELEHNT": {
+  "s": "ENTWURF",
+  "t": "Deine Anfrage {nummer} konnten wir nicht bestätigen. Grund: {grund}"
+ },
+ "UI-MAIL-ORT-BESTAETIGT": {
+  "s": "ENTWURF",
+  "t": "Deine Anfrage {nummer} ist bestätigt. Der Eintrag trägt jetzt das Kennzeichen „vom Ort bestätigt“."
+ },
+ "UI-MAIL-ORT-BETREFF": {
+  "s": "ENTWURF",
+  "t": "Vorgang {nummer}"
+ },
+ "UI-MAIL-ORT-ENTFERNT": {
+  "s": "ENTWURF",
+  "t": "Deine Anfrage {nummer} ist bestätigt. Der Eintrag ist entfernt und wird nicht wieder aufgenommen."
+ },
+ "UI-MAIL-ORT-RUECKFRAGE": {
+  "s": "ENTWURF",
+  "t": "Zu deiner Anfrage {nummer} haben wir eine Rückfrage:\n\n{frage}\n\nAntworte einfach auf diese Mail."
+ },
+ "UI-MAIL-ORT-TEXT": {
+  "s": "ENTWURF",
+  "t": "Bitte bestätige deine Adresse mit diesem Link: {link}\n\nDanach prüft ein Mensch die Anfrage {nummer}, in der Regel innerhalb von 24 Stunden. Wenn du nichts angefragt hast, ignoriere diese Mail."
+ },
+ "UI-MAIL-TERMIN-BETREFF": {
+  "s": "ENTWURF",
+  "t": "Deine Einreichung"
+ },
+ "UI-MEL-INTIM": {
+  "s": "ENTWURF",
+  "t": "Intime Bilder ohne Einwilligung"
+ },
+ "UI-MELDEN-INHALT-WEG": {
+  "s": "ENTWURF",
+  "t": "Dieser Inhalt ist nicht mehr da und lässt sich nicht mehr melden."
+ },
+ "UI-MELDEN-KONTAKT": {
+  "s": "ENTWURF",
+  "t": "Bitte gib einen Namen und eine E-Mail-Adresse an, damit wir dir antworten können."
+ },
+ "UI-MELDUNG-ENTSCHIEDEN": {
+  "s": "ENTWURF",
+  "t": "Deine Meldung {fallnummer}"
+ },
+ "UI-MERKMALE-MAX": {
+  "s": "ENTWURF",
+  "t": "Du kannst höchstens {max} Merkmale wählen."
+ },
+ "UI-MOD-ABGLEICH-FEHLT": {
+  "s": "ENTWURF",
+  "t": "Es ist kein Abgleichdienst angebunden (HASH_PROVIDER)."
+ },
+ "UI-MOD-ANMELDEN": {
+  "s": "ENTWURF",
+  "t": "Bitte melde dich an."
+ },
+ "UI-MOD-ANSPRECHPERSON-FEHLT": {
+  "s": "ENTWURF",
+  "t": "Ohne hinterlegte Ansprechperson lässt sich der Hash-Abgleich nicht einschalten."
+ },
+ "UI-MOD-ANTRAG-OFFEN": {
+  "s": "ENTWURF",
+  "t": "Zu diesem Konto ist schon ein Antrag offen."
+ },
+ "UI-MOD-AUS-VORGANG": {
+  "s": "ENTWURF",
+  "t": "Aus dem Vorgang {nummer} des Kontaktservice."
+ },
+ "UI-MOD-BEZUG-FEHLT": {
+  "s": "ENTWURF",
+  "t": "Ohne gültige Fall- oder Meldenummer geht das nicht."
+ },
+ "UI-MOD-EIGENER-ANTRAG": {
+  "s": "ENTWURF",
+  "t": "Den eigenen Antrag kann niemand selbst freigeben."
+ },
+ "UI-MOD-EIGENER-FALL": {
+  "s": "ENTWURF",
+  "t": "Über die eigene Entscheidung entscheidet eine andere Person."
+ },
+ "UI-MOD-ENTWURF-VORHANDEN": {
+  "s": "ENTWURF",
+  "t": "Zu diesem Fall gibt es schon einen Entwurf."
+ },
+ "UI-MOD-ERST-RUECKFRAGE": {
+  "s": "ENTWURF",
+  "t": "Für diesen Ort gibt es mehrere Anfragen. Erst Rückfrage bei allen stellen."
+ },
+ "UI-MOD-GRUND": {
+  "s": "ENTWURF",
+  "t": "Ohne Begründung wird nichts ausgeführt."
+ },
+ "UI-MOD-HASH-WIDERSPRUCH": {
+  "s": "ENTWURF",
+  "t": "Einen Hash-Fall entscheidet nicht das Werkzeug, sondern die Behörde."
+ },
+ "UI-MOD-KATEGORIE-WIDERSPRUCH": {
+  "s": "ENTWURF",
+  "t": "Kategorie 7 ist kein Vorgang, sondern ein Widerspruch."
+ },
+ "UI-MOD-KEIN-KONTO": {
+  "s": "ENTWURF",
+  "t": "Zu diesem Fall gibt es kein Konto (mehr)."
+ },
+ "UI-MOD-NACH-21": {
+  "s": "ENTWURF",
+  "t": "Ab 21 Uhr werden keine Hash-Fälle mehr geöffnet. Die Frist lässt das zu."
+ },
+ "UI-MOD-NEUER-GRUND": {
+  "s": "ENTWURF",
+  "t": "Mit genau diesem Grund wurde schon einmal abgelehnt. Ein neuer Anlauf braucht einen neuen Grund."
+ },
+ "UI-MOD-NICHTS-AUFZUHEBEN": {
+  "s": "ENTWURF",
+  "t": "Dieses Konto ist weder eingeschränkt noch gesperrt."
+ },
+ "UI-MOD-NOTFALL-1": {
+  "s": "ENTWURF",
+  "t": "Ärztlicher Bereitschaftsdienst: 116117"
+ },
+ "UI-MOD-NOTFALL-2": {
+  "s": "ENTWURF",
+  "t": "TelefonSeelsorge: 0800 111 0 111 und 0800 111 0 222"
+ },
+ "UI-MOD-ORT-GESPERRT": {
+  "s": "ENTWURF",
+  "t": "Dieser Ort wurde auf eigenen Wunsch entfernt und wird nicht wieder aufgenommen."
+ },
+ "UI-MOD-PARAMETER-TYP": {
+  "s": "ENTWURF",
+  "t": "Dieser Wert passt nicht zum Parameter."
+ },
+ "UI-MOD-PRUEFLISTE": {
+  "s": "ENTWURF",
+  "t": "Ohne alle fünf Prüfpunkte keine Freigabe."
+ },
+ "UI-MOD-RECHT": {
+  "s": "ENTWURF",
+  "t": "Dafür hat deine Rolle keine Berechtigung."
+ },
+ "UI-MOD-SCHON-ENTSCHIEDEN": {
+  "s": "ENTWURF",
+  "t": "Dieser Fall ist schon entschieden."
+ },
+ "UI-MOD-TAGESGRENZE": {
+  "s": "ENTWURF",
+  "t": "Heute sind es schon zwei Hash-Fälle. Übergib den Fall an die zweite Person oder an die Beschwerdestelle."
+ },
+ "UI-MOD-TEXT-BESTAETIGEN": {
+  "s": "ENTWURF",
+  "t": "Der Sachverhalt muss gelesen und bestätigt sein."
+ },
+ "UI-MOD-ZWEITE-PERSON": {
+  "s": "ENTWURF",
+  "t": "Dafür braucht es die Freigabe einer zweiten Person."
+ },
+ "UI-NAME-UNGUELTIG": {
+  "s": "ENTWURF",
+  "t": "Der Name darf höchstens {max} Zeichen lang sein und keine Links oder Nummern enthalten."
+ },
+ "UI-NEU-ANMELDEN": {
+  "s": "ENTWURF",
+  "t": "Bitte gib zur Sicherheit noch einmal dein Passwort oder einen Code ein."
+ },
+ "UI-NICHT-VERFUEGBAR": {
+  "s": "ENTWURF",
+  "t": "Das ist nicht mehr verfügbar."
+ },
+ "UI-NUMMER-UNGUELTIG": {
+  "s": "ENTWURF",
+  "t": "Diese Nummer können wir nicht verwenden."
+ },
+ "UI-PASSWORT-KURZ": {
+  "s": "ENTWURF",
+  "t": "Das Passwort braucht mindestens {zahl} Zeichen."
+ },
+ "UI-PROFIL-FEHLT": {
+  "s": "ENTWURF",
+  "t": "Leg zuerst dein Profil an."
+ },
+ "UI-RUECKMELDUNG-ANTWORT": {
+  "s": "ENTWURF",
+  "t": "Antwort auf deine Rückmeldung"
+ },
+ "UI-SCHLUESSEL-ABGELAUFEN": {
+  "s": "ENTWURF",
+  "t": "Das hat zu lange gedauert. Bitte versuch es noch einmal."
+ },
+ "UI-SCHLUESSEL-FALSCH": {
+  "s": "ENTWURF",
+  "t": "Dieser Schlüssel passt nicht."
+ },
+ "UI-SCHLUESSEL-FEHLER": {
+  "s": "ENTWURF",
+  "t": "Der Schlüssel ließ sich nicht prüfen."
+ },
+ "UI-SCHLUESSEL-SYNC": {
+  "s": "ENTWURF",
+  "t": "Dieser Schlüssel wird mit anderen Geräten geteilt. Wir brauchen einen, der nur auf diesem Gerät liegt."
+ },
+ "UI-SORT-AQ-AUS": {
+  "s": "ENTWURF",
+  "t": "Diese Sortierung gibt es nur, wenn deine eigene Antwortquote eingeschaltet ist."
+ },
+ "UI-SPERRE-AB": {
+  "s": "ENTWURF",
+  "t": "Gilt ab: {zeit}"
+ },
+ "UI-SPERRE-AUFGEHOBEN-TEXT": {
+  "s": "ENTWURF",
+  "t": "Die Einschränkung deines Kontos ist aufgehoben. Du kannst alles wieder wie vorher nutzen."
+ },
+ "UI-SPERRE-AUFGEHOBEN-TITEL": {
+  "s": "ENTWURF",
+  "t": "Dein Konto ist wieder frei"
+ },
+ "UI-SPERRE-LOESCHUNG": {
+  "s": "ENTWURF",
+  "t": "Nach Ablauf aller Fristen wird das Konto gelöscht."
+ },
+ "UI-SPERRE-TITEL": {
+  "s": "ENTWURF",
+  "t": "Eine Entscheidung zu deinem Konto"
+ },
+ "UI-STUFE2-SCHON": {
+  "s": "ENTWURF",
+  "t": "Diese Prüfung hast du schon bestanden."
+ },
+ "UI-TESTBETRIEB-EINLADUNG": {
+  "s": "ENTWURF",
+  "t": "Wir sind gerade im Testbetrieb. Zum Registrieren brauchst du einen Einladungscode."
+ },
+ "UI-TESTBETRIEB-HINWEIS": {
+  "s": "ENTWURF",
+  "t": "Testbetrieb — bitte nur erfundene Angaben und keine echten Fotos von dir."
+ },
+ "UI-TREFFPUNKT-SPAETER": {
+  "s": "ENTWURF",
+  "t": "Das geht erst, wenn ihr beide geschrieben habt."
+ },
+ "UI-VERFALL-NICHT-DU": {
+  "s": "ENTWURF",
+  "t": "Nur wer das Verschwinden eingeschaltet hat, kann es ausschalten."
+ },
+ "UI-WARTEFRIST": {
+  "s": "ENTWURF",
+  "t": "Die Wartefrist läuft noch."
+ },
+ "UI-WEGE-DAGEGEN": {
+  "s": "ENTWURF",
+  "t": "Du kannst innerhalb der Frist widersprechen. Ein anderer Mensch als der, der entschieden hat, prüft das. Außerdem steht dir die außergerichtliche Streitbeilegung und der Rechtsweg offen."
+ },
+ "UI-WHR-TITEL": {
+  "s": "ENTWURF",
+  "t": "Wiederherstellung deines Kontos"
+ },
+ "UI-WIDERSPRUCH-ABGEMILDERT": {
+  "s": "ENTWURF",
+  "t": "Die Entscheidung ist abgemildert."
+ },
+ "UI-WIDERSPRUCH-AUFGEHOBEN": {
+  "s": "ENTWURF",
+  "t": "Die Entscheidung ist aufgehoben. Alles ist wiederhergestellt."
+ },
+ "UI-WIDERSPRUCH-BLEIBT": {
+  "s": "ENTWURF",
+  "t": "Die Entscheidung bleibt bestehen."
+ },
+ "UI-WIDERSPRUCH-ENTSCHIEDEN": {
+  "s": "ENTWURF",
+  "t": "Dein Widerspruch {fallnummer}"
+ },
+ "UI-WIDERSPRUCH-FRIST": {
+  "s": "ENTWURF",
+  "t": "Du kannst innerhalb von {stunden} Stunden widersprechen — unter „Ich“ → „Mitteilungen“."
+ },
+ "UI-WIDERSPRUCH-HASH-WEG": {
+  "s": "ENTWURF",
+  "t": "Zu dieser Entscheidung können wir keine Einzelheiten nennen. Der Weg dagegen führt über die zuständige Behörde."
+ },
+ "UI-WIDERSPRUCH-LAEUFT": {
+  "s": "ENTWURF",
+  "t": "Zu dieser Entscheidung läuft schon ein Widerspruch."
+ },
+ "UI-WIDERSPRUCH-OFFENLEGUNG": {
+  "s": "ENTWURF",
+  "t": "Hinweis: Die Person, die über deinen Widerspruch entschieden hat, hat die ursprüngliche Entscheidung mit freigegeben. Wir sind zurzeit nur zu zweit."
+ },
+ "UI-ZONE-RADIUS": {
+  "s": "ENTWURF",
+  "t": "Der Radius muss zwischen {min} und {max} km liegen."
+ },
+ "UI-ZONEN-MAX": {
+  "s": "ENTWURF",
+  "t": "Mehr als {max} Zonen gehen nicht."
+ },
+ "UI-ZU-SPAET": {
+  "s": "ENTWURF",
+  "t": "Dafür ist es jetzt zu spät."
+ },
+ "UI-ZU-VIELE": {
+  "s": "ENTWURF",
+  "t": "Das waren gerade zu viele Versuche. Bitte warte einen Moment."
+ }
+}

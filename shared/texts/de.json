@@ -1,0 +1,1646 @@
+{
+ "ST-ABO-01": {
+  "s": "ENTWURF",
+  "t": "Cruizy PLUS und PRO"
+ },
+ "ST-ABO-02": {
+  "s": "ENTWURF",
+  "t": "Alles, was dich schützt, bleibt kostenlos. Ein Abo macht die App bequemer."
+ },
+ "ST-ABO-03": {
+  "s": "ENTWURF",
+  "t": "Unsichtbar in deinen Zonen. Mehr Zonen. Gespeicherte Filter. Längeres Archiv. Mehr private Alben. Termine im eigenen Kalender."
+ },
+ "ST-ABO-04": {
+  "s": "ENTWURF",
+  "t": "Alles aus PLUS. Dazu Travel: in anderen Städten umsehen, schreiben und deine Reise vorher ankündigen."
+ },
+ "ST-ABO-10": {
+  "s": "ENTWURF",
+  "t": "1 Monat · 9 €"
+ },
+ "ST-ABO-11": {
+  "s": "ENTWURF",
+  "t": "3 Monate · 23 € (7,67 € im Monat)"
+ },
+ "ST-ABO-12": {
+  "s": "ENTWURF",
+  "t": "6 Monate · 40 € (6,67 € im Monat)"
+ },
+ "ST-ABO-13": {
+  "s": "ENTWURF",
+  "t": "12 Monate · 70 € (5,83 € im Monat)"
+ },
+ "ST-ABO-14": {
+  "s": "ENTWURF",
+  "t": "1 Monat · 17 €"
+ },
+ "ST-ABO-15": {
+  "s": "ENTWURF",
+  "t": "3 Monate · 43 € (14,33 € im Monat)"
+ },
+ "ST-ABO-16": {
+  "s": "ENTWURF",
+  "t": "6 Monate · 76 € (12,67 € im Monat)"
+ },
+ "ST-ABO-17": {
+  "s": "ENTWURF",
+  "t": "12 Monate · 132 € (11,00 € im Monat)"
+ },
+ "ST-ABO-18": {
+  "s": "OFFEN",
+  "t": "[WORTLAUT ZUR VERLÄNGERUNG — ANWALT]"
+ },
+ "ST-ABO-19": {
+  "s": "ENTWURF",
+  "t": "Kündigen kannst du jederzeit mit zwei Tipps in deinem Konto."
+ },
+ "ST-ABO-20": {
+  "s": "GESETZ",
+  "t": "Zahlungspflichtig bestellen"
+ },
+ "ST-ABO-21": {
+  "s": "ENTWURF",
+  "t": "Nicht jetzt"
+ },
+ "ST-ABO-22": {
+  "s": "OFFEN",
+  "t": "Auf deinem Kontoauszug steht: {abrechnungsname}"
+ },
+ "ST-ABO-30": {
+  "s": "GESETZ",
+  "t": "Verträge hier kündigen"
+ },
+ "ST-ABO-31": {
+  "s": "GESETZ",
+  "t": "Jetzt kündigen"
+ },
+ "ST-ABO-32": {
+  "s": "ENTWURF",
+  "t": "Gekündigt. Dein Abo läuft bis {datum}, danach wird nichts mehr abgebucht. Die Bestätigung kannst du hier speichern."
+ },
+ "ST-ABO-33": {
+  "s": "ENTWURF",
+  "t": "Magst du uns sagen, warum? Freiwillig — die Kündigung ist schon erledigt."
+ },
+ "ST-ABO-34": {
+  "s": "ENTWURF",
+  "t": "Du zahlst über {store}. Kündigen kannst du dort in den Abo-Einstellungen. Wir bringen dich hin."
+ },
+ "ST-ABO-40": {
+  "s": "ENTWURF",
+  "t": "Unterstützen — du wählst den Betrag, ab 3 € im Monat. Dafür gibt es nichts: kein Abzeichen, keine Funktion, keine Sichtbarkeit. Nur unseren Dank und ein Produkt, das es weiter gibt."
+ },
+ "ST-BLO-01": {
+  "s": "ENTWURF",
+  "t": "Blockieren"
+ },
+ "ST-BLO-02": {
+  "s": "ENTWURF",
+  "t": "{name} ist blockiert. Ihr seht euch nirgends mehr in der App."
+ },
+ "ST-BLO-03": {
+  "s": "ENTWURF",
+  "t": "Rückgängig machen kannst du das bis {datum}, {uhrzeit} Uhr."
+ },
+ "ST-BLO-04": {
+  "s": "ENTWURF",
+  "t": "Rückgängig"
+ },
+ "ST-BLO-05": {
+  "s": "ENTWURF",
+  "t": "Wir schicken {name} keine Nachricht darüber."
+ },
+ "ST-BLO-06": {
+  "s": "ENTWURF",
+  "t": "Du hast {name} schon einmal blockiert und wieder freigegeben. Diese Sperre ist endgültig und lässt sich nicht mehr aufheben."
+ },
+ "ST-BLO-07": {
+  "s": "ENTWURF",
+  "t": "Endgültig blockieren"
+ },
+ "ST-BLO-08": {
+  "s": "ENTWURF",
+  "t": "Abbrechen"
+ },
+ "ST-BLO-09": {
+  "s": "ENTWURF",
+  "t": "Blockiert"
+ },
+ "ST-BLO-10": {
+  "s": "ENTWURF",
+  "t": "Blockierungen gelten auch nach einem Update oder einer Neuinstallation."
+ },
+ "ST-CHAT-01": {
+  "s": "FEST",
+  "t": "Anfragen"
+ },
+ "ST-CHAT-02": {
+  "s": "OFFEN",
+  "t": "Gespräche"
+ },
+ "ST-CHAT-03": {
+  "s": "ENTWURF",
+  "t": "Hier landen erste Nachrichten von Leuten, mit denen du noch nicht geschrieben hast. Sie lösen keine Mitteilung aus."
+ },
+ "ST-CHAT-04": {
+  "s": "ENTWURF",
+  "t": "Erste Nachricht: nur Text"
+ },
+ "ST-CHAT-05": {
+  "s": "ENTWURF",
+  "t": "Einstieg vorschlagen"
+ },
+ "ST-CHAT-06": {
+  "s": "ENTWURF",
+  "t": "Der Vorschlag landet im Textfeld. Du kannst ihn ändern, bevor du ihn schickst."
+ },
+ "ST-CHAT-10": {
+  "s": "ENTWURF",
+  "t": "Freundlich absagen"
+ },
+ "ST-CHAT-11": {
+  "s": "ENTWURF",
+  "t": "Absage wird gesendet …"
+ },
+ "ST-CHAT-12": {
+  "s": "ENTWURF",
+  "t": "Absage gesendet. Sie zählt als Antwort."
+ },
+ "ST-CHAT-13": {
+  "s": "ENTWURF",
+  "t": "{name} hat freundlich abgesagt. Das Gespräch ist beendet."
+ },
+ "ST-CHAT-20": {
+  "s": "ENTWURF",
+  "t": "Beendet. Liegt 24 Stunden im Archiv."
+ },
+ "ST-CHAT-21": {
+  "s": "ENTWURF",
+  "t": "Gespräch wieder öffnen"
+ },
+ "ST-CHAT-22": {
+  "s": "ENTWURF",
+  "t": "{name} sieht, dass du das Gespräch wieder geöffnet hast."
+ },
+ "ST-CHAT-23": {
+  "s": "ENTWURF",
+  "t": "Gesendete Nachrichten lassen sich nicht zurückholen."
+ },
+ "ST-CHAT-30": {
+  "s": "ENTWURF",
+  "t": "Nachrichten nach 24 Stunden löschen"
+ },
+ "ST-CHAT-31": {
+  "s": "ENTWURF",
+  "t": "Gilt für euch beide: Nachrichten verschwinden nach 24 Stunden auf beiden Seiten. Bildschirmfotos kann das nicht verhindern."
+ },
+ "ST-CHAT-32": {
+  "s": "ENTWURF",
+  "t": "Nachrichten in diesem Gespräch verschwinden nach 24 Stunden."
+ },
+ "ST-CHAT-40": {
+  "s": "ENTWURF",
+  "t": "{name} möchte dir ein privates Album zeigen. Willst du es sehen?"
+ },
+ "ST-CHAT-41": {
+  "s": "ENTWURF",
+  "t": "Ansehen"
+ },
+ "ST-CHAT-42": {
+  "s": "ENTWURF",
+  "t": "Lieber nicht"
+ },
+ "ST-CHAT-43": {
+  "s": "ENTWURF",
+  "t": "Private Bilder tragen ein unsichtbares Wasserzeichen. So lässt sich feststellen, von welchem Konto ein weitergegebenes Bild stammt."
+ },
+ "ST-CHAT-44": {
+  "s": "ENTWURF",
+  "t": "In privaten Alben sind Bildschirmfotos auf diesem Gerät gesperrt."
+ },
+ "ST-CHAT-45": {
+  "s": "ENTWURF",
+  "t": "Auf dem iPhone können wir Bildschirmfotos nicht verhindern. Bitte respektiere, was dir privat gezeigt wird."
+ },
+ "ST-CHAT-46": {
+  "s": "ENTWURF",
+  "t": "In der Web-App können wir Bildschirmfotos nicht verhindern. Bitte respektiere, was dir privat gezeigt wird."
+ },
+ "ST-CHAT-50": {
+  "s": "ENTWURF",
+  "t": "Gesicht zeigen"
+ },
+ "ST-CHAT-51": {
+  "s": "ENTWURF",
+  "t": "{name} sieht jetzt dein Profilbild ohne Unschärfe, nur in diesem Gespräch. Du kannst das zurücknehmen — was schon gesehen wurde, bleibt gesehen."
+ },
+ "ST-CHAT-52": {
+  "s": "ENTWURF",
+  "t": "{name} sieht wieder das unkenntliche Bild."
+ },
+ "ST-CHAT-60": {
+  "s": "ENTWURF",
+  "t": "Neue Konten ohne Altersprüfung können fünf neue Leute in 24 Stunden anschreiben."
+ },
+ "ST-CHAT-70": {
+  "s": "ENTWURF",
+  "t": "{name} möchte dir Bilder senden. [Zulassen] [Ablehnen]"
+ },
+ "ST-CHAT-71": {
+  "s": "ENTWURF",
+  "t": "Bilder sind jetzt frei in diesem Gespräch."
+ },
+ "ST-CHAT-72": {
+  "s": "ENTWURF",
+  "t": "Abgelehnt. Die Bilder sind gelöscht, und {name} kann dich hier nicht noch einmal fragen."
+ },
+ "ST-CHAT-73": {
+  "s": "ENTWURF",
+  "t": "Wann darf dir jemand Bilder schicken? · Nach der ersten Antwort (Standard) · Nur mit meiner Bestätigung · Immer"
+ },
+ "ST-CHAT-74": {
+  "s": "ENTWURF",
+  "t": "Bilder kommen nicht bei allen an. Warum, steht in der Hilfe."
+ },
+ "ST-CHK-01": {
+  "s": "ENTWURF",
+  "t": "Ich treffe jemanden · Ich bin unterwegs"
+ },
+ "ST-CHK-02": {
+  "s": "ENTWURF",
+  "t": "Beginnt jetzt · Beginnt um {uhrzeit}"
+ },
+ "ST-CHK-03": {
+  "s": "ENTWURF",
+  "t": "Läuft alles gut?"
+ },
+ "ST-CHK-04": {
+  "s": "ENTWURF",
+  "t": "Ja · Nein"
+ },
+ "ST-CHK-05": {
+  "s": "ENTWURF",
+  "t": "Frag mich in 30 Minuten nochmal"
+ },
+ "ST-CHK-06": {
+  "s": "ENTWURF",
+  "t": "Tipp: Richte dir jetzt die Notruf-App nora ein. Mit ihr kannst du im Notfall lautlos die Polizei rufen — per Chat, ohne zu sprechen. Das geht nur, wenn du dich vorher registriert hast."
+ },
+ "ST-CHK-07": {
+  "s": "ENTWURF",
+  "t": "Wenn ich mich nach der letzten Frage nicht melde: Nichts tun · Meine Vertrauenspersonen benachrichtigen"
+ },
+ "ST-CHK-08": {
+  "s": "ENTWURF",
+  "t": "Deine Vertrauenspersonen liegen nur auf deinem Telefon. Wir wissen nicht, wer sie sind."
+ },
+ "ST-CHK-09": {
+  "s": "ENTWURF",
+  "t": "Sag deiner Vertrauensperson Bescheid, dass sie im Ernstfall eine automatische Nachricht bekommen könnte — sonst hält sie sie vielleicht für Betrug. [Jetzt Bescheid sagen]"
+ },
+ "ST-CHK-10": {
+  "s": "ENTWURF",
+  "t": "Hol dir Hilfe. Du musst nichts erklären."
+ },
+ "ST-CHK-11": {
+  "s": "ENTWURF",
+  "t": "Jetzt informieren"
+ },
+ "ST-CHK-12": {
+  "s": "ENTWURF",
+  "t": "[NOTRUFNUMMER] anrufen"
+ },
+ "ST-CHK-13": {
+  "s": "ENTWURF",
+  "t": "Lautlos Hilfe holen (nora)"
+ },
+ "ST-CHK-14": {
+  "s": "ENTWURF",
+  "t": "Du hast niemanden hinterlegt. Das ist in Ordnung — Notruf und Hinweise sind trotzdem da."
+ },
+ "ST-CHK-15": {
+  "s": "ENTWURF",
+  "t": "Auch benachrichtigen, wenn mein Telefon aus ist. Dafür liegt die Nachricht für die Dauer des Check-ins verschlüsselt bei uns. Danach ist sie weg."
+ },
+ "ST-CHK-16": {
+  "s": "ENTWURF",
+  "t": "Die Nachricht geht nur hinaus, solange dein Telefon an ist und Netz hat."
+ },
+ "ST-CHK-17": {
+  "s": "ENTWURF",
+  "t": "Was hast du vor? [Ich treffe jemanden] [Ich bin unterwegs]"
+ },
+ "ST-CHK-18": {
+  "s": "ENTWURF",
+  "t": "112 anrufen"
+ },
+ "ST-CHK-19": {
+  "s": "ENTWURF",
+  "t": "Lautlos Hilfe holen (DEC112)"
+ },
+ "ST-CV-00": {
+  "s": "ENTWURF",
+  "t": "Bevor du schreibst: zwei kurze Schritte"
+ },
+ "ST-CV-01": {
+  "s": "ENTWURF",
+  "t": "Vier Sätze, die hier gelten"
+ },
+ "ST-CV-02": {
+  "s": "ENTWURF",
+  "t": "Bestätige jeden Satz einzeln. Wer dagegen verstößt, kann gesperrt werden — immer erst, nachdem ein Mensch es geprüft hat."
+ },
+ "ST-CV-03": {
+  "s": "ENTWURF",
+  "t": "Ich zeige mich echt: eigene Fotos, eigenes Alter."
+ },
+ "ST-CV-04": {
+  "s": "ENTWURF",
+  "t": "Ein Nein gilt — auch ein freundliches, auch ein stilles."
+ },
+ "ST-CV-05": {
+  "s": "ENTWURF",
+  "t": "Was mir jemand privat zeigt, bleibt privat. Ich leite nichts weiter und mache keine Bildschirmfotos."
+ },
+ "ST-CV-06": {
+  "s": "ENTWURF",
+  "t": "Ich werte niemanden ab — nicht wegen Herkunft, Hautfarbe, Körper, Alter, Geschlechtsidentität oder HIV-Status."
+ },
+ "ST-CV-07": {
+  "s": "ENTWURF",
+  "t": "Weiter"
+ },
+ "ST-CV-08": {
+  "s": "ENTWURF",
+  "t": "Die vollständigen Regeln stehen in den Nutzungsbedingungen. Diese vier Sätze sind die Kurzfassung."
+ },
+ "ST-CV-13": {
+  "s": "ENTWURF",
+  "t": "Ich bin hier, wer ich auf meinem Profil bin."
+ },
+ "ST-CV-14": {
+  "s": "ENTWURF",
+  "t": "Ich frage, bevor ich Bilder schicke, und akzeptiere die Antwort."
+ },
+ "ST-CV-15": {
+  "s": "ENTWURF",
+  "t": "Private Bilder anderer bleiben bei mir."
+ },
+ "ST-CV-16": {
+  "s": "ENTWURF",
+  "t": "Kein Hass und keine Abwertung, egal wegen was."
+ },
+ "ST-DAT-01": {
+  "s": "ENTWURF",
+  "t": "Deine Daten"
+ },
+ "ST-DAT-02": {
+  "s": "ENTWURF",
+  "t": "Hier siehst du, was wir über dich speichern. Du kannst alles herunterladen oder löschen."
+ },
+ "ST-DAT-03": {
+  "s": "ENTWURF",
+  "t": "Daten herunterladen"
+ },
+ "ST-DAT-04": {
+  "s": "ENTWURF",
+  "t": "Wir stellen deine Daten zusammen. Das kann bis zu {stunden} Stunden dauern. Den Download findest du dann hier, nicht in einer E-Mail."
+ },
+ "ST-DAT-05": {
+  "s": "ENTWURF",
+  "t": "Dein Download ist fertig. Er steht {tage} Tage bereit."
+ },
+ "ST-DAT-06": {
+  "s": "ENTWURF",
+  "t": "Die Datei enthält alles, auch Nachrichten und Fotos. Speichere sie dort, wo sonst niemand hinschaut."
+ },
+ "ST-DAT-10": {
+  "s": "ENTWURF",
+  "t": "Konto löschen"
+ },
+ "ST-DAT-11": {
+  "s": "ENTWURF",
+  "t": "Wir löschen dein Konto und alle Daten nach 30 Tagen. Bis dahin kannst du es dir anders überlegen."
+ },
+ "ST-DAT-12": {
+  "s": "ENTWURF",
+  "t": "In dieser Zeit ist dein Profil für andere nicht sichtbar, und niemand kann dir schreiben."
+ },
+ "ST-DAT-13": {
+  "s": "ENTWURF",
+  "t": "Dein Konto wird am {datum} gelöscht."
+ },
+ "ST-DAT-14": {
+  "s": "ENTWURF",
+  "t": "Löschung abbrechen"
+ },
+ "ST-DAT-15": {
+  "s": "ENTWURF",
+  "t": "Dein Konto bleibt, und dein Profil ist wieder sichtbar."
+ },
+ "ST-DAT-16": {
+  "s": "ENTWURF",
+  "t": "Zahlst du über Apple oder Google, endet dein Abo nicht von selbst. Kündige es dort zusätzlich."
+ },
+ "ST-DAT-18": {
+  "s": "ENTWURF",
+  "t": "Nach der Löschung liegen deine Gespräche noch 14 Tage gesperrt — falls jemand in dieser Zeit etwas meldet. Niemand kann sie in dieser Zeit ansehen, auch wir nicht. Danach sind sie weg."
+ },
+ "ST-DAT-19": {
+  "s": "ENTWURF",
+  "t": "Wenn du löschst, verschwindet euer gemeinsames Gespräch auch bei der anderen Person — auch das, was sie selbst geschrieben hat."
+ },
+ "ST-DAT-20": {
+  "s": "OFFEN",
+  "t": "[TEXT AUS A-37, ABSCHNITT 11 — zwei Fassungen, siehe Abschnitt 17]"
+ },
+ "ST-DAT-20-A": {
+  "s": "ENTWURF",
+  "t": "Was wir prüfen — und was nicht\n\nDein öffentliches Profilbild schauen wir uns an, bevor es sichtbar wird. Meist macht das ein Programm. Ist es unentschieden, sieht ein Mensch nach. Im öffentlichen Bereich sollen keine expliziten Bilder stehen.\n\nWas du privat schickst, sieht nur die Person, der du es schickst. Kein Programm bewertet es, und wir speichern keine Einschätzung dazu.\n\nEine einzige Prüfung läuft auch dort: ein Abgleich mit bekannten Darstellungen von Kindesmissbrauch. Dafür wird aus deinem Bild eine Zahl berechnet und mit einer Liste verglichen. Aus der Zahl lässt sich dein Bild nicht wiederherstellen. Gibt es keinen Treffer, bleibt nichts davon übrig.\n\nDie Ausnahme: Meldet dein Gegenüber ein Bild, muss jemand von uns es ansehen können — sonst wäre die Meldung wertlos. Jeder solche Zugriff wird protokolliert, und wir sehen gegenseitig, wer was geöffnet hat."
+ },
+ "ST-DAT-20-B": {
+  "s": "ENTWURF",
+  "t": "Was wir prüfen — und was nicht\n\nDein öffentliches Profilbild schauen wir uns an, bevor es sichtbar wird. Meist macht das ein Programm. Ist es unentschieden, sieht ein Mensch nach. Im öffentlichen Bereich sollen keine expliziten Bilder stehen.\n\nWas du privat schickst, sieht nur die Person, der du es schickst. Kein Programm bewertet es, und wir speichern keine Einschätzung dazu.\n\nDie Ausnahme: Meldet dein Gegenüber ein Bild, muss jemand von uns es ansehen können — sonst wäre die Meldung wertlos. Jeder solche Zugriff wird protokolliert, und wir sehen gegenseitig, wer was geöffnet hat."
+ },
+ "ST-EVT-01": {
+  "s": "ENTWURF",
+  "t": "Öffentlich · Privat"
+ },
+ "ST-EVT-02": {
+  "s": "ENTWURF",
+  "t": "Nur die Umgebung ist sichtbar. Die genaue Adresse schickst du erst, wenn du jemanden angenommen hast."
+ },
+ "ST-EVT-03": {
+  "s": "ENTWURF",
+  "t": "Wie viele Leute können kommen?"
+ },
+ "ST-EVT-04": {
+  "s": "ENTWURF",
+  "t": "Anfragen"
+ },
+ "ST-EVT-05": {
+  "s": "ENTWURF",
+  "t": "Diesmal passt es leider nicht. Das liegt nicht an dir — Gastgeber entscheiden nach Platz und Runde."
+ },
+ "ST-EVT-06": {
+  "s": "ENTWURF",
+  "t": "Du bist dabei. {gastgeber} hat dich angenommen: {adresse}, {datum}, {uhrzeit}."
+ },
+ "ST-EVT-07": {
+  "s": "ENTWURF",
+  "t": "Die Gästeliste sieht nur der Gastgeber."
+ },
+ "ST-EVT-08": {
+  "s": "ENTWURF",
+  "t": "Du bist Veranstalter: Du entscheidest, wen du einlädst, und gibst deine Adresse selbst frei. Wir vermitteln nur den Kontakt."
+ },
+ "ST-EVT-09": {
+  "s": "ENTWURF",
+  "t": "Wir schauen kurz drüber, bevor deine Veranstaltung sichtbar wird. Das dauert meist weniger als einen Tag."
+ },
+ "ST-EVT-10": {
+  "s": "ENTWURF",
+  "t": "Deine Veranstaltung ist so noch nicht sichtbar. Grund: {grund}. Du kannst sie ändern und neu einreichen."
+ },
+ "ST-FEH-01": {
+  "s": "ENTWURF",
+  "t": "Keine Verbindung. Prüf dein Netz — wir versuchen es gleich automatisch noch mal."
+ },
+ "ST-FEH-02": {
+  "s": "ENTWURF",
+  "t": "Bei uns ist etwas schiefgegangen, nicht bei dir. Versuch es in ein paar Minuten noch mal."
+ },
+ "ST-FEH-03": {
+  "s": "ENTWURF",
+  "t": "Das hat zu lange gedauert. Tipp auf „Erneut versuchen“. Deine Eingaben sind noch da."
+ },
+ "ST-FEH-04": {
+  "s": "ENTWURF",
+  "t": "Deine Anmeldung ist abgelaufen. Melde dich neu an — deine Chats sind noch da."
+ },
+ "ST-FEH-10": {
+  "s": "ENTWURF",
+  "t": "Das Bild ist zu groß. Wähle eines unter {mb} MB, dann geht es direkt weiter."
+ },
+ "ST-FEH-11": {
+  "s": "ENTWURF",
+  "t": "Dieses Format können wir nicht lesen. Nimm ein Foto im Format {formate}."
+ },
+ "ST-FEH-12": {
+  "s": "ENTWURF",
+  "t": "Dieses Foto können wir so nicht zeigen: {grund}. Die Stelle ist markiert. Wähl ein anderes oder leg Einspruch ein."
+ },
+ "ST-FEH-13": {
+  "s": "ENTWURF",
+  "t": "im öffentlichen Bereich sind explizite Inhalte nicht erlaubt"
+ },
+ "ST-FEH-14": {
+  "s": "PLATZHALTER",
+  "t": "auf dem Bild stehen Kontaktdaten oder Werbung"
+ },
+ "ST-FEH-15": {
+  "s": "ENTWURF",
+  "t": "das Bild ist zu dunkel oder zu unscharf, um es zu prüfen"
+ },
+ "ST-FEH-16": {
+  "s": "ENTWURF",
+  "t": "Dein Foto wird geprüft. Meist dauert das Sekunden, manchmal bis zu {stunden} Stunden."
+ },
+ "ST-FEH-17": {
+  "s": "OFFEN",
+  "t": ""
+ },
+ "ST-FEH-20": {
+  "s": "ENTWURF",
+  "t": "Wir finden deinen Standort gerade nicht. Schalte WLAN ein oder geh ans Fenster, dann klappt es meist."
+ },
+ "ST-FEH-21": {
+  "s": "ENTWURF",
+  "t": "Dein Standort ist gerade sehr ungenau. Entfernungen können deshalb abweichen."
+ },
+ "ST-FEH-30": {
+  "s": "ENTWURF",
+  "t": "Bilder gehen erst, wenn {name} geantwortet hat. Schreib zuerst ein paar Worte."
+ },
+ "ST-FEH-31": {
+  "s": "ENTWURF",
+  "t": "Du hast in den letzten 24 Stunden fünf neue Leute angeschrieben. Mit Altersprüfung fällt diese Grenze weg."
+ },
+ "ST-FEH-32": {
+  "s": "ENTWURF",
+  "t": "Die Nachricht ist zu lang. Kürz sie auf {zeichen} Zeichen oder teil sie auf."
+ },
+ "ST-FEH-33": {
+  "s": "ENTWURF",
+  "t": "Nicht gesendet. Tipp darauf, um es noch mal zu versuchen."
+ },
+ "ST-FEH-40": {
+  "s": "ENTWURF",
+  "t": "Die Prüfung wurde abgebrochen. Du kannst sie jederzeit neu starten. Bis dahin kannst du lesen, aber noch nicht schreiben."
+ },
+ "ST-FEH-41": {
+  "s": "ENTWURF",
+  "t": "Die Prüfung hat nicht geklappt. Oft liegt es am Licht oder an der Kamera. Versuch es noch mal oder nimm einen anderen Weg."
+ },
+ "ST-FEH-42": {
+  "s": "ENTWURF",
+  "t": "Unser Prüfpartner ist gerade nicht erreichbar. Versuch es in ein paar Minuten noch mal."
+ },
+ "ST-FEH-50": {
+  "s": "ENTWURF",
+  "t": "Die Zahlung hat nicht geklappt, es wurde nichts abgebucht. Prüf deine Angaben oder nimm eine andere Zahlungsart."
+ },
+ "ST-FEH-51": {
+  "s": "ENTWURF",
+  "t": "Dein Kauf ist noch nicht bestätigt. Bei Apple und Google kann das ein paar Minuten dauern."
+ },
+ "ST-FEH-60": {
+  "s": "ENTWURF",
+  "t": "Dein Download hat nicht geklappt. Wir versuchen es automatisch noch einmal und sagen dir hier Bescheid."
+ },
+ "ST-FEH-61": {
+  "s": "ENTWURF",
+  "t": "Höchstens zwei Filter gleichzeitig. Nimm einen heraus, bevor du einen neuen wählst."
+ },
+ "ST-FEH-62": {
+  "s": "ENTWURF",
+  "t": "Dein Text schließt andere aus, etwa wegen Herkunft oder Körper. Magst du das ändern? Gespeichert ist er trotzdem."
+ },
+ "ST-FEH-63": {
+  "s": "OFFEN",
+  "t": "Dein Text schließt andere aus, etwa wegen Herkunft oder Körper. So können wir ihn nicht speichern. Formulier es bitte anders."
+ },
+ "ST-FEH-64": {
+  "s": "ENTWURF",
+  "t": "Höchstens 400 Zeichen. Du bist bei {zahl}."
+ },
+ "ST-FEST-01": {
+  "s": "FEST",
+  "t": "Damit hier echte Menschen schreiben und keine Bots: Bestätige einmal kurz, dass du 18+ bist."
+ },
+ "ST-FEST-02": {
+  "s": "FEST",
+  "t": "Wir sehen dein Selfie nie. Unser Prüfpartner löscht es sofort nach der Prüfung — wir bekommen nur ja oder nein."
+ },
+ "ST-FEST-03": {
+  "s": "FEST",
+  "t": "Wir können dich nicht identifizieren. Ein Gericht kann es über unseren Prüfpartner. Genau deshalb ist diese App für Täter uninteressant."
+ },
+ "ST-FEST-04": {
+  "s": "FEST",
+  "t": "Wir bauen den sichersten Raum, den wir technisch bauen können — und sagen dir offen, wo seine Grenzen liegen."
+ },
+ "ST-FEST-05": {
+  "s": "FEST",
+  "t": "Danke dir — für mich passt es gerade nicht. Alles Gute!"
+ },
+ "ST-FEST-06": {
+  "s": "FEST",
+  "t": "Dein Standort gehört dir, und du siehst jederzeit, wie genau er ist."
+ },
+ "ST-FEST-07": {
+  "s": "FEST",
+  "t": "Dein Gesicht zeigst du, wem du willst — und bist trotzdem sichtbar."
+ },
+ "ST-FEST-08": {
+  "s": "FEST",
+  "t": "Erste Nachricht: nur Text — und wir helfen dir dabei."
+ },
+ "ST-FEST-09": {
+  "s": "FEST",
+  "t": "Absagen dauert einen Tipp und schadet dir nicht."
+ },
+ "ST-FEST-10": {
+  "s": "FEST",
+  "t": "Was dich schützt, kostet nie etwas."
+ },
+ "ST-HEU-01": {
+  "s": "FEST",
+  "t": "Heute"
+ },
+ "ST-HEU-02": {
+  "s": "ENTWURF",
+  "t": "Ich komme"
+ },
+ "ST-HEU-03": {
+  "s": "ENTWURF",
+  "t": "Wer zusagt, sieht die anderen Zusagen. Öffentlich ist die Liste nicht."
+ },
+ "ST-HEU-04": {
+  "s": "ENTWURF",
+  "t": "Die Gruppe öffnet zwei Stunden vor Beginn und verschwindet 24 Stunden danach."
+ },
+ "ST-HEU-05": {
+  "s": "ENTWURF",
+  "t": "Personen zeigen wir nur als grobe Gruppe, nie als einzelnen Punkt."
+ },
+ "ST-HLF-01": {
+  "s": "ENTWURF",
+  "t": "Hilfe und Kontakt"
+ },
+ "ST-HLF-02": {
+  "s": "ENTWURF",
+  "t": "Wie können wir helfen?"
+ },
+ "ST-HLF-03": {
+  "s": "ENTWURF",
+  "t": "Viele Fragen sind hier schon beantwortet. Wenn deine nicht dabei ist, schreib uns — ein Mensch liest das."
+ },
+ "ST-HLF-04": {
+  "s": "ENTWURF",
+  "t": "Häufige Fragen"
+ },
+ "ST-HLF-05": {
+  "s": "ENTWURF",
+  "t": "Meine Frage ist nicht dabei"
+ },
+ "ST-HLF-06": {
+  "s": "ENTWURF",
+  "t": "Schreib uns"
+ },
+ "ST-HLF-07": {
+  "s": "ENTWURF",
+  "t": "Worum geht es?"
+ },
+ "ST-HLF-08": {
+  "s": "ENTWURF",
+  "t": "Was ist passiert?"
+ },
+ "ST-HLF-09": {
+  "s": "ENTWURF",
+  "t": "Bild anhängen (freiwillig)"
+ },
+ "ST-HLF-10": {
+  "s": "ENTWURF",
+  "t": "Wo sollen wir dir antworten?"
+ },
+ "ST-HLF-11": {
+  "s": "ENTWURF",
+  "t": "Nur hier in der App"
+ },
+ "ST-HLF-12": {
+  "s": "ENTWURF",
+  "t": "An meine E-Mail-Adresse"
+ },
+ "ST-HLF-13": {
+  "s": "ENTWURF",
+  "t": "Wenn wir dir schreiben, steht im Betreff nur deine Fallnummer — sonst nichts."
+ },
+ "ST-HLF-14": {
+  "s": "ENTWURF",
+  "t": "Wir antworten normalerweise innerhalb von 48 Stunden, spätestens nach 72 Stunden an Werktagen."
+ },
+ "ST-HLF-15": {
+  "s": "ENTWURF",
+  "t": "Absenden"
+ },
+ "ST-HLF-16": {
+  "s": "ENTWURF",
+  "t": "Angekommen. Deine Fallnummer ist {fallnummer}."
+ },
+ "ST-HLF-17": {
+  "s": "ENTWURF",
+  "t": "Du findest den Stand jederzeit unter „Hilfe und Kontakt“."
+ },
+ "ST-HLF-18": {
+  "s": "ENTWURF",
+  "t": "Eingegangen · In Bearbeitung · Beantwortet · Abgeschlossen"
+ },
+ "ST-HLF-19": {
+  "s": "ENTWURF",
+  "t": "Anfragen zu deinen Daten beantworten wir innerhalb eines Monats. Dauert es länger, sagen wir dir das vorher."
+ },
+ "ST-HLF-20": {
+  "s": "ENTWURF",
+  "t": "Du brauchst kein Konto, um uns zu erreichen"
+ },
+ "ST-HLF-21": {
+  "s": "ENTWURF",
+  "t": "Wenn jemand jetzt in Gefahr ist, ruf 110 oder 112. Wir sind kein Notdienst und können nicht sofort da sein."
+ },
+ "ST-HLF-22": {
+  "s": "ENTWURF",
+  "t": "Ohne Konto können wir dir nur per E-Mail antworten."
+ },
+ "ST-HLF-23": {
+  "s": "ENTWURF",
+  "t": "Dafür gibt es einen eigenen Weg — den Widerspruch. Da gelten andere Fristen, und wir erklären dir dort die Entscheidung."
+ },
+ "ST-HLF-24": {
+  "s": "ENTWURF",
+  "t": "Deine Fallnummer {fallnummer}"
+ },
+ "ST-HLF-25": {
+  "s": "ENTWURF",
+  "t": "Wir haben dir geantwortet. Du findest die Antwort, wenn du dich anmeldest."
+ },
+ "ST-KON-01": {
+  "s": "ENTWURF",
+  "t": "Du schaust als Gast. Fotos bleiben unscharf, bis du ein Konto hast."
+ },
+ "ST-KON-02": {
+  "s": "ENTWURF",
+  "t": "Noch {minuten} Minuten als Gast"
+ },
+ "ST-KON-03": {
+  "s": "ENTWURF",
+  "t": "Die drei Minuten sind um. Mit einem Konto siehst du Fotos und kannst schreiben."
+ },
+ "ST-KON-04": {
+  "s": "ENTWURF",
+  "t": "Konto anlegen"
+ },
+ "ST-KON-05": {
+  "s": "ENTWURF",
+  "t": "Zurück zum Start"
+ },
+ "ST-KON-10": {
+  "s": "ENTWURF",
+  "t": "So läuft es hier"
+ },
+ "ST-KON-11": {
+  "s": "ENTWURF",
+  "t": "Du stellst selbst ein, wie genau dein Standort ist. Die erste Nachricht ist Text. Absagen dauert einen Tipp."
+ },
+ "ST-KON-12": {
+  "s": "ENTWURF",
+  "t": "Weiter"
+ },
+ "ST-KON-20": {
+  "s": "ENTWURF",
+  "t": "Konto anlegen"
+ },
+ "ST-KON-21": {
+  "s": "ENTWURF",
+  "t": "Wir brauchen nur eine E-Mail-Adresse und ein Passwort. Keinen Klarnamen, keine Telefonnummer."
+ },
+ "ST-KON-22": {
+  "s": "ENTWURF",
+  "t": "Mit E-Mail weiter"
+ },
+ "ST-KON-23": {
+  "s": "ENTWURF",
+  "t": "Mit Apple anmelden"
+ },
+ "ST-KON-24": {
+  "s": "ENTWURF",
+  "t": "Tipp: Wähle „E-Mail-Adresse verbergen“. Dann kennen wir deine echte Adresse nicht."
+ },
+ "ST-KON-25": {
+  "s": "ENTWURF",
+  "t": "Anmelden mit Google oder Facebook bieten wir nicht an. Diese Werbekonzerne würden sonst erfahren, dass du diese App nutzt."
+ },
+ "ST-KON-26": {
+  "s": "ENTWURF",
+  "t": "Schon ein Konto hier verrät etwas Persönliches über dich. Deshalb fragen wir ausdrücklich, bevor wir etwas speichern."
+ },
+ "ST-KON-27": {
+  "s": "PLATZHALTER",
+  "t": "Ich willige ausdrücklich ein, dass Cruizy Angaben über mich verarbeitet, aus denen sich meine sexuelle Orientierung und – wenn ich sie angebe – meine Geschlechtsidentität ergeben können. Zweck ist allein, mir die Funktionen dieser App bereitzustellen. Ich kann die Einwilligung jederzeit unter „Deine Daten“ widerrufen; danach lässt sich das Konto nicht fortführen. [ENTWURF – der verbindliche Wortlaut kommt vom Fachanwalt und muss die Rechtsnachfolge vorsehen]"
+ },
+ "ST-KON-28": {
+  "s": "ENTWURF",
+  "t": "Wichtige Mitteilungen nur in der App"
+ },
+ "ST-KON-29": {
+  "s": "ENTWURF",
+  "t": "Sicherheitsmitteilungen stehen nur hier in der App, nie im Text einer E-Mail oder SMS."
+ },
+ "ST-KON-30": {
+  "s": "ENTWURF",
+  "t": "Per E-Mail oder SMS melden wir uns nur, wenn du es angestoßen hast oder nach einem Sicherheitsvorfall — ohne unseren Namen im Betreff oder in der SMS."
+ },
+ "ST-KON-31": {
+  "s": "ENTWURF",
+  "t": "Kommt eine andere E-Mail, die angeblich von uns ist, öffne keine Links darin."
+ },
+ "ST-KON-32": {
+  "s": "ENTWURF",
+  "t": "Verstanden"
+ },
+ "ST-KON-33": {
+  "s": "ENTWURF",
+  "t": "An diese Adresse oder Nummer melden wir uns nur, wenn es sein muss. Wähle etwas, das nur du liest."
+ },
+ "ST-KON-40": {
+  "s": "ENTWURF",
+  "t": "Wie willst du hier auftauchen?"
+ },
+ "ST-KON-41": {
+  "s": "ENTWURF",
+  "t": "Ein Foto, ein Name, eine Absicht. Alles lässt sich später ändern."
+ },
+ "ST-KON-42": {
+  "s": "ENTWURF",
+  "t": "Foto zeigen"
+ },
+ "ST-KON-43": {
+  "s": "ENTWURF",
+  "t": "Foto unkenntlich machen"
+ },
+ "ST-KON-44": {
+  "s": "ENTWURF",
+  "t": "Nur eine farbige Initiale"
+ },
+ "ST-KON-45": {
+  "s": "ENTWURF",
+  "t": "Dein Foto wird so unscharf, dass man dich nicht erkennt. Dabei wird Bildinformation gelöscht — das Original lässt sich daraus nicht wiederherstellen."
+ },
+ "ST-KON-46": {
+  "s": "ENTWURF",
+  "t": "Mit der Fotoprüfung sehen andere trotzdem: echte Person, nur ohne Gesicht."
+ },
+ "ST-KON-47": {
+  "s": "ENTWURF",
+  "t": "Ein Vorname oder ein Spitzname. Deinen echten Namen brauchen wir nicht."
+ },
+ "ST-KON-48": {
+  "s": "ENTWURF",
+  "t": "Was suchst du gerade?"
+ },
+ "ST-KON-49": {
+  "s": "ENTWURF",
+  "t": "Deine Absicht läuft von selbst ab. Danach steht bei dir wieder „Offen“."
+ },
+ "ST-KON-50": {
+  "s": "ENTWURF",
+  "t": "Fertig"
+ },
+ "ST-KON-60": {
+  "s": "ENTWURF",
+  "t": "Auf den Home-Bildschirm legen"
+ },
+ "ST-KON-61": {
+  "s": "ENTWURF",
+  "t": "Auf dem iPhone kommen Mitteilungen nur an, wenn die App auf deinem Home-Bildschirm liegt. Tippe auf „Teilen“ und dann auf „Zum Home-Bildschirm“."
+ },
+ "ST-KON-62": {
+  "s": "ENTWURF",
+  "t": "Such dir vorher ein Symbol aus. Auf dem iPhone lässt es sich danach nicht mehr ändern."
+ },
+ "ST-KON-63": {
+  "s": "ENTWURF",
+  "t": "Zeig mir, wie"
+ },
+ "ST-KON-64": {
+  "s": "ENTWURF",
+  "t": "Nicht jetzt"
+ },
+ "ST-LEER-01": {
+  "s": "ENTWURF",
+  "t": "In deiner Nähe ist gerade wenig los."
+ },
+ "ST-LEER-02": {
+  "s": "ENTWURF",
+  "t": "Weiter weg sind {zahl} Profile. Wir zeigen sie getrennt, damit du weißt, wie weit es ist."
+ },
+ "ST-LEER-03": {
+  "s": "ENTWURF",
+  "t": "Diese Woche waren {zahl} Leute im Umkreis von 50 km aktiv. Sie sind gerade nicht online — deine Nachricht wartet, bis sie reinschauen."
+ },
+ "ST-LEER-04": {
+  "s": "ENTWURF",
+  "t": "In „Heute“ siehst du, wo heute etwas los ist."
+ },
+ "ST-LEER-05": {
+  "s": "ENTWURF",
+  "t": "Mit diesen Filtern gibt es gerade keine Treffer. Nimm einen Filter heraus, dann siehst du wieder mehr."
+ },
+ "ST-LEER-10": {
+  "s": "ENTWURF",
+  "t": "Keine neuen Anfragen. Wer dir zum ersten Mal schreibt, landet hier — ohne Mitteilung und ohne Zähler."
+ },
+ "ST-LEER-11": {
+  "s": "ENTWURF",
+  "t": "Noch keine Gespräche. Schreib jemandem aus dem Raster. Wenn dir nichts einfällt, schlagen wir dir einen Einstieg vor."
+ },
+ "ST-LEER-12": {
+  "s": "ENTWURF",
+  "t": "Das Archiv ist leer. Beendete Gespräche liegen hier 24 Stunden."
+ },
+ "ST-LEER-13": {
+  "s": "ENTWURF",
+  "t": "Deine Merkliste ist leer. Wen du dir merkst, erfährt davon nichts."
+ },
+ "ST-LEER-20": {
+  "s": "ENTWURF",
+  "t": "Heute steht in deiner Nähe noch nichts im Kalender. Orte, die geöffnet haben, siehst du auf der Karte."
+ },
+ "ST-LEER-21": {
+  "s": "ENTWURF",
+  "t": "Hier kennen wir noch keine Orte. Wir gehen Stadt für Stadt vor — zuerst Köln."
+ },
+ "ST-LEER-22": {
+  "s": "ENTWURF",
+  "t": "Gerade sind hier zu wenige Leute, um sie auf der Karte zu zeigen."
+ },
+ "ST-LEER-30": {
+  "s": "ENTWURF",
+  "t": "Offline. Du siehst den letzten Stand."
+ },
+ "ST-LEER-31": {
+  "s": "ENTWURF",
+  "t": "Wird gesendet, sobald du wieder Netz hast."
+ },
+ "ST-MAIL-01": {
+  "s": "PLATZHALTER",
+  "t": "Benachrichtigung"
+ },
+ "ST-MAIL-02": {
+  "s": "ENTWURF",
+  "t": "Dein Bestätigungscode"
+ },
+ "ST-MAIL-03": {
+  "s": "ENTWURF",
+  "t": "Code für deine Anmeldung"
+ },
+ "ST-MAIL-04": {
+  "s": "ENTWURF",
+  "t": "Dein Code lautet {code}. Er gilt {minuten} Minuten. Hast du keinen Code angefordert, ignoriere diese E-Mail."
+ },
+ "ST-MAIL-05": {
+  "s": "ENTWURF",
+  "t": "Neues Passwort festlegen"
+ },
+ "ST-MAIL-06": {
+  "s": "ENTWURF",
+  "t": "Du hast ein neues Passwort angefordert. Der Link gilt {minuten} Minuten: {link}. Warst du das nicht, ignoriere diese E-Mail. Dein Passwort bleibt dann gleich."
+ },
+ "ST-MAIL-07": {
+  "s": "ENTWURF",
+  "t": "Wichtige Nachricht für dich"
+ },
+ "ST-MAIL-08": {
+  "s": "ENTWURF",
+  "t": "Bitte melde dich an"
+ },
+ "ST-MAIL-09": {
+  "s": "ENTWURF",
+  "t": "Es gibt eine wichtige Nachricht für dich. Du liest sie, wenn du dich wie gewohnt anmeldest — einen Link schicken wir dafür nicht."
+ },
+ "ST-MEL-01": {
+  "s": "ENTWURF",
+  "t": "Melden"
+ },
+ "ST-MEL-02": {
+  "s": "ENTWURF",
+  "t": "Was ist passiert?"
+ },
+ "ST-MEL-03": {
+  "s": "ENTWURF",
+  "t": "Belästigung oder Drohung"
+ },
+ "ST-MEL-04": {
+  "s": "ENTWURF",
+  "t": "Ungewollte Nacktbilder"
+ },
+ "ST-MEL-05": {
+  "s": "ENTWURF",
+  "t": "Fake-Profil oder Betrug"
+ },
+ "ST-MEL-06": {
+  "s": "ENTWURF",
+  "t": "Wirkt minderjährig"
+ },
+ "ST-MEL-07": {
+  "s": "ENTWURF",
+  "t": "Hass oder Abwertung"
+ },
+ "ST-MEL-08": {
+  "s": "ENTWURF",
+  "t": "Sex gegen Geld oder Werbung"
+ },
+ "ST-MEL-09": {
+  "s": "ENTWURF",
+  "t": "Gewalt oder Gefahr für jemanden"
+ },
+ "ST-MEL-10": {
+  "s": "ENTWURF",
+  "t": "Etwas anderes"
+ },
+ "ST-MEL-11": {
+  "s": "ENTWURF",
+  "t": "Bist du oder jemand anderes gerade in Gefahr? Ruf die 112."
+ },
+ "ST-MEL-12": {
+  "s": "ENTWURF",
+  "t": "Magst du kurz beschreiben, was passiert ist? Freiwillig."
+ },
+ "ST-MEL-13": {
+  "s": "ENTWURF",
+  "t": "Wenn du ein Bild meldest, kann jemand von uns es ansehen — sonst könnten wir es nicht prüfen. Jeder Zugriff wird protokolliert."
+ },
+ "ST-MEL-14": {
+  "s": "ENTWURF",
+  "t": "Auch blockieren"
+ },
+ "ST-MEL-15": {
+  "s": "ENTWURF",
+  "t": "Meldung senden"
+ },
+ "ST-MEL-16": {
+  "s": "ENTWURF",
+  "t": "Danke. Deine Meldung hat die Nummer {fallnummer}. Wir antworten dir hier in der App, in der Regel innerhalb von 24 Stunden."
+ },
+ "ST-MEL-17": {
+  "s": "ENTWURF",
+  "t": "Wir sagen {name} nicht, wer gemeldet hat. In einem Gespräch zu zweit kann die Person es sich aber denken."
+ },
+ "ST-MEL-18": {
+  "s": "ENTWURF",
+  "t": "Eingegangen am {datum}"
+ },
+ "ST-MEL-19": {
+  "s": "ENTWURF",
+  "t": "Wird geprüft"
+ },
+ "ST-MEL-20": {
+  "s": "ENTWURF",
+  "t": "Entschieden am {datum}"
+ },
+ "ST-MEL-21": {
+  "s": "ENTWURF",
+  "t": "Wir haben entschieden: {entscheidung}. Der Grund: {begruendung}"
+ },
+ "ST-MEL-22": {
+  "s": "ENTWURF",
+  "t": "Wir haben keinen Verstoß gegen unsere Regeln gefunden. Das heißt nicht, dass dein Eindruck falsch ist. Du kannst {name} jederzeit blockieren."
+ },
+ "ST-MEL-23": {
+  "s": "ENTWURF",
+  "t": "Wir haben {inhalt} eingeschränkt. Der Grund: {begruendung} Geprüft hat das ein Mensch. Du kannst widersprechen."
+ },
+ "ST-MEL-24": {
+  "s": "ENTWURF",
+  "t": "Wir haben {inhalt} eingeschränkt. Der Grund: {begruendung} Entschieden hat das ein Programm. Wenn du widersprichst, prüft ein Mensch."
+ },
+ "ST-MEL-25": {
+  "s": "ENTWURF",
+  "t": "Widersprechen"
+ },
+ "ST-MEL-26": {
+  "s": "ENTWURF",
+  "t": "Dein Widerspruch ist da. Ein Mensch prüft ihn, in der Regel innerhalb von {stunden} Stunden."
+ },
+ "ST-PRO-01": {
+  "s": "ENTWURF",
+  "t": "Deine Absicht ist abgelaufen. Wisch, um sie zu erneuern."
+ },
+ "ST-PRO-02": {
+  "s": "FEST",
+  "t": "Heute Abend"
+ },
+ "ST-PRO-03": {
+  "s": "FEST",
+  "t": "Nur schreiben"
+ },
+ "ST-PRO-04": {
+  "s": "PLATZHALTER",
+  "t": "Kennenlernen"
+ },
+ "ST-PRO-05": {
+  "s": "PLATZHALTER",
+  "t": "Jetzt spontan"
+ },
+ "ST-PRO-06": {
+  "s": "FEST",
+  "t": "Offen"
+ },
+ "ST-PRO-07": {
+  "s": "ENTWURF",
+  "t": "noch {stunden} Std."
+ },
+ "ST-PRO-08": {
+  "s": "ENTWURF",
+  "t": "Wie lange? · 1 Std. · 2 Std. · 4 Std. · 8 Std. · Bis morgen früh · Dieses Wochenende"
+ },
+ "ST-PRO-10": {
+  "s": "PLATZHALTER",
+  "t": "antwortet oft"
+ },
+ "ST-PRO-11": {
+  "s": "PLATZHALTER",
+  "t": "antwortet manchmal"
+ },
+ "ST-PRO-12": {
+  "s": "PLATZHALTER",
+  "t": "antwortet selten"
+ },
+ "ST-PRO-13": {
+  "s": "ENTWURF",
+  "t": "Zeigt, wie oft jemand auf erste Nachrichten reagiert. Eine freundliche Absage zählt auch. Gewertet werden höchstens 20 erste Nachrichten pro Woche."
+ },
+ "ST-PRO-14": {
+  "s": "ENTWURF",
+  "t": "Ausschalten? Dann siehst du auch bei anderen keine Antwortquote mehr."
+ },
+ "ST-PRO-20": {
+  "s": "ENTWURF",
+  "t": "zuletzt aktiv: {band}"
+ },
+ "ST-PRO-30": {
+  "s": "ENTWURF",
+  "t": "Wen möchtest du sehen?"
+ },
+ "ST-PRO-31": {
+  "s": "ENTWURF",
+  "t": "Das wirkt nur auf deine eigene Ansicht. Andere erfahren davon nichts."
+ },
+ "ST-PRO-40": {
+  "s": "PLATZHALTER",
+  "t": "Wie beschreibst du dich?"
+ },
+ "ST-PRO-41": {
+  "s": "ENTWURF",
+  "t": "Auf meinem Profil zeigen"
+ },
+ "ST-PRO-50": {
+  "s": "ENTWURF",
+  "t": "Merken"
+ },
+ "ST-PRO-51": {
+  "s": "ENTWURF",
+  "t": "Die Person erfährt nicht, dass du sie dir gemerkt hast."
+ },
+ "ST-PRO-60": {
+  "s": "ENTWURF",
+  "t": "Bis zu 8 Fotos. Jedes wird geprüft, bevor andere es sehen."
+ },
+ "ST-PRO-61": {
+  "s": "ENTWURF",
+  "t": "Freiwillig. Niemand kann danach filtern."
+ },
+ "ST-PUSH-01": {
+  "s": "ENTWURF",
+  "t": "Neue Nachricht"
+ },
+ "ST-PUSH-02": {
+  "s": "ENTWURF",
+  "t": "Neue Nachrichten"
+ },
+ "ST-PUSH-03": {
+  "s": "ENTWURF",
+  "t": "{name}: {vorschau}"
+ },
+ "ST-PUSH-04": {
+  "s": "ENTWURF",
+  "t": "Name und Vorschau zeigen"
+ },
+ "ST-PUSH-05": {
+  "s": "ENTWURF",
+  "t": "Auf dem Sperrbildschirm kann das jeder lesen, der dein Telefon sieht."
+ },
+ "ST-PUSH-10": {
+  "s": "ENTWURF",
+  "t": "Neue Mitteilung in der App"
+ },
+ "ST-PUSH-11": {
+  "s": "ENTWURF",
+  "t": "Ein Treffen, dem du zugesagt hast, beginnt bald."
+ },
+ "ST-PUSH-12": {
+  "s": "ENTWURF",
+  "t": "Kurze Rückmeldung zu deinem Termin?"
+ },
+ "ST-PUSH-13": {
+  "s": "ENTWURF",
+  "t": "Dein Foto ist jetzt sichtbar."
+ },
+ "ST-PUSH-20": {
+  "s": "ENTWURF",
+  "t": "Ruhezeit von {von} bis {bis} Uhr"
+ },
+ "ST-REC-01": {
+  "s": "ENTWURF",
+  "t": "Wer ist in deiner Nähe?"
+ },
+ "ST-REC-02": {
+  "s": "ENTWURF",
+  "t": "Dafür brauchen wir deinen Standort. Andere sehen nur eine grobe Entfernung wie „1–3 km“. Deine genaue Position geben wir nicht weiter."
+ },
+ "ST-REC-03": {
+  "s": "ENTWURF",
+  "t": "Standort erlauben"
+ },
+ "ST-REC-04": {
+  "s": "ENTWURF",
+  "t": "Ohne Standort weiter"
+ },
+ "ST-REC-05": {
+  "s": "ENTWURF",
+  "t": "Ohne Standort können wir dir keine Profile in deiner Nähe zeigen. Du kannst ihn jederzeit in den Einstellungen erlauben."
+ },
+ "ST-REC-06": {
+  "s": "ENTWURF",
+  "t": "Dein Browser blockiert den Standort. Erlaube ihn in den Browser-Einstellungen für diese Seite und lade die App neu."
+ },
+ "ST-REC-10": {
+  "s": "ENTWURF",
+  "t": "Soll dein Telefon Bescheid sagen?"
+ },
+ "ST-REC-11": {
+  "s": "ENTWURF",
+  "t": "Wir melden dir neue Nachrichten in deinen Gesprächen — ohne Namen und ohne Vorschau."
+ },
+ "ST-REC-12": {
+  "s": "ENTWURF",
+  "t": "Neue Anfragen lösen keine Mitteilung aus. Von 23 bis 8 Uhr ist Ruhe."
+ },
+ "ST-REC-13": {
+  "s": "ENTWURF",
+  "t": "Mitteilungen erlauben"
+ },
+ "ST-REC-14": {
+  "s": "ENTWURF",
+  "t": "Ohne Mitteilungen"
+ },
+ "ST-REC-15": {
+  "s": "ENTWURF",
+  "t": "Je nach Browser steht in einer Mitteilung auch die Internetadresse. Das können wir nicht abschalten."
+ },
+ "ST-REC-16": {
+  "s": "ENTWURF",
+  "t": "Mitteilungen sind aus. Neue Nachrichten siehst du, wenn du die App öffnest."
+ },
+ "ST-REC-20": {
+  "s": "ENTWURF",
+  "t": "Foto aufnehmen"
+ },
+ "ST-REC-21": {
+  "s": "ENTWURF",
+  "t": "Dafür brauchen wir kurz die Kamera. Ortsangaben und Gerätedaten entfernen wir aus jedem Bild, bevor irgendetwas anderes damit passiert."
+ },
+ "ST-REC-22": {
+  "s": "ENTWURF",
+  "t": "Kamera erlauben"
+ },
+ "ST-REC-23": {
+  "s": "ENTWURF",
+  "t": "Aus der Galerie wählen"
+ },
+ "ST-REC-24": {
+  "s": "ENTWURF",
+  "t": "Ohne Kamera kannst du trotzdem ein Foto aus deiner Galerie wählen."
+ },
+ "ST-REC-30": {
+  "s": "ENTWURF",
+  "t": "Damit du Profile in deiner Nähe siehst. Andere sehen nur eine grobe Entfernung."
+ },
+ "ST-REC-31": {
+  "s": "ENTWURF",
+  "t": "Für Fotos in deinem Profil und in Gesprächen. Ortsangaben entfernen wir aus jedem Bild."
+ },
+ "ST-REC-32": {
+  "s": "ENTWURF",
+  "t": "Damit du Fotos aus deiner Galerie hochladen kannst."
+ },
+ "ST-SIC-01": {
+  "s": "ENTWURF",
+  "t": "Sicherheit"
+ },
+ "ST-SIC-02": {
+  "s": "ENTWURF",
+  "t": "Alles hier ist kostenlos, dauerhaft."
+ },
+ "ST-SIC-10": {
+  "s": "ENTWURF",
+  "t": "Check-in vor dem Treffen"
+ },
+ "ST-SIC-11": {
+  "s": "ENTWURF",
+  "t": "Hinterleg Ort und Uhrzeit deines Treffens. Beides wird verschlüsselt gespeichert, und {name} sieht davon nichts."
+ },
+ "ST-SIC-12": {
+  "s": "ENTWURF",
+  "t": "Nach 15, 30 und 60 Minuten fragen wir, ob alles gut läuft. Meldest du dich nach der letzten Frage nicht, passiert genau das, was du vorher eingestellt hast."
+ },
+ "ST-SIC-13": {
+  "s": "ENTWURF",
+  "t": "Check-in anlegen"
+ },
+ "ST-SIC-14": {
+  "s": "ENTWURF",
+  "t": "Alles gut gelaufen? Dann tipp auf „Ja“, und wir löschen Ort und Uhrzeit."
+ },
+ "ST-SIC-20": {
+  "s": "ENTWURF",
+  "t": "Treffpunkt vorschlagen"
+ },
+ "ST-SIC-21": {
+  "s": "ENTWURF",
+  "t": "Für ein erstes Treffen eignen sich Orte, an denen auch andere sind. Hier siehst du welche in eurer Nähe."
+ },
+ "ST-SIC-30": {
+  "s": "ENTWURF",
+  "t": "Schnell verstecken"
+ },
+ "ST-SIC-31": {
+  "s": "ENTWURF",
+  "t": "In der Web-App erkennt das Telefon kein Tippen auf die Rückseite. Tippe stattdessen dreimal schnell auf den Titel oben oder drücke am Rechner zweimal die Escape-Taste. Zurück kommst du mit deiner PIN."
+ },
+ "ST-SIC-32": {
+  "s": "ENTWURF",
+  "t": "Wähle eine PIN aus {n} Ziffern. Du brauchst sie nur hierfür."
+ },
+ "ST-SIC-40": {
+  "s": "ENTWURF",
+  "t": "Symbol und Name ändern"
+ },
+ "ST-SIC-41": {
+  "s": "ENTWURF",
+  "t": "Wähle ein unauffälliges Symbol und einen anderen Namen, bevor du die App auf den Home-Bildschirm legst. Eine spätere Änderung wirkt erst, wenn du die App neu hinzufügst."
+ },
+ "ST-SIC-50": {
+  "s": "ENTWURF",
+  "t": "Mitteilungen"
+ },
+ "ST-SIC-51": {
+  "s": "ENTWURF",
+  "t": "Keine Mitteilungen. Wenn wir dir etwas Wichtiges sagen müssen, steht es hier — nicht in einer E-Mail."
+ },
+ "ST-SIC-60": {
+  "s": "ENTWURF",
+  "t": "Du bist in einem Land, in dem gleichgeschlechtliche Handlungen strafbar sein können. Überleg, ob du die App hier nutzen willst. Im Bereich Sicherheit siehst du, was du einstellen kannst."
+ },
+ "ST-SMS-01": {
+  "s": "ENTWURF",
+  "t": "Wichtige Nachricht für dich. Bitte melde dich wie gewohnt an, um sie zu lesen."
+ },
+ "ST-SMS-02": {
+  "s": "ENTWURF",
+  "t": "Dein Code: {code}. Gib ihn nicht weiter."
+ },
+ "ST-STO-01": {
+  "s": "ENTWURF",
+  "t": "Standort: {stufe}"
+ },
+ "ST-STO-02": {
+  "s": "ENTWURF",
+  "t": "Wie genau soll dein Standort sein? Andere sehen ohnehin nur eine grobe Entfernung."
+ },
+ "ST-STO-10": {
+  "s": "FEST",
+  "t": "unter 1 km"
+ },
+ "ST-STO-11": {
+  "s": "FEST",
+  "t": "1–3 km"
+ },
+ "ST-STO-12": {
+  "s": "FEST",
+  "t": "3–10 km"
+ },
+ "ST-STO-13": {
+  "s": "FEST",
+  "t": "über 10 km"
+ },
+ "ST-STO-14": {
+  "s": "ENTWURF",
+  "t": "Weiter weg"
+ },
+ "ST-STO-15": {
+  "s": "ENTWURF",
+  "t": "Hier ist gerade wenig los. Darunter siehst du Profile weiter weg — getrennt, damit nichts näher wirkt, als es ist."
+ },
+ "ST-STO-20": {
+  "s": "FEST",
+  "t": "jetzt"
+ },
+ "ST-STO-21": {
+  "s": "FEST",
+  "t": "unter 1 Std."
+ },
+ "ST-STO-22": {
+  "s": "FEST",
+  "t": "heute"
+ },
+ "ST-STO-23": {
+  "s": "FEST",
+  "t": "diese Woche"
+ },
+ "ST-STO-24": {
+  "s": "FEST",
+  "t": "länger her"
+ },
+ "ST-STO-30": {
+  "s": "ENTWURF",
+  "t": "Zonen"
+ },
+ "ST-STO-31": {
+  "s": "ENTWURF",
+  "t": "In einer Zone wird dein Standort anders behandelt, zum Beispiel rund um dein Zuhause. Bis zu {max} Zonen mit Ersatzpunkt sind kostenlos."
+ },
+ "ST-STO-40": {
+  "s": "ENTWURF",
+  "t": "Mit Ersatzpunkt sehen andere jede Entfernung von diesem Punkt aus, nicht von deinem echten Ort. Unsichtbar zu sein ist bequemer, schützt aber nicht mehr. Deshalb ist der Ersatzpunkt kostenlos und unsichtbar im Abo."
+ },
+ "ST-STO-41": {
+  "s": "ENTWURF",
+  "t": "ungefährer Ort"
+ },
+ "ST-STO-42": {
+  "s": "ENTWURF",
+  "t": "Diese Person zeigt einen Punkt statt ihres echten Ortes. Die Entfernung gilt ab diesem Punkt — das Genaue klärt ihr im Gespräch."
+ },
+ "ST-STO-43": {
+  "s": "ENTWURF",
+  "t": "Setz deinen Punkt 2 bis 30 km von dir entfernt. Andere sehen dann die Entfernung von dort."
+ },
+ "ST-STO-44": {
+  "s": "ENTWURF",
+  "t": "Weiter als 30 km ist Reisen — das ist im Abo."
+ },
+ "ST-STO-45": {
+  "s": "ENTWURF",
+  "t": "auf Reisen"
+ },
+ "ST-STO-46": {
+  "s": "ENTWURF",
+  "t": "schreibt von außerhalb"
+ },
+ "ST-STO-47": {
+  "s": "ENTWURF",
+  "t": "Zu nah an dir — so schützt der Punkt nicht. Wähl einen Punkt mindestens 2 km entfernt."
+ },
+ "ST-VER-01": {
+  "s": "ENTWURF",
+  "t": "Deine Nachricht ist nicht angekommen"
+ },
+ "ST-VER-02": {
+  "s": "ENTWURF",
+  "t": "{name} lässt nur Nachrichten von Profilen zu, die ihr Alter bestätigt haben. Das ist hier die Voreinstellung, damit weniger Fake-Profile und Bots schreiben."
+ },
+ "ST-VER-03": {
+  "s": "ENTWURF",
+  "t": "Bestätige dein Alter, dann kannst du {name} schreiben."
+ },
+ "ST-VER-04": {
+  "s": "ENTWURF",
+  "t": "Alter bestätigen"
+ },
+ "ST-VER-05": {
+  "s": "ENTWURF",
+  "t": "Später"
+ },
+ "ST-VER-06": {
+  "s": "ENTWURF",
+  "t": "Wie willst du dein Alter bestätigen?"
+ },
+ "ST-VER-07": {
+  "s": "ENTWURF",
+  "t": "Mit einem Selfie — ohne Ausweis"
+ },
+ "ST-VER-08": {
+  "s": "ENTWURF",
+  "t": "Mit der Online-Ausweisfunktion"
+ },
+ "ST-VER-09": {
+  "s": "PLATZHALTER",
+  "t": "Mit deiner digitalen Brieftasche"
+ },
+ "ST-VER-10": {
+  "s": "ENTWURF",
+  "t": "Wir erfahren nur, ob du volljährig bist. Wer du bist, weiß nur unser Prüfpartner. Er gibt es nur heraus, wenn eine Behörde das gesetzlich verlangen darf."
+ },
+ "ST-VER-11": {
+  "s": "ENTWURF",
+  "t": "Die Schätzung war nicht eindeutig. Das passiert oft, wenn jemand jünger aussieht. Bestätige dein Alter bitte mit deinem Ausweis."
+ },
+ "ST-VER-12": {
+  "s": "ENTWURF",
+  "t": "Danke, dein Alter ist bestätigt. Du kannst jetzt schreiben."
+ },
+ "ST-VER-13": {
+  "s": "ENTWURF",
+  "t": "Diese App ist nur für Erwachsene, deshalb schalten wir dein Konto nicht frei. Ist das ein Irrtum, bestätige dein Alter mit deinem Ausweis."
+ },
+ "ST-VER-14": {
+  "s": "PLATZHALTER",
+  "t": "Du bist unter 18 und suchst jemanden zum Reden? Die Nummer gegen Kummer erreichst du kostenlos unter 116 111."
+ },
+ "ST-VER-20": {
+  "s": "ENTWURF",
+  "t": "Zeig, dass deine Fotos echt sind"
+ },
+ "ST-VER-21": {
+  "s": "ENTWURF",
+  "t": "Mach ein Selfie. Passt es zu deinen Profilfotos, bekommt dein Profil ein Prüfzeichen. Freiwillig."
+ },
+ "ST-VER-22": {
+  "s": "ENTWURF",
+  "t": "Die Fotos dieses Profils passen zur Person. Ob ein Treffen gut läuft, sagt das nicht — pass trotzdem auf dich auf."
+ },
+ "ST-VER-23": {
+  "s": "ENTWURF",
+  "t": "Geprüft, aber ohne Gesicht: echte Person, die ihr Gesicht erst im Gespräch zeigt."
+ },
+ "ST-VER-30": {
+  "s": "ENTWURF",
+  "t": "Nur Nachrichten von geprüften Profilen"
+ },
+ "ST-VER-31": {
+  "s": "ENTWURF",
+  "t": "Voreinstellung: an. Dann schreiben dir nur Menschen, die ihr Alter bestätigt haben. Kostenlos, immer."
+ },
+ "ST-VER-32": {
+  "s": "ENTWURF",
+  "t": "Ausschalten? Dann können dir auch Profile ohne Altersprüfung schreiben."
+ },
+ "ST-VER-33": {
+  "s": "ENTWURF",
+  "t": "Ausschalten"
+ },
+ "ST-VER-34": {
+  "s": "ENTWURF",
+  "t": "Anlassen"
+ },
+ "ST-VER-40": {
+  "s": "PLATZHALTER",
+  "t": "Für private Bilder: eine zusätzliche Prüfung"
+ },
+ "ST-VER-41": {
+  "s": "PLATZHALTER",
+  "t": "Private Bilder können Inhalte nur für Erwachsene enthalten. Dafür verlangt das Jugendschutzrecht eine zusätzliche Prüfung. Du machst sie einmal und bestätigst dich danach mit deinem Gerät."
+ },
+ "ST-VER-42": {
+  "s": "PLATZHALTER",
+  "t": "Ohne diese Prüfung bleiben private Bilder geschlossen. Alles andere funktioniert wie bisher."
+ },
+ "ST-VER-43": {
+  "s": "PLATZHALTER",
+  "t": "Privates Bild — für dich noch geschlossen"
+ },
+ "ST-WHR-01": {
+  "s": "ENTWURF",
+  "t": "Du hast deinen Code verloren und keinen anderen Weg eingerichtet. Dann können wir dein Konto nicht wiederherstellen — wir wissen nicht, wer du bist, und das ist Absicht."
+ },
+ "ST-WHR-02": {
+  "s": "ENTWURF",
+  "t": "Das ist dein Wiederherstellungscode. Schreib ihn auf oder speicher ihn an einem sicheren Ort. Ohne ihn — und ohne einen anderen Weg — kommst du nicht zurück, wenn du dein Passwort verlierst."
+ },
+ "ST-WHR-03": {
+  "s": "ENTWURF",
+  "t": "Hast du deinen Wiederherstellungscode gesichert? [Ja, habe ich] [Zeig ihn mir nochmal]"
+ },
+ "ST-WHR-04": {
+  "s": "ENTWURF",
+  "t": "Willst du einen zweiten Weg hinterlegen? Dann kommst du auch zurück, wenn ein Postfach oder eine Nummer wegfällt. [Hinterlegen] [Später]"
+ },
+ "ST-WHR-05": {
+  "s": "ENTWURF",
+  "t": "Du kannst Menschen, denen du vertraust, einen Schlüssel geben. Jede von ihnen kann dir allein helfen, zurück in dein Konto zu kommen. Wir wissen nicht, wer sie sind."
+ },
+ "ST-WHR-06": {
+  "s": "OFFEN",
+  "t": ""
+ },
+ "ST-WHR-07": {
+  "s": "ENTWURF",
+  "t": "Jemand will über eine Vertrauensperson zurück in dein Konto. Wenn das nicht du bist, brich es ab — du hast dafür drei Tage Zeit. [Das war ich nicht]"
+ },
+ "ST-WHR-08": {
+  "s": "ENTWURF",
+  "t": "Dieser Weg braucht eine hinterlegte Adresse oder Nummer — sonst könnten wir dich nicht warnen, wenn jemand ihn benutzt. [Adresse hinterlegen]"
+ }
+}
