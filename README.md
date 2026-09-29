@@ -1,68 +1,183 @@
-# Cruizy — Projektordner
+# Cruizy — Server, Web-App und Moderationswerkzeug
 
-Cruising- und Verbindungs-App für schwule Männer, DACH.
+Privatsphäre-zuerst-App zum Kennenlernen für schwule, bi und queere Männer: Web-App (PWA),
+API-Server und ein getrenntes Moderationswerkzeug. Alles läuft in Docker auf **einem**
+Hetzner-VPS (4 GB RAM, 2 Kerne).
 
-**Gründer:** Henry Luca Kurz (Niedersachsen) · Nicolas Greulich (Hessen), je zur Hälfte — **Rechtsform: GmbH** mit 25.000 € Stammkapital (Nr. 2, 4, 20). Ressorts: Nicolas Technik und Produktentwicklung, Henry Marketing, Veranstaltungen und Partnerschaften (Gesellschaftsvertrag, Eckpunkte).
-**Aktuelle Phase:** Phase 0, Vorbereitung — Recherche, Recht, Interviews, Warteliste, Kanäle. Gebaut wird nach Beschluss Nr. 73 **vor T0** und am Ende vollständig geprüft; die Sitzungen S0 bis S13 liegen in den Fenstern V1 bis V3 (A-61). **Sitzung S0 kann sofort beginnen** — sie braucht keine offene Entscheidung. Produktion läuft auf einem gemieteten Server bei **hosttech**, Bau und Staging auf einem eigenen (`70-entwicklung-ab-monat-4/start-der-code-phase.md`).
-**Realer Start (T0):** **Anfang Juli**, zum ColognePride — im Bestfall **2028**, geplant wird ein Jahr später (Nr. 45, präzisiert 27.09.2026). Die GmbH wird **etwa drei Monate vor T0** gegründet (Nr. 97, 27.09.2026) — damit sie in der geschlossenen Testphase datenschutzrechtlich Verantwortliche ist und nicht zwei Privatpersonen. Nr. 88 gilt als **(c) + (a)**: Jugendschutzfrage vorab als Einzelmandat, Gründung vor der Saison, Prüfungen danach. Phaseneinteilung: `01-steuerung/zeitplan-bis-start.md`. Alle Tages- und Monatsangaben in der Roadmap zählen ab dann, nicht ab heute — bis dahin wird vorbereitet, als ginge es sofort los.
-
-**Wo finde ich was?** `WEGWEISER.md` führt nach Fragen statt nach Ordnern — „Ich habe einen Anwaltstermin", „Ich will wissen, was das kostet", „Etwas ist passiert".
-
-## Struktur
+```
+                    ┌────────────── Docker (ein VPS) ───────────────┐
+ Browser ──HTTPS──▶ │ web  (Caddy: TLS, Web-App, Werkzeug-Oberfläche) │
+                    │   ├── /api/*      ─▶ api (Node 22, Fastify)     │
+                    │   └── /mod-api/*  ─▶ api  (nur Werkzeug-Adresse)│
+                    │ api ─▶ db (PostgreSQL 16)                       │
+                    │ api ─▶ Volume media-data (verschlüsselte Bilder)│
+                    └───────────────────────────────────────────────┘
+```
 
 | Ordner | Inhalt |
 |---|---|
-| `00-grundlagen/` | Die Wahrheitsquellen: Handbuch A (Produkt/Technik/Recht), Handbuch B (Wirtschaft), KI-Einsatzplan. Werden nicht bearbeitet, nur fortgeschrieben durch neue Fassungen. |
-| `01-steuerung/` | **Hier beginnen:** `zeitplan-bis-start.md` (wann passiert was bis 2028), `log.md` (Verlauf mit Datum und Uhrzeit — was ist seit dem letzten Mal passiert), `roadmap.md` (Vorgehen + Reihenfolge), `offene-entscheidungen.md` (was noch entschieden werden muss), `projektanalyse.md`, `ki-arbeitsteilung.md` |
-| `02-ki-aufgaben/` | **KI-Arbeitsvorrat:** Arbeitsanweisung (lesen → ausführen → abhaken) + ausformulierte Prompts für alle Aufgaben (`aufgaben-phase-0.md`, `aufgaben-entwicklung.md`). Claude liest diesen Ordner zu Sitzungsbeginn und nach jeder erledigten Aufgabe. |
-| `10-recht-gruendung/` | Entscheidungsvorlagen, Fragenkataloge, Markenrecherche, Entwürfe für den Anwalt. **`anwaltstermin/`** enthält die 30-seitige Mandantenakte mit allen Rechtsfragen — das Dokument, mit dem ihr in den Termin geht. |
-| `20-interviews-feedback/` | Leitfaden, anonyme Protokolle, Auswertungen |
-| `30-marketing-kanaele/` | Redaktionspläne, Beitragsentwürfe, Landingpage, Presse |
-| `35-veranstaltungen/` | Eigene Veranstaltungen, Safe Spaces, Community-Treffen, spätere Kommerzialisierung |
-| `40-finanzen-foerderung/` | Finanzmodell, Fördermittel, Businessplan |
-| `50-produkt-prototyp/` | Wireframes, Systemtexte, Taxonomie |
-| `60-orte-b2b/` | Ortsliste Köln, Kontaktanlässe, Ortsporträts, B2B-Entwürfe |
-| `70-entwicklung-ab-monat-4/` | Bauplan, Kickoff-Struktur, Entwicklungsmodelle; später Verweis auf das Code-Repo |
+| `backend/` | API, Echtzeit (WebSocket), Hintergrundaufträge, Moderationswerkzeug-API, Tests |
+| `frontend/` | Web-App (React, Vite, Tailwind, Service Worker) und Werkzeug-Oberfläche (`mod.html`) |
+| `shared/texts/` | alle Texte mit ID — `de.json` (Systemtexte), `ui-de.json` (erzeugt von `build-ui.py`) |
+| `deploy/` | Caddyfile, Einrichtung, Sicherung, Wiederherstellung, Aktualisierung |
+| `docker-compose.yml`, `.env.example` | der ganze Stack und seine Einstellungen |
 
-## Arbeitsregeln (Kurzfassung)
+---
 
-Handbuch A und B sind Wahrheitsquelle. Jeder KI-Entwurf ist Entwurf bis zur Freigabe. Kein Versand, keine Veröffentlichung, keine Ausgabe ohne Gründer. Keine erfundenen Fakten. Details: `01-steuerung/ki-arbeitsteilung.md`.
+## 1 · Auf dem VPS einrichten
 
-Jeder Arbeitsschritt wird mit Datum und Uhrzeit in `01-steuerung/log.md` festgehalten — auch die von Menschen.
+Voraussetzungen: Ubuntu 24.04, zwei DNS-Einträge (A/AAAA) auf die Server-IP — einer für die
+App, einer für das Werkzeug, z. B. `app.example.de` und `werkzeug.example.de`.
 
-**Nächster Schritt:** alle offenen Fragen auf einmal beantworten — `01-steuerung/entscheidungsvorlage-2026-09-25.md` (Optionen und Empfehlung je Frage). Reihenfolge und Zeitachse: „Die nächsten konkreten Schritte“ am Ende von `01-steuerung/roadmap.md`. Eilig ist davon zweierlei: **die offenen Fragen Nr. 83 bis 93 beantworten** und **die Jugendschutzfrage vor Sitzung S8 klären** (Nr. 88) — die Antwort blockiert mehr als alles andere. Handles und Domains werden nach dem Beschluss vom 19.09.2026 vorerst nicht gesichert (Nr. 5).
+```bash
+git clone <dieses-repository> /opt/cruizy
+cd /opt/cruizy
+sudo bash deploy/install.sh app.example.de werkzeug.example.de technik@example.de
+```
 
-## Stand
+Das Skript aktualisiert das System, schaltet automatische Sicherheitsupdates ein, setzt die
+Firewall (nur 22, 80, 443), legt 2 GB Swap an, installiert Docker, erzeugt `.env` mit frischen
+Geheimnissen, startet den Stack und richtet die tägliche Sicherung ein. Caddy holt die
+TLS-Zertifikate selbst, sobald die DNS-Einträge stimmen.
 
-**27.09.2026, 18:20 Uhr — die zwölf Festlegungen sind beantwortet, Sitzung S1 ist frei.** Neun wie empfohlen, drei anders — und die drei sind keine Auswahl, sondern **neue Mechanik**: Bei **FV-57** entscheidet jede Person selbst über eine Einstellung, wann sie Bilder empfangen will (Voreinstellung wie bisher, dazu „nur mit meiner Bestätigung" mit Anfrageknopf und „immer erlaubt"). Bei **FV-77** verschwindet das gemeinsame Gespräch vollständig, **dazu eine Nachlauffrist von 14 Tagen** in gesperrter Ablage, erreichbar nur über eine Meldung. Bei **FV-29** wählt die Person die Dauer ihrer Absicht selbst. **FV-17 steht auf Weg B unter ausdrücklichem Vorbehalt** — die Einspruchsfrist hält sieben Tage lang Daten einer möglicherweise minderjährigen Person, und genau das prüft **K6**. Eingearbeitet: 14 Kriterien, 6 Parameter, 2 Festlegungen (FV-96, FV-97), 8 Systemtexte, **AF-13** neu.
+**Sofort sichern (außerhalb des Servers):** `MASTER_KEY` und `BACKUP_PASSPHRASE` aus `.env`.
+Ohne `MASTER_KEY` lassen sich Nachrichten, Kontaktdaten und Bilder nicht mehr entschlüsseln.
 
-**28.09.2026, 15:05 Uhr — `CLAUDE.md` steht.** Die Datei, die Claude Code bei **jeder** Sitzung lädt, liegt als `70-entwicklung-ab-monat-4/CLAUDE.md` bereit und wird bei S0 in die Wurzel des Code-Verzeichnisses kopiert. Sie enthält alle Systemdaten, die beim Bauen gelten: die vier nicht nachrüstbaren Architekturpunkte mit Prüffragen, die sicherheitskritischen Bereiche mit Freigabepflicht, **die zwei Annahmen** (K1 vertagt, Hash-Abgleich als Steckplatz) samt der Bauweise, die einen anderen Ausgang billig hält, Kontozustände, Moderationszonen, Prüfkette, Wiederherstellung, **die Nie-bauen-Liste**, 16 Parameter, Ordnerstruktur, 16 Arbeitspakete, den Sitzungsplan S0–S13, die zwei Serverfallen, Abnahme- und Testregeln sowie den Quellenrang. **Jede Zahl und jede Kennung ist gegen die Quelle geprüft** — acht Kennzahlen, 16 Parameter samt Vorgabewerten, fünf Akzeptanzkriterien, 13 Beschlussnummern, keine Abweichung.
+### Zugänge für das Moderationswerkzeug
 
-**28.09.2026, 13:20 Uhr — der Entwicklungsserver ist durchgeplant: Hetzner statt hosttech.** Nicolas hat entschieden, dass der Server ein **Hetzner-VPS mit Ubuntu 24.04 LTS** wird. Dazu liegen jetzt bereit: eine **Schritt-für-Schritt-Anleitung** (`70-entwicklung-ab-monat-4/server-einrichtung-hetzner.md`) und ein **fertiges Einrichtungspaket** zum Hochladen (`70-entwicklung-ab-monat-4/server-paket/cruizy-server-setup.zip`, 40 KB, 18 Dateien) — Härtung, Docker, selbst gehostetes Supabase, PostGIS, tägliche Sicherung mit geprobter Rückspielung und eine Abnahmeliste. ⚠ **Zwingend: Standort Falkenstein, Nürnberg oder Helsinki** — Hetzner hat drei Standorte außerhalb der EU, und die brechen **G-01**. **Zwei Befunde aus der Arbeit:** Für selbst gehostetes Supabase ist bekannt, dass PostGIS im SQL-Editor läuft, über `rpc()` aber mit `type "geometry" does not exist` scheitert — das trifft die **Standortarchitektur im Kern**, und das Paket behebt es und **prüft es mit einem Rauchtest**, der abbricht, wenn es nicht trägt. Und Docker schreibt seine Regeln **unterhalb** von ufw, sodass eine Datenbank offen im Netz stehen kann, obwohl die Firewall „alles zu" meldet — das Paket bindet deshalb jeden Anschluss auf 127.0.0.1. **Geprüft:** alle Skripte mit `shellcheck` ohne Befund, das PostGIS-Skript und der Rauchtest gegen eine echte PostgreSQL-Instanz mit PostGIS, in beiden Ausgangslagen.
+Jede Person bekommt einen eigenen Zugang mit zweitem Faktor (Authenticator-App):
 
-**27.09.2026, 20:35 Uhr — der Bau braucht noch genau eine Handlung: ein leeres Verzeichnis.** **Nr. 100** ist entschieden: „Passkey" heißt **gerätegebunden, niemals USA** — Nr. 69 und G-01 bleiben unberührt. Daraus folgt, dass ein gerätegebundener Schlüssel **kein Wiederherstellungsweg** sein kann; die Wege sind E-Mail oder Telefonnummer, Vertrauensperson und Wiederherstellungscode, und benachrichtigt wird in der Wartefrist **nur die Person selbst**. Danach ist **gemessen** statt geschätzt worden, was die beteiligten Umgebungen können — Ergebnis in `70-entwicklung-ab-monat-4/einrichtung-vor-dem-ersten-code.md`. **Drei Befunde ändern den Plan:** **Codeberg und GitLab sind aus beiden Claude-Umgebungen gesperrt** (GitHub nicht), also beginnt der Code **lokal** und die Fernablage kommt später von Windows (**Nr. 102**) · **PostgreSQL 16 mit PostGIS läuft in der Arbeitsumgebung der KI**, also ist der Entwicklungsserver erst ab **S4** nötig statt ab S1 · **Docker gibt es nur auf dem Entwicklungsserver**, also schreibt die KI die Einrichtung und ihr führt sie aus. **Was jetzt gebraucht wird: ein leeres verbundenes Verzeichnis `cruizy-code`, 0 €, eine Minute.** Danach laufen S0 bis S3 ohne weitere Menschenhandlung.
+```bash
+docker compose exec api node dist/src/cli/staff-create.js --name "Vorname" --login vorname --role BETRIEB --founder
+docker compose exec api node dist/src/cli/staff-create.js --name "Vorname" --login zweite --role MOD --founder
+```
 
-**27.09.2026, 19:05 Uhr — der Bau ist frei, und die Reihenfolge hat sich umgekehrt.** Beschlossen: **Erst wird alles fertig gebaut, dann geht es zu den Prüfstellen.** Anwalt, Steuerberater, Hash-Anbieter, Prüfanbieter und Code-Prüfung kommen, wenn der Code steht. **Entschieden:** **Nr. 94** (Gesellschafterdarlehen), **Nr. 98 Weg b** — auch die geschlossene Testphase wartet auf den Hash-Abgleich, der Antrag folgt nach dem Bau, **Nr. 99** (hosttech trägt nur Entwicklung, ausschließlich erfundene Daten) und **Nr. 5** (Domain später). **Teilweise:** Nr. 95 (Wartefrist und Abbruchrecht) und Nr. 96 (das Werkzeugabo kauft Selbstbedienung). **Damit sind S0, S1, S2, S3, S7, S11, S12 und S13 frei; S8 bis S10 werden auf einer Annahme gebaut**, weil K1 vertagt ist — begrenzt über `P-PRUEFUNG-VOR-EINTRITT` und datengetriebene Zonenregeln. **Zwei Antworten sind nicht eingearbeitet, sondern benannt:** „Passkey" als Wiederherstellungsweg widerspricht Nr. 69 und G-01 (→ **Nr. 100**), und „zahlende Orte präsenter" widerspricht Nr. 65, Nr. 91 und Handbuch A Prinzip 5 (→ ⚠ **W-32**, **Nr. 101**). Neu außerdem **Nr. 102** (wohin der Code kommt) und **Nr. 103** (Produktionsserver). **Aufgelöst:** der Widerspruch „öffentliche Bilder ohne Hash-Abgleich" — durch Weg (b) findet er nicht mehr statt. Berichtigt: Die Zulassung zum Hash-Abgleich dauert nicht pauschal Monate — für Project Arachnid nennen Erfahrungsberichte **Tage bis Wochen**.
+Die Ausgabe zeigt das Einmalpasswort und eine `otpauth://`-Adresse für die Authenticator-App —
+nur dieses eine Mal. Rollen: `MOD` und `BETRIEB`; Gründer sehen die Protokolleinträge des
+jeweils anderen. Weitere Befehle: `--disable --login …` (sperren), `--reset-totp --login …`.
 
-**27.09.2026, 15:40 Uhr — der Bau hat zwei Blocker weniger.** **Nr. 97 ist entschieden:** Die GmbH wird etwa drei Monate vor T0 gegründet, damit sie in der Testphase Verantwortliche ist. Damit ist **Nr. 88 auf (c) + (a) erweitert**, der Prüfanbietervertrag vor Sitzung S10 nicht mehr blockiert, und **T0 liegt Anfang Juli** zum ColognePride (Nr. 45). Der **Produktionsserver steht: hosttech** — offen ist nur der Standort (**Nr. 99**, Vorschlag Berlin) und der Auftragsverarbeitungsvertrag. Der **Hash-Abgleich wird später beantragt**: Gebaut wird Stufe 1 der Prüfkette als **Steckplatz** mit Schalter, Zustand „Hash-Prüfung ausstehend" an jedem freigegebenen Bild und einer **Sperre im Code gegen den öffentlichen Start**, solange der Schalter aus ist. **Ehrlich benannt:** Die Zusage aus Handbuch A und der Moderationsarchitektur, dass kein öffentliches Bild ohne Hash-Abgleich erscheint, ist in dieser Zeit nicht eingehalten — was in der Testphase gilt, ist **Nr. 98**, die Rechtsfrage dazu **W18**.
+Mindestens **zwei** Zugänge sind nötig: Sperren, Kontext ausklappen, Dateiansicht und
+Art.-18-Meldungen brauchen immer eine zweite Person. Es gibt keinen Notfallzugang.
 
-**26.09.2026, 16:05 Uhr — 28 Punkte beantwortet, eingearbeitet und nachgerechnet.** Die Entscheidungsvorlage vom 25.09.2026 ist beantwortet: **Nr. 83 bis 93** sowie **Nr. 4, 29, 57 und 67** sind entschieden, dazu fünf Vorschläge aus Teil 4 (Frühindikator mit Maß, Zonenmittelpunkt gerundet, Ersatzpunkt 2 km, Notrufnummern nach Land, Code-Prüfung als fünfter Nie-streichen-Punkt). **Die Testphase beginnt mit 200 Plätzen** (Nr. 89), der Planungswert bleibt **233.053 €** mit **42.808 € benannter Reserve** (Nr. 90), und der Zuschnitt von PLUS, PRO und Unterstützen steht — **bestätigt durch eine Neuberechnung des Finanzmodells in sieben Varianten:** Selbst im schlechtesten geprüften Fall liegt der Mehrbedarf mit 21.135 € innerhalb der Reserve. **Teil 5 wurde zurückgestellt** und neu aufbereitet: Die zwölf folgenschwersten Festlegungen stehen jetzt ausführlich in `50-produkt-prototyp/festlegungen-die-zwoelf-ausfuehrlich.md` — **nur zwei davon (FV-23, FV-77) müssen jetzt entschieden werden.** Neu entstanden sind **Nr. 94 bis 97**, ⚠ **W-31** und **sechs Anwaltsfragen** (Nachtrag 05). Dabei aufgefallen und aufgelöst: Handbuch A setzt den Bau nach T0, Beschluss Nr. 73 davor — die Sitzungen liegen jetzt in V1 bis V3 (A-61). Der Start der Code-Phase ist durchgeplant (A-67), **S0 kann sofort beginnen**.
+### Testbetrieb und Echtbetrieb
 
-**22.09.2026, 22:20 Uhr — jede Entscheidung ist in den Dokumenten angekommen.** Beim Abgleich der Spezifikation mit allen Beschlüssen vom 19. und 21.09.2026 hat sich gezeigt, dass mehrere davon in den lebenden Dokumenten noch als offen standen — allen voran **Nr. 64**: Die Spezifikation führte weiter zwei Modelle der Altersschranke nebeneinander, obwohl ihr drei Zustände beschlossen habt. Das ist nachgezogen (A-63), ebenso Nr. 47, 50, 53, 55, 56, 58, 65, 71, 78 und der Name („Cruizy“ steht jetzt ausgeschrieben statt als Platzhalter). Zwei neue Fragen sind dabei entstanden: **Nr. 92** (wo Nacktheit endet und Explizites beginnt) und **Nr. 93** (was geschieht, wenn Tor 1 gerissen wird).
+`OPERATION_MODE=test` ist voreingestellt: Registrierung nur mit Einladungscode
+(`TEST_INVITE_CODE` in `.env`), jede Antwort trägt `x-betrieb: test`, die App zeigt den Hinweis
+„nur erfundene Angaben“. Erfundene Testdaten (40 Konten rund um Köln, Orte, Termine):
 
-**22.09.2026, 15:30 Uhr — alle Dokumente auf dem Stand der Beschlüsse und des neuen Finanzmodells.** Pitchdeck, Förderpräsentation und Businessplan nennen jetzt dieselben Zahlen wie das Finanzmodell vom 21.09.2026 (A-62). Die Produktspezifikation setzt die Benachrichtigung im Ernstfall nach Nr. 46 um, die Bedingungen die Abgrenzung aus Nr. 48, und alle neuen Fragen an den Fachanwalt stehen gebündelt in Nachtrag 04. Dabei sind drei neue Fragen an euch entstanden: Nr. 89 bis 91.
+```bash
+docker compose exec api node dist/src/seed/testdaten.js          # anlegen
+docker compose exec api node dist/src/seed/testdaten.js --clear  # wieder entfernen
+```
 
-| | |
+Anmeldung dann mit `test1@example.invalid` … `test40@example.invalid`, Passwort `testpasswort-123`.
+
+`OPERATION_MODE=live` startet **nur**, wenn nichts mehr auf Attrappen läuft. Der Server nennt
+beim Start, was fehlt — derzeit:
+
+| Offen für den Echtbetrieb | wo es angebunden wird |
 |---|---|
-| Aufgaben | 76 · **60 erledigt (☑)** · 9 Vorfassung (◐) · 2 warten auf die Interviews (⏳) · 5 laufend (🔁) — **keine Aufgabe ist mehr blockiert** |
-| Dokumente im Ordner | 137 Dateien in 11 Ordnern (davon eine als Paket zum Hochladen) |
-| Offene Entscheidungen | **103** nummeriert — 62 entschieden, 2 teilweise entschieden, 28 offen, 7 in Klärung, 4 vertagt · `01-steuerung/offene-entscheidungen.md` (gezählt nach der Statusspalte; Zählskript `gen/a54/entsch_check.py`) |
-| Fragen an den Anwalt | **132** — 64 aus den Nachträgen 01 bis 03, 42 aus den Rechtstexte-Entwürfen, 13 aus dem Veranstaltungskonzept, 5 in Nachtrag 04, **8 in Nachtrag 05** (K11, G14, G15, V14, P11, W17, W18, **AF-13**); **K6 und AF-09 geschärft** |
-| Kapitalbedarf der Firma | **160.253 €** im realistischen Fall (Prüfweg eID voreingestellt), je nach Prüfweg beim Jugendschutz zwischen **143.397 €** und **245.841 €** — Stand 21.09.2026 (A-52), am 26.09.2026 in sieben Varianten nachgerechnet |
-| Gesamtbedarf mit Lebenshaltung | **233.053 €** realistisch — die Zahl, gegen die seit Nr. 38 geplant wird und die nach **Nr. 90 (26.09.2026)** auch nach außen gilt. Dazu **42.808 € benannte Reserve** bis zum pessimistischen Fall (275.861 €); Grundsatz G-02: im Zweifel den oberen Rand finanzieren |
-| Erster Monat mit Überschuss | **Monat 28** im realistischen Fall (optimistisch 21, pessimistisch keiner in 36 Monaten) |
-| Nächster Prüfpunkt | **Tor 1** — mehr als 1.500 Wartelisten-Anmeldungen, davon 900 aus einer Stadt |
+| Prüfpartner für die Altersprüfung (Stufe 1/2, Fotoprüfung) | `backend/src/providers/verification.ts` (Schnittstelle vorhanden; die Attrappe ist nur im Testbetrieb erreichbar) |
+| Hash-Abgleich (bekannte Missbrauchsdarstellungen) | `HASH_PROVIDER=http`, `HASH_URL` — danach im Werkzeug `P-HASH-AKTIV` einschalten (geht nur mit hinterlegter Ansprechperson) |
+| Mailversand über einen EU-Dienst | `SMTP_URL` |
+| SMS-Versand | `SMS_PROVIDER=http` mit Vorlage (Sweego-Beispiel in `.env.example`) |
+| Rechtstexte (Impressum, Bedingungen, Datenschutz, Einwilligung) | Platzhalter in `shared/texts/` (IDs `UI-RECHT-*`, `ST-KON-27`) |
 
-**Was das heißt:** Was ohne Menschen vorbereitet werden konnte, ist vorbereitet. Die nächsten Schritte brauchen eure Entscheidungen, einen Anruf oder ein Gespräch vor Ort — keine weitere Recherche.
+### Sicherung, Wiederherstellung, Aktualisierung
 
-**Vollständiger Verlauf:** `01-steuerung/log.md` · **Was nur ihr tun könnt:** die Liste „Offene Menschen-Handlungen“ am Ende von `01-steuerung/log.md` (Stand 26.09.2026).
+```bash
+bash deploy/backup.sh      # täglich per cron (03:17); verschlüsselt, 14 Tage Aufbewahrung in ./backups
+bash deploy/restore.sh backups/db-….dump.enc backups/media-….tar.gz.enc
+bash deploy/update.sh      # git pull, Sicherung, neu bauen, starten (Migrationen laufen beim Start)
+```
+
+Die Sicherungen gehören zusätzlich auf einen zweiten Ort (z. B. Hetzner Storage Box):
+`BACKUP_DIR=/mnt/storagebox bash deploy/backup.sh`.
+
+### Ressourcen auf 4 GB RAM
+
+PostgreSQL ist auf etwa ein Viertel des Speichers abgestimmt (`shared_buffers=256MB`,
+`max_connections=40`), die API auf 768 MB Heap; jeder Dienst hat eine Speichergrenze.
+Bildverarbeitung läuft mit einem Thread (`sharp.concurrency(1)`), der Swap fängt Spitzen ab.
+Hintergrundaufträge laufen nacheinander, damit Nutzeranfragen immer Datenbankverbindungen behalten.
+
+---
+
+## 2 · Lokal entwickeln
+
+Voraussetzungen: Node 22, PostgreSQL 16.
+
+```bash
+createdb cruizy_dev && createdb cruizy_test          # Rolle cruizy/cruizy oder DATABASE_URL anpassen
+
+cd backend && npm ci
+MASTER_KEY=$(openssl rand -base64 32) OPERATION_MODE=test TEST_INVITE_CODE=einladung \
+  COOKIE_SECURE=0 NODE_ENV=development npm run dev    # API auf :3000
+
+cd frontend && npm ci && npm run dev                  # App auf :5173, Werkzeug auf :5173/mod.html
+```
+
+| Befehl (in `backend/`) | Zweck |
+|---|---|
+| `npm test` | 68 Tests gegen eine echte Datenbank (`cruizy_test`, wird neu angelegt) |
+| `npm run typecheck` | TypeScript für Code und Tests |
+| `npm run check:deps` | keine Analyse-, Werbe- oder Fehler-SDKs Dritter (Backend und Frontend) |
+| `npm run migrate` | Migrationen einspielen |
+
+Texte ändern: `shared/texts/de.json` direkt, Oberflächentexte in `shared/texts/build-ui.py`
+und danach `python3 shared/texts/build-ui.py`.
+
+Produktparameter (`P-…`, `backend/src/config/params.ts`) lassen sich ohne Codeänderung im
+Werkzeug unter „Verwaltung“ ändern (nur BETRIEB, protokolliert). Tagesgrenze und
+Uhrzeitsperre für Hash-Fälle sind absichtlich **keine** Parameter.
+
+---
+
+## 3 · Was eingebaut ist — und was bewusst fehlt
+
+**Schutz, der im Code steckt**
+
+- Standort: gespeichert wird nur ein Zellmittelpunkt (2 km bzw. 500 m), nie die gemeldete
+  Position, nie ein Verlauf. Andere sehen vier Entfernungsstufen, keine Meter; Zonen mit
+  Ersatzpunkt, Mittelpunkt verschlüsselt.
+- Nachrichten, Kontaktdaten, Zonen und Check-in-Hinterlegungen sind mit Teilschlüsseln aus
+  `MASTER_KEY` verschlüsselt (AES-256-GCM); Suchen laufen über Prüfwerte (HMAC).
+- Bilder: Metadaten werden vor allem anderen entfernt, öffentliche Fassung neu erzeugt,
+  private Bilder mit unsichtbarem Wasserzeichen je Empfänger, Bildadressen nur 5 Minuten und
+  nur für die berechtigte Person gültig.
+- Erstkontakt nur Text; Bilder erst nach Antwort oder Freigabe; höflicher Ausstieg mit
+  5 Sekunden „Rückgängig“; keine Lese- oder Tippanzeige.
+- Moderation: jede Einsicht zuerst ins unveränderliche Zugriffsprotokoll (Datenbank-Trigger),
+  sonst geschieht nichts; Vier-Augen-Prinzip in der Anwendung **und** als Datenbankregel;
+  Hash-Fälle ohne Vorschaubild; keine Suche über private Inhalte; kein Werkzeugzugang von der
+  App-Adresse aus.
+- Löschung mit 30 Tagen Karenz, danach vollständig (ein Test prüft jede Tabelle mit
+  Kontobezug); Export als AES-verschlüsselte ZIP-Datei; Vollständigkeit ebenfalls per Test.
+- Keine Drittanbieter im Browser: keine Analyse, keine Schriften oder Karten Dritter
+  (die Karte ist schematisch, bis ein eigener Kachelserver eingetragen ist).
+
+**Bewusst nicht gebaut (Phase 2 oder ruhend laut Beschlusslage)**
+
+- Bezahlung und Abo (PLUS/PRO, Travel) — der Bildschirm zeigt nur die Leistungen, der Kauf ist
+  nicht möglich; die Tabelle `entitlements` ist die Grundlage.
+- „Nur geprüfte Profile“ (F08) und die Erstkontakt-Grenze (F57) — ruhen bis Nr. 40.
+- Private Veranstaltungen und Inserate von Nutzern, Werkzeugkonten für Orte, native Apps.
+
+---
+
+## 4 · Abweichungen von früheren Vorgaben
+
+Die früheren Arbeitsaufträge enthielten einige „nur mit …“- und „niemals …“-Vorgaben. Sie sind
+geprüft; wo sie beibehalten wurden, steht das nicht extra hier. Abgewichen wurde an diesen Stellen:
+
+| Vorgabe | Umsetzung | Grund |
+|---|---|---|
+| Supabase (selbst gehostet) mit Auth, Edge Functions, RLS | eigener Node-Server mit PostgreSQL | ein Supabase-Stack braucht auf 4 GB RAM allein den halben Speicher; die Sicherheitsregeln (Protokoll zuerst, vier Augen, Standortrundung) stehen so an einer Stelle im Server statt verteilt über RLS-Regeln und Funktionen |
+| PostGIS-Spalte `precise_location` mit „deny-all“ | die genaue Position wird gar nicht gespeichert, nur die Rasterzelle | strenger als die Vorgabe und so, wie F70 es verlangt; Entfernungen auf Zellebene brauchen kein PostGIS |
+| Sweego als fester SMS-Dienst | frei konfigurierbarer HTTP-Versand mit Vorlage (Sweego als Beispiel) | Dienst wechselbar ohne Codeänderung; die Feldnamen sind vor dem Start mit der Sweego-Dokumentation abzugleichen |
+| Kartenkacheln (Karte „Heute“) | schematische Karte ohne Dritte; eigener Kachelserver über `MAP_TILE_URL` | ohne eigenen Server würden Kacheln eines Dritten den Aufenthaltsort der Nutzer verraten |
+| Web-Push „ohne Umweg“ | nach eigener Erklärung, auf dem iPhone erst nach „Zum Home-Bildschirm“ | anders stellt iOS keine Mitteilungen zu |
+
+Alles, was die Rechtsprüfung noch offen hat (Wortlaut der Einwilligung, Rechtstexte,
+Aufbewahrungsfristen), ist im Code als **ENTWURF** bzw. `PRÜFUNG ERFORDERLICH` markiert und
+über Texte oder Parameter änderbar.
