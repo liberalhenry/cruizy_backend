@@ -461,29 +461,65 @@ export function Einwilligung() {
 
 // ─────────────────────────── S05 · Profil anlegen ───────────────────────────
 
-export function IntentionPicker({ value, duration, onChange }: { value: string | null; duration: string | null; onChange: (key: string | null, duration: string | null) => void }) {
+export function IntentionPicker({
+  value,
+  duration,
+  onChange,
+  disabled,
+}: {
+  value: string | null;
+  duration: string | null;
+  onChange: (key: string | null, duration: string | null) => void;
+  disabled?: boolean;
+}) {
   const { config } = useApp();
   const labels = parts('ST-PRO-08');
-  const DUR_LABEL: Record<string, string> = { '1h': labels[1], '2h': labels[2], '4h': labels[3], '8h': labels[4], morgen: labels[5], wochenende: labels[6] };
+  const DUR_LABEL: Record<string, string> = {
+    '1h': labels[1],
+    '2h': labels[2],
+    '4h': labels[3],
+    '8h': labels[4],
+    morgen: labels[5],
+    wochenende: labels[6],
+    // Standardwerte der Absichten „Heute Abend“ und „Nur schreiben“ (Issue #4: fehlten)
+    abend: labels[5],
+    schreiben: t('UI-DAUER-TAGE', { tage: config?.params.writeDays ?? 7 }),
+  };
   const current = config?.intentions.find((i) => i.key === value);
+  const selected = duration ?? current?.default ?? null;
   return (
     <div className="flex flex-col gap-3">
       <div className="flex flex-wrap gap-2">
-        <button className={`chip min-h-tap ${value === null ? 'border-akzent text-akzent' : ''}`} onClick={() => onChange(null, null)} aria-pressed={value === null}>
+        <button type="button" disabled={disabled} className={`chip min-h-tap ${value === null ? 'border-akzent text-akzent' : ''}`} onClick={() => onChange(null, null)} aria-pressed={value === null}>
           {t('ST-PRO-06')}
         </button>
         {config?.intentions.map((i) => (
-          <button key={i.key} className={`chip min-h-tap ${value === i.key ? 'border-akzent text-akzent' : ''}`} onClick={() => onChange(i.key, null)} aria-pressed={value === i.key}>
+          <button
+            type="button"
+            key={i.key}
+            disabled={disabled}
+            className={`chip min-h-tap ${value === i.key ? 'border-akzent text-akzent' : ''}`}
+            // erneutes Antippen der gewählten Absicht behält die gewählte Dauer
+            onClick={() => onChange(i.key, value === i.key ? selected : null)}
+            aria-pressed={value === i.key}
+          >
             {t(i.textId)}
           </button>
         ))}
       </div>
       {current && current.durations.length > 1 && (
-        <div>
+        <div role="group" aria-label={labels[0]}>
           <p className="label">{labels[0]}</p>
           <div className="flex flex-wrap gap-2">
             {current.durations.map((d) => (
-              <button key={d} className={`chip min-h-tap ${(duration ?? current.default) === d ? 'border-akzent text-akzent' : ''}`} onClick={() => onChange(current.key, d)}>
+              <button
+                type="button"
+                key={d}
+                disabled={disabled}
+                className={`chip min-h-tap ${selected === d ? 'border-akzent text-akzent' : ''}`}
+                onClick={() => onChange(current.key, d)}
+                aria-pressed={selected === d}
+              >
                 {DUR_LABEL[d] ?? d}
               </button>
             ))}

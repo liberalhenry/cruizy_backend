@@ -67,6 +67,7 @@ export default async function publicRoutes(app: FastifyInstance) {
         colors: p('P-INITIALE-FARBEN'),
         mediaRequestDays: Math.round(p('P-BILD-ANFRAGE-FRIST') / 86400),
         authPauseMin: Math.round(p('P-AUTH-PAUSE') / 60),
+        writeDays: Math.round(p('P-ABSICHT-SCHREIBEN') / 86400),
       },
       intentions: INTENTIONS.map((i) => ({ key: i.key, textId: i.textId, default: i.default, durations: allowedDurations(i.key) })),
       traits: TRAIT_GROUPS.map((g) => ({ group: g.group, items: g.items.map(([id, name]) => ({ id, name })) })),

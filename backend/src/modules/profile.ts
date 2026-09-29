@@ -81,7 +81,8 @@ export async function ownProfile(accountId: string) {
     agePrompt: !!ageDue,
     photoMode: r.photo_mode,
     color: r.initial_color,
-    intention,
+    // die gewählte Dauer gehört dazu — sonst kann der Editor sie nicht anzeigen (Issue #4)
+    intention: intention ? { ...intention, duration: r.last_intention_duration ?? null } : null,
     // F14: Erneuerungsleiste nach stillem Ablauf, nicht zwischen 4 und 10 Uhr (FV-30)
     renewal: expiredUnrenewed && !renewalQuiet(nowD) ? { key: r.last_intention, duration: r.last_intention_duration } : null,
     traits: r.traits,
