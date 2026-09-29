@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="de" class="no-js">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Handbuch A — Produkt, Technik, Recht</title>
+<style>
+:root{
+  --ink:#0E0C16;--paper:#F1EFF5;--surface:#FFFFFF;
+  --violet:#5B3DF5;--violet-lt:#9B85FF;--violet-soft:#E9E4FF;--violet-deep:#2A1B7A;
+  --teal:#0E9E8A;--teal-soft:#DBF3EF;--amber:#B57200;--amber-soft:#FBEFD6;
+  --danger:#B31F35;--danger-soft:#FBE3E7;
+  --muted:rgba(14,12,22,.55);--muted2:rgba(14,12,22,.40);
+  --rule:#D8D3E4;--rule2:#B8B1CC;
+  --display:-apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue",Arial,sans-serif;
+  --body:Georgia,"Iowan Old Style","Palatino Linotype","Book Antiqua","Times New Roman",serif;
+  --data:ui-monospace,"SF Mono","JetBrains Mono","Cascadia Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.62}
+.wrap{max-width:1200px;margin:0 auto;padding:0 24px}
+.col{max-width:710px}
+
+.cover{background:var(--ink);color:#fff;padding:74px 0 56px;position:relative;overflow:hidden}
+.cover::after{content:"";position:absolute;inset:0;background:radial-gradient(740px 400px at 88% -12%,rgba(91,61,245,.5),transparent 62%);pointer-events:none}
+.cover .wrap{position:relative;z-index:1}
+.eyebrow{font-family:var(--data);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--violet-lt);margin:0 0 24px}
+.cover h1{font-family:var(--display);font-weight:800;letter-spacing:-.036em;line-height:1.02;font-size:clamp(32px,5.6vw,60px);margin:0 0 20px;max-width:15ch}
+.cover .lede{font-size:19px;line-height:1.55;color:rgba(255,255,255,.80);max-width:64ch;margin:0 0 18px}
+.cover .thesis{font-family:var(--display);font-size:17px;font-weight:600;color:#6FE3CF;border-left:3px solid var(--teal);padding-left:16px;margin:0 0 36px;max-width:60ch;line-height:1.45}
+.cmeta{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.14)}
+.cmeta div{background:var(--ink);padding:15px 17px}
+.cmeta dt{font-family:var(--data);font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,.46);margin:0 0 6px}
+.cmeta dd{margin:0;font-family:var(--display);font-weight:700;font-size:14.5px;letter-spacing:-.015em}
+
+.tocbar{position:sticky;top:0;z-index:40;background:rgba(241,239,245,.94);backdrop-filter:saturate(160%) blur(10px);border-bottom:1px solid var(--rule)}
+.tocbar-inner{display:flex;gap:2px;overflow-x:auto;padding:8px 24px;max-width:1200px;margin:0 auto}
+.tocbar a{font-family:var(--data);font-size:11px;letter-spacing:.05em;color:var(--muted);text-decoration:none;white-space:nowrap;padding:6px 10px;border-radius:3px}
+.tocbar a:hover,.tocbar a:focus-visible{background:var(--violet-soft);color:var(--violet-deep)}
+
+.part{background:#171327;color:#fff;padding:32px 0 30px}
+.part .pn{font-family:var(--data);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--violet-lt);margin:0 0 8px}
+.part h2{font-family:var(--display);font-weight:800;letter-spacing:-.03em;font-size:clamp(25px,3.8vw,37px);margin:0 0 8px;line-height:1.05}
+.part p{margin:0;color:rgba(255,255,255,.62);font-size:15.5px;max-width:70ch;line-height:1.5}
+
+section{padding:54px 0 8px;border-top:1px solid var(--rule)}
+.sec-head{display:flex;gap:19px;align-items:flex-start;margin-bottom:24px}
+.sec-num{font-family:var(--data);font-size:12px;font-weight:700;color:#fff;background:var(--ink);min-width:40px;height:38px;border-radius:3px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:5px}
+.sec-head h3{font-family:var(--display);font-weight:800;letter-spacing:-.026em;font-size:clamp(22px,3vw,31px);line-height:1.12;margin:0}
+.sec-head .sub{margin:8px 0 0;color:var(--muted2);font-size:15px;font-style:italic}
+h4{font-family:var(--display);font-weight:700;letter-spacing:-.018em;font-size:19px;margin:34px 0 11px;line-height:1.25}
+p{margin:0 0 17px}
+ul,ol{margin:0 0 17px;padding-left:22px}
+li{margin-bottom:7px}
+
+.b{display:inline-block;font-family:var(--data);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;padding:2px 6px;border-radius:2px;vertical-align:2px;white-space:nowrap}
+.b-mvp{background:var(--teal-soft);color:var(--teal)}
+.b-v2{background:var(--violet-soft);color:var(--violet-deep)}
+.b-v3{background:var(--amber-soft);color:var(--amber)}
+.b-no{background:var(--danger-soft);color:var(--danger)}
+.b-usp{background:var(--ink);color:#fff}
+.b-arch{background:#FFE9D6;color:#9A4A00}
+.legend{display:flex;flex-wrap:wrap;gap:15px;background:var(--surface);border:1px solid var(--rule);padding:13px 17px;margin:0 0 28px;font-size:13.5px}
+.legend span{display:flex;align-items:center;gap:8px}
+
+.call{border-left:3px solid var(--violet);background:var(--surface);padding:18px 22px;margin:22px 0}
+.call.warn{border-left-color:var(--amber)}
+.call.stop{border-left-color:var(--danger)}
+.call.go{border-left-color:var(--teal)}
+.call p:last-child{margin-bottom:0}
+.call .lbl{font-family:var(--data);font-size:10px;letter-spacing:.15em;text-transform:uppercase;font-weight:700;color:var(--violet);display:block;margin-bottom:8px}
+.call.warn .lbl{color:var(--amber)}
+.call.stop .lbl{color:var(--danger)}
+.call.go .lbl{color:var(--teal)}
+
+.tw{overflow-x:auto;margin:20px 0 26px;border:1px solid var(--rule);background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:640px;font-family:var(--display);font-size:13.5px;line-height:1.45}
+caption{caption-side:top;text-align:left;padding:13px 16px 11px;font-family:var(--data);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted2);border-bottom:1px solid var(--rule);font-weight:700}
+th{text-align:left;font-weight:700;font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);padding:11px 14px;border-bottom:1.5px solid var(--rule2);vertical-align:bottom;background:#FAF9FC}
+td{padding:11px 14px;border-bottom:1px solid var(--rule);vertical-align:top}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover td{background:#FAF9FC}
+td.n,th.n{font-family:var(--data);font-size:12px;text-align:right;white-space:nowrap}
+td.c,th.c{font-family:var(--data);font-size:12px;text-align:center;white-space:nowrap}
+tr.grp td{font-family:var(--data);font-size:10px;letter-spacing:.14em;text-transform:uppercase;background:#F4F2F9;font-weight:700;color:var(--violet-deep);border-top:1.5px solid var(--rule2)}
+tr.total td{font-weight:700;background:#F4F2F9;border-top:1.5px solid var(--rule2)}
+.pill{font-family:var(--data);font-size:10px;padding:2px 7px;border-radius:10px;font-weight:700;white-space:nowrap;display:inline-block;letter-spacing:.04em}
+.p-hi{background:var(--danger-soft);color:var(--danger)}
+.p-mid{background:var(--amber-soft);color:var(--amber)}
+.p-lo{background:var(--teal-soft);color:var(--teal)}
+.free{color:var(--teal);font-weight:700}
+.no{color:var(--muted2)}
+.tagi{font-family:var(--data);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;padding:2px 6px;border-radius:2px;font-weight:700;white-space:nowrap}
+.t-new{background:var(--teal-soft);color:var(--teal)}
+.t-warn{background:var(--danger-soft);color:var(--danger)}
+.t-chg{background:var(--amber-soft);color:var(--amber)}
+
+.vs{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--rule);border:1px solid var(--rule);margin:20px 0 24px}
+.vs > div{background:var(--surface);padding:17px 20px}
+.vs h6{font-family:var(--data);font-size:10px;letter-spacing:.14em;text-transform:uppercase;margin:0 0 10px;font-weight:700}
+.vs .a h6{color:var(--danger)}
+.vs .b2 h6{color:var(--teal)}
+.vs p{font-size:14.5px;margin:0 0 10px;line-height:1.5}
+.vs p:last-child{margin-bottom:0}
+.vs ul{font-size:14px;margin:0;padding-left:19px}
+
+.steps{border-top:1.5px solid var(--ink);margin:22px 0 28px}
+.step{display:grid;grid-template-columns:116px 1fr;gap:20px;padding:17px 0;border-bottom:1px solid var(--rule)}
+.step .when{font-family:var(--data);font-size:11px;letter-spacing:.06em;font-weight:700;color:var(--violet-deep);padding-top:3px;line-height:1.5}
+.step h6{font-family:var(--display);font-weight:700;font-size:16px;margin:0 0 7px;letter-spacing:-.012em}
+.step ul{margin:8px 0 0;font-size:14.5px;color:var(--muted)}
+
+.js .rv{opacity:0;transform:translateY(13px);transition:opacity .5s ease,transform .5s ease}
+.js .rv.shown{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){.js .rv{opacity:1!important;transform:none!important;transition:none}}
+:focus-visible{outline:2.5px solid var(--violet);outline-offset:3px}
+
+footer{background:var(--ink);color:rgba(255,255,255,.62);padding:42px 0 50px;margin-top:60px;font-size:13.5px}
+footer h5{color:var(--violet-lt);margin-top:0;font-family:var(--data);font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:700}
+.fgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:30px}
+
+@media (max-width:760px){
+  body{font-size:16px}.wrap{padding:0 18px}
+  .vs{grid-template-columns:1fr}
+  .step{grid-template-columns:1fr;gap:6px}
+  .sec-num{min-width:34px;height:34px;font-size:11px}
+}
+@media print{
+  body{background:#fff;font-size:10pt;line-height:1.4}
+  .tocbar{display:none}
+  .cover{background:#fff;color:#000;padding:0 0 20pt;border-bottom:2pt solid #000}
+  .cover::after{display:none}
+  .cover h1{font-size:26pt}.cover .lede{color:#333}.eyebrow{color:#555}.cover .thesis{color:#000;border-left-color:#000}
+  .cmeta{background:#fff;border:1pt solid #999}.cmeta div{background:#fff}.cmeta dt{color:#666}
+  .part{background:#fff;color:#000;border-top:2pt solid #000;border-bottom:1pt solid #999;padding:12pt 0}
+  .part .pn{color:#555}.part p{color:#333}
+  footer{background:#fff;color:#000;border-top:2pt solid #000}footer h5{color:#000}
+  section{padding-top:16pt}
+  .sec-head,h4{page-break-after:avoid}
+  table,.tw,.call,.vs,.step{page-break-inside:avoid}
+  .tw{overflow:visible}
+  .js .rv{opacity:1!important;transform:none!important}
+}
+</style>
+</head>
+<body>
+
+<header class="cover">
+  <div class="wrap">
+    <p class="eyebrow">Handbuch A · Produkt, Technik, Recht · Juli 2026</p>
+    <h1>Was gebaut wird und nach welchen Regeln</h1>
+    <p class="lede">Vollständige Produkt- und Technikspezifikation mit allen produktbezogenen Rechtsauflagen. Enthält Positionierung, Funktionskatalog, UX- und UI-Festlegungen, Technik-Stack, Bauplan, Zuständigkeiten und KI-Regeln.</p>
+    <p class="thesis">Alles Wirtschaftliche — Kosten, Szenarien, Marketing, Steuern, Gesellschaftsform, Förderung — steht in Handbuch B.</p>
+    <dl class="cmeta">
+      <div><dt>Funktionen</dt><dd>74 spezifiziert</dd></div>
+      <div><dt>Im MVP</dt><dd>46</dd></div>
+      <div><dt>Gestrichen</dt><dd>15</dd></div>
+      <div><dt>Alleinstellung</dt><dd>13</dd></div>
+      <div><dt>MVP-Dauer</dt><dd>Monat 4–9</dd></div>
+    </dl>
+  </div>
+</header>
+
+<nav class="tocbar" aria-label="Abschnitte">
+  <div class="tocbar-inner">
+    <a href="#p1">I Positionierung</a>
+    <a href="#p2">II Produkt</a>
+    <a href="#p3">III Recht</a>
+    <a href="#p4">IV Bau</a>
+  </div>
+</nav>
+
+<!-- TEIL I -->
+<div class="part" id="p1">
+  <div class="wrap">
+    <p class="pn">Teil I</p>
+    <h2>Positionierung und Prinzipien</h2>
+    <p>Was die App ist, nach welchen Regeln entschieden wird, und worin der strukturelle Vorteil gegenüber einem Marktführer mit fünfzehn Jahren Vorsprung liegt.</p>
+  </div>
+</div>
+
+<main class="wrap">
+<section id="s1" style="border-top:none">
+  <div class="sec-head"><span class="sec-num">1</span><div>
+    <h3>Was die App ist</h3>
+    <p class="sub">Die Positionierung, aus der sich jede weitere Entscheidung ableitet</p>
+  </div></div>
+
+  <div class="col rv">
+    <p>Grindr beantwortet eine Frage: <em>Wer ist in meiner Nähe?</em> Das hat es fünfzehn Jahre lang so gut gemacht, dass ein Angriff auf dieser Achse aussichtslos ist — nicht wegen der Produktqualität, sondern weil die Antwort von der Nutzerdichte abhängt und nicht vom Können des Anbieters.</p>
+    <p>Diese App beantwortet eine andere Frage: <strong>Was passiert hier gerade, und wo bin ich willkommen?</strong> Nähe bleibt Teil der Antwort, aber der Ort tritt gleichberechtigt neben die Person — die Bar, die heute Abend läuft; die Laufgruppe am Donnerstag; das Café für das erste Treffen; die Party mit zwölf Zusagen.</p>
+  </div>
+
+  <div class="call stop rv">
+    <span class="lbl">Wichtige Abgrenzung</span>
+    <p>„Verbindungspunkt statt Raster" heißt <strong>nicht</strong>, dass die spontane sexuelle Begegnung nicht bedient wird. Sie wird vollständig bedient, ohne Beschönigung. Ein Produkt für diese Zielgruppe, das so tut, als ginge es nur um Freundschaften, wird binnen Wochen als unehrlich erkannt.</p>
+    <p>Der Unterschied liegt nicht darin, <em>was</em> bedient wird, sondern <em>worin ihr besser seid</em>: in der lokalen Verankerung. Die Absicht „Heute Abend" steht gleichberechtigt neben „Nur schreiben".</p>
+  </div>
+
+  <div class="vs rv">
+    <div class="a"><h6>Was es nicht ist</h6><ul>
+      <li>Kein soziales Netzwerk mit Feed</li>
+      <li>Keine Wisch-App mit Übereinstimmungslogik</li>
+      <li>Kein Ort, an dem Aufmerksamkeit gekauft wird</li>
+      <li>Kein Produkt, das auf Verweildauer optimiert</li>
+      <li>Kein Anbieter mit Escort-Bereich</li>
+      <li>Keine App, die vorgibt, sicher zu sein</li>
+    </ul></div>
+    <div class="b2"><h6>Was es ist</h6><ul>
+      <li>Ein Raster ohne Werbung und ohne Tricks</li>
+      <li>Ein lokales Wissensprodukt: Orte, Termine, Auslastung</li>
+      <li>Ein Ort, an dem Absagen leichter ist als Verschwinden</li>
+      <li>Ein Produkt, dessen Maß Treffen sind, nicht Minuten</li>
+      <li>Ein Angebot für die, die kein Gesicht zeigen können</li>
+      <li>Europäisch gehostet, ohne Werbe-Tracking</li>
+    </ul></div>
+  </div>
+
+  <div class="call go rv">
+    <span class="lbl">Der Satz, der alles trägt</span>
+    <p>Wenn jemand die App an einem Dienstagnachmittag öffnet, obwohl er niemanden sucht — dann funktioniert das Produkt. <strong>Jede Funktion dient entweder diesem Satz oder der Sicherheit derer, die sie benutzen.</strong></p>
+  </div>
+
+  <h4>Die drei verteidigbaren Positionen</h4>
+
+  <div class="tw rv"><table>
+    <caption>Strukturelle Vorteile</caption>
+    <thead><tr><th style="width:20%">Vorteil</th><th>Worin er besteht</th><th style="width:30%">Warum er nicht kopierbar ist</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Ortsbeziehungen</strong></td><td>Vierzig Einzelvereinbarungen je Stadt, aus denen Verzeichnis, Ereignisse, Auslastung, Treffpunktvorschlag, Sicherheit und Vertriebskanal <em>gleichzeitig</em> entstehen.</td><td>Nicht wegen der Technik, sondern wegen der Arbeit. Ein US-Konzern verhandelt keine vierzig Verträge mit Kölner Läden. Ein Team vor Ort schon.</td></tr>
+      <tr><td><strong>Datensouveränität</strong></td><td>Deutsches Hosting, kein US-Auftragsverarbeiter, kein Werbe-Tracking, serverseitige Standortunschärfe.</td><td>Für Grindr geschäftsmodellwidrig — ein erheblicher Umsatzanteil stammt aus Werbung. Eine Umstellung würde Umsatz kosten und die Architektur brechen.</td></tr>
+      <tr><td><strong>Die Nicht-Metropole</strong></td><td>Asynchrone Mechanik für Regionen ohne Echtzeit-Dichte: Wochenaktive, elastisches Raster, Reiseankündigung.</td><td>Das Echtzeit-Raster <em>ist</em> Grindrs Produkt. Ein Modus, der ohne lokale Dichte funktioniert, widerspricht der Kernmechanik.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="s2">
+  <div class="sec-head"><span class="sec-num">2</span><div>
+    <h3>Sieben Prinzipien</h3>
+    <p class="sub">Entscheidungsregeln, die jede Detailfrage vorwegbeantworten — und jede etwas kosten</p>
+  </div></div>
+
+  <div class="tw rv"><table>
+    <caption>Prinzipien und ihr Preis</caption>
+    <thead><tr><th class="n">#</th><th style="width:20%">Prinzip</th><th>Bedeutung im Alltag</th><th style="width:22%">Was es kostet</th></tr></thead>
+    <tbody>
+      <tr><td class="n">1</td><td><strong>Keine dunklen Muster</strong></td><td>Kein künstlicher Mangel, keine Geisterprofile, keine Zähler ohne Einblick, nie ein blockierendes Fenster. Jede Bezahlaufforderung wegwischbar, Wiederholung frühestens nach 30 Tagen.</td><td>Niedrigere Konversion in Jahr 1.</td></tr>
+      <tr><td class="n">2</td><td><strong>Der Standort gehört dem Nutzer</strong></td><td>Ungenauigkeit ist Voreinstellung. Der Client erhält nie eine exakte Fremdkoordinate. Die Genauigkeitsstufe steht dauerhaft in der Kopfzeile.</td><td>Schlechtere Nähe-Wahrnehmung als Grindr.</td></tr>
+      <tr><td class="n">3</td><td><strong>Ablehnung ohne Verletzung</strong></td><td>Freundlich absagen muss leichter sein als verschwinden.</td><td>Weniger offene Gespräche, weniger Nutzungszeit.</td></tr>
+      <tr><td class="n">4</td><td><strong>Erfolg heißt Treffen, nicht Verweildauer</strong></td><td>Leitkennzahl ist die Zahl zustande gekommener Kontakte je Nutzer und Monat.</td><td>Der Werbeumsatz bleibt strukturell klein.</td></tr>
+      <tr><td class="n">5</td><td><strong>Alles Sichtbare ist erklärbar</strong></td><td>Sortierung benannt und umschaltbar. Keine verdeckte Gewichtung.</td><td>Kein Optimieren über verdeckte Rangfolge.</td></tr>
+      <tr><td class="n">6</td><td><strong>Sicherheit ist Kernfunktion</strong></td><td>Nichts, was schützt, liegt je hinter einer Bezahlschranke.</td><td>Ein naheliegender Umsatzhebel fällt weg.</td></tr>
+      <tr><td class="n">7</td><td><strong>Eine Handlung, ein Ort</strong></td><td>Keine Funktion hat zwei Einstiegspunkte.</td><td>Langsamere Funktionsentwicklung.</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="call stop rv">
+    <span class="lbl">Prüffrage für jede künftige Funktion</span>
+    <p><strong>Bringt sie mehr zustande gekommene Kontakte — oder nur mehr Zeit in der App?</strong> Führt sie nur zu mehr Zeit, wird sie nicht gebaut.</p>
+  </div>
+</section>
+</main>
+
+<!-- TEIL II -->
+<div class="part" id="p2">
+  <div class="wrap">
+    <p class="pn">Teil II</p>
+    <h2>Das Produkt</h2>
+    <p>Aufbau, vollständiger Funktionskatalog, Alleinstellungsmerkmale, Bedienregeln und Gestaltung.</p>
+  </div>
+</div>
+
+<main class="wrap">
+<section id="s3" style="border-top:none">
+  <div class="sec-head"><span class="sec-num">3</span><div>
+    <h3>Aufbau und Verbindungspunkte</h3>
+    <p class="sub">Vier Reiter — und wie Orte in die App kommen</p>
+  </div></div>
+
+  <div class="tw rv"><table>
+    <caption>Reiterstruktur</caption>
+    <thead><tr><th style="width:12%">Reiter</th><th style="width:22%">Aufgabe</th><th>Enthält</th><th style="width:20%">Enthält bewusst nicht</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Nähe</strong><br><span style="color:var(--muted2);font-size:12px">Start</span></td><td>Wer ist in meiner Umgebung und passt zu meiner Absicht?</td><td>Raster in drei Spalten, elastische Reichweite, vier Sortierungen, Absichtsfilter</td><td>Werbung, Karte, Ereignisse, Wischmechanik</td></tr>
+      <tr><td><strong>Heute</strong></td><td>Was passiert hier gerade — und wo lohnt es sich hinzugehen?</td><td>Karte mit Personenclustern, Ortsverzeichnis mit Auslastung, Ereignisse mit Zusagen, temporäre Gruppen</td><td>Personen-Einzelpins, Feed, Beiträge</td></tr>
+      <tr><td><strong>Chats</strong></td><td>Mit wem spreche ich gerade?</td><td>Zwei Postfächer, Echtzeit-Nachrichten, Eisbrecher, private Alben, höflicher Ausstieg, Archiv</td><td><strong>Jede Werbung.</strong> Nachrichtenlimits. Lesebestätigung. Videoanrufe.</td></tr>
+      <tr><td><strong>Ich</strong></td><td>Wer bin ich hier, was ist gespeichert, wie schütze ich mich?</td><td>Profil, Verifizierung, Sicherheitszentrum, Datenkonto, Abo</td><td>Profilaufruf-Statistiken als Bezahlköder</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="call rv">
+    <span class="lbl">Startreiter — offene Entscheidung</span>
+    <p>Voreinstellung bleibt <strong>Nähe</strong>. Ab V2 zu testen: ein zeitabhängiger Startreiter — werktags nachmittags Nähe, Freitag- und Samstagabend ab 18 Uhr Heute. Erst umstellen, wenn „Heute" gefüllt ist; vorher wäre es ein Beweis für Leere.</p>
+  </div>
+
+  <div class="tw rv"><table>
+    <caption>Sechs Wege, wie ein Ort in die App kommt</caption>
+    <thead><tr><th style="width:19%">Weg</th><th class="c">Stufe</th><th class="c">Aufwand Ort</th><th>Ablauf</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Vorangelegt</strong></td><td class="c"><span class="b b-mvp">MVP</span></td><td class="c">null</td><td>Top-40-Orte je Stadt aus öffentlichen Quellen. Der Ort existiert, bevor der Betreiber davon weiß.</td></tr>
+      <tr><td><strong>Beansprucht</strong></td><td class="c"><span class="b b-mvp">MVP</span></td><td class="c">5 Min.</td><td>Betreiber bestätigt Eigentum. Prüfung über Adresse unter der Impressum-Domain, ersatzweise Gewerbeanmeldung, manuell binnen 24 Std. <strong>Der Unterschied zwischen „anlegen" und „bestätigen" entscheidet über die Annahmequote.</strong></td></tr>
+      <tr><td><strong>E-Mail-Einreichung</strong></td><td class="c"><span class="b b-mvp">MVP</span></td><td class="c">null</td><td>Der Ort setzt <em>termine@</em> in seinen bestehenden Verteiler. Unelegant — und in den ersten zwölf Monaten der wirksamste Weg, weil niemand etwas Neues lernen muss.</td></tr>
+      <tr><td><strong>Kalender-Abonnement</strong></td><td class="c"><span class="b b-v2">V2</span></td><td class="c">5 Min. einmalig</td><td>Adresse des bestehenden Kalenders hinterlegen, nächtlicher Abgleich.</td></tr>
+      <tr><td><strong>Beitragstext einfügen</strong></td><td class="c"><span class="b b-v2">V2</span></td><td class="c">30 Sek.</td><td>Text kopieren, Parser erkennt Datum und Uhrzeit. <strong>Kein automatischer Abgleich mit sozialen Netzwerken.</strong></td></tr>
+      <tr><td><strong>Portal</strong></td><td class="c"><span class="b b-v2">V2</span></td><td class="c">hoch</td><td>Für die Minderheit, die Kontrolle will. Auslöser: 10 beanspruchte Orte je Stadt.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="s4">
+  <div class="sec-head"><span class="sec-num">4</span><div>
+    <h3>Funktionskatalog</h3>
+    <p class="sub">74 Funktionen mit Stufe, Abhängigkeit und Begründung</p>
+  </div></div>
+
+  <div class="legend rv">
+    <span><span class="b b-mvp">MVP</span> Monat 4–9</span>
+    <span><span class="b b-v2">V2</span> Monat 10–21</span>
+    <span><span class="b b-v3">V3</span> ab Monat 22</span>
+    <span><span class="b b-no">Gestrichen</span></span>
+    <span><span class="b b-usp">USP</span> Alleinstellung</span>
+    <span><span class="b b-arch">Arch.</span> nachträglich nicht einbaubar</span>
+  </div>
+
+  <div class="tw rv"><table>
+    <caption>Vollständiger Funktionskatalog</caption>
+    <thead><tr><th class="n">Nr.</th><th style="width:19%">Funktion</th><th class="c">Stufe</th><th>Festlegung</th></tr></thead>
+    <tbody>
+      <tr class="grp"><td colspan="4">Konto und Identität</td></tr>
+      <tr><td class="n">1</td><td>Gastmodus, 3 Minuten</td><td class="c"><span class="b b-mvp">MVP</span></td><td>Raster mit unkenntlichen Fotos ohne Konto. Der Nutzer sieht zuerst, dass die App lebt.</td></tr>
+      <tr><td class="n">2</td><td>Registrierung per E-Mail</td><td class="c"><span class="b b-mvp">MVP</span></td><td>Kein Klarname, keine Telefonnummer als Pflicht.</td></tr>
+      <tr><td class="n">3</td><td>Anmelden mit Apple</td><td class="c"><span class="b b-mvp">MVP</span></td><td>Mit „E-Mail verbergen". <strong>Google und Meta bewusst nicht.</strong></td></tr>
+      <tr><td class="n">4</td><td>Altersprüfung 18+</td><td class="c"><span class="b b-mvp">MVP</span> <span class="b b-usp">USP</span></td><td>Ausgelöst <strong>vor der ersten Nachricht</strong>, nicht bei der Registrierung. Mehrere Verfahren. EU-Anbieter, Sofortlöschung vertraglich zugesichert.</td></tr>
+      <tr><td class="n">5</td><td>Community-Vertrag</td><td class="c"><span class="b b-mvp">MVP</span></td><td>Vier einzeln zu bestätigende Zeilen, gebündelt mit der Altersprüfung. Vier ist Obergrenze.</td></tr>
+      <tr><td class="n">6</td><td>Fotoechtheit</td><td class="c"><span class="b b-mvp">MVP</span></td><td>Selfie-Abgleich, freiwillig, sichtbar belohnt.</td></tr>
+      <tr><td class="n">7</td><td>Erreichbarkeit</td><td class="c"><span class="b b-v2">V2</span></td><td>Telefonnummer oder Bestätigung durch einen Partnerort.</td></tr>
+      <tr><td class="n">8</td><td>Nur Verifizierte zulassen</td><td class="c"><span class="b b-mvp">MVP</span> <span class="b b-usp">USP</span></td><td><strong>Kostenlos und standardmäßig an</strong>, mit zwei Tipps abschaltbar. Keine Plattformsperre.</td></tr>
+      <tr><td class="n">9</td><td>Erklärbildschirm für Unverifizierte</td><td class="c"><span class="b b-mvp">MVP</span></td><td>Warum die Nachricht nicht ankam und was zu tun ist.</td></tr>
+
+      <tr class="grp"><td colspan="4">Profil</td></tr>
+      <tr><td class="n">10</td><td>Bis zu 8 Fotos</td><td class="c"><span class="b b-mvp">MVP</span></td><td>Vorabprüfung. Bei Ablehnung immer konkreter Grund und beanstandeter Bildbereich.</td></tr>
+      <tr><td class="n">11</td><td>Privates Profilbild</td><td class="c"><span class="b b-mvp">MVP</span> <span class="b b-usp">USP</span> <span class="b b-arch">Arch.</span></td><td>Serverseitig weichgezeichnet über 32×42-Zwischenstufe — unumkehrbar, weil Information zerstört statt verdeckt wird. Getrennte, nicht ableitbare Ablage.</td></tr>
+      <tr><td class="n">12</td><td>Ein-Tipp-Freischaltung</td><td class="c"><span class="b b-mvp">MVP</span></td><td>Pro Gespräch, mit Wasserzeichen, Rücknahme wirkt nur vorwärts.</td></tr>
+      <tr><td class="n">13</td><td>Farbige Initiale</td><td class="c"><span class="b b-mvp">MVP</span></td><td>Option für Nutzer ganz ohne Foto.</td></tr>
+      <tr><td class="n">14</td><td>Absicht mit Ablauf</td><td class="c"><span class="b b-mvp">MVP</span> <span class="b b-usp">USP</span></td><td>Vier Absichten mit Zeitfenster. Danach stiller Rückfall auf „Offen", Erneuerung über wischbare Leiste. Keine Vorwarnung, Nachtruhe 4–10 Uhr.</td></tr>
+      <tr><td class="n">15</td><td>Interessens-Merkmale</td><td class="c"><span class="b b-mvp">MVP</span></td><td>Strukturiert. Grundlage für die Eisbrecher.</td></tr>
+      <tr><td class="n">16</td><td>Geschlechtsidentität</td><td class="c"><span class="b b-mvp">MVP</span></td><td>Selbstbeschreibung, sichtbar nur auf Wunsch. Artikel-9-Behandlung. Feldgestaltung vor dem Bau mit Betroffenen gegenlesen.</td></tr>
+      <tr><td class="n">17</td><td>Wen ich sehen möchte</td><td class="c"><span class="b b-mvp">MVP</span></td><td>Positivauswahl, wirkt nur auf die eigene Ansicht. <strong>Kein Feld „wen ich nicht sehen will".</strong></td></tr>
+      <tr><td class="n">18</td><td>Freitext, 400 Zeichen</td><td class="c"><span class="b b-mvp">MVP</span></td><td>Prüfung auf ausschließende Formulierungen beim Speichern.</td></tr>
+      <tr><td class="n">19</td><td>Antwortquote</td><td class="c"><span class="b b-mvp">MVP</span> <span class="b b-usp">USP</span></td><td>Drei Bänder, nie eine Zahl. Gewertet: erste 20 Erstnachrichten je Woche. <strong>Der höfliche Ausstieg zählt als Antwort.</strong> Frist sieben Tage. Abschaltbar, dann symmetrisch.</td></tr>
+      <tr><td class="n">20</td><td>Zuletzt aktiv in Bändern</td><td class="c"><span class="b b-mvp">MVP</span></td><td>jetzt · unter 1 Std. · heute · diese Woche · länger her. <strong>Kein grüner Onlinepunkt.</strong></td></tr>
+      <tr><td class="n">21</td><td>Merkliste</td><td class="c"><span class="b b-mvp">MVP</span></td><td>Privat, ohne Benachrichtigung.</td></tr>
+      <tr><td class="n">22</td><td>Gesundheitsangaben</td><td class="c"><span class="b b-v2">V2</span></td><td>Freiwillig, als eigene Aussage, <strong>niemals filterbar.</strong></td></tr>
+
+      <tr class="grp"><td colspan="4">Entdecken — Reiter „Nähe"</td></tr>
+      <tr><td class="n">23</td><td>Raster, 3 Spalten</td><td class="c"><span class="b b-mvp">MVP</span></td><td>Kachel zeigt Foto, Name, Entfernungsband, Absicht, Antwortquote.</td></tr>
+      <tr><td class="n">24</td><td>Vier Sortierungen</td><td class="c"><span class="b b-mvp">MVP</span></td><td>Nähe, Antwortquote, Neu hier, Passende Absicht. Sichtbar umschaltbar.</td></tr>
+      <tr><td class="n">25</td><td>Elastisches Raster</td><td class="c"><span class="b b-mvp">MVP</span> <span class="b b-usp">USP</span></td><td>Zielgröße ~100 Profile. <strong>Sichtbar getrennt</strong> nach Nähe und Ferne. Obergrenze 150 km. Radius auf 10 km gerundet.</td></tr>
+      <tr><td class="n">26</td><td>Positivfilter</td><td class="c"><span class="b b-mvp">MVP</span></td><td>Nur Entfernung, Absicht, Alter. <strong>Höchstens zwei gleichzeitig.</strong> Trefferzähler in Echtzeit. Position erst ab 15.000 MAU.</td></tr>
+      <tr><td class="n">27</td><td>Wochenaktive im Umkreis</td><td class="c"><span class="b b-mvp">MVP</span> <span class="b b-usp">USP</span></td><td>Asynchrone Liste bis 50 km. Schaltet sich automatisch zu bei unter 20 Profilen im 10-km-Umkreis.</td></tr>
+      <tr><td class="n">28</td><td>Reiseankündigung</td><td class="c"><span class="b b-v2">V2</span></td><td>Bis 14 Tage im Voraus in einer anderen Stadt sichtbar.</td></tr>
+      <tr><td class="n">29</td><td>Leerer Zustand</td><td class="c"><span class="b b-mvp">MVP</span></td><td>Nie ein leeres Raster. Feste Reihenfolge der Ersatzinhalte.</td></tr>
+
+      <tr class="grp"><td colspan="4">Verbindungspunkte — Reiter „Heute"</td></tr>
+      <tr><td class="n">30</td><td>Karte mit Clustern</td><td class="c"><span class="b b-mvp">MVP</span></td><td>Personen nur als grobe Cluster. <strong>Nie ein Einzelpin für eine Person.</strong></td></tr>
+      <tr><td class="n">31</td><td>Ortsverzeichnis mit Claiming</td><td class="c"><span class="b b-mvp">MVP</span> <span class="b b-usp">USP</span></td><td>Siehe Abschnitt 3.</td></tr>
+      <tr><td class="n">32</td><td>Ereignisse mit Zusage</td><td class="c"><span class="b b-mvp">MVP</span> <span class="b b-usp">USP</span></td><td>Zusagen für andere Zusagende sichtbar, nicht öffentlich.</td></tr>
+      <tr><td class="n">33</td><td>Temporäre Ereignisgruppen</td><td class="c"><span class="b b-mvp">MVP</span></td><td>Öffnet 2 Std. vorher, verschwindet 24 Std. danach.</td></tr>
+      <tr><td class="n">34</td><td>E-Mail-Einreichung</td><td class="c"><span class="b b-mvp">MVP</span></td><td><em>termine@</em> mit Parser oder Handarbeit.</td></tr>
+      <tr><td class="n">35</td><td>Auslastungsanzeige</td><td class="c"><span class="b b-v2">V2</span></td><td>Drei Stufen, nie Personenzahl. Auslöser 5.000 MAU in der Stadt.</td></tr>
+      <tr><td class="n">36</td><td>Eigenes Treffen anlegen</td><td class="c"><span class="b b-v2">V2</span></td><td>Getrennt von gewerblichen Ereignissen abgelegt und moderiert.</td></tr>
+      <tr><td class="n">37</td><td>Kalender-Abonnement</td><td class="c"><span class="b b-v2">V2</span></td><td>Nächtlicher Abgleich.</td></tr>
+      <tr><td class="n">38</td><td>Beitragstext einfügen</td><td class="c"><span class="b b-v2">V2</span></td><td>Parser für Datum und Uhrzeit.</td></tr>
+      <tr><td class="n">39</td><td>Veranstalterportal</td><td class="c"><span class="b b-v2">V2</span></td><td>Auslöser 10 beanspruchte Orte je Stadt.</td></tr>
+      <tr><td class="n">40</td><td>Ortskanäle</td><td class="c"><span class="b b-v2">V2</span></td><td>Abonnement als Einwilligung nach § 7 UWG, max. 1 Mitteilung je Woche.</td></tr>
+
+      <tr class="grp"><td colspan="4">Kommunikation</td></tr>
+      <tr><td class="n">41</td><td>Echtzeit-Chat</td><td class="c"><span class="b b-mvp">MVP</span></td><td>Unbegrenzt, auch gratis. <strong>Keine Nachrichtenlimits.</strong></td></tr>
+      <tr><td class="n">42</td><td>Zwei Postfächer</td><td class="c"><span class="b b-mvp">MVP</span> <span class="b b-usp">USP</span></td><td>Erstnachrichten in „Anfragen": keine Push, keine Zählmarke.</td></tr>
+      <tr><td class="n">43</td><td>Erstkontakt nur Text</td><td class="c"><span class="b b-mvp">MVP</span> <span class="b b-usp">USP</span></td><td>Bild, Sprache, Video gesperrt bis zur ersten Antwort.</td></tr>
+      <tr><td class="n">44</td><td>Kontextuelle Eisbrecher</td><td class="c"><span class="b b-mvp">MVP</span></td><td>Aus strukturierten Merkmalen über feste Vorlagen. <strong>Entwurf ins Textfeld, kein Direktversand. Keine generative KI.</strong></td></tr>
+      <tr><td class="n">45</td><td>Höflicher Ausstieg</td><td class="c"><span class="b b-mvp">MVP</span> <span class="b b-usp">USP</span></td><td>Ein Tipp, fester Text, beidseitige Ablage. <strong>Fünf Sekunden Rückgängig statt Bestätigungsabfrage.</strong></td></tr>
+      <tr><td class="n">46</td><td>24-Stunden-Archiv</td><td class="c"><span class="b b-mvp">MVP</span></td><td>Wiedereröffnung beidseitig sichtbar. <strong>Keine Rücknahme zugestellter Nachrichten.</strong> Verfallende Chats haben Vorrang.</td></tr>
+      <tr><td class="n">47</td><td>Verfallende Chats</td><td class="c"><span class="b b-mvp">MVP</span></td><td>Optional 24 Std., beidseitig gelöscht.</td></tr>
+      <tr><td class="n">48</td><td>Private Alben</td><td class="c"><span class="b b-mvp">MVP</span></td><td>Beidseitige Freigabe, unsichtbares Wasserzeichen, Bildschirmfoto-Warnung.</td></tr>
+      <tr><td class="n">49</td><td>Sprachnachrichten</td><td class="c"><span class="b b-v2">V2</span></td><td>Erst nach der ersten Antwort.</td></tr>
+      <tr><td class="n">50</td><td>Ortsfreigabe auf Zeit</td><td class="c"><span class="b b-v2">V2</span></td><td>Exakter Standort für 60 Minuten.</td></tr>
+      <tr><td class="n">51</td><td>Übersetzung im Chat</td><td class="c"><span class="b b-v3">V3</span></td><td>Nur mit europäischem Anbieter.</td></tr>
+      <tr><td class="n">52</td><td>Lesebestätigung, „schreibt gerade"</td><td class="c"><span class="b b-no">Gestrichen</span></td><td><strong>Wird nicht gebaut</strong> — nicht als Einstellung, nicht als Bezahlfunktion.</td></tr>
+      <tr><td class="n">53</td><td>Videoanrufe</td><td class="c"><span class="b b-no">Gestrichen</span></td><td>Erst ab 40.000 MAU und mit Moderationsteam erneut prüfen.</td></tr>
+      <tr><td class="n">74</td><td><strong>Text-Ende-zu-Ende-Verschlüsselung</strong></td><td class="c"><span class="b b-v2">V2</span></td><td>Nur für Textnachrichten. Meldungen über den Client des Meldenden mit Signaturnachweis. <strong>Bilder bleiben serverseitig prüfbar</strong> — der Abgleich gegen Missbrauchsdarstellungen ist gesetzlich vorgeschrieben. Auslöser 15.000 MAU, mit Fachfreelancer.</td></tr>
+
+      <tr class="grp"><td colspan="4">Sicherheit</td></tr>
+      <tr><td class="n">54</td><td>Sicherheitszentrum</td><td class="c"><span class="b b-mvp">MVP</span> <span class="b b-usp">USP</span></td><td>Aus jedem Chat mit einem Tipp erreichbar, vollständig kostenlos.</td></tr>
+      <tr><td class="n">55</td><td>Treffen-Check-in</td><td class="c"><span class="b b-mvp">MVP</span> <span class="b b-usp">USP</span></td><td>Adresse und Zeit verschlüsselt, für die Gegenseite unsichtbar.</td></tr>
+      <tr><td class="n">56</td><td>Treffpunkt vorschlagen</td><td class="c"><span class="b b-mvp">MVP</span> <span class="b b-usp">USP</span></td><td>Verbindet Ortsverzeichnis und Check-in.</td></tr>
+      <tr><td class="n">57</td><td>Erstkontakt-Verlangsamung</td><td class="c"><span class="b b-mvp">MVP</span></td><td>Neue unverifizierte Konten: max. 5 Erstnachrichten in 24 Std.</td></tr>
+      <tr><td class="n">58</td><td>Schnellverstecken</td><td class="c"><span class="b b-mvp">MVP</span> <span class="b b-usp">USP</span></td><td>Doppeltippen auf die Geräterückseite → harmlose Ansicht, Rückkehr per PIN.</td></tr>
+      <tr><td class="n">59</td><td>Symbol und Name tarnen</td><td class="c"><span class="b b-mvp">MVP</span></td><td>Mindestens vier alternative Symbole.</td></tr>
+      <tr><td class="n">60</td><td>Zonen</td><td class="c"><span class="b b-mvp">MVP</span></td><td>Eine Zone gratis, weitere im Abo.</td></tr>
+      <tr><td class="n">61</td><td>Blockieren</td><td class="c"><span class="b b-mvp">MVP</span></td><td>Serverseitig unveränderlich, überlebt Updates. Sofort wirksam, 24 Std. rücknehmbar. <strong>Zweite Sperre endgültig.</strong></td></tr>
+      <tr><td class="n">62</td><td>Melden mit Fallnummer</td><td class="c"><span class="b b-mvp">MVP</span></td><td>Nummer, Statusverlauf, begründete Rückmeldung.</td></tr>
+      <tr><td class="n">63</td><td>Bildschirmfoto-Warnung</td><td class="c"><span class="b b-mvp">MVP</span></td><td>Unter Android erzwingbar, unter iOS nur Warnung. <strong>Der Unterschied wird offen benannt.</strong></td></tr>
+      <tr><td class="n">64</td><td>Reisewarnung</td><td class="c"><span class="b b-v2">V2</span></td><td>Bei Einreise in Länder mit Strafbarkeit. Kostenlos, immer.</td></tr>
+      <tr><td class="n">65</td><td>Stiller Alarm</td><td class="c"><span class="b b-v2">V2</span></td><td>Tastenmuster löst unauffällige Benachrichtigung aus.</td></tr>
+      <tr><td class="n">66</td><td>Ortsmuster-Warnung</td><td class="c"><span class="b b-v2">V2</span></td><td>Junge Konten mit wiederholt abgelegenen Treffpunkten. Datenschutzrechtlich vorab bewerten.</td></tr>
+      <tr><td class="n">67</td><td>Warnung bei Kontowiederkehr</td><td class="c"><span class="b b-v2">V2</span></td><td>Gesperrtes Konto wiedererkannt → frühere Meldende informiert.</td></tr>
+
+      <tr class="grp"><td colspan="4">Datenhoheit</td></tr>
+      <tr><td class="n">68</td><td>Datenkonto</td><td class="c"><span class="b b-mvp">MVP</span> <span class="b b-usp">USP</span></td><td>Export und Löschung mit je einem Tipp, 30 Tage Karenz.</td></tr>
+      <tr><td class="n">69</td><td>Standortstufe in der Kopfzeile</td><td class="c"><span class="b b-mvp">MVP</span> <span class="b b-usp">USP</span></td><td>Dauerhaft sichtbar, ein Tipp zum Ändern.</td></tr>
+      <tr><td class="n">70</td><td>Serverseitige Ungenauigkeit</td><td class="c"><span class="b b-mvp">MVP</span> <span class="b b-arch">Arch.</span></td><td>Client erhält nie eine exakte Fremdkoordinate. Trilateration konstruktiv ausgeschlossen.</td></tr>
+      <tr><td class="n">71</td><td>Kein Werbe-Tracking</td><td class="c"><span class="b b-mvp">MVP</span> <span class="b b-arch">Arch.</span></td><td>Kein einziges Werbe-SDK. Analytik selbst gehostet.</td></tr>
+      <tr><td class="n">72</td><td>EXIF-Entfernung</td><td class="c"><span class="b b-mvp">MVP</span> <span class="b b-arch">Arch.</span></td><td>Bei jedem Upload, vor jeder weiteren Verarbeitung.</td></tr>
+      <tr><td class="n">73</td><td>Statusseite</td><td class="c"><span class="b b-v2">V2</span></td><td>Öffentliche Störungshistorie, Gutschrift ab 30 Min. Ausfall.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h4>Was bewusst wegbleibt</h4>
+
+  <div class="tw rv"><table>
+    <caption>Streichliste — 15 Funktionen, die andere haben</caption>
+    <thead><tr><th style="width:24%">Funktion</th><th>Warum nicht</th><th class="c">Wiedervorlage</th></tr></thead>
+    <tbody>
+      <tr><td>Sozialer Feed</td><td>Keine Dating-Liquidität, doppelte Moderationslast.</td><td class="c">Nie</td></tr>
+      <tr><td>Stories, flüchtige Beiträge</td><td>Selbstdarstellungszwang, moderativ der schlechteste Inhaltstyp.</td><td class="c">Nie</td></tr>
+      <tr><td>Wischmechanik</td><td>Maschine für binäre Aussehensurteile.</td><td class="c">Nie</td></tr>
+      <tr><td>„Wer hat mich angesehen"-Zähler</td><td>Eine Zahl anzeigen und das Auflösen verkaufen.</td><td class="c">Nie</td></tr>
+      <tr><td>Ausschlussfilter</td><td>Ethnie, Körperform, HIV-Status. Dokumentierter Diskriminierungsschwerpunkt.</td><td class="c">Nie</td></tr>
+      <tr><td>Werbung im Raster oder Chat</td><td>Meistgenannte Einzelbeschwerde der Auswertung.</td><td class="c">Nie</td></tr>
+      <tr><td>KI-Chatbot, KI-Profiltexte</td><td>Echtheit ist das gesamte Vertrauensversprechen.</td><td class="c">Nie</td></tr>
+      <tr><td>Serien, Punkte, Stufen</td><td>Erzeugt zwanghafte Nutzung.</td><td class="c">Nie</td></tr>
+      <tr><td>Anmelden mit Google oder Meta</td><td>Würde die Nutzung gegenüber einem Werbekonzern offenlegen.</td><td class="c">Nie</td></tr>
+      <tr><td>Exakte Personen-Pins</td><td>Bekannter Schwachpunkt kartenbasierter Anbieter.</td><td class="c">Nie</td></tr>
+      <tr><td>Öffentliche Gruppen und Foren</td><td>Herd für Belästigung und illegale Angebote.</td><td class="c">Nie offen</td></tr>
+      <tr><td>Escort- und Bezahlbereich</td><td>Berührt Apples Richtlinie 1.1.4, Risiko bei Zahlungsdienstleistern.</td><td class="c">Nie</td></tr>
+      <tr><td>Lesebestätigung</td><td>Erzeugt Antwortdruck und verrät Anwesenheit.</td><td class="c">Nie</td></tr>
+      <tr><td>Boosts</td><td>Bezahlte Sichtbarkeit zerstört das Vertrauen in die Sortierung.</td><td class="c">ab 50.000 MAU</td></tr>
+      <tr><td>Videoanrufe</td><td>Live-Moderation, strafrechtliches Risiko.</td><td class="c">ab 40.000 MAU</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="s5">
+  <div class="sec-head"><span class="sec-num">5</span><div>
+    <h3>Alleinstellung, Bedienung, Gestaltung</h3>
+    <p class="sub">Dreizehn Merkmale und die Regeln, an denen sich Qualität entscheidet</p>
+  </div></div>
+
+  <div class="tw rv"><table>
+    <caption>Alleinstellungsmerkmale, sortiert nach Kopierbarkeit</caption>
+    <thead><tr><th class="n">#</th><th style="width:20%">Merkmal</th><th>Kern</th><th class="c">Kopierbar?</th></tr></thead>
+    <tbody>
+      <tr><td class="n">01</td><td><strong>Ortsbeziehungen</strong></td><td>Vierzig Vereinbarungen je Stadt, aus denen sechs Produktfunktionen und der Vertriebskanal zugleich entstehen.</td><td class="c"><span class="pill p-lo">Nein</span></td></tr>
+      <tr><td class="n">02</td><td><strong>Datensouveränität</strong></td><td>Deutsches Hosting, kein US-Auftragsverarbeiter, kein Werbe-Tracking.</td><td class="c"><span class="pill p-lo">Nein</span></td></tr>
+      <tr><td class="n">03</td><td><strong>Privates Profilbild</strong></td><td>Unumkehrbar weichgezeichnet plus Prüfabzeichen. Macht aus „kein Gesicht = verdächtig" ein „geprüft, aber vorsichtig".</td><td class="c"><span class="pill p-mid">Schwer</span></td></tr>
+      <tr><td class="n">04</td><td><strong>Antwortquote</strong></td><td>Ersetzt den grünen Punkt. Senkt die Zahl gesendeter Nachrichten — für einen auf Nutzungszeit optimierten Anbieter eine Kennzahlenverschlechterung.</td><td class="c"><span class="pill p-lo">Nein</span></td></tr>
+      <tr><td class="n">05</td><td><strong>Erstkontakt nur Text</strong></td><td>Strukturelle statt kurativer Lösung gegen unaufgeforderte Intimbilder.</td><td class="c"><span class="pill p-hi">Leicht</span></td></tr>
+      <tr><td class="n">06</td><td><strong>Höflicher Ausstieg</strong></td><td>Absagen dauert einen Tipp und schützt die eigene Antwortquote.</td><td class="c"><span class="pill p-mid">Schwer</span></td></tr>
+      <tr><td class="n">07</td><td><strong>Standort-Souveränität</strong></td><td>Genauigkeitsstufe dauerhaft sichtbar, Zonen, serverseitige Unschärfe.</td><td class="c"><span class="pill p-mid">Schwer</span></td></tr>
+      <tr><td class="n">08</td><td><strong>Sicherheitszentrum</strong></td><td>Check-in, Treffpunktvorschlag, Schnellverstecken, Tarnung — kostenlos.</td><td class="c"><span class="pill p-mid">Schwer</span></td></tr>
+      <tr><td class="n">09</td><td><strong>Absicht mit Ablauf</strong></td><td>Verfallende Absicht statt statischem „Ich suche".</td><td class="c"><span class="pill p-hi">Leicht</span></td></tr>
+      <tr><td class="n">10</td><td><strong>Drei Verifizierungsstufen</strong></td><td>Filter „nur Verifizierte" kostenlos und standardmäßig an.</td><td class="c"><span class="pill p-mid">Schwer</span></td></tr>
+      <tr><td class="n">11</td><td><strong>Wochenaktive</strong></td><td>Asynchrone Mechanik für die Nicht-Metropole.</td><td class="c"><span class="pill p-lo">Nein</span></td></tr>
+      <tr><td class="n">12</td><td><strong>Datenkonto</strong></td><td>Gesetzliche Pflicht, sichtbar statt versteckt umgesetzt.</td><td class="c"><span class="pill p-hi">Leicht</span></td></tr>
+      <tr><td class="n">13</td><td><strong>Schutzversprechen</strong></td><td>Bindende Zusage: Was schützt, bleibt kostenlos.</td><td class="c"><span class="pill p-lo">Nein</span></td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="tw rv"><table>
+    <caption>Mikro-UX — verbindlich</caption>
+    <thead><tr><th style="width:22%">Bereich</th><th>Festlegung</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Entfernungsbänder</strong></td><td>Genau vier: unter 1 km · 1–3 km · 3–10 km · über 10 km. Keine Meterangaben, nirgends.</td></tr>
+      <tr><td><strong>Aktivitätsbänder</strong></td><td>jetzt · unter 1 Std. · heute · diese Woche · länger her.</td></tr>
+      <tr><td><strong>Push, Frequenz</strong></td><td>Gebündelt, max. eine je Absender in 15 Min. Ruhezeiten standardmäßig 23–8 Uhr. Anfragen lösen nie eine Push aus.</td></tr>
+      <tr><td><strong>Push, Inhalt</strong></td><td>Standardmäßig ohne Absendername und Vorschau. Eine Vorschau auf dem Sperrbildschirm kann ein Outing sein.</td></tr>
+      <tr><td><strong>Rechteabfragen</strong></td><td>Nie auf Vorrat. Standort beim ersten Rasteraufruf, Push bei der ersten Nachricht, Kamera beim ersten Upload.</td></tr>
+      <tr><td><strong>Bewegung, Haptik</strong></td><td>150–200 ms, ease-out, kein Konfetti. Haptik nur bei Nachrichteneingang, Verifizierung, Sicherheitsalarm — <strong>niemals bei Bezahlaufforderungen.</strong></td></tr>
+      <tr><td><strong>Berührflächen</strong></td><td>Mind. 44 × 44 pt. Hauptaktionen im unteren Bildschirmdrittel — die App wird einhändig, im Dunkeln und im Gehen bedient.</td></tr>
+      <tr><td><strong>Schriftgröße</strong></td><td>Dynamische Größen bis „sehr groß" ohne Abschneiden. Das Segment 35+ ist zahlungsbereit und wird typografisch überall ignoriert.</td></tr>
+      <tr><td><strong>Kontrast, Vorlesen</strong></td><td>WCAG AA durchgängig. Vollständige Beschriftungen für VoiceOver und TalkBack, auch für Rasterkacheln.</td></tr>
+      <tr><td><strong>Fehlermeldungen</strong></td><td>Immer: was passiert ist, was zu tun ist, wie es weitergeht. Nie „Ein Fehler ist aufgetreten".</td></tr>
+      <tr><td><strong>Offline</strong></td><td>Letztes Raster und alle Chats lesbar. Kellerclubs und U-Bahnen sind kein Randfall.</td></tr>
+      <tr><td><strong>Startzeit</strong></td><td>Unter 1,2 Sek. bis zum ersten Raster auf einem vier Jahre alten Android-Gerät.</td></tr>
+      <tr><td><strong>Bezahlaufforderungen</strong></td><td>Nie blockierend, nie im Chat, höchstens alle 30 Tage je Funktion.</td></tr>
+      <tr><td><strong>Kündigung</strong></td><td>Zwei Tipps aus dem Konto heraus, ohne Rückhaltefragen.</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="tw rv"><table>
+    <caption>Gestaltungssystem</caption>
+    <thead><tr><th style="width:18%">Element</th><th style="width:24%">Festlegung</th><th>Begründung</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Grundton</strong></td><td>Sehr dunkles Neutral, leicht kühl — nicht reines Schwarz</td><td>Reines Schwarz erzeugt auf OLED Schlieren. Ein kühler Ton lässt Hauttöne natürlich wirken — bei einer fotogetriebenen App der wichtigste Farbtest.</td></tr>
+      <tr><td><strong>Akzentfarbe</strong></td><td>Ein einziger Akzent, kräftig, kühl</td><td>Nicht Grindr-Gelb, ROMEO-Orange, Scruff-Rot, Sniffies-Grün. Muss auf dem Startbildschirm sofort unterscheidbar sein.</td></tr>
+      <tr><td><strong>Regenbogen</strong></td><td>Nirgends in der Grundoberfläche</td><td>Abgenutzt — und für nicht geoutete Nutzer auf dem Startbildschirm ein Risiko.</td></tr>
+      <tr><td><strong>Tonfall</strong></td><td>Du, kurze Sätze, keine Anbiederung</td><td>Keine Ausrufezeichen, keine Emojis in Systemtexten. Zielgruppe 18 bis 60.</td></tr>
+      <tr><td><strong>Sicherheitsaussagen</strong></td><td>Nie absolut</td><td>Kein „100 % sicher" — nach § 5 UWG angreifbar. Auch „verifiziert" wird nie mit „sicher" gleichgesetzt.</td></tr>
+      <tr><td><strong>App-Symbol</strong></td><td>Abstrakt, ohne Personen, ohne Regenbogen</td><td>Muss neben Arbeits-Apps unauffällig sein. Mindestens vier Alternativen.</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="call go rv">
+    <span class="lbl">Festgelegte Formulierungen</span>
+    <ul style="margin-bottom:0">
+      <li><strong>Altersprüfung:</strong> „Damit hier echte Menschen schreiben und keine Bots: Bestätige einmal kurz, dass du 18+ bist."</li>
+      <li><strong>Selfie:</strong> „Wir sehen dein Selfie nie. Unser Prüfpartner löscht es sofort nach der Prüfung — wir bekommen nur ja oder nein."</li>
+      <li><strong>Rückverfolgbarkeit:</strong> „Wir können dich nicht identifizieren. Ein Gericht kann es über unseren Prüfpartner. Genau deshalb ist diese App für Täter uninteressant."</li>
+      <li><strong>Sicherheit:</strong> „Wir bauen den sichersten Raum, den wir technisch bauen können — und sagen dir offen, wo seine Grenzen liegen."</li>
+      <li><strong>Höflicher Ausstieg:</strong> „Danke dir — für mich passt es gerade nicht. Alles Gute!"</li>
+    </ul>
+  </div>
+</section>
+</main>
+
+<!-- TEIL III -->
+<div class="part" id="p3">
+  <div class="wrap">
+    <p class="pn">Teil III</p>
+    <h2>Produktbezogenes Recht</h2>
+    <p>Welche Vorschrift welche Funktion erzwingt oder verbietet. Gesellschaftsrecht, Steuern und Förderung stehen in Handbuch B.</p>
+  </div>
+</div>
+
+<main class="wrap">
+<section id="s6" style="border-top:none">
+  <div class="sec-head"><span class="sec-num">6</span><div>
+    <h3>Rechtsauflagen am Produkt</h3>
+    <p class="sub">Vier Regelwerke, die das Produktdesign unmittelbar bestimmen</p>
+  </div></div>
+
+  <div class="tw rv"><table>
+    <caption>Pflichtenkatalog nach Rechtsgrundlage</caption>
+    <thead><tr><th style="width:19%">Pflicht</th><th style="width:14%">Grundlage</th><th>Was konkret zu tun ist</th><th class="c">Wann</th></tr></thead>
+    <tbody>
+      <tr class="grp"><td colspan="4">Datenschutz</td></tr>
+      <tr><td><strong>Rechtsgrundlage</strong></td><td>Art. 9 Abs. 2 lit. a DSGVO</td><td>Nur <em>ausdrückliche</em> Einwilligung trägt. Berechtigtes Interesse und Vertragserfüllung scheiden für Artikel-9-Daten aus. Die bloße Registrierung offenbart bereits die Orientierung. Gilt gleichermaßen für die Geschlechtsidentität.</td><td class="c">Vor Launch</td></tr>
+      <tr><td><strong>Folgenabschätzung</strong></td><td>Art. 35 DSGVO</td><td>Zwingend: umfangreiche Verarbeitung besonderer Kategorien <em>und</em> systematische Standortverarbeitung. Muss vor Verarbeitungsbeginn vorliegen und fortgeschrieben werden. Biometrische Altersschätzung ausdrücklich aufnehmen.</td><td class="c">Vor Launch</td></tr>
+      <tr><td><strong>Datenschutzbeauftragter</strong></td><td>Art. 37 Abs. 1 lit. c DSGVO</td><td><strong>Ab dem ersten Tag Pflicht</strong> — unabhängig von der Mitarbeiterzahl, weil die Kerntätigkeit in umfangreicher Artikel-9-Verarbeitung besteht. Extern beauftragen.</td><td class="c">Ab Tag 1</td></tr>
+      <tr><td><strong>Verarbeitungsverzeichnis</strong></td><td>Art. 30 DSGVO</td><td>Die KMU-Erleichterung greift bei Artikel-9-Daten <strong>nicht</strong>. Vollständiges Verzeichnis erforderlich.</td><td class="c">Ab Tag 1</td></tr>
+      <tr><td><strong>Technische Maßnahmen</strong></td><td>Art. 32 DSGVO</td><td>Verschlüsselung ruhend und in Übertragung, Standortrundung, strenges Berechtigungskonzept, automatisches Löschkonzept, geprüftes Backup.</td><td class="c">In Phase 1</td></tr>
+      <tr><td><strong>Meldeprozess Datenpanne</strong></td><td>Art. 33, 34 DSGVO</td><td>72-Stunden-Frist. Ablauf vorher festlegen: Wer entscheidet, wer meldet, wie werden Betroffene informiert. Einmal proben.</td><td class="c">Vor Launch</td></tr>
+      <tr><td><strong>Auftragsverarbeitung</strong></td><td>Art. 28, 44 ff. DSGVO</td><td>Vertrag mit jedem Dienstleister. <strong>Empfehlung: keine US-Auftragsverarbeiter</strong> — das ist zugleich das Alleinstellungsmerkmal.</td><td class="c">Laufend</td></tr>
+      <tr><td><strong>Rechtsnachfolge</strong></td><td>Art. 13, 14 DSGVO</td><td class="c" style="text-align:left"><span class="tagi t-warn">Wichtig</span> Die Datenschutzerklärung muss den Fall eines Eigentümerwechsels ausdrücklich vorsehen. Fehlt das, kann ein späterer Verkauf eine erneute Einwilligung erfordern — bei Artikel-9-Daten ein realistischer Massenverlust. <strong>Nachträglich kaum zu heilen.</strong></td><td class="c">Vor Launch</td></tr>
+
+      <tr class="grp"><td colspan="4">Plattformrecht</td></tr>
+      <tr><td><strong>Anbieterkennzeichnung</strong></td><td>§ 5 DDG</td><td>Frühere Impressumspflicht des TMG. Vollständig, jederzeit erreichbar, auch in der App. <strong>Gilt bereits für die Wartelistenseite</strong> — siehe Handbuch B.</td><td class="c">Vor Launch</td></tr>
+      <tr><td><strong>Kontaktstellen</strong></td><td>Art. 11, 12 DSA</td><td>Zwei getrennte Stellen: eine für Behörden, eine für Nutzer. Gilt für <em>alle</em> Vermittlungsdienste, auch Kleinstunternehmen.</td><td class="c">Vor Launch</td></tr>
+      <tr><td><strong>AGB-Transparenz</strong></td><td>Art. 14 DSA</td><td>Moderationsregeln klar, verständlich und öffentlich — inklusive der eingesetzten automatisierten Mittel. Der Community-Vertrag ist die lesbare Kurzfassung, kein Ersatz.</td><td class="c">Vor Launch</td></tr>
+      <tr><td><strong>Melde- und Abhilfeverfahren</strong></td><td>Art. 16–17 DSA</td><td>Niedrigschwelliger Meldeweg, begründete Entscheidung an alle Betroffenen bei Sperrungen.</td><td class="c">In Phase 1</td></tr>
+      <tr><td><strong>Straftatenmeldung</strong></td><td>Art. 18 DSA, § 13 DDG</td><td>Verdacht auf schwere Straftaten gegen Leib, Leben oder Sicherheit ist zu melden. Prozess und Zuständigkeit definieren.</td><td class="c">Vor Launch</td></tr>
+      <tr><td><strong>Erleichterung</strong></td><td>Art. 19 DSA</td><td><strong>Beschwerdemanagement, Transparenzberichte, Streitbeilegung und vertrauenswürdige Hinweisgeber entfallen</strong> für Klein- und Kleinstunternehmen — unter 50 Beschäftigten und höchstens 10 Mio. € Umsatz.</td><td class="c">bis Schwelle</td></tr>
+      <tr><td><strong>Werbebeschränkung</strong></td><td>Art. 26 Abs. 3 DSA</td><td>Keine Werbung auf Basis von Profiling mit besonderen Datenkategorien. <strong>Begrenzt das Werbegeschäft dauerhaft strukturell.</strong> Ortskanäle mit Abonnement sind der zulässige Weg.</td><td class="c">Dauerhaft</td></tr>
+      <tr><td><strong>Automatisierte Entscheidung</strong></td><td>Art. 22 DSGVO</td><td>Keine Sperre ohne menschliche Prüfmöglichkeit. Widerspruch aus der App, Bearbeitung binnen 72 Std.</td><td class="c">In Phase 1</td></tr>
+
+      <tr class="grp"><td colspan="4">Jugendschutz und Altersverifikation</td></tr>
+      <tr><td><strong>JMStV</strong></td><td>seit 01.12.2025</td><td>Neues Schutzziel „persönliche Integrität", erweiterter Maßnahmenkatalog der Landesmedienanstalten — inklusive der Möglichkeit, Zahlungsdienstleistern die Mitwirkung zu untersagen.</td><td class="c">gilt bereits</td></tr>
+      <tr><td><strong>Jugendschutzbeauftragter</strong></td><td>§ 7 JMStV</td><td>Zu bestellen. Kann extern und kombiniert vergeben werden.</td><td class="c">Vor Launch</td></tr>
+      <tr><td><strong>Geschlossene Benutzergruppe</strong></td><td>§ 4 Abs. 2 JMStV</td><td class="c" style="text-align:left"><span class="tagi t-warn">Kritisch</span> Sobald pornografische Inhalte zugänglich sind, greift die Pflicht zur geschlossenen Benutzergruppe mit KJM-anerkanntem System. Das verlangt <strong>Identifizierung plus Authentifizierung</strong> — eine Selfie-Altersschätzung genügt ausdrücklich nicht. <strong>Deshalb: keine expliziten Inhalte im öffentlichen Raster, ausschließlich private beidseitig freigegebene Alben.</strong> Diese Frage vor allem anderen anwaltlich klären.</td><td class="c">Produktentscheidung</td></tr>
+      <tr><td><strong>EU-Altersverifikation</strong></td><td>DSA Art. 28</td><td>Kommission drängt auf Ausrollung bis Ende 2026, EUDI-Wallet parallel. Selbstauskunft und reine Altersschätzung wurden in laufenden Verfahren als unzureichend bewertet.</td><td class="c">Q4 2026</td></tr>
+      <tr><td><strong>App-Store-Alterspflichten</strong></td><td>Apple, Google</td><td>Alterseinstufungsfragen verpflichtend beantwortet, Declared Age Range API eingebunden. 18+-Downloads werden in mehreren Ländern ohne Erwachsenenbestätigung blockiert.</td><td class="c">gilt bereits</td></tr>
+      <tr><td><strong>Missbrauchsdarstellungen</strong></td><td>§ 184b StGB</td><td>Null Toleranz, strafrechtliche Verantwortung der Geschäftsführung. Proaktiver Hash-Abgleich vor Veröffentlichung jedes Bildes ist alternativlos. <strong>Der Grund, warum Bilder nicht Ende-zu-Ende verschlüsselt werden können.</strong></td><td class="c">Vor Launch</td></tr>
+
+      <tr class="grp"><td colspan="4">Verbraucher, Werbung, KI</td></tr>
+      <tr><td><strong>Abo-Recht</strong></td><td>§ 312k BGB, PAngV</td><td>Kündigungsbutton, 14 Tage Widerruf, klare Preisangaben inkl. Verlängerung. Für Web-Abos vollständig eure Pflicht.</td><td class="c">Vor Web-Abo</td></tr>
+      <tr><td><strong>Endgerätezugriff</strong></td><td>§ 25 TDDDG</td><td>Einwilligung für Zugriff auf Endgeräteinformationen, die nicht technisch erforderlich sind — auch für Analytik.</td><td class="c">Vor Launch</td></tr>
+      <tr><td><strong>Elektronische Werbung</strong></td><td>§ 7 UWG</td><td>Ortskanal-Mitteilungen sind Werbung und brauchen eine gesonderte, widerrufbare Einwilligung. Das Abonnement <em>ist</em> diese Einwilligung.</td><td class="c">Vor V2</td></tr>
+      <tr><td><strong>Irreführende Werbung</strong></td><td>§ 5 UWG</td><td>Keine absoluten Sicherheitsaussagen. „100 % sicher" ist angreifbar und beim ersten Vorfall unhaltbar.</td><td class="c">Dauerhaft</td></tr>
+      <tr><td><strong>KI-Verordnung</strong></td><td>EU 2024/1689</td><td>Exponierung gering, weil keine nutzerseitigen KI-Funktionen. <strong>Ausnahme: die Altersschätzung per Gesichtsaufnahme</strong> ist biometrische Verarbeitung — in Folgenabschätzung und Anbieterauswahl aufnehmen, mehrere Prüfwege anbieten.</td><td class="c">Vor Launch</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="call stop rv">
+    <span class="lbl">Die Frage, die vor allem anderen zu klären ist</span>
+    <p>Löst das Produktkonzept die Pflicht zur geschlossenen Benutzergruppe nach § 4 Abs. 2 JMStV aus? Die Antwort bestimmt, ob ihr eine Selfie-Altersprüfung für 0,40 € oder ein KJM-anerkanntes Identifizierungsverfahren für mehrere Euro je Nutzer braucht — und damit das gesamte Geschäftsmodell.</p>
+    <p><strong>Erstes Gespräch mit dem Fachanwalt, Tag 1 bis 14.</strong> Alles andere kann warten.</p>
+  </div>
+</section>
+
+<section id="s7">
+  <div class="sec-head"><span class="sec-num">7</span><div>
+    <h3>Nicht verhandelbar</h3>
+    <p class="sub">Die Punkte, bei denen ein Fehler das Produkt beendet</p>
+  </div></div>
+
+  <div class="tw rv"><table>
+    <caption>Auflagen ohne Ausnahme</caption>
+    <thead><tr><th style="width:24%">Auflage</th><th>Warum</th></tr></thead>
+    <tbody>
+      <tr class="grp"><td colspan="2">Architektur — nachträglich nicht einbaubar</td></tr>
+      <tr><td><strong>Serverseitige Standortunschärfe</strong></td><td>Muss vor der ersten Zeile Anwendungscode stehen. Später eingebaut, muss die halbe Anwendung umgeschrieben werden.</td></tr>
+      <tr><td><strong>Bildaufbereitung</strong></td><td>Weichzeichnung über verkleinerte Zwischenstufe, getrennte nicht ableitbare Ablage, EXIF-Entfernung, Moderationsprüfung auf dem Original. <strong>Ein umkehrbar weichgezeichnetes Bild ist schlimmer als gar keins</strong>, weil es Sicherheit verspricht, die es nicht hat.</td></tr>
+      <tr><td><strong>Löschbarkeit von Beginn an</strong></td><td>Vollständige Löschung und Export ab Tag eins. Nachträglich eine der teuersten Umbauten.</td></tr>
+      <tr><td><strong>Keine US-Auftragsverarbeiter</strong></td><td>Hosting, Medien, Verifizierung, Analytik, Fehlerprotokolle, Chat. Ein einziger Ausrutscher entwertet die gesamte Positionierung.</td></tr>
+      <tr><td><strong>Kennzahlenhistorie</strong></td><td>Kohortendaten von Tag eins erheben und monatlich archivieren. Wer das versäumt, kann es nie nachliefern — und verliert bei einem späteren Verkauf erheblich an Preis.</td></tr>
+      <tr class="grp"><td colspan="2">Sicherheit</td></tr>
+      <tr><td><strong>Hash-Abgleich vor Veröffentlichung</strong></td><td>Die einzige Position mit strafrechtlichen Folgen für die Geschäftsführung.</td></tr>
+      <tr><td><strong>Blockierlisten unveränderlich</strong></td><td>Serverseitig, überlebt Updates und Neuinstallation. Explizite Testabdeckung.</td></tr>
+      <tr><td><strong>Sicherheit nie hinter Bezahlschranke</strong></td><td>Der klassische Kardinalfehler der Kategorie.</td></tr>
+      <tr class="grp"><td colspan="2">Verfahren</td></tr>
+      <tr><td><strong>Taxonomie mit Betroffenen gegenlesen</strong></td><td>Der Unterschied zwischen „passt" und „verletzt" liegt oft in einem Wort.</td></tr>
+      <tr><td><strong>Wechselwirkungen testen</strong></td><td>Archiv × verfallende Chats, Blockieren × Archiv, Eisbrecher × Antwortquote.</td></tr>
+      <tr><td><strong>Barrierefreiheit prüfen lassen</strong></td><td>Vor Version 1.0, durch Betroffene.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+</main>
+
+<!-- TEIL IV -->
+<div class="part" id="p4">
+  <div class="wrap">
+    <p class="pn">Teil IV</p>
+    <h2>Technik und Bau</h2>
+    <p>Stack, Reihenfolge, Zuständigkeiten und KI-Regeln.</p>
+  </div>
+</div>
+
+<main class="wrap">
+<section id="s8" style="border-top:none">
+  <div class="sec-head"><span class="sec-num">8</span><div>
+    <h3>Technik-Stack</h3>
+    <p class="sub">Entscheidungen mit Begründung</p>
+  </div></div>
+
+  <div class="tw rv"><table>
+    <caption>Empfohlener Stack</caption>
+    <thead><tr><th style="width:19%">Ebene</th><th style="width:25%">Empfehlung</th><th>Begründung</th></tr></thead>
+    <tbody>
+      <tr><td>Client, Phase 1</td><td><strong>React + Vite als PWA</strong></td><td>Nicht Flutter. Die Web-App ist wegen Apples Richtlinie 1.1.4 das <em>Hauptprodukt</em>, nicht die Ergänzung. Flutter Web zeichnet auf eine Leinwand, ist bei Startzeit und Vorlesefunktion deutlich schwächer.</td></tr>
+      <tr><td>Client, Phase 2</td><td>React Native / Expo</td><td>Teilt Logik und Typen mit der Web-App. Over-the-Air-Updates umgehen den Review-Zyklus bei Fehlerbehebungen.</td></tr>
+      <tr><td>Backend</td><td><strong>Supabase, selbst gehostet</strong></td><td>Quelloffen, PostgreSQL-basiert, auf eigenen Servern betreibbar. Der Zeitgewinn eines Baukastens ohne den Widerspruch. <strong>Firebase ausgeschlossen</strong> (Google als Auftragsverarbeiter für Artikel-9-Daten), Supabase Cloud ebenfalls (US-Unternehmen als Auftragsverarbeiter).<br><br><strong>Auflagen:</strong> Der Betrieb ist echte Arbeit. Die Zugriffsregeln auf Zeilenebene müssen sorgfältig geschrieben werden — ein Fehler darin <em>ist</em> ein Datenleck.</td></tr>
+      <tr><td>Datenbank</td><td>PostgreSQL 17 + PostGIS</td><td>Geo-Umkreissuche mit räumlichen Indizes. Bis ~100.000 MAU genügt das.</td></tr>
+      <tr><td>Medien</td><td>S3-kompatibel bei Hetzner + imgproxy</td><td>Bilder verlassen die EU nie — das ist zugleich das Marketingversprechen.</td></tr>
+      <tr><td>Hosting</td><td>Hetzner Cloud, Nürnberg oder Falkenstein</td><td>Deutsches Unternehmen, deutsche Rechenzentren, kein Drittlandtransfer.</td></tr>
+      <tr><td>Abo-Verwaltung</td><td>RevenueCat + Stripe für Web-Abos</td><td>Web-Abos kosten rund 3 % statt 15 %.</td></tr>
+      <tr><td>Analytik</td><td>PostHog, selbst gehostet</td><td>Kein Datenabfluss, DSGVO-tauglich ohne Einwilligungsakrobatik. <strong>Kohorten von Tag eins sauber modellieren.</strong></td></tr>
+      <tr><td>Fehlerprotokolle</td><td>Sentry, EU-Region</td><td>Personenbezug in Fehlerdaten muss europäisch bleiben.</td></tr>
+      <tr><td>Bauumgebung</td><td>Automatische Lizenzprüfung</td><td>KI-erzeugter Code kann Fragmente aus copyleft-lizenzierten Quellen enthalten. Bei einer Übernahmeprüfung wird das abgefragt. Aufwand: ein halber Tag.</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="tw rv"><table>
+    <caption>Eigenbau gegen Zukauf</caption>
+    <thead><tr><th style="width:22%">Komponente</th><th class="c">Entscheidung</th><th>Ansatz</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Altersverifikation</strong></td><td class="c"><span class="pill p-lo">Kaufen</span></td><td>EU-Anbieter, Sofortlöschung vertraglich zugesichert als Ausschlusskriterium. Ab Ende 2026 zusätzlich EUDI-Wallet.</td></tr>
+      <tr><td><strong>Missbrauchsbild-Erkennung</strong></td><td class="c"><span class="pill p-lo">Kaufen</span></td><td>Hash-Abgleich. <strong>Nicht verhandelbar.</strong></td></tr>
+      <tr><td><strong>Inhaltsmoderation</strong></td><td class="c"><span class="pill p-lo">Kaufen</span></td><td>KI-Vorfilter, menschliche Prüfung bei Grenzfällen.</td></tr>
+      <tr><td><strong>Zahlungsabwicklung</strong></td><td class="c"><span class="pill p-lo">Kaufen</span></td><td>Stripe für Web, Apple und Google für App.</td></tr>
+      <tr><td><strong>Geo-Umkreissuche</strong></td><td class="c"><span class="pill p-hi">Selbst</span></td><td>PostGIS. Das <em>ist</em> das Produkt.</td></tr>
+      <tr><td><strong>Chat und Präsenz</strong></td><td class="c"><span class="pill p-hi">Selbst</span></td><td>Verwaltete Chat-Anbieter speichern Nachrichten und sind meist US-Firmen.</td></tr>
+      <tr><td><strong>Ranking und Entdeckung</strong></td><td class="c"><span class="pill p-hi">Selbst</span></td><td>Der Unterschied zwischen guter und schlechter App liegt hier.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="s9">
+  <div class="sec-head"><span class="sec-num">9</span><div>
+    <h3>Bauplan</h3>
+    <p class="sub">Was wann — und warum die Reihenfolge nicht beliebig ist</p>
+  </div></div>
+
+  <div class="call stop rv">
+    <span class="lbl">Das Grundprinzip</span>
+    <p>Zuerst wird gebaut, was sich <strong>nachträglich nicht mehr einbauen lässt</strong>: Standortarchitektur, Bildaufbereitung, Löschbarkeit, Kennzahlenerfassung, Wahl der Auftragsverarbeiter. Alles davon ist unsichtbar, nichts davon vorzeigbar — und jedes kostet später das Zehnfache.</p>
+  </div>
+
+  <div class="steps rv">
+    <div class="step"><div class="when">Monat 1–3<br>Phase 0</div><div>
+      <h6>Vorbereitung — kein Produktivcode</h6>
+      <ul>
+        <li>Gesellschaft gründen, Marke anmelden, Fachanwalt auswählen</li>
+        <li>JMStV-Frage klären — bestimmt das gesamte Produktdesign</li>
+        <li>60–80 Interviews, davon mind. acht mit trans und nichtbinären Personen</li>
+        <li>Ortsliste Köln: 40 Läden mit Adresse, Öffnungszeiten, Ansprechpartner</li>
+        <li>Drei EU-Verifizierungsanbieter mit echtem Trichtertest vergleichen</li>
+        <li>Wartelistenseite mit Postleitzahl — Dichte messen, nicht Anmeldungen</li>
+        <li><strong>Tag 90: das Tor.</strong> Weiter nur bei über 1.500 Anmeldungen, davon mind. 900 aus einer Stadt</li>
+      </ul>
+    </div></div>
+    <div class="step"><div class="when">Monat 4–5<br>Phase 1a</div><div>
+      <h6>Fundament — unsichtbar, unumkehrbar</h6>
+      <ul>
+        <li>Hetzner, Supabase selbst gehostet, PostGIS, Redis</li>
+        <li>Standortarchitektur: serverseitige Unschärfe, Entfernungsbänder, Zonen</li>
+        <li>Bildaufbereitung: EXIF, 32×42-Zwischenstufe, getrennte Ablage, Wasserzeichen</li>
+        <li>Datenmodell mit vollständiger Löschung und Export</li>
+        <li>Kohortenerfassung in PostHog, monatliche Archivierung</li>
+        <li>Auftragsverarbeitungsverträge, Moderations-Vorfilter, Hash-Abgleich, Lizenzprüfung</li>
+      </ul>
+    </div></div>
+    <div class="step"><div class="when">Monat 5–7<br>Phase 1b</div><div>
+      <h6>Kernprodukt als Web-App</h6>
+      <ul>
+        <li>Registrierung, Gastmodus, Profil, private Profilbilder</li>
+        <li>Raster mit elastischer Reichweite, Sortierungen, Filter mit Trefferzähler</li>
+        <li>Echtzeit-Chat, zwei Postfächer, Erstkontakt-Regel, Eisbrecher</li>
+        <li>Altersprüfung und Community-Vertrag vor der ersten Nachricht</li>
+        <li>Höflicher Ausstieg mit Rückgängig, 24-Stunden-Archiv</li>
+        <li>Blockieren, Melden mit Fallnummer, Moderations-Backend</li>
+      </ul>
+    </div></div>
+    <div class="step"><div class="when">Monat 7–8<br>Phase 1c</div><div>
+      <h6>Sicherheit, Datenhoheit, Verbindungspunkte</h6>
+      <ul>
+        <li>Sicherheitszentrum vollständig, Datenkonto mit Export und Löschung</li>
+        <li>Reiter „Heute": Karte, Ortsverzeichnis, Ereignisse redaktionell, temporäre Gruppen</li>
+        <li>Treffpunkt vorschlagen, <em>termine@</em> mit Parser</li>
+        <li>Antwortquote zuletzt — dafür müssen erst Chatdaten existieren</li>
+      </ul>
+    </div></div>
+    <div class="step"><div class="when">Monat 8–9<br>Phase 1d</div><div>
+      <h6>Härten und geschlossene Beta</h6>
+      <ul>
+        <li>Externer Penetrationstest, Schwerpunkt Standort- und Bildarchitektur</li>
+        <li>Barrierefreiheitsprüfung durch Betroffene</li>
+        <li>Wechselwirkungen prüfen</li>
+        <li>150 Testnutzer aus <em>einem</em> Kölner Viertel</li>
+        <li>Eine Zahl entscheidet: Wie viele öffnen die App an Tag 7 erneut?</li>
+      </ul>
+    </div></div>
+    <div class="step"><div class="when">Monat 10–21<br>Phase 2</div><div>
+      <h6>Öffentlich, native Apps, Erlöse, zweite Stadt</h6>
+      <ul>
+        <li>Native Apps über React Native, bewusst zurückgenommene Fassung</li>
+        <li>Bezahlstufen ab 5.000 MAU in der Stadt, realistisch Monat 13–15</li>
+        <li>Auslastungsanzeige, Kalender-Abonnement, Veranstalterportal</li>
+        <li>Text-E2EE ab 15.000 MAU mit Fachfreelancer</li>
+        <li>Erste bezahlte Moderationskraft ab etwa 15.000 MAU</li>
+      </ul>
+    </div></div>
+    <div class="step"><div class="when">ab Monat 22<br>Phase 3</div><div>
+      <h6>Skalierung</h6>
+      <ul>
+        <li>DACH vollständig, danach Reisekorridore</li>
+        <li>Mehrsprachigkeit ab der ersten Auslandsstadt</li>
+        <li>Freundschaftsmodus ab 25.000 MAU, Videoanrufe ab 40.000 MAU mit Team</li>
+        <li>EUDI-Wallet anbinden, sobald verfügbar</li>
+      </ul>
+    </div></div>
+  </div>
+</section>
+
+<section id="s10">
+  <div class="sec-head"><span class="sec-num">10</span><div>
+    <h3>Zuständigkeiten und KI</h3>
+    <p class="sub">Wer was macht, und wo KI ein Werkzeug ist statt ein Risiko</p>
+  </div></div>
+
+  <div class="tw rv"><table>
+    <caption>Rollen</caption>
+    <thead><tr><th style="width:20%">Rolle</th><th class="c">Ab wann</th><th class="c">Umfang</th><th>Aufgabe</th></tr></thead>
+    <tbody>
+      <tr class="grp"><td colspan="4">Intern</td></tr>
+      <tr><td><strong>Gründer 1 — Technik</strong></td><td class="c">Monat 4</td><td class="c">Vollzeit</td><td>Standort- und Bildarchitektur, Datenmodell, Chat, Moderations-Backend.</td></tr>
+      <tr><td><strong>Gründer 2 — Produkt, Vertrieb</strong></td><td class="c">Monat 1</td><td class="c">Vollzeit</td><td>UX, Microcopy, Marke, B2B-Vertrieb, Community, <strong>Steuerung</strong> der Compliance. Social Media ~40 % der Zeit.</td></tr>
+      <tr><td><strong>Beide — Ortsakquise</strong></td><td class="c">Monat 1</td><td class="c">1–2 Tage/Woche</td><td><strong>Nicht delegierbar.</strong> Wer sie an eine Agentur gibt, verliert den einzigen unkopierbaren Vorteil.</td></tr>
+      <tr><td><strong>Beide — Moderation</strong></td><td class="c">Monat 8</td><td class="c">1 Std./Tag</td><td>Anfangs selbst. Man lernt dabei mehr über die Nutzer als aus jedem Dashboard.</td></tr>
+      <tr class="grp"><td colspan="4">Extern, verpflichtend</td></tr>
+      <tr><td><strong>Fachanwalt IT-Recht</strong></td><td class="c">Monat 1</td><td class="c">einmalig + laufend</td><td>AGB, Datenschutzerklärung, Einwilligung, DSA- und JMStV-Einordnung.</td></tr>
+      <tr><td><strong>Datenschutzbeauftragter</strong></td><td class="c">Monat 1</td><td class="c">laufend</td><td>Gesetzlich verpflichtend ab dem ersten Tag.</td></tr>
+      <tr><td><strong>Jugendschutzbeauftragter</strong></td><td class="c">vor Launch</td><td class="c">laufend</td><td>Nach § 7 JMStV, kombinierbar.</td></tr>
+      <tr><td><strong>Penetrationstester</strong></td><td class="c">Monat 8–9</td><td class="c">3–5 Tage</td><td><strong>Vor</strong> dem öffentlichen Start.</td></tr>
+      <tr class="grp"><td colspan="4">Extern, empfohlen</td></tr>
+      <tr><td><strong>UI-Gestaltung</strong></td><td class="c">Monat 3–4</td><td class="c">8–12 Tage</td><td>Bei einer fotogetriebenen App ist Gestaltung Produktqualität.</td></tr>
+      <tr><td><strong>Beratung Taxonomie</strong></td><td class="c">Monat 2</td><td class="c">3 Tage</td><td>Trans und nichtbinäre Personen, bezahlt.</td></tr>
+      <tr><td><strong>Barrierefreiheit</strong></td><td class="c">Monat 8</td><td class="c">2–3 Tage</td><td>Erschließt ein Segment, das nirgendwo sonst willkommen ist.</td></tr>
+      <tr><td><strong>Kryptografie-Freelancer</strong></td><td class="c">Monat 16+</td><td class="c">10–20 Tage</td><td>Nur für die Text-E2EE. <strong>Kein Bedarf für Zero-Knowledge-Beweise.</strong></td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="call go rv">
+    <span class="lbl">KI — die Trennlinie in einem Satz</span>
+    <p><strong>KI auf eurem Code und euren Inhalten: uneingeschränkt sinnvoll. KI auf Nutzerdaten: praktisch nie — und niemals über einen Anbieter außerhalb der EU.</strong></p>
+  </div>
+
+  <div class="tw rv"><table>
+    <caption>KI-Einsatz konkret</caption>
+    <thead><tr><th style="width:28%">Einsatz</th><th class="c">Bewertung</th><th>Anmerkung</th></tr></thead>
+    <tbody>
+      <tr><td>Gerüstcode, Formulare, Migrationen, Tests</td><td class="c"><span class="pill p-lo">Uneingeschränkt</span></td><td>Der größte Zeitgewinn für ein Zweierteam.</td></tr>
+      <tr><td>Code-Durchsicht, Umbau, Dokumentation</td><td class="c"><span class="pill p-lo">Uneingeschränkt</span></td><td>Zweitmeinung bei zwei Personen ohne Team.</td></tr>
+      <tr><td>Testdaten erzeugen</td><td class="c"><span class="pill p-lo">Uneingeschränkt</span></td><td><strong>Nie in die Produktivumgebung</strong> — Geisterprofile sind ein dunkles Muster.</td></tr>
+      <tr><td>Terminparser, Bild-Vorfilter, Textprüfung</td><td class="c"><span class="pill p-lo">Ja</span></td><td>Selbst gehostet. Als Vorschlag, nicht als endgültige Entscheidung.</td></tr>
+      <tr><td>Entwürfe für Systemtexte</td><td class="c"><span class="pill p-mid">Als Entwurf</span></td><td>Endfassung durch Menschen.</td></tr>
+      <tr><td>Sicherheitskritischer Code</td><td class="c"><span class="pill p-mid">Nur mit Prüfung</span></td><td>Anmeldung, Verschlüsselung, Standortberechnung, Zugriffsregeln. <strong>Zeile für Zeile durchgehen oder gar nicht verwenden.</strong></td></tr>
+      <tr><td>Eisbrecher, Profiltexte, Nachrichten</td><td class="c"><span class="pill p-hi">Nie</span></td><td>Echtheit ist das gesamte Vertrauensversprechen.</td></tr>
+      <tr><td>Nutzerdaten an externe Modellanbieter</td><td class="c"><span class="pill p-hi">Nie</span></td><td>Der schnellste Weg, die Positionierung zu zerstören.</td></tr>
+      <tr><td>Sperrentscheidung ohne Mensch</td><td class="c"><span class="pill p-hi">Nie</span></td><td>Art. 22 DSGVO und DSA-Widerspruchsrecht.</td></tr>
+      <tr><td>Rechtstexte</td><td class="c"><span class="pill p-hi">Nie</span></td><td>Fachanwalt, ohne Ausnahme.</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="call warn rv">
+    <span class="lbl">Zur Formulierung „100 % Eigenleistung"</span>
+    <p>Die kommerziellen Nutzungsrechte liegen bei euch — zutreffend. <strong>Urheberrechtsschutz ist etwas anderes:</strong> § 2 UrhG verlangt eine persönliche geistige Schöpfung; rein maschinell erzeugte Ausgaben genießen ihn nach überwiegender Auffassung nicht. Geschützt sind Architektur, Auswahl und Integration.</p>
+    <p>Für den Businessplan: <em>„Die Entwicklung erfolgt inhouse. Architektur, Logik, Sicherheitsentscheidungen und Tests verantwortet der technische Gründer; KI-Werkzeuge beschleunigen die Umsetzung. Die kommerziellen Nutzungsrechte liegen vollständig bei der Gesellschaft. Eine automatisierte Lizenzprüfung ist Teil der Bauumgebung."</em></p>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="fgrid">
+      <div>
+        <h5>Fassungsstand</h5>
+        <p>Handbuch A, Juli 2026. Produkt-, Technik- und produktbezogener Rechtsteil. Ersetzt die entsprechenden Abschnitte aller Vorfassungen.</p>
+        <p>Wirtschaft, Kosten, Szenarien, Marketing, Steuern, Gesellschaftsform, Förderung und Risikoanalyse stehen in <strong>Handbuch B</strong>.</p>
+        <h5 style="margin-top:24px">Vor Umsetzung zu klären</h5>
+        <ul>
+          <li>JMStV § 4 Abs. 2: geschlossene Benutzergruppe erforderlich?</li>
+          <li>Datenschutzerklärung: Rechtsnachfolge ausdrücklich vorsehen</li>
+          <li>Verifizierungsanbieter: Sofortlöschung im Vertrag, biometrische Einordnung</li>
+          <li>Taxonomie-Felder mit Betroffenen gegenlesen</li>
+        </ul>
+      </div>
+      <div>
+        <h5>Die fünf Sätze, die die App erklären</h5>
+        <ul>
+          <li>Dein Standort gehört dir, und du siehst jederzeit, wie genau er ist.</li>
+          <li>Dein Gesicht zeigst du, wem du willst — und bist trotzdem sichtbar.</li>
+          <li>Erste Nachricht: nur Text — und wir helfen dir dabei.</li>
+          <li>Absagen dauert einen Tipp und schadet dir nicht.</li>
+          <li>Was dich schützt, kostet nie etwas.</li>
+        </ul>
+        <h5 style="margin-top:24px">Reihenfolge im MVP</h5>
+        <ol>
+          <li>Standortarchitektur</li>
+          <li>Bildaufbereitung</li>
+          <li>Datenmodell mit Löschbarkeit und Kohortenerfassung</li>
+          <li>Registrierung, Profil, Raster</li>
+          <li>Chat mit Erstkontakt-Regel</li>
+          <li>Moderation und Hash-Abgleich</li>
+          <li>Altersprüfung und Community-Vertrag</li>
+          <li>Sicherheitszentrum, Datenkonto</li>
+          <li>Reiter „Heute", redaktionell</li>
+          <li>Antwortquote</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+document.documentElement.classList.remove('no-js');
+document.documentElement.classList.add('js');
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var t = document.querySelectorAll('.rv');
+  if(!('IntersectionObserver' in window) || reduce){ t.forEach(function(x){x.classList.add('shown');}); return; }
+  var io = new IntersectionObserver(function(es){
+    es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('shown'); io.unobserve(e.target);} });
+  },{rootMargin:'0px 0px -8% 0px',threshold:.05});
+  t.forEach(function(x){io.observe(x);});
+  window.addEventListener('beforeprint',function(){ t.forEach(function(x){x.classList.add('shown');}); });
+})();
+</script>
+</body>
+</html>
