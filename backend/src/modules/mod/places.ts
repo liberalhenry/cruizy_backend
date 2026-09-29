@@ -157,7 +157,7 @@ export default async function placeModRoutes(app: FastifyInstance) {
           : b.decision === 'bestaetigen'
             ? t(c.kind === 'claim' ? 'UI-MAIL-ORT-BESTAETIGT' : 'UI-MAIL-ORT-ENTFERNT', { nummer: c.number })
             : t('UI-MAIL-ORT-ABGELEHNT', { nummer: c.number, grund: b.message ?? b.reason });
-      await sendMail({ to: email, subject: t('UI-MAIL-ORT-BETREFF', { nummer: c.number }), text });
+      await sendMail({ to: email, subject: t('UI-MAIL-ORT-BETREFF', { nummer: c.number }), text, design: { heading: t('UI-MAIL-ORT-BETREFF', { nummer: c.number }) } });
     }
     return { ok: true };
   });
@@ -246,7 +246,12 @@ export default async function placeModRoutes(app: FastifyInstance) {
       return null;
     });
     if (from && b.decision === 'zurueckgeben') {
-      await sendMail({ to: from.replace(/^.*<([^>]+)>.*$/, '$1'), subject: t('UI-MAIL-TERMIN-BETREFF'), text: t('ST-EVT-10', { grund: b.returnReason ?? b.reason }) });
+      await sendMail({
+        to: from.replace(/^.*<([^>]+)>.*$/, '$1'),
+        subject: t('UI-MAIL-TERMIN-BETREFF'),
+        text: t('ST-EVT-10', { grund: b.returnReason ?? b.reason }),
+        design: { heading: t('UI-MAIL-TERMIN-BETREFF') },
+      });
     }
     return { ok: true, eventId };
   });

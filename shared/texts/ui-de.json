@@ -1155,6 +1155,22 @@
   "s": "ENTWURF",
   "t": "Wir haben deine Nachricht unter der Fallnummer {fallnummer} erhalten. Ein Mensch liest sie und antwortet dir an diese Adresse."
  },
+ "UI-MAIL-KOPF-ADRESSE": {
+  "s": "ENTWURF",
+  "t": "Adresse bestätigen"
+ },
+ "UI-MAIL-KOPF-ANTWORT": {
+  "s": "ENTWURF",
+  "t": "Unsere Antwort"
+ },
+ "UI-MAIL-KOPF-EINGANG": {
+  "s": "ENTWURF",
+  "t": "Deine Nachricht ist angekommen"
+ },
+ "UI-MAIL-KOPF-ENTSCHEIDUNG": {
+  "s": "ENTWURF",
+  "t": "Wir haben entschieden"
+ },
  "UI-MAIL-MELDUNG-EINGANG": {
   "s": "ENTWURF",
   "t": "Wir haben deine Nachricht unter der Fallnummer {fallnummer} erhalten. Wir melden uns, sobald entschieden ist."
@@ -1186,6 +1202,10 @@
  "UI-MAIL-TERMIN-BETREFF": {
   "s": "ENTWURF",
   "t": "Deine Einreichung"
+ },
+ "UI-MAIL-WHR-ABBRECHEN": {
+  "s": "ENTWURF",
+  "t": "Das war ich nicht — abbrechen"
  },
  "UI-MEL-CSAM": {
   "s": "ENTWURF",

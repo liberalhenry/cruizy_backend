@@ -3,7 +3,7 @@ import { useEffect, useState, type ReactNode } from 'react';
 import { Banner, Sheet, TextArea, Toggle, useAsync } from '../components/ui';
 import { api, errText } from '../lib/api';
 import { fmtDate, t } from '../lib/texts';
-import { Card, Reason, useAction } from './common';
+import { Card, Logo, Reason, useAction } from './common';
 import { MeinZugang, Team } from './team';
 
 export interface Staff {
@@ -53,6 +53,7 @@ export function Screens({ me, onLogout, reloadMe }: { me: Staff; onLogout: () =>
     <div className="min-h-screen md:flex">
       <aside className="md:w-60 md:min-h-screen bg-flaeche border-b md:border-b-0 md:border-r border-linie">
         <div className="p-4 border-b border-linie">
+          <Logo className="h-6 w-auto mb-3" />
           <p className="font-semibold">{me.staff.name}</p>
           <p className="text-xs muted">
             {me.staff.role}

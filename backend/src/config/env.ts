@@ -44,6 +44,11 @@ const schema = z.object({
   /* E-Mail über SMTP (EU-Dienst, z. B. Sweego). Leer = Ausgabe ins Protokoll (nur Testbetrieb). */
   SMTP_URL: z.string().default(''),
   MAIL_FROM: z.string().default('Benachrichtigung <no-reply@example.invalid>'),
+  /**
+   * Issue #9: voll = HTML-Mails mit Logo; dezent = gleiche Gestaltung ohne Logo und Namen.
+   * Betreff und Vorschauzeile sind in beiden Fällen neutral (AK-F02-06).
+   */
+  MAIL_BRANDING: z.enum(['voll', 'dezent']).default('voll'),
 
   /*
    * SMS: 'log' (nur Testbetrieb) oder 'http' — ein beliebiger EU-Versanddienst per

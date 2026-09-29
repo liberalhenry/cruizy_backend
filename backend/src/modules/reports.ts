@@ -248,7 +248,12 @@ export default async function reportRoutes(app: FastifyInstance) {
       fromWeb: true,
     });
     if (b.email) {
-      await sendMail({ to: b.email, subject: t('ST-HLF-24', { fallnummer: res.number }), text: t('UI-MAIL-MELDUNG-EINGANG', { fallnummer: res.number }) });
+      await sendMail({
+        to: b.email,
+        subject: t('ST-HLF-24', { fallnummer: res.number }),
+        text: t('UI-MAIL-MELDUNG-EINGANG', { fallnummer: res.number }),
+        design: { heading: t('UI-MAIL-KOPF-EINGANG') },
+      });
     }
     return { number: res.number, hours: Math.round(p('P-FRIST-MELDUNG') / 3600) };
   });

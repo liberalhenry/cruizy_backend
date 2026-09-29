@@ -115,6 +115,11 @@ T = {
   # ───── Mails (Betreff und erster Satz ohne Anlass und ohne Produktnamen) ─────
   'UI-MAIL-HILFE-EINGANG': 'Wir haben deine Nachricht unter der Fallnummer {fallnummer} erhalten. Ein Mensch liest sie und antwortet dir an diese Adresse.',
   'UI-MAIL-MELDUNG-EINGANG': 'Wir haben deine Nachricht unter der Fallnummer {fallnummer} erhalten. Wir melden uns, sobald entschieden ist.',
+  'UI-MAIL-KOPF-EINGANG': 'Deine Nachricht ist angekommen',
+  'UI-MAIL-KOPF-ANTWORT': 'Unsere Antwort',
+  'UI-MAIL-KOPF-ENTSCHEIDUNG': 'Wir haben entschieden',
+  'UI-MAIL-KOPF-ADRESSE': 'Adresse bestätigen',
+  'UI-MAIL-WHR-ABBRECHEN': 'Das war ich nicht — abbrechen',
   'UI-MAIL-ANTWORT-EINLEITUNG': 'Hier ist unsere Antwort zu deinem Fall {fallnummer}.',
   'UI-MAIL-ORT-BETREFF': 'Vorgang {nummer}',
   'UI-MAIL-ORT-TEXT': 'Bitte bestätige deine Adresse mit diesem Link: {link}\n\nDanach prüft ein Mensch die Anfrage {nummer}, in der Regel innerhalb von 24 Stunden. Wenn du nichts angefragt hast, ignoriere diese Mail.',

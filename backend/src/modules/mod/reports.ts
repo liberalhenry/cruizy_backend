@@ -282,7 +282,14 @@ export async function informParties(reportId: string) {
     await createNotice(r.reporter_id, 'meldung_entscheidung', t('UI-MELDUNG-ENTSCHIEDEN', { fallnummer: r.number }), `${text}\n\n${t('UI-WEGE-DAGEGEN')}`, r.number);
   } else if (r.reporter_contact_enc) {
     const contact = JSON.parse(decStr('tickets', r.reporter_contact_enc, 'report-contact') ?? '{}');
-    if (contact.email) await sendMail({ to: contact.email, subject: t('ST-HLF-24', { fallnummer: r.number }), text: `${text}\n\n${t('UI-WEGE-DAGEGEN')}` });
+    if (contact.email) {
+      await sendMail({
+        to: contact.email,
+        subject: t('ST-HLF-24', { fallnummer: r.number }),
+        text: `${text}\n\n${t('UI-WEGE-DAGEGEN')}`,
+        design: { heading: t('UI-MAIL-KOPF-ENTSCHEIDUNG') },
+      });
+    }
   }
   if (r.target_id && r.decision === 'inhalt_entfernt') {
     await createNotice(

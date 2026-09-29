@@ -298,6 +298,7 @@ export default async function authRoutes(app: FastifyInstance) {
             to: found.value,
             subject: t('ST-MAIL-05'),
             text: t('ST-MAIL-06', { minuten: Math.round(p('P-CODE-GUELTIG') / 60), link }),
+            design: { heading: t('ST-MAIL-05'), action: { label: t('ST-MAIL-05'), url: link } },
           });
         }
       } else if (found.kind === 'phone' && found.row.phone_verified_at) {
@@ -408,6 +409,10 @@ export default async function authRoutes(app: FastifyInstance) {
         subject: t('ST-MAIL-07'),
         preheader: t('ST-MAIL-08'),
         text: `${t('ST-WHR-07')}\n\n${env().APP_URL}/wiederherstellung-abbrechen?t=${cancelToken}`,
+        design: {
+          heading: t('ST-MAIL-07'),
+          action: { label: t('UI-MAIL-WHR-ABBRECHEN'), url: `${env().APP_URL}/wiederherstellung-abbrechen?t=${cancelToken}` },
+        },
       });
     }
     return { token, dueAt: due.toISOString() };

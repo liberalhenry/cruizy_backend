@@ -9,6 +9,7 @@ import { api, ApiError, errText, setUnauthorizedHandler } from '../lib/api';
 import { Banner, Field } from '../components/ui';
 import { t } from '../lib/texts';
 import { Screens, type Staff } from './screens';
+import { Logo } from './common';
 
 function Login({ onDone }: { onDone: () => void }) {
   const [login, setLogin] = useState('');
@@ -18,6 +19,7 @@ function Login({ onDone }: { onDone: () => void }) {
   return (
     <div className="min-h-screen grid place-items-center p-4">
       <div className="card p-6 w-full max-w-sm">
+        <Logo className="h-9 w-auto mb-5" />
         <h1 className="text-xl font-semibold mb-4">Anmeldung Werkzeug</h1>
         <Field label="Kennung" value={login} onChange={(e) => setLogin(e.target.value)} autoComplete="username" />
         <Field label="Passwort" type="password" value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="current-password" />

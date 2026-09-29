@@ -117,7 +117,7 @@ export async function weeklySummary(): Promise<string> {
     .MOD_REPORT_MAIL.split(',')
     .map((x) => x.trim())
     .filter(Boolean);
-  for (const addr of to) await sendMail({ to: addr, subject: 'Wochenzusammenfassung', text });
+  for (const addr of to) await sendMail({ to: addr, subject: 'Wochenzusammenfassung', text, design: { heading: 'Wochenzusammenfassung', audience: 'team' } });
   // auch im Werkzeug sichtbar, falls keine Adresse hinterlegt ist
   await q(`INSERT INTO staff_notes (staff_id, kind, ref) SELECT id, 'wochenbericht', $1 FROM staff WHERE disabled_at IS NULL AND founder`, [text]);
   return text;

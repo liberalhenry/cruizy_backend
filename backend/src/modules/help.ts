@@ -88,7 +88,12 @@ export default async function helpRoutes(app: FastifyInstance) {
     );
     if (!loggedIn && email) {
       // FV-92: Betreff nur die Fallnummer
-      await sendMail({ to: email, subject: t('ST-HLF-24', { fallnummer: number }), text: t('UI-MAIL-HILFE-EINGANG', { fallnummer: number }) });
+      await sendMail({
+        to: email,
+        subject: t('ST-HLF-24', { fallnummer: number }),
+        text: t('UI-MAIL-HILFE-EINGANG', { fallnummer: number }),
+        design: { heading: t('UI-MAIL-KOPF-EINGANG') },
+      });
     }
     discord('meldungen', {
       title: `Neue Anfrage ${number}`,

@@ -25,6 +25,8 @@ COPY --from=build /app/backend/node_modules ./node_modules
 COPY --from=build /app/backend/dist ./dist
 COPY backend/package.json ./
 COPY shared/texts /app/shared/texts
+# Logo für die HTML-Mails (Issue #9)
+COPY shared/brand /app/shared/brand
 RUN mkdir -p /data && chown node:node /data
 USER node
 EXPOSE 3000

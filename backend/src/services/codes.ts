@@ -99,6 +99,7 @@ export async function mailCode(to: string, code: string) {
     subject: t('ST-MAIL-02'),
     preheader: t('ST-MAIL-03'),
     text: t('ST-MAIL-04', { code, minuten }),
+    design: { heading: t('ST-MAIL-02'), code },
   });
 }
 
