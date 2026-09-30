@@ -59,6 +59,8 @@ export default async function publicRoutes(app: FastifyInstance) {
         pinLength: p('P-PIN-LAENGE'),
         pinTries: p('P-PIN-VERSUCHE'),
         hideMs: p('P-VERSTECKEN-ZEIT'),
+        // Issue #37: Dauer einer Datenfreigabe für das Support-Team
+        supportReleaseS: p('P-SUPPORT-FREIGABE'),
         checkin: [p('P-CHECKIN-ERSTE'), p('P-CHECKIN-ZWEITE'), p('P-CHECKIN-DRITTE')].map((s) => Math.round(s / 60)),
         checkinGraceMin: Math.round(p('P-CHECKIN-FRIST') / 60),
         archiveHours: hours(p('P-ARCHIV')),

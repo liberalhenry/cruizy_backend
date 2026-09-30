@@ -44,3 +44,27 @@ CREATE TABLE IF NOT EXISTS telegram_state (
 ALTER TABLE profiles ADD COLUMN IF NOT EXISTS notify_email boolean NOT NULL DEFAULT false;
 ALTER TABLE profiles ADD COLUMN IF NOT EXISTS notify_telegram boolean NOT NULL DEFAULT false;
 ALTER TABLE profiles ADD COLUMN IF NOT EXISTS notify_content boolean NOT NULL DEFAULT false;
+
+-- #37: Support-Portal. Antworten des Teams stehen immer in der App; auf Wunsch kommt zusätzlich ein
+-- Hinweis per E-Mail (ohne Inhalt). Antworten kann die Person nur in der App.
+ALTER TABLE tickets ADD COLUMN IF NOT EXISTS notify_email boolean NOT NULL DEFAULT false;
+ALTER TABLE tickets ADD COLUMN IF NOT EXISTS last_person_at timestamptz;
+ALTER TABLE ticket_messages ADD COLUMN IF NOT EXISTS read_by_person_at timestamptz;
+
+-- #37: Das Team bittet um Einsicht in Konto-, Profil- oder Diagnosedaten — sichtbar erst nach Freigabe
+-- durch die Person, befristet, jederzeit widerrufbar. Diagnosedaten liefert das Gerät bei der Freigabe.
+CREATE TABLE IF NOT EXISTS support_data_requests (
+  id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  ticket_id       uuid NOT NULL REFERENCES tickets(id) ON DELETE CASCADE,
+  account_id      uuid NOT NULL REFERENCES accounts(id) ON DELETE CASCADE,
+  requested_by    uuid REFERENCES staff(id) ON DELETE SET NULL,
+  scope           text[] NOT NULL CHECK (scope <@ ARRAY['konto','profil','diagnose']::text[] AND cardinality(scope) > 0),
+  reason          text NOT NULL,
+  status          text NOT NULL DEFAULT 'offen' CHECK (status IN ('offen','freigegeben','abgelehnt','widerrufen','abgelaufen')),
+  created_at      timestamptz NOT NULL DEFAULT now(),
+  decided_at      timestamptz,
+  expires_at      timestamptz,
+  diagnostics_enc bytea
+);
+CREATE INDEX IF NOT EXISTS support_data_requests_ticket ON support_data_requests (ticket_id);
+CREATE INDEX IF NOT EXISTS support_data_requests_account ON support_data_requests (account_id);

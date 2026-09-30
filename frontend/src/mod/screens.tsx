@@ -1348,6 +1348,71 @@ function Art18({ isBetrieb, owner }: { isBetrieb: boolean; owner: boolean }) {
 
 // ─────────────────────────── M85 · Vorgänge ───────────────────────────
 
+const RELEASE_SCOPES: [string, string][] = [
+  ['konto', 'Kontodaten'],
+  ['profil', 'Profildaten'],
+  ['diagnose', 'Diagnosedaten des Geräts'],
+];
+
+/** Issue #37: um Einsicht in Daten bitten — sichtbar erst nach Freigabe durch die Person. */
+function DataRelease({ ticket, onChange }: { ticket: any; onChange: () => void }) {
+  const [scope, setScope] = useState<string[]>(['konto', 'diagnose']);
+  const [why, setWhy] = useState('');
+  const [shown, setShown] = useState<Record<string, any>>({});
+  const { run, box } = useAction();
+  const hasOpen = ticket.dataRequests.some((r: any) => r.status === 'offen');
+  return (
+    <div className="card p-3 flex flex-col gap-2">
+      {box}
+      <p className="font-semibold">Datenfreigabe</p>
+      <p className="text-xs muted">Die Person entscheidet in der App. Freigaben sind befristet, jederzeit widerrufbar und enden mit dem Abschluss. Jede Einsicht steht im Zugriffsprotokoll.</p>
+      {ticket.dataRequests.map((r: any) => (
+        <div key={r.id} className="border-t border-linie pt-2">
+          <p>
+            {r.scope.join(', ')} · <b>{r.status}</b>
+            {r.expiresAt && r.status === 'freigegeben' ? ` bis ${fmtDate(r.expiresAt, true)}` : ''}
+          </p>
+          <p className="text-xs muted">
+            {fmtDate(r.createdAt, true)} · {r.reason}
+          </p>
+          {r.status === 'freigegeben' && (
+            <button
+              className="btn-secondary mt-1"
+              onClick={async () => {
+                const d: any = await run(() => api.post(`/mod-api/tickets/${ticket.id}/data`, { requestId: r.id, reason: 'Bearbeitung Vorgang' }));
+                if (d) setShown({ ...shown, [r.id]: d.data });
+              }}
+            >
+              Freigegebene Daten ansehen
+            </button>
+          )}
+          {shown[r.id] && <pre className="mt-2 text-xs bg-flaeche2 rounded p-2 overflow-auto max-h-80 whitespace-pre-wrap">{JSON.stringify(shown[r.id], null, 2)}</pre>}
+        </div>
+      ))}
+      {ticket.mayRequestData && !hasOpen && (
+        <div className="border-t border-linie pt-2 flex flex-col gap-2">
+          <div className="flex gap-3 flex-wrap">
+            {RELEASE_SCOPES.map(([k, label]) => (
+              <label key={k} className="flex items-center gap-1">
+                <input type="checkbox" checked={scope.includes(k)} onChange={(e) => setScope(e.target.checked ? [...scope, k] : scope.filter((x) => x !== k))} />
+                {label}
+              </label>
+            ))}
+          </div>
+          <TextArea label="Begründung (sieht die Person)" value={why} onChange={(e) => setWhy(e.target.value)} />
+          <button
+            className="btn-secondary self-start"
+            disabled={!scope.length || why.trim().length < 10}
+            onClick={() => run(() => api.post(`/mod-api/tickets/${ticket.id}/data-request`, { scope, reason: why }), 'Anfrage gesendet.').then((r) => r && (setWhy(''), onChange()))}
+          >
+            Um Freigabe bitten
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function Vorgaenge() {
   const { data, reload } = useAsync(() => api.get('/mod-api/tickets'), []);
   const templates = useAsync(() => api.get('/mod-api/tickets/templates'), []);
@@ -1438,9 +1503,18 @@ function Vorgaenge() {
             {open.attachment && <img src={open.attachment} alt="" className="max-h-60 object-contain" />}
             {open.messages.map((m: any, i: number) => (
               <p key={i} className={`whitespace-pre-wrap ${m.fromTeam ? 'border-l-2 border-akzent pl-2' : ''}`}>
+                <span className="block text-xs muted">
+                  {m.fromTeam ? 'Team' : 'Person'} · {fmtDate(m.at, true)}
+                </span>
                 {m.text}
               </p>
             ))}
+            {!open.withoutAccount && (
+              <p className="text-xs muted">
+                Antwort erscheint in der App der Person{open.notifyEmail ? ' — dazu ein Hinweis per E-Mail ohne Inhalt' : ''}. Die Person antwortet nur in der App.
+              </p>
+            )}
+            {!open.withoutAccount && <DataRelease ticket={open} onChange={() => openTicket(open.id)} />}
             <select className="input" onChange={(e) => e.target.value && setAnswer(e.target.value)} defaultValue="">
               <option value="">Vorlage einsetzen (bearbeitbar, nie automatisch)</option>
               {templates.data?.templates.map((tp: any) => (

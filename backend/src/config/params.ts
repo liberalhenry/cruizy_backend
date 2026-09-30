@@ -237,6 +237,9 @@ export const PARAMETER = {
   'P-TICKET-MAX': { wert: 4000, einheit: 'Zeichen', quelle: 'kontaktservice-und-tickets.md' },
   'P-TICKET-FRIST': { wert: 72 * STD, einheit: 's', quelle: 'F75 (Obergrenze 72 h)' },
   'P-TICKET-FRIST-DATENSCHUTZ': { wert: 30 * TAG, einheit: 's', quelle: 'Art. 12 Abs. 3 DSGVO' },
+  // Issue #37: wie lange eine Datenfreigabe für das Support-Team gilt, und wie lange eine Anfrage offen bleibt
+  'P-SUPPORT-FREIGABE': { wert: 7 * TAG, einheit: 's', quelle: 'Issue #37 (Vorschlag)' },
+  'P-SUPPORT-ANFRAGE-OFFEN': { wert: 14 * TAG, einheit: 's', quelle: 'Issue #37 (Vorschlag)' },
   'P-TICKET-AUFBEWAHRUNG': { wert: { hilfe: 90 * TAG, missbrauch: 365 * TAG }, einheit: 's nach Abschluss', quelle: 'D17 (Vorschlag)' },
   'P-ANMELDE-VERSUCHE': { wert: 10, einheit: 'Fehlversuche je Stunde und Netz', quelle: 'FV-90' },
   'P-REGISTRIERUNGEN-JE-NETZ': { wert: 20, einheit: 'je Tag', quelle: 'F02 (Begrenzung je Netzadresse), FV-90' },

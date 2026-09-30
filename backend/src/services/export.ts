@@ -97,6 +97,7 @@ export const EXPORT_SECTIONS: Record<string, string> = {
   // Issues #32, #35, #37
   telegram_chats: 'benachrichtigungen (Telegram: nur, ob verbunden)',
   telegram_link_tokens: 'nicht exportiert: Einmal-Link zum Verbinden (höchstens 30 Minuten)',
+  support_data_requests: 'hilfe_vorgaenge (Datenfreigaben; Diagnosedaten nur während der Freigabe gespeichert)',
 };
 
 export async function collectExport(accountId: string) {
@@ -331,6 +332,15 @@ export async function collectExport(accountId: string) {
           von: m.author === 'team' ? 'Team' : 'du',
           text: decStr('tickets', m.body_enc, 'ticket'),
           am: m.created_at,
+        })),
+        // Issue #37: Anfragen des Teams nach Daten und deine Entscheidung
+        datenfreigaben: (await q(`SELECT scope, reason, status, created_at, decided_at, expires_at FROM support_data_requests WHERE ticket_id = $1 ORDER BY created_at`, [tk.id])).map((r) => ({
+          bereiche: r.scope,
+          begruendung: r.reason,
+          status: r.status,
+          angefragt: r.created_at,
+          entschieden: r.decided_at,
+          gueltig_bis: r.expires_at,
         })),
       })),
     ),

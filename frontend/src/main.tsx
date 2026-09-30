@@ -5,6 +5,10 @@ import './index.css';
 import App from './App';
 import { AppProvider } from './lib/app';
 import { applySymbol } from './screens/einstieg';
+import { installErrorCapture } from './lib/diagnostics';
+
+// Issue #37: Fehler der App für die Diagnose mitschreiben — verlässt das Gerät nur nach Freigabe
+installErrorCapture();
 
 // Tarnung (Issue #11): Symbol, Name und Manifest schon beim Start — nicht erst nach einer Auswahl
 try {
