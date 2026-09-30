@@ -6,7 +6,7 @@ import { one, type Queryable, db } from '../db/pool.js';
 import { t } from '../lib/texts.js';
 import { emit } from './hub.js';
 import { sendPush } from './push.js';
-import { forwardNotice } from './notice-forward.js';
+import { forwardNotice, track } from './notice-forward.js';
 
 export type NoticeKind =
   | 'meldung_entscheidung'
@@ -84,7 +84,7 @@ export async function createNotice(
   forwardNotice(accountId, { kind, title, body, target: noticeTarget(kind, ref, opts.url) });
   // neutrale Mitteilung ohne Inhalt, unter Beachtung der Ruhezeit
   if (opts.push !== false) {
-    sendPush(accountId, 'notice', { title: opts.pushTitle ?? t('ST-PUSH-10'), url: opts.url ?? '/ich/mitteilungen', tag: 'mitteilung' }).catch(() => {});
+    track(sendPush(accountId, 'notice', { title: opts.pushTitle ?? t('ST-PUSH-10'), url: opts.url ?? '/ich/mitteilungen', tag: 'mitteilung' }));
   }
   return row!.id as string;
 }

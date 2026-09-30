@@ -28,18 +28,23 @@ export const ONLY_IN_APP = new Set([
   'hilfe_freigabe',
 ]);
 
-const pending = new Set<Promise<void>>();
+const pending = new Set<Promise<unknown>>();
 
-/** Nur für Tests: warten, bis alle angestoßenen Weiterleitungen fertig sind. */
+/** Angestoßene Arbeit einer Mitteilung (Push, Weiterleitung) merken — wirft nie. */
+export function track(job: Promise<unknown>) {
+  const safe = job.catch(() => {});
+  pending.add(safe);
+  void safe.finally(() => pending.delete(safe));
+}
+
+/** Nur für Tests: warten, bis alle angestoßenen Push-Mitteilungen und Weiterleitungen fertig sind. */
 export async function flushForwards() {
   while (pending.size) await Promise.allSettled([...pending]);
 }
 
 /** Wird von createNotice angestoßen — wartet nicht und wirft nie. */
 export function forwardNotice(accountId: string, n: { kind: string; title: string; body: string; target: string | null }) {
-  const job = deliver(accountId, n).catch(() => {});
-  pending.add(job);
-  void job.finally(() => pending.delete(job));
+  track(deliver(accountId, n));
 }
 
 async function deliver(accountId: string, n: { kind: string; title: string; body: string; target: string | null }) {
