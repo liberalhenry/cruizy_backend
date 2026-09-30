@@ -8,6 +8,7 @@ import { t } from './lib/texts';
 import { api } from './lib/api';
 import { Einwilligung, Gast, HomeBildschirm, Konto, PasswortNeu, ProfilAnlegen, Willkommen, Wiederherstellung, WiederherstellungAbbrechen } from './screens/einstieg';
 import { Naehe, Suche } from './screens/naehe';
+import { Besucher, Gesundheit } from './screens/extras';
 import { FotoHinzufuegen, ProfilEditor, ProfilEigen, ProfilFremd } from './screens/profil';
 import { AlbumAnsicht, AlbumBearbeiten, Alben, Chat, Chats } from './screens/chats';
 import { Pruefung, PruefungAusweis, PruefungFertig } from './screens/pruefung';
@@ -279,6 +280,8 @@ export default function App() {
       <Route path="/ich/einstellungen" element={<Einstellungen />} />
       <Route path="/ich/blockiert" element={<Blockiert />} />
       <Route path="/ich/merkliste" element={<Merkliste />} />
+      <Route path="/ich/besucher" element={<Besucher />} />
+      <Route path="/ich/gesundheit" element={<Gesundheit />} />
       <Route path="/ich/hilfe" element={<Hilfe />} />
       <Route path="/ich/konto-sichern" element={<KontoSichern />} />
       <Route path="*" element={<Navigate to="/naehe" replace />} />

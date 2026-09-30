@@ -83,6 +83,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
         setDot((d) => ({ ...d, chats: r.requests > 0 }));
       })
       .catch(() => {});
+    // Issue #27: neue Profilbesucher als Punkt am Reiter „Ich“ — gebündelt, keine Push je Besuch
+    api
+      .get('/api/visitors/new')
+      .then((r) => setDot((d) => ({ ...d, ich: r.count > 0 })))
+      .catch(() => {});
   }, []);
 
   const refreshMe = useCallback(async () => {

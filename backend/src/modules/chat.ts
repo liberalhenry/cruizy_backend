@@ -33,6 +33,7 @@ import { metric } from '../services/metrics.js';
 import { openHashCase } from '../services/photo-chain.js';
 import { activityBand, currentIntention, initialOf, isBlockedEitherWay, canSee } from '../services/profiles.js';
 import { sendPush } from '../services/push.js';
+import { recomputeResponseRates } from '../services/response-rate.js';
 import { stage2Required, stage2Satisfied } from '../services/stage2.js';
 import { dropImageCache } from './media.js';
 import { readUpload } from './photos.js';
@@ -131,30 +132,26 @@ async function notifyNewMessage(c: ConvRow, senderId: string, preview: string | 
   await sendPush(recipient, 'message', { title, url: `/chats/${c.id}`, tag: `c:${c.id}` }, senderId);
 }
 
-/** Antwortquote (F19): Erstnachricht beim Empfänger vermerken — nur Wertung, keine Inhalte. */
+/** Antwortquote (F19, Issue #24): Erstnachricht beim Empfänger vermerken — nur Wertung, keine Inhalte. */
 async function recordFirstMessage(convId: string, recipient: string, sender: string, client: Queryable) {
-  const week = isoWeek(new Date());
-  const n = await one(
-    `SELECT count(*)::int AS n FROM first_message_stats WHERE recipient_id = $1 AND iso_week = $2 AND counted`,
-    [recipient, week],
-    client,
-  );
   await q(
     `INSERT INTO first_message_stats (conversation_id, recipient_id, sender_id, received_at, iso_week, counted, deadline_at)
-     VALUES ($1, $2, $3, now(), $4, $5, now() + make_interval(secs => $6)) ON CONFLICT DO NOTHING`,
-    [convId, recipient, sender, week, n!.n < p('P-AQ-JE-WOCHE'), p('P-AQ-FRIST')],
+     VALUES ($1, $2, $3, now(), $4, true, now() + make_interval(secs => $5)) ON CONFLICT DO NOTHING`,
+    [convId, recipient, sender, isoWeek(new Date()), p('P-AQ-FRIST')],
     client,
   );
 }
 
-/** Erste Reaktion der angeschriebenen Person — Text oder höflicher Ausstieg (F19, AK-F45-04). */
+/** Erste Reaktion der angeschriebenen Person — Text, Sprache oder höfliche Absage (F19, AK-F45-04). */
 async function markAnswered(convId: string, recipient: string, client: Queryable) {
-  await q(
+  const r = await q(
     `UPDATE first_message_stats SET answered_at = now()
-      WHERE conversation_id = $1 AND recipient_id = $2 AND answered_at IS NULL AND deadline_at > now()`,
+      WHERE conversation_id = $1 AND recipient_id = $2 AND answered_at IS NULL AND deadline_at > now() RETURNING 1`,
     [convId, recipient],
     client,
   );
+  // nach dem Abschluss der Buchung neu berechnen (die Quote kommt nie aus dem Client)
+  if (r.length) setTimeout(() => recomputeResponseRates(recipient).catch(() => {}), 300);
 }
 
 async function afterText(c: ConvRow, me: string, client: Queryable) {
@@ -592,6 +589,7 @@ export default async function chatRoutes(app: FastifyInstance) {
         }
       }
       const mid = await insertText(a, c!, text, b.clientRef ?? null, cl);
+      if (created) await cl.query(`UPDATE first_message_stats SET first_message_id = $2 WHERE conversation_id = $1`, [c!.id, mid]);
       return { c: c!, mid };
     });
     await notifyNewMessage(res.c, a.id, text);

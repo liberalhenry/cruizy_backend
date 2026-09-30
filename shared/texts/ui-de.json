@@ -27,6 +27,18 @@
   "s": "ENTWURF",
   "t": "Das Abo startet später. Bis dahin ist alles kostenlos."
  },
+ "UI-ABO-TEST": {
+  "s": "ENTWURF",
+  "t": "PLUS im Testbetrieb 7 Tage ausprobieren"
+ },
+ "UI-ABO-TEST-AKTIV": {
+  "s": "ENTWURF",
+  "t": "PLUS ist aktiv bis {datum}."
+ },
+ "UI-ABO-TEST-BEENDEN": {
+  "s": "ENTWURF",
+  "t": "PLUS beenden"
+ },
  "UI-ABSICHT-ERNEUERN": {
   "s": "ENTWURF",
   "t": "„{absicht}“ erneuern"
@@ -247,6 +259,54 @@
   "s": "ENTWURF",
   "t": "Anmelden mit Apple ist gerade nicht verfügbar."
  },
+ "UI-AQ-EIGEN": {
+  "s": "ENTWURF",
+  "t": "Deine Antwortquote: {prozent} % · {stufe}"
+ },
+ "UI-AQ-EIGEN-ERKL": {
+  "s": "ENTWURF",
+  "t": "Die Quote zählt, wie oft du in den letzten {tage} Tagen innerhalb von 3 Tagen auf neue Nachrichten reagiert hast."
+ },
+ "UI-AQ-EIGEN-OHNE-STUFE": {
+  "s": "ENTWURF",
+  "t": "Deine Antwortquote: {prozent} %"
+ },
+ "UI-AQ-FORTSCHRITT": {
+  "s": "ENTWURF",
+  "t": "{zahl} von {min} Unterhaltungen gezählt"
+ },
+ "UI-AQ-INFO-1": {
+  "s": "ENTWURF",
+  "t": "Das zeigt, wie zuverlässig jemand auf erste Nachrichten reagiert."
+ },
+ "UI-AQ-INFO-2": {
+  "s": "ENTWURF",
+  "t": "Wir schauen auf die letzten {tage} Tage. Als Antwort zählt jede Reaktion innerhalb von 3 Tagen, auch eine freundliche Absage."
+ },
+ "UI-AQ-INFO-2-TITEL": {
+  "s": "ENTWURF",
+  "t": "So wird’s berechnet:"
+ },
+ "UI-AQ-INFO-3": {
+  "s": "ENTWURF",
+  "t": "Das heißt nicht, dass jemand nicht antwortet. Vielleicht ist er neu oder bekommt gerade wenige Nachrichten."
+ },
+ "UI-AQ-INFO-3-TITEL": {
+  "s": "ENTWURF",
+  "t": "Kein Abzeichen?"
+ },
+ "UI-AQ-INFO-TITEL": {
+  "s": "ENTWURF",
+  "t": "Was bedeutet das?"
+ },
+ "UI-AQ-NOCH-KEINE": {
+  "s": "ENTWURF",
+  "t": "Deine Antwortquote: Sobald du genug Nachrichten bekommen hast, siehst du hier deine Quote."
+ },
+ "UI-AQ-TIPP": {
+  "s": "ENTWURF",
+  "t": "Tipp: Kein Interesse? Mit „Absagen“ antwortest du mit einem Tipp freundlich, und das zählt als Antwort."
+ },
  "UI-AUSWEIS-ERKL": {
   "s": "ENTWURF",
   "t": "Wir schauen nur auf dein Geburtsdatum. Name, Foto, Adresse und Ausweisnummer darfst du abdecken — wir brauchen sie nicht und speichern sie nicht."
@@ -306,6 +366,58 @@
  "UI-AUSWEIS-WEG": {
   "s": "ENTWURF",
   "t": "Mit einem Foto deines Ausweises"
+ },
+ "UI-BESUCHER": {
+  "s": "ENTWURF",
+  "t": "Profilbesucher"
+ },
+ "UI-BESUCHER-ANZAHL": {
+  "s": "ENTWURF",
+  "t": "{zahl} Besucher in den letzten {tage} Tagen"
+ },
+ "UI-BESUCHER-FRUEHER": {
+  "s": "ENTWURF",
+  "t": "früher"
+ },
+ "UI-BESUCHER-GESTERN": {
+  "s": "ENTWURF",
+  "t": "gestern"
+ },
+ "UI-BESUCHER-HEUTE": {
+  "s": "ENTWURF",
+  "t": "heute"
+ },
+ "UI-BESUCHER-KEINE": {
+  "s": "ENTWURF",
+  "t": "In den letzten {tage} Tagen hat niemand dein Profil geöffnet."
+ },
+ "UI-BESUCHER-NEU": {
+  "s": "ENTWURF",
+  "t": "{zahl} neu"
+ },
+ "UI-BESUCHER-PREMIUM": {
+  "s": "ENTWURF",
+  "t": "Wer dein Profil angesehen hat, siehst du mit PLUS."
+ },
+ "UI-BESUCHER-PREMIUM-KNOPF": {
+  "s": "ENTWURF",
+  "t": "PLUS ansehen"
+ },
+ "UI-BESUCHER-UNSICHTBAR": {
+  "s": "ENTWURF",
+  "t": "Unsichtbar stöbern"
+ },
+ "UI-BESUCHER-UNSICHTBAR-ERKL": {
+  "s": "ENTWURF",
+  "t": "Deine Besuche werden nicht gespeichert. Andere sehen nicht, dass du ihr Profil angesehen hast."
+ },
+ "UI-BESUCHER-UNSICHTBAR-PLUS": {
+  "s": "ENTWURF",
+  "t": "Nur mit PLUS."
+ },
+ "UI-BESUCHER-WOCHE": {
+  "s": "ENTWURF",
+  "t": "diese Woche"
  },
  "UI-BLOCKIERT-BIS": {
   "s": "ENTWURF",
@@ -2495,6 +2607,98 @@
   "s": "ENTWURF",
   "t": "Das neue Passwort muss sich vom alten unterscheiden."
  },
+ "UI-TEST-AKTIVIEREN": {
+  "s": "ENTWURF",
+  "t": "Erinnerung einschalten"
+ },
+ "UI-TEST-AUS": {
+  "s": "ENTWURF",
+  "t": "Erinnerung ausschalten"
+ },
+ "UI-TEST-AUS-FERTIG": {
+  "s": "ENTWURF",
+  "t": "Ausgeschaltet. Deine Angaben sind gelöscht."
+ },
+ "UI-TEST-BEREICH": {
+  "s": "ENTWURF",
+  "t": "Gesundheit & Tests"
+ },
+ "UI-TEST-DATEN": {
+  "s": "ENTWURF",
+  "t": "Gespeichert sind nur: Intervall, Datum der nächsten Erinnerung, Zeitpunkt deiner Einwilligung."
+ },
+ "UI-TEST-EINWILLIGUNG": {
+  "s": "ENTWURF",
+  "t": "Ich willige ein, dass Cruizy mein Erinnerungsintervall und das Datum der nächsten Erinnerung speichert, um mich zu erinnern. Diese Angaben sind nur für mich sichtbar, werden nicht im Profil angezeigt und nie weitergegeben. Ich kann das jederzeit ausschalten, dann werden die Daten gelöscht."
+ },
+ "UI-TEST-ERLEDIGT": {
+  "s": "ENTWURF",
+  "t": "Erledigt"
+ },
+ "UI-TEST-GERADE": {
+  "s": "ENTWURF",
+  "t": "Ich war gerade testen"
+ },
+ "UI-TEST-INTERVALL": {
+  "s": "ENTWURF",
+  "t": "Wie oft?"
+ },
+ "UI-TEST-KANAL": {
+  "s": "ENTWURF",
+  "t": "Wähle mindestens einen Weg."
+ },
+ "UI-TEST-KANAL-APP": {
+  "s": "ENTWURF",
+  "t": "Als Hinweis in der App"
+ },
+ "UI-TEST-KANAL-PUSH": {
+  "s": "ENTWURF",
+  "t": "Per Push-Mitteilung"
+ },
+ "UI-TEST-MONATE-1": {
+  "s": "ENTWURF",
+  "t": "jeden Monat"
+ },
+ "UI-TEST-MONATE-3": {
+  "s": "ENTWURF",
+  "t": "alle 3 Monate"
+ },
+ "UI-TEST-MONATE-6": {
+  "s": "ENTWURF",
+  "t": "alle 6 Monate"
+ },
+ "UI-TEST-NAECHSTE": {
+  "s": "ENTWURF",
+  "t": "Nächste Erinnerung: {datum}"
+ },
+ "UI-TEST-PUSH": {
+  "s": "ENTWURF",
+  "t": "Du hast eine Erinnerung."
+ },
+ "UI-TEST-SCHALTER": {
+  "s": "ENTWURF",
+  "t": "Erinnere mich an einen Test"
+ },
+ "UI-TEST-SCHALTER-ERKL": {
+  "s": "ENTWURF",
+  "t": "Auf sexuell übertragbare Infektionen. Freiwillig, nur für dich sichtbar, nie im Profil."
+ },
+ "UI-TEST-TESTSTELLEN": {
+  "s": "ENTWURF",
+  "t": "Teststellen finden"
+ },
+ "UI-TEST-TEXT": {
+  "s": "ENTWURF",
+  "t": "Regelmäßig testen schützt dich und andere."
+ },
+ "UI-TEST-TITEL": {
+  "s": "ENTWURF",
+  "t": "Zeit für deinen Check!"
+ },
+ "UI-TEST-WOCHE": {
+  "s": "ENTWURF",
+  "t": "In einer Woche erinnern"
+ },
  "UI-TESTBETRIEB-EINLADUNG": {
   "s": "ENTWURF",
   "t": "Wir sind gerade im Testbetrieb. Zum Registrieren brauchst du einen Einladungscode."
@@ -2582,6 +2786,54 @@
  "UI-VERSTECKT-TITEL": {
   "s": "ENTWURF",
   "t": "Einkaufsliste"
+ },
+ "UI-VOLL-FERTIG": {
+  "s": "ENTWURF",
+  "t": "Dein Profil ist komplett!"
+ },
+ "UI-VOLL-HINWEIS": {
+  "s": "ENTWURF",
+  "t": "Dein Profil ist erst zu {prozent} % fertig. Mit ein paar Angaben mehr bekommst du deutlich mehr Nachrichten."
+ },
+ "UI-VOLL-JETZT": {
+  "s": "ENTWURF",
+  "t": "Jetzt ergänzen"
+ },
+ "UI-VOLL-TIPP-ABSICHT": {
+  "s": "ENTWURF",
+  "t": "Setz eine Absicht – dann wissen andere, was du gerade suchst."
+ },
+ "UI-VOLL-TIPP-BASIS": {
+  "s": "ENTWURF",
+  "t": "Ergänze Alter, Größe, Gewicht und Körpertyp."
+ },
+ "UI-VOLL-TIPP-BIO": {
+  "s": "ENTWURF",
+  "t": "Schreib ein paar Sätze über dich."
+ },
+ "UI-VOLL-TIPP-DREI-FOTOS": {
+  "s": "ENTWURF",
+  "t": "Füg noch {zahl} Fotos hinzu."
+ },
+ "UI-VOLL-TIPP-DREI-FOTOS-1": {
+  "s": "ENTWURF",
+  "t": "Füg noch ein Foto hinzu."
+ },
+ "UI-VOLL-TIPP-FOTO-ECHT": {
+  "s": "ENTWURF",
+  "t": "Lass dein Foto verifizieren – das schafft Vertrauen."
+ },
+ "UI-VOLL-TIPP-INTERESSEN": {
+  "s": "ENTWURF",
+  "t": "Wähle ein paar Interessen aus."
+ },
+ "UI-VOLL-TIPP-PROFILBILD": {
+  "s": "ENTWURF",
+  "t": "Lade ein Profilbild hoch – Profile mit Bild bekommen deutlich mehr Nachrichten."
+ },
+ "UI-VOLL-TITEL": {
+  "s": "ENTWURF",
+  "t": "Dein Profil ist zu {prozent} % fertig"
  },
  "UI-VORLAGEN": {
   "s": "ENTWURF",

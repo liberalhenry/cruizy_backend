@@ -73,6 +73,9 @@ export const EXPORT_SECTIONS: Record<string, string> = {
   grid_snapshots: 'nicht exportiert: Reihenfolge einer Rastersitzung (nur Kennungen, höchstens 6 Stunden)',
   message_templates: 'vorlagen',
   albums: 'alben',
+  profile_visits: 'profilbesuche',
+  health_reminders: 'test_erinnerung',
+  health_profile: 'gesundheitsangaben',
 };
 
 export async function collectExport(accountId: string) {
@@ -191,7 +194,14 @@ export async function collectExport(accountId: string) {
           koerpertypen: prof.body_types,
           kinks: prof.kinks,
           in_namenssuche_auffindbar: prof.name_searchable,
-          antwortquote: { eingeschaltet: prof.response_rate_enabled, band: prof.response_band },
+          antwortquote: {
+            eingeschaltet: prof.response_rate_enabled,
+            stufe: ({ 1: 'Antwortet fast immer', 2: 'Antwortet meistens', 3: 'Antwortet oft' } as Record<number, string>)[prof.response_band] ?? null,
+            prozent: prof.response_pct === null ? null : Math.round(prof.response_pct * 100),
+            gezaehlte_unterhaltungen: prof.response_counted,
+            zeitraum_tage: Math.round(p('P-AQ-ZEITRAUM') / 86400),
+            berechnet: prof.response_band_at,
+          },
           einstellungen: {
             sortierung: prof.sort_mode,
             bilder_empfangen: prof.media_receive,
@@ -222,10 +232,31 @@ export async function collectExport(accountId: string) {
     gespraeche: conversations,
     alben,
     vorlagen: (await templatesOf(accountId)).map((x) => x.text),
+    // Issue #27: wen ich besucht habe und wer mich besucht hat (ohne bestehende Blockierungen)
+    profilbesuche: {
+      von_dir: await q(
+        `SELECT pr.name, v.visited_at AS am FROM profile_visits v JOIN profiles pr ON pr.account_id = v.target_id
+          WHERE v.visitor_id = $1 AND NOT EXISTS (SELECT 1 FROM blocks b WHERE b.revoked_at IS NULL
+            AND ((b.blocker_id = $1 AND b.blocked_id = v.target_id) OR (b.blocker_id = v.target_id AND b.blocked_id = $1)))
+          ORDER BY v.visited_at DESC`,
+        [accountId],
+      ),
+      bei_dir: await q(
+        `SELECT pr.name, v.visited_at AS am FROM profile_visits v JOIN profiles pr ON pr.account_id = v.visitor_id
+          WHERE v.target_id = $1 AND NOT EXISTS (SELECT 1 FROM blocks b WHERE b.revoked_at IS NULL
+            AND ((b.blocker_id = $1 AND b.blocked_id = v.visitor_id) OR (b.blocker_id = v.visitor_id AND b.blocked_id = $1)))
+          ORDER BY v.visited_at DESC`,
+        [accountId],
+      ),
+      unsichtbar_stoebern: prof?.invisible_browsing ?? false,
+    },
+    // Issue #25: nur Intervall, nächste Erinnerung, Einwilligung
+    test_erinnerung: await one(`SELECT interval_months AS intervall_monate, next_at AS naechste_erinnerung, consented_at AS einwilligung FROM health_reminders WHERE account_id = $1`, [accountId]),
+    gesundheitsangaben: await one(`SELECT prep, last_test AS letzter_test, consented_at AS einwilligung FROM health_profile WHERE account_id = $1`, [accountId]),
     album_freigaben: await q(`SELECT state AS zustand, created_at AS angeboten, ended_at AS beendet FROM album_shares WHERE owner_id = $1`, [accountId]),
     gesicht_freigeschaltet: await q(`SELECT created_at AS am, revoked_at AS zurueckgenommen FROM face_unlocks WHERE owner_id = $1`, [accountId]),
     bildanfragen: await q(`SELECT state AS zustand, requested_at AS angefragt, decided_at AS entschieden FROM media_grants WHERE recipient_id = $1`, [accountId]),
-    antwortquote_wertung: await q(`SELECT iso_week AS woche, counted AS gewertet, answered_at AS beantwortet FROM first_message_stats WHERE recipient_id = $1`, [accountId]),
+    antwortquote_wertung: await q(`SELECT received_at AS eingegangen, deadline_at AS frist, answered_at AS beantwortet, excluded AS ausgenommen FROM first_message_stats WHERE recipient_id = $1`, [accountId]),
     mitteilungen: await q(`SELECT title AS titel, body AS text, ref AS nummer, created_at AS am, first_shown_at AS angezeigt FROM notices WHERE account_id = $1`, [accountId]),
     mitteilungen_geraete: (await one(`SELECT count(*)::int AS n FROM push_subscriptions WHERE account_id = $1`, [accountId]))!.n,
     zusagen: await q(`SELECT e.title AS ereignis, e.starts_at AS beginn, r.created_at AS zugesagt FROM event_rsvps r JOIN events e ON e.id = r.event_id WHERE r.account_id = $1`, [accountId]),

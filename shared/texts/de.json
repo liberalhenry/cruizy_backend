@@ -157,7 +157,7 @@
  },
  "ST-CHAT-10": {
   "s": "ENTWURF",
-  "t": "Freundlich absagen"
+  "t": "Absagen"
  },
  "ST-CHAT-11": {
   "s": "ENTWURF",
@@ -1157,19 +1157,19 @@
  },
  "ST-PRO-10": {
   "s": "PLATZHALTER",
-  "t": "antwortet oft"
+  "t": "Antwortet fast immer"
  },
  "ST-PRO-11": {
   "s": "PLATZHALTER",
-  "t": "antwortet manchmal"
+  "t": "Antwortet meistens"
  },
  "ST-PRO-12": {
   "s": "PLATZHALTER",
-  "t": "antwortet selten"
+  "t": "Antwortet oft"
  },
  "ST-PRO-13": {
   "s": "ENTWURF",
-  "t": "Zeigt, wie oft jemand auf erste Nachrichten reagiert. Eine freundliche Absage zählt auch. Gewertet werden höchstens 20 erste Nachrichten pro Woche."
+  "t": "Zeigt, wie zuverlässig jemand auf erste Nachrichten reagiert. Gezählt werden die letzten 30 Tage; auch eine freundliche Absage zählt als Antwort."
  },
  "ST-PRO-14": {
   "s": "ENTWURF",

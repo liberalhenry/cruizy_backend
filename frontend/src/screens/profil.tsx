@@ -6,8 +6,9 @@ import { intentionLabel } from '../components/tile';
 import { ReportSheet, useBlock } from '../components/report';
 import { api, errText } from '../lib/api';
 import { useApp } from '../lib/app';
-import { ACTIVITY_TEXT, RESPONSE_TEXT, fmtDate, fmtKm, t } from '../lib/texts';
+import { ACTIVITY_TEXT, fmtDate, fmtKm, t } from '../lib/texts';
 import { IntentionPicker } from './einstieg';
+import { CompletenessCard, OwnResponseCard, ResponseBadge, ResponseInfo } from './extras';
 import { isIosSafariNotInstalled } from '../lib/push';
 
 function traitNames(ids: number[], traits: { items: { id: number; name: string }[] }[] | undefined) {
@@ -115,11 +116,7 @@ function ProfileBody({ p, own }: { p: any; own?: boolean }) {
         </ul>
       )}
       <p className="mt-3">{intentionLabel(p.intention)}</p>
-      {p.response && (
-        <button className="mt-1 text-sm muted underline" onClick={() => setInfo('quote')}>
-          {t(RESPONSE_TEXT[p.response])}
-        </button>
-      )}
+      <ResponseBadge stage={p.response} onInfo={() => setInfo('quote')} />
       {traits.length > 0 && (
         <div className="flex flex-wrap gap-2 mt-4">
           {traits.map((x) => (
@@ -143,8 +140,9 @@ function ProfileBody({ p, own }: { p: any; own?: boolean }) {
         </section>
       )}
       {gender && <p className="mt-4 text-sm muted">{gender}</p>}
-      <Sheet open={!!info} onClose={() => setInfo(null)} title={info === 'quote' ? t(RESPONSE_TEXT[p.response ?? 1]) : info === 'verified' ? t('UI-APP-GEPRUEFT') : t('ST-STO-41')}>
-        <p>{info === 'quote' ? t('ST-PRO-13') : info === 'verified' ? t('ST-VER-22') : t('ST-STO-42')}</p>
+      <ResponseInfo open={info === 'quote'} onClose={() => setInfo(null)} />
+      <Sheet open={info === 'verified' || info === 'approx'} onClose={() => setInfo(null)} title={info === 'verified' ? t('UI-APP-GEPRUEFT') : t('ST-STO-41')}>
+        <p>{info === 'verified' ? t('ST-VER-22') : t('ST-STO-42')}</p>
       </Sheet>
     </>
   );
@@ -286,7 +284,9 @@ export function ProfilEigen() {
             </Banner>
           </div>
         )}
+        <CompletenessCard />
         <ProfileBody p={preview} own />
+        <OwnResponseCard />
         <section className="card mt-6 overflow-hidden">
           <button className="row" onClick={() => nav('/pruefung')}>
             <span className="flex-1 py-3">{t('UI-PROFIL-ALTERSPRUEFUNG')}</span>

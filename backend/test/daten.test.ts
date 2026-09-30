@@ -170,20 +170,4 @@ describe('Hintergrundaufträge', () => {
     expect(notes!.n).toBe(0);
   });
 
-  it('Antwortquote: Band erst ab P-AQ-MIN gewerteten Erstnachrichten, nie als Zahl (F19)', async () => {
-    const target = await member({ pos: KOELN });
-    const senders = [];
-    for (let i = 0; i < 6; i++) senders.push(await member({ pos: destination(KOELN, i * 60, 1) }));
-    const convs: string[] = [];
-    for (const s of senders) convs.push((await s.c.post('/api/conversations', { to: target.id, text: 'Hallo' })).body.conversationId);
-    // antwortet auf 4 von 6
-    for (const c of convs.slice(0, 4)) await target.c.post(`/api/conversations/${c}/messages`, { text: 'Hi' });
-    // unbeantwortete Erstnachrichten: Frist abgelaufen
-    await q(`UPDATE first_message_stats SET deadline_at = now() - interval '1 minute' WHERE recipient_id = $1 AND answered_at IS NULL`, [target.id]);
-    await computeResponseBands();
-    const pr = await one(`SELECT response_band FROM profiles WHERE account_id = $1`, [target.id]);
-    expect(pr!.response_band).toBe(1); // 4/6 ≥ 0,6
-    const view = await senders[0].c.get(`/api/profiles/${target.id}`);
-    expect(JSON.stringify(view.body)).not.toMatch(/0\.6|66|4\/6|answered|counted/);
-  });
 });

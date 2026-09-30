@@ -58,12 +58,13 @@ export const PARAMETER = {
   'P-FREITEXT-MAX': { wert: 2000, einheit: 'Zeichen', quelle: 'Issue #13' },
   'P-KOERPERTYP-MAX': { wert: 3, einheit: 'Körpertypen je Profil', quelle: 'Issue #13' },
   'P-KINKS-MAX': { wert: 12, einheit: 'Kinks je Profil', quelle: 'Issue #13' },
-  'P-AQ-JE-WOCHE': { wert: 20, quelle: 'Handbuch A (F19)' },
-  'P-AQ-FRIST': { wert: 7 * TAG, einheit: 's', quelle: 'Handbuch A (F19)' },
-  'P-AQ-MIN': { wert: 5, quelle: 'FV-34' },
-  'P-AQ-ZEITRAUM': { wert: 28 * TAG, einheit: 's', quelle: 'FV-34' },
-  'P-AQ-GRENZE-1': { wert: 0.6, quelle: 'FV-34 (Nr. 68, Weg B), [A-19]' },
-  'P-AQ-GRENZE-2': { wert: 0.2, quelle: 'FV-34 (Nr. 68, Weg B), [A-19]' },
+  // Issue #24: Antwortquote — rollierender Zeitraum, Frist, Mindestzahl, Stufen, Hysterese, Massennachrichten
+  'P-AQ-ZEITRAUM': { wert: 30 * TAG, einheit: 's', quelle: 'Issue #24' },
+  'P-AQ-FRIST': { wert: 72 * STD, einheit: 's', quelle: 'Issue #24' },
+  'P-AQ-MIN': { wert: 10, einheit: 'gezählte Unterhaltungen', quelle: 'Issue #24' },
+  'P-AQ-STUFEN': { wert: [0.85, 0.65, 0.45], einheit: 'fast immer / meistens / oft', quelle: 'Issue #24' },
+  'P-AQ-HYSTERESE': { wert: 0.05, einheit: 'Anteil (5 Prozentpunkte)', quelle: 'Issue #24' },
+  'P-AQ-MASSEN': { wert: { anzahl: 20, sekunden: 3600 }, einheit: 'neue Unterhaltungen je Zeitraum', quelle: 'Issue #24' },
   'P-AKTIV-JETZT': { wert: 5 * MIN, einheit: 's', quelle: 'FV-35' },
   'P-AKTIV-TAKT': { wert: 1 * MIN, einheit: 's', quelle: 'FV-35' },
   'P-NEU-TAGE': { wert: 7, einheit: 'Tage (Konto jünger → „Neu“)', quelle: 'Issue #22 (vorher FV-40: 14)' },
@@ -81,6 +82,21 @@ export const PARAMETER = {
   'P-RASTER-INAKTIV-UNTEN': { wert: 14, einheit: 'Tage (ab dann ans Ende des Abschnitts)', quelle: 'Issue #22' },
   'P-RASTER-INAKTIV-WEG': { wert: 30, einheit: 'Tage (ab dann nicht mehr im Raster)', quelle: 'Issue #22' },
   'P-NEU-REIHE': { wert: 10, einheit: 'Profile in „Neu in deiner Nähe“', quelle: 'Issue #22' },
+  // Issue #29: Punkte der Profil-Vollständigkeit (Summe 100)
+  'P-VOLLSTAENDIG': {
+    wert: { profilbild: 20, drei_fotos: 10, bio: 15, basis: 15, foto_echt: 20, interessen: 10, absicht: 10 },
+    einheit: 'Punkte',
+    quelle: 'Issue #29',
+  },
+  // Issue #27: Profilbesucher
+  'P-BESUCHE-TAGE': { wert: 30, einheit: 'Tage Aufbewahrung', quelle: 'Issue #27' },
+  // Issue #25: Test-Erinnerung und vorbereitete Gesundheitsfelder
+  'P-TESTSTELLEN': {
+    wert: { DE: 'https://www.aidshilfe.de/adressen', AT: 'https://www.aidshilfen.at', CH: 'https://www.drgay.ch/de/' },
+    einheit: 'Adressen der Teststellen-Suche je Land (vor dem Start prüfen)',
+    quelle: 'Issue #25',
+  },
+  'P-GESUNDHEITSFELDER': { wert: false, einheit: 'Schalter health_profile_fields', quelle: 'Issue #25 — NICHT vor rechtlicher Prüfung einschalten' },
   'P-SUCHE-MAX-KM': { wert: 150, einheit: 'km (Namenssuche)', quelle: 'Issue #20' },
   'P-SUCHE-MIN-ZEICHEN': { wert: 2, einheit: 'Zeichen', quelle: 'Issue #20' },
   'P-ZAEHLER-LATENZ': { wert: 300, einheit: 'ms', quelle: 'FV-90' },

@@ -23,6 +23,8 @@ import {
 import { allowedDurations, computeExpiry, renewalQuiet, type Duration } from '../services/intentions.js';
 import { CARD_COLUMNS, VISIBLE_SQL, currentIntention, profileView, toTile, viewerFor } from '../services/profiles.js';
 import { ownPhotos } from './photos.js';
+import { completeness } from '../services/completeness.js';
+import { recordVisit } from './visitors.js';
 import { emit } from '../services/hub.js';
 
 const intentionKey = z.enum(['abend', 'schreiben', 'absicht3', 'absicht4']);
@@ -76,6 +78,19 @@ export async function ownProfile(accountId: string) {
     r.intention_expired_at &&
     r.last_intention &&
     (!r.renewal_dismissed_until || new Date(r.renewal_dismissed_until) < new Date(r.intention_expired_at));
+  const photoStats = await one(`SELECT count(*) FILTER (WHERE status = 'approved')::int AS n FROM photos WHERE account_id = $1`, [accountId]);
+  const complete = completeness({
+    approvedPhotos: photoStats?.n ?? 0,
+    photoMode: r.photo_mode,
+    bio: r.free_text ?? '',
+    age: r.age,
+    heightCm: r.height_cm,
+    weightKg: r.weight_kg,
+    bodyTypes: r.body_types ?? [],
+    faceChecked: !!r.face_check_at,
+    traits: r.traits ?? [],
+    intentionSet: !!intention,
+  });
   const ageDue =
     r.age != null && r.age_set_at && Date.now() - new Date(r.age_prompted_at ?? r.age_set_at).getTime() > p('P-ALTER-NACHFRAGE') * 1000;
   return {
@@ -98,8 +113,18 @@ export async function ownProfile(accountId: string) {
     position: r.position,
     bodyTypes: r.body_types,
     kinks: r.kinks,
-    responseRate: { enabled: r.response_rate_enabled, band: r.response_rate_enabled ? r.response_band : null },
+    // Issue #24: den Prozentwert sieht nur die Person selbst
+    responseRate: {
+      enabled: r.response_rate_enabled,
+      band: r.response_rate_enabled ? r.response_band : null,
+      pct: r.response_pct === null ? null : Math.round(r.response_pct * 100),
+      counted: r.response_counted ?? 0,
+      min: p('P-AQ-MIN'),
+      days: Math.round(p('P-AQ-ZEITRAUM') / 86400),
+    },
     verified: { age: !!r.age1_at, stage2: !!r.age2_at, photos: !!r.face_check_at, contract: !!r.contract_version },
+    // Issue #29: nur hier, im eigenen Profil — nie in einer Antwort über andere
+    completeness: { ...complete, hintShown: !!r.completeness_hint_at },
     settings: {
       sort: r.sort_mode,
       mediaReceive: r.media_receive,
@@ -116,6 +141,7 @@ export async function ownProfile(accountId: string) {
       voiceReceive: r.voice_receive,
       startersEnabled: r.starters_enabled,
       onceHintSeen: r.once_hint_seen,
+      invisibleBrowsing: r.invisible_browsing,
     },
     location: {
       level: r.level ?? 'grob',
@@ -321,6 +347,12 @@ export default async function profileRoutes(app: FastifyInstance) {
     return { ok: true, hint, profile: await ownProfile(a.id) };
   });
 
+  app.post('/api/profile/completeness-hint', async (req) => {
+    const a = await requireMember(req);
+    await q(`UPDATE profiles SET completeness_hint_at = now() WHERE account_id = $1 AND completeness_hint_at IS NULL`, [a.id]);
+    return { ok: true };
+  });
+
   app.post('/api/profile/age-confirm', async (req) => {
     const a = await requireMember(req);
     await q(`UPDATE profiles SET age_prompted_at = now() WHERE account_id = $1`, [a.id]);
@@ -365,6 +397,8 @@ export default async function profileRoutes(app: FastifyInstance) {
     // „Dieses Profil gibt es nicht mehr.“ — Blockierung, Löschung, Sperre sehen gleich aus
     if (!view) throw notFound();
     const bookmarked = !!(await one(`SELECT 1 FROM bookmarks WHERE owner_id = $1 AND target_id = $2`, [a.id, id]));
+    // Issue #27: nur das Öffnen eines Profils zählt als Besuch
+    await recordVisit(a.id, id);
     return { profile: { ...view, bookmarked } };
   });
 

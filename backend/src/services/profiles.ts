@@ -89,14 +89,16 @@ export function initialOf(name: string): string {
   return /\p{L}/u.test(ch) ? ch.toLocaleUpperCase('de-DE') : ch;
 }
 
-export function toTile(row: any, viewer: Viewer, opts: { withActivity?: boolean } = {}): Tile {
+export function toTile(row: any, viewer: Viewer, opts: { withActivity?: boolean; fullResponse?: boolean } = {}): Tile {
   const photo = row.photo_mode === 'photo' ? parsePhoto(row.first_photo) : null;
   const guest = !viewer.id;
   const pos: LatLng | null = row.display_lat != null ? { lat: row.display_lat, lng: row.display_lng } : null;
   let km: number | null = null;
   if (viewer.cell && pos) km = displayKm(distanceKm(viewer.cell, pos));
-  const response =
+  const stage =
     !guest && viewer.responseEnabled && row.response_rate_enabled && row.response_band ? (row.response_band as 1 | 2 | 3) : null;
+  // Issue #24: auf der Kachel nur die oberste Stufe, im Profil jede der drei — nie der Prozentwert
+  const response = opts.fullResponse ? stage : stage === 1 ? 1 : null;
   const viewerKey = viewer.id ?? viewer.guestKey ?? 'gast';
   return {
     id: row.id,
@@ -160,7 +162,7 @@ export async function profileView(viewer: Viewer, targetId: string) {
     [viewer.id, targetId],
   );
   if (!row) return null;
-  const tile = toTile(row, viewer, { withActivity: true });
+  const tile = toTile(row, viewer, { withActivity: true, fullResponse: true });
   // Freischaltung des Gesichts (F12): gilt, solange sie nicht zurückgenommen ist
   const unlocked = viewer.id
     ? !!(await one(

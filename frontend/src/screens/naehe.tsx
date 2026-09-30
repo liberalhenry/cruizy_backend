@@ -8,6 +8,7 @@ import { useApp } from '../lib/app';
 import { idbGet, idbSet } from '../lib/idb';
 import { INTENTION_TEXT, fmtTime, t } from '../lib/texts';
 import { reportPosition } from '../App';
+import { CompletenessHint } from './extras';
 
 type Sort = 'naehe' | 'antwortquote' | 'neu' | 'absicht';
 interface Range {
@@ -266,6 +267,7 @@ export function Naehe() {
             </Banner>
           </div>
         )}
+        <CompletenessHint />
         {me?.profile?.renewal && <RenewalBar renewal={me.profile.renewal} />}
         {err && online && (
           <div className="mb-3">

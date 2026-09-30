@@ -106,6 +106,16 @@ export default async function mediaRoutes(app: FastifyInstance) {
 
     if (!acc || acc.id !== tok.r) return deny(reply);
 
+    // Issue #27: Vorschau der Profilbesucher ohne Premium — nur die stark verkleinerte, unkenntliche Fassung
+    if (tok.k === 'teaser') {
+      const ph = await one(`SELECT public_file FROM photos WHERE id = $1 AND status = 'approved'`, [tok.id]);
+      if (!ph?.public_file) return deny(reply);
+      const k = `g:${ph.public_file}`;
+      let data = cacheGet(k);
+      if (!data) cachePut(k, (data = await guestVersion(await getFile('zone1-public', ph.public_file))));
+      return send(reply, data, tok.e);
+    }
+
     if (tok.k === 'own') {
       const ph = await one(`SELECT original_file FROM photos WHERE id = $1 AND account_id = $2 AND status <> 'blocked'`, [tok.id, acc.id]);
       if (!ph) return deny(reply);

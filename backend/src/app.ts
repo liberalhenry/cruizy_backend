@@ -21,6 +21,8 @@ import idVerificationRoutes from './modules/id-verification.js';
 import chatRoutes from './modules/chat.js';
 import albumRoutes from './modules/album.js';
 import templateRoutes from './modules/templates.js';
+import visitorRoutes from './modules/visitors.js';
+import healthRoutes from './modules/health.js';
 import safetyRoutes from './modules/safety.js';
 import reportRoutes from './modules/reports.js';
 import noticeRoutes from './modules/notices.js';
@@ -115,6 +117,8 @@ export async function buildApp(): Promise<FastifyInstance> {
   await app.register(chatRoutes);
   await app.register(albumRoutes);
   await app.register(templateRoutes);
+  await app.register(visitorRoutes);
+  await app.register(healthRoutes);
   await app.register(safetyRoutes);
   await app.register(reportRoutes);
   await app.register(noticeRoutes);

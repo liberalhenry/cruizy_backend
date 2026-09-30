@@ -14,12 +14,13 @@ import { disablePush, enablePush, isIosSafariNotInstalled, pushSupported } from 
 import { fmtDate, fmtKm, parts, plain, t } from '../lib/texts';
 import { LocationSheet } from './naehe';
 import { SymbolPicker } from './einstieg';
+import { CompletenessCard, PremiumTest } from './extras';
 
 // ─────────────────────────── S50 · Übersicht ───────────────────────────
 
 export function Ich() {
   const nav = useNavigate();
-  const { me, unread, logout, refreshMe, toast } = useApp();
+  const { me, unread, logout, refreshMe, toast, dot } = useApp();
   const [feedback, setFeedback] = useState('');
   const [wantsReply, setWantsReply] = useState(false);
   const [recovery, setRecovery] = useState<string | null>(null);
@@ -39,6 +40,8 @@ export function Ich() {
           </span>
           <span className="muted">›</span>
         </button>
+
+        <CompletenessCard />
 
         {p.account.restricted && (
           <div className="mb-3">
@@ -104,9 +107,11 @@ export function Ich() {
         <ListCard>
           <RowLink to="/ich/mitteilungen" label={t('ST-SIC-50')} badge={unread ? <span className="rounded-full bg-akzent text-grund px-2 text-xs">{unread}</span> : undefined} />
           <RowLink to="/ich/profil/bearbeiten" label={t('UI-ICH-PROFIL')} hint={t('UI-PROFIL-BEARBEITEN')} />
+          <RowLink to="/ich/besucher" label={t('UI-BESUCHER')} badge={dot.ich ? <span className="rounded-full bg-gefahr text-white px-2 text-xs">{t('UI-APP-NEUES')}</span> : undefined} />
           <RowLink to="/ich/merkliste" label={t('UI-ICH-MERKLISTE')} />
           <RowLink to="/alben" label={t('UI-ALBUM-MEINS')} />
           <RowLink to="/ich/sicherheit" label={t('ST-SIC-01')} hint={t('ST-SIC-02')} />
+          <RowLink to="/ich/gesundheit" label={t('UI-TEST-BEREICH')} />
           <RowLink to="/ich/daten" label={t('ST-DAT-01')} />
           <RowLink to="/ich/abo" label={t('UI-ICH-ABO')} />
           <RowLink to="/ich/einstellungen" label={t('UI-ICH-EINSTELLUNGEN')} />
@@ -583,7 +588,7 @@ export function Mitteilungen() {
           <div className="flex flex-col gap-3">
             <p className="text-sm muted">
               {fmtDate(open.createdAt, true)}
-              {open.ref && open.kind !== 'wiederherstellung' ? ` · ${open.ref}` : ''}
+              {open.ref && !['wiederherstellung', 'test_erinnerung', 'veranstaltung', 'date'].includes(open.kind) ? ` · ${open.ref}` : ''}
             </p>
             <p className="whitespace-pre-wrap">{open.body.replace(/\s*\[[^\]]+\]/g, '')}</p>
             {open.kind === 'wiederherstellung' && (
@@ -607,6 +612,18 @@ export function Mitteilungen() {
               <button className="btn-secondary" onClick={() => nav('/ich/meldungen')}>
                 {t('UI-MELDUNGEN-TITEL')}
               </button>
+            )}
+            {open.kind === 'test_erinnerung' && (
+              <>
+                {open.ref && (
+                  <a className="btn-secondary" href={open.ref} target="_blank" rel="noopener noreferrer">
+                    {t('UI-TEST-TESTSTELLEN')} ↗
+                  </a>
+                )}
+                <button className="btn-primary" onClick={() => nav('/ich/gesundheit')}>
+                  {t('UI-TEST-BEREICH')}
+                </button>
+              </>
             )}
             {open.kind === 'export_bereit' && (
               <button className="btn-secondary" onClick={() => nav('/ich/daten')}>
@@ -970,7 +987,8 @@ export function Abo() {
             ))}
           </ul>
         </Section>
-        <p className="text-sm muted">{t('ST-ABO-19')}</p>
+        <PremiumTest />
+        <p className="text-sm muted mt-4">{t('ST-ABO-19')}</p>
       </Page>
     </div>
   );
