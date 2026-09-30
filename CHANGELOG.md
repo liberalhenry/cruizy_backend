@@ -11,6 +11,8 @@ Werkzeug → „Aktualisierung“ (Owner) oder `bash deploy/update.sh`.
 
 ## [Unveröffentlicht]
 
+## [0.6.0] – 2026-09-30
+
 ### Geändert
 - **Neue Gestaltung der App („Nachtstadt“):** eigene Schriften (Bricolage Grotesque für Überschriften, Figtree
   für Text), im Paket mitgeliefert — kein Abruf bei Dritten. Tiefer Hintergrund mit leichtem Lichtschimmer von
