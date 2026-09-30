@@ -2267,6 +2267,10 @@
   "s": "ENTWURF",
   "t": "Diese Woche"
  },
+ "UI-HEUTE-ZEITRAUM": {
+  "s": "ENTWURF",
+  "t": "Zeitraum"
+ },
  "UI-HILFE-ANTWORTEN": {
   "s": "ENTWURF",
   "t": "Antworten"

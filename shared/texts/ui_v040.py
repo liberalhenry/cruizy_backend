@@ -88,6 +88,9 @@ NEU = {
   'UI-SUP-N-FREIGABE': 'Das Support-Team bittet um Einsicht in einige Daten, um dir helfen zu können. Du entscheidest in der App, ob du sie freigibst.',
   'UI-SUP-ANFRAGE-OFFEN': 'Es gibt schon eine offene Anfrage in diesem Vorgang.',
   'UI-SUP-KEINE-FREIGABE': 'Dafür gibt es keine gültige Freigabe.',
+
+  # ───── #39 Heute ─────
+  'UI-HEUTE-ZEITRAUM': 'Zeitraum',
 }
 
 ERSETZT = {
