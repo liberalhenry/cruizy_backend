@@ -64,7 +64,8 @@ export async function ownProfile(accountId: string) {
             a.created_at AS account_created, a.recovery_prompted_at, a.recovery_code_created_at,
             a.email_verified_at IS NOT NULL AS has_email, a.phone_verified_at IS NOT NULL AS has_phone,
             a.primary_method, a.trusted_key_hash IS NOT NULL AS has_trusted, a.hash_restricted_at,
-            l.level, l.city_id, l.cell_lat IS NOT NULL AS has_location, l.approx, l.invisible, l.in_zone, l.country
+            l.level, l.city_id, l.cell_lat IS NOT NULL AS has_location, l.approx, l.invisible, l.in_zone, l.country,
+            l.travel_place, l.travel_since, l.shift_lat IS NOT NULL AS shifted
        FROM profiles pr JOIN accounts a ON a.id = pr.account_id
        LEFT JOIN locations l ON l.account_id = pr.account_id
       WHERE pr.account_id = $1`,
@@ -151,6 +152,8 @@ export async function ownProfile(accountId: string) {
       invisible: !!r.invisible,
       inZone: !!r.in_zone,
       country: r.country,
+      travel: r.travel_place ? { place: r.travel_place, since: r.travel_since } : null,
+      shifted: !!r.shifted,
     },
     account: {
       primaryMethod: r.primary_method,

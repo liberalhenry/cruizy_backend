@@ -10,6 +10,7 @@ import { q, one } from '../db/pool.js';
 import { displayKm, distanceKm, type LatLng } from '../lib/geo.js';
 import { sameLocalDay } from '../lib/time.js';
 import { imgUrl } from './media-tokens.js';
+import { publicTrips } from '../modules/travel.js';
 
 export interface Viewer {
   id: string | null; // null = Gast
@@ -35,13 +36,17 @@ export const CARD_COLUMNS = `
   a.id, a.created_at AS account_created_at, a.last_active_at, a.first_visible_at, a.face_check_at, a.hash_restricted_at,
   pr.name, pr.age, pr.photo_mode, pr.initial_color, pr.intention, pr.intention_expires_at,
   pr.response_rate_enabled, pr.response_band, pr.gender_visible, pr.gender_category,
-  l.display_lat, l.display_lng, l.approx, l.level,
+  l.display_lat, l.display_lng, l.approx, l.level, l.travel_lat, l.travel_lng, l.travel_place, l.cell_lat AS own_cell_lat, l.cell_lng AS own_cell_lng,
   (SELECT row(ph.id, ph.blurred)::text FROM photos ph
      WHERE ph.account_id = a.id AND ph.status = 'approved' ORDER BY ph.position, ph.created_at LIMIT 1) AS first_photo,
   (a.face_check_at IS NOT NULL AND NOT EXISTS (
      SELECT 1 FROM photos ph2 WHERE ph2.account_id = a.id AND ph2.status = 'approved' AND ph2.created_at > a.face_check_at)) AS verified`;
 
 export type ActivityBand = 1 | 2 | 3 | 4 | 5;
+
+function travelModeOf(from: LatLng | null, to: LatLng): 'auto' | 'flug' {
+  return !from || distanceKm(from, to) >= 300 ? 'flug' : 'auto';
+}
 
 export function activityBand(last: Date | null, nowD = new Date()): ActivityBand {
   if (!last) return 5;
@@ -78,6 +83,8 @@ export interface Tile {
   approx: boolean;
   /** Konto jünger als P-NEU-TAGE (Issue #22) */
   isNew: boolean;
+  /** Travel-Modus (Issue #18): nur das Zeichen, nie der Ort, an dem gestöbert wird */
+  travel: { mode: 'auto' | 'flug' } | null;
   intention: { key: string; hours: number } | null;
   response: 1 | 2 | 3 | null;
   verified: boolean;
@@ -110,6 +117,10 @@ export function toTile(row: any, viewer: Viewer, opts: { withActivity?: boolean;
     color: row.initial_color,
     km,
     approx: !!row.approx && km !== null,
+    travel:
+      row.travel_lat != null && !guest
+        ? { mode: travelModeOf(row.own_cell_lat != null ? { lat: row.own_cell_lat, lng: row.own_cell_lng } : null, { lat: row.travel_lat, lng: row.travel_lng }) }
+        : null,
     isNew: !!row.account_created_at && Date.now() - new Date(row.account_created_at).getTime() < p('P-NEU-TAGE') * 86400_000,
     intention: currentIntention(row),
     response,
@@ -195,5 +206,8 @@ export async function profileView(viewer: Viewer, targetId: string) {
     position: row.position ?? null,
     bodyTypes: row.body_types ?? [],
     kinks: row.kinks ?? [],
+    // Issue #18: wo die Person gerade stöbert, und ihre öffentlichen Reisen
+    travelPlace: row.travel_lat != null ? row.travel_place : null,
+    trips: viewer.id ? await publicTrips(targetId) : [],
   };
 }

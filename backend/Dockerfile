@@ -29,6 +29,8 @@ WORKDIR /app/backend
 COPY --from=build /app/backend/node_modules ./node_modules
 COPY --from=build /app/backend/dist ./dist
 COPY backend/package.json ./
+# Ortsverzeichnis DE/AT/CH für Travel und Reisen (Issue #18, GeoNames CC BY 4.0)
+COPY backend/verzeichnis ./verzeichnis
 COPY shared/texts /app/shared/texts
 # Logo für die HTML-Mails (Issue #9)
 COPY shared/brand /app/shared/brand

@@ -97,6 +97,12 @@ export const PARAMETER = {
     quelle: 'Issue #25',
   },
   'P-GESUNDHEITSFELDER': { wert: false, einheit: 'Schalter health_profile_fields', quelle: 'Issue #25 — NICHT vor rechtlicher Prüfung einschalten' },
+  // Issue #18: Travel, Punkt verschieben, Reisen
+  'P-VERSCHIEBEN-MAX-KM': { wert: 20, einheit: 'km (eigenen Punkt verschieben ohne Travel)', quelle: 'Issue #18' },
+  'P-BALD-TAGE': { wert: 3, einheit: 'Tage vor der Anreise „bald in der Gegend“', quelle: 'Issue #18' },
+  'P-REISE-MAX-TAGE': { wert: 90, einheit: 'Tage je Reise', quelle: 'Issue #18' },
+  'P-REISEN-MAX': { wert: 10, einheit: 'kommende Reisen je Konto', quelle: 'Issue #18' },
+  'P-TRAVEL-ABO': { wert: false, einheit: 'Travel nur mit PLUS?', quelle: 'Issue #18 (offen: Abo oder frei)' },
   'P-SUCHE-MAX-KM': { wert: 150, einheit: 'km (Namenssuche)', quelle: 'Issue #20' },
   'P-SUCHE-MIN-ZEICHEN': { wert: 2, einheit: 'Zeichen', quelle: 'Issue #20' },
   'P-ZAEHLER-LATENZ': { wert: 300, einheit: 'ms', quelle: 'FV-90' },

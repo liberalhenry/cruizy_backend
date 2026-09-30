@@ -81,6 +81,8 @@ export interface DiscoverResult extends GridPage {
   inRadius: number;
   fewNearby: boolean;
   newNearby: Tile[];
+  /** Issue #18: angekündigte Reisen hierher — ab P-BALD-TAGE vor der Anreise */
+  soonNearby: (Tile & { soon: { from: string; to: string; place: string } })[];
   sort: SortMode;
 }
 
@@ -355,8 +357,11 @@ export async function discover(opts: DiscoverOpts): Promise<DiscoverResult> {
   );
   const newNearby = fresh.map((c) => freshTiles.get(c.id)).filter(Boolean) as Tile[];
 
+  const soonNearby = opts.cityMode ? [] : await soonTiles(opts.viewer, opts.ref);
+
   return {
     ...page,
+    soonNearby,
     radiusKm,
     capKm,
     inRadius: built.inRadius,
@@ -364,6 +369,35 @@ export async function discover(opts: DiscoverOpts): Promise<DiscoverResult> {
     newNearby,
     sort: opts.sort,
   };
+}
+
+/**
+ * „Bald in der Gegend“ (Issue #18): öffentliche Reisen, deren Ziel (mit seinem Umkreis je nach
+ * Ortsgröße) den Bezugspunkt einschließt — ab P-BALD-TAGE vor der Anreise bis zum letzten Tag.
+ */
+async function soonTiles(viewer: Viewer, ref: LatLng) {
+  const rows = await q(
+    `SELECT ${CARD_COLUMNS}, t.place_label, t.from_date, t.to_date
+       FROM trips t
+       JOIN accounts a ON a.id = t.account_id
+       JOIN profiles pr ON pr.account_id = a.id
+       LEFT JOIN locations l ON l.account_id = a.id
+      WHERE t.public AND t.to_date >= current_date AND t.from_date - make_interval(days => $4) <= current_date
+        AND ${VISIBLE_SQL} AND a.hash_restricted_at IS NULL
+        AND (2 * 6371.0088 * asin(least(1, sqrt(power(sin(radians(t.lat - $2) / 2), 2) +
+             cos(radians($2)) * cos(radians(t.lat)) * power(sin(radians(t.lng - $3) / 2), 2))))) <= t.radius_km
+      ORDER BY t.from_date LIMIT 20`,
+    [viewer.id, ref.lat, ref.lng, p('P-BALD-TAGE')],
+  );
+  const seen = new Set<string>();
+  const out = [];
+  for (const r of rows) {
+    if (seen.has(r.id)) continue;
+    seen.add(r.id);
+    const d = (x: Date) => new Date(x).toISOString().slice(0, 10);
+    out.push({ ...toTile(r, viewer), soon: { from: d(r.from_date), to: d(r.to_date), place: r.place_label } });
+  }
+  return out;
 }
 
 /** Nachladen aus der gespeicherten Reihenfolge. null = Liste abgelaufen (dann neu laden). */

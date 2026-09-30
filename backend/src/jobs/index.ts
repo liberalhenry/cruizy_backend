@@ -196,6 +196,8 @@ async function housekeeping() {
   await q(`DELETE FROM profile_visits WHERE visited_at < now() - make_interval(days => $1)`, [p('P-BESUCHE-TAGE')]);
   await q(`UPDATE profiles pr SET invisible_browsing = false WHERE invisible_browsing AND NOT EXISTS (
              SELECT 1 FROM entitlements e WHERE e.account_id = pr.account_id AND e.valid_until > now())`);
+  // Issue #18: vergangene Reisen
+  await q(`DELETE FROM trips WHERE to_date < current_date - 1`);
   // Issue #22: Reihenfolgen der Rastersitzungen
   await q(`DELETE FROM grid_snapshots WHERE created_at < now() - interval '6 hours'`);
 }

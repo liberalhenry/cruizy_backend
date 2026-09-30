@@ -753,6 +753,7 @@ export function Suche() {
 
 /** S13: Standortgenauigkeit und Zonen. Der Client erhält nie eine fremde Koordinate. */
 export function LocationSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const nav = useNavigate();
   const { refreshMe, toast } = useApp();
   const [loc, setLoc] = useState<any | null>(null);
   const [cities, setCities] = useState<{ id: string; name: string }[]>([]);
@@ -792,6 +793,9 @@ export function LocationSheet({ open, onClose }: { open: boolean; onClose: () =>
             ]}
           />
           <p className="text-sm muted">{t('UI-STANDORT-ANDERE-SEHEN')}</p>
+          <button className="btn-secondary" onClick={() => (onClose(), nav('/ich/reisen'))}>
+            ✈ {t('UI-TRAVEL-TITEL')}
+          </button>
           {loc.level !== 'aus' && localStorage.getItem('standort-ok') !== '1' && (
             <button
               className="btn-secondary"

@@ -115,6 +115,25 @@ function ProfileBody({ p, own }: { p: any; own?: boolean }) {
           ))}
         </ul>
       )}
+      {p.travel && (
+        <p className="mt-2 text-sm text-warn flex items-center gap-1">
+          {p.travel.mode === 'flug' ? '✈' : '🚗'} {p.travelPlace ? t('UI-TRAVEL-STOEBERT', { ort: p.travelPlace }) : t(p.travel.mode === 'flug' ? 'UI-TRAVEL-ZEICHEN-FLUG' : 'UI-TRAVEL-ZEICHEN-AUTO')}
+        </p>
+      )}
+      {p.trips?.length > 0 && (
+        <ul className="mt-2 text-sm flex flex-col gap-1" aria-label={t('UI-PROFIL-REISEN')}>
+          {p.trips.map((tr: any, i: number) => (
+            <li key={i} className="flex items-center gap-2">
+              <Icon name="calendar" className="w-4 h-4 text-akzent" />
+              {t('UI-REISE-ZEILE', {
+                ort: tr.place,
+                von: new Date(`${tr.from}T12:00:00`).toLocaleDateString('de-DE', { day: 'numeric', month: 'numeric' }),
+                bis: new Date(`${tr.to}T12:00:00`).toLocaleDateString('de-DE', { day: 'numeric', month: 'numeric', year: 'numeric' }),
+              })}
+            </li>
+          ))}
+        </ul>
+      )}
       <p className="mt-3">{intentionLabel(p.intention)}</p>
       <ResponseBadge stage={p.response} onInfo={() => setInfo('quote')} />
       {traits.length > 0 && (

@@ -74,6 +74,7 @@ export const EXPORT_SECTIONS: Record<string, string> = {
   message_templates: 'vorlagen',
   albums: 'alben',
   profile_visits: 'profilbesuche',
+  trips: 'reisen',
   health_reminders: 'test_erinnerung',
   health_profile: 'gesundheitsangaben',
 };
@@ -250,6 +251,8 @@ export async function collectExport(accountId: string) {
       ),
       unsichtbar_stoebern: prof?.invisible_browsing ?? false,
     },
+    reisen: await q(`SELECT place_label AS ziel, from_date AS von, to_date AS bis, public AS oeffentlich FROM trips WHERE account_id = $1`, [accountId]),
+    travel: await one(`SELECT travel_place AS stoebert_in, travel_since AS seit, shift_lat IS NOT NULL AS punkt_verschoben FROM locations WHERE account_id = $1`, [accountId]),
     // Issue #25: nur Intervall, nächste Erinnerung, Einwilligung
     test_erinnerung: await one(`SELECT interval_months AS intervall_monate, next_at AS naechste_erinnerung, consented_at AS einwilligung FROM health_reminders WHERE account_id = $1`, [accountId]),
     gesundheitsangaben: await one(`SELECT prep, last_test AS letzter_test, consented_at AS einwilligung FROM health_profile WHERE account_id = $1`, [accountId]),

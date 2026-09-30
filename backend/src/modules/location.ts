@@ -83,6 +83,19 @@ export async function acceptPosition(accountId: string, pos: LatLng, opts: { for
       break;
     }
   }
+  // Issue #18: verschobener Punkt gilt, solange er höchstens P-VERSCHIEBEN-MAX-KM von der Zelle entfernt ist
+  const sh = await one(`SELECT shift_lat, shift_lng FROM locations WHERE account_id = $1 AND shift_lat IS NOT NULL`, [accountId]);
+  if (sh) {
+    const shift = { lat: sh.shift_lat, lng: sh.shift_lng };
+    if (distanceKm(cell, shift) <= p('P-VERSCHIEBEN-MAX-KM')) {
+      if (!invisible) {
+        display = shift;
+        approx = true;
+      }
+    } else {
+      await q(`UPDATE locations SET shift_lat = NULL, shift_lng = NULL WHERE account_id = $1`, [accountId]);
+    }
+  }
   await q(
     `INSERT INTO locations (account_id, level, cell_lat, cell_lng, display_lat, display_lng, approx, invisible, in_zone, updated_at)
      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, now())
@@ -124,7 +137,7 @@ export default async function locationRoutes(app: FastifyInstance) {
       if (b.level === 'aus') {
         // „Aus“: nichts mehr gespeichert, unsichtbar in Raster, Karte und Wochenaktiven (FV-01)
         await q(
-          `UPDATE locations SET level = 'aus', cell_lat = NULL, cell_lng = NULL, display_lat = NULL, display_lng = NULL,
+          `UPDATE locations SET level = 'aus', cell_lat = NULL, cell_lng = NULL, display_lat = NULL, display_lng = NULL, shift_lat = NULL, shift_lng = NULL,
                   approx = false, invisible = false, in_zone = false, updated_at = NULL WHERE account_id = $1`,
           [a.id],
         );
