@@ -24,6 +24,8 @@ import { purgeEventGroups, remindEvents } from '../modules/events.js';
 import { computeClusters } from '../modules/places.js';
 import { finalizeBlock } from '../modules/safety.js';
 import { weeklySummary } from '../modules/mod/log.js';
+import { closeReview } from '../modules/mod/idcheck.js';
+import { discord } from '../services/discord.js';
 
 interface Job {
   name: string;
@@ -142,12 +144,21 @@ async function purgeProvisional() {
   for (const r of rows) await deleteAccountNow(r.id, { vault: false });
 }
 
+/** Issue #7: unentschiedene Ausweisprüfungen — spätestens nach P-AUSWEIS-AUFBEWAHRUNG sind die Bilder weg. */
+async function expireIdReviews() {
+  const rows = await q(`SELECT id FROM id_reviews WHERE decided_at IS NULL AND created_at < now() - make_interval(secs => $1) LIMIT 100`, [p('P-AUSWEIS-AUFBEWAHRUNG')]);
+  for (const r of rows) await closeReview(r.id, 'abgelaufen', null);
+}
+
 /** Löschung nach der Karenz (F68) und nach FV-17 (nicht volljährig). */
 async function runDeletions() {
   const due = await q(`SELECT id FROM accounts WHERE deletion_due_at IS NOT NULL AND deletion_due_at <= now() LIMIT 50`);
   for (const r of due) await deleteAccountNow(r.id);
   const minors = await q(`SELECT id FROM accounts WHERE minor_locked_at IS NOT NULL AND minor_delete_at IS NOT NULL AND minor_delete_at <= now() LIMIT 50`);
   for (const r of minors) await deleteAccountNow(r.id);
+  if (due.length + minors.length) {
+    discord('konten', { title: 'Konten endgültig gelöscht', level: 'info', fields: [{ name: 'nach Karenz', value: String(due.length) }, { name: 'nicht volljährig', value: String(minors.length) }] });
+  }
 }
 
 /** Nachlauf-Ablage (FV-97): nach P-LOESCH-NACHLAUF gelöscht, außer sie hängt an einem Meldefall. */
@@ -279,6 +290,7 @@ const JOBS: Job[] = [
   { name: 'event_groups', everyS: () => HOUR, run: purgeEventGroups },
   { name: 'housekeeping', everyS: () => HOUR, run: housekeeping },
   { name: 'retention', everyS: () => 6 * HOUR, run: retention },
+  { name: 'id_reviews', everyS: () => HOUR, run: expireIdReviews },
   { name: 'photo_chains', everyS: () => 5 * MIN, run: resumePhotoChains },
   { name: 'pending_hashes', everyS: () => 6 * HOUR, run: pendingHashes },
   { name: 'metrics_archive', everyS: () => 6 * HOUR, run: archiveMonth },
@@ -316,6 +328,7 @@ async function runOne(job: Job) {
     await q(`INSERT INTO job_runs (name, last_run) VALUES ($1, now()) ON CONFLICT (name) DO UPDATE SET last_run = now()`, [job.name]);
   } catch (e) {
     console.error(`Auftrag ${job.name} fehlgeschlagen:`, (e as Error).message);
+    discord('system', { title: `Hintergrundauftrag fehlgeschlagen: ${job.name}`, level: 'danger', description: (e as Error).name });
   }
 }
 

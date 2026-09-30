@@ -141,7 +141,14 @@ export default async function ticketModRoutes(app: FastifyInstance) {
       const email = decStr('tickets', tk.email_enc, 'ticket');
       // FV-92: im Betreff nur die Fallnummer
       // Regel 3 (2.4): der erste Satz nennt den Anlass nicht
-      if (email) await sendMail({ to: email, subject: t('ST-HLF-24', { fallnummer: tk.number }), text: `${t('UI-MAIL-ANTWORT-EINLEITUNG', { fallnummer: tk.number })}\n\n${b.text}` });
+      if (email) {
+        await sendMail({
+          to: email,
+          subject: t('ST-HLF-24', { fallnummer: tk.number }),
+          text: `${t('UI-MAIL-ANTWORT-EINLEITUNG', { fallnummer: tk.number })}\n\n${b.text}`,
+          design: { heading: t('UI-MAIL-KOPF-ANTWORT') },
+        });
+      }
     }
     return { ok: true };
   });

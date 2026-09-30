@@ -5,8 +5,9 @@ import { db } from '../db/pool.js';
  * Fall- und Vorgangsnummern: Präfix, Jahr, laufende Nummer (FV-91).
  * Kein Datum genauer als das Jahr, keine Kontokennung, keine Kategorie.
  *   H = Hilfe und Kontakt · M = Meldung · E = Einspruch/Widerspruch · T = Hash-Treffer · O = Ort
+ *   A = Altersprüfung per Ausweis, die das Team prüft (Issue #7)
  */
-export async function nextNumber(prefix: 'H' | 'M' | 'E' | 'T' | 'O', client: Queryable = db()): Promise<string> {
+export async function nextNumber(prefix: 'H' | 'M' | 'E' | 'T' | 'O' | 'A', client: Queryable = db()): Promise<string> {
   const year = new Date().getUTCFullYear();
   const r = await client.query(
     `INSERT INTO counters (kind, year, value) VALUES ($1, $2, 1)

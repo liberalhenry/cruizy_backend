@@ -3,7 +3,8 @@
  *  * Kein Bildverweis in der Fallansicht (Zusage 4, AK-M04-02).
  *  * Hashwert im Klartext nur für BETRIEB (M30.03).
  *  * Höchstens zwei Hash-Fälle je Person und Tag, keine ab 21 Uhr (M90.01/02) — Sperren, nicht einstellbar.
- *  * Datei ansehen nur mit schriftlichem Grund und zweiter Person (M30.08).
+ *  * Datei ansehen nur mit schriftlichem Grund und zweiter Person (M30.08) — Owner ohne
+ *    zweite Person, gekennzeichnet im Protokoll (Issue #3).
  *  * Es gibt keine Schaltfläche „Datei löschen“.
  */
 import type { FastifyInstance } from 'fastify';
@@ -12,7 +13,7 @@ import { p } from '../../config/params.js';
 import { one, q } from '../../db/pool.js';
 import { AppError, notFound } from '../../lib/errors.js';
 import { body, idParam, params, uuid } from '../../lib/http.js';
-import { HASH_CASES_PER_DAY, afterHashLock, hashCasesToday, logged, requireStaff } from './core.js';
+import { HASH_CASES_PER_DAY, afterHashLock, hashCasesToday, logged, needsSecondPerson, requireStaff } from './core.js';
 import { modImgUrl } from './index.js';
 
 export default async function hashRoutes(app: FastifyInstance) {
@@ -64,9 +65,16 @@ export default async function hashRoutes(app: FastifyInstance) {
     const b = body(req, z.object({ reason: z.string().min(20) }));
     const hc = await one(`SELECT number FROM hash_cases WHERE id = $1`, [id]);
     if (!hc) throw notFound();
-    return logged(s, hc.number, 'datei_ansicht_beantragt', b.reason, async (c) => {
-      const r = (await c.query(`INSERT INTO mod_approvals (kind, ref, requested_by, reason) VALUES ('datei', $1, $2, $3) RETURNING id`, [id, s.id, b.reason])).rows[0];
-      return { approvalId: r.id };
+    const self = !needsSecondPerson(s);
+    return logged(s, hc.number, self ? 'datei_ansicht_ohne_zweite_person' : 'datei_ansicht_beantragt', b.reason, async (c) => {
+      const r = (
+        await c.query(
+          `INSERT INTO mod_approvals (kind, ref, requested_by, reason, approved_by, approved_at)
+           VALUES ('datei', $1, $2, $3, CASE WHEN $4 THEN $2::uuid END, CASE WHEN $4 THEN now() END) RETURNING id`,
+          [id, s.id, b.reason, self],
+        )
+      ).rows[0];
+      return { approvalId: r.id, approved: self };
     }, true);
   });
 
@@ -128,9 +136,11 @@ export default async function hashRoutes(app: FastifyInstance) {
     const b = body(req, z.object({ approve: z.boolean(), reason: z.string().min(1) }));
     const ap = await one(`SELECT * FROM mod_approvals WHERE id = $1 AND approved_by IS NULL AND rejected_at IS NULL`, [id]);
     if (!ap) throw notFound();
-    // nie die eigene Anfrage (auch durch CHECK in der Datenbank erzwungen)
-    if (ap.requested_by === s.id) throw new AppError(403, 'UI-MOD-EIGENER-ANTRAG', {}, 'eigener_antrag');
-    await logged(s, `freigabe:${ap.kind}:${ap.ref}`, b.approve ? 'gegengezeichnet' : 'gegenzeichnung_abgelehnt', b.reason, async (c) => {
+    // nie die eigene Anfrage — außer als Owner (Issue #3); auch in der Datenbank erzwungen
+    const self = ap.requested_by === s.id;
+    if (self && needsSecondPerson(s)) throw new AppError(403, 'UI-MOD-EIGENER-ANTRAG', {}, 'eigener_antrag');
+    const action = b.approve ? (self ? 'selbst_freigegeben_ohne_zweite_person' : 'gegengezeichnet') : 'gegenzeichnung_abgelehnt';
+    await logged(s, `freigabe:${ap.kind}:${ap.ref}`, action, b.reason, async (c) => {
       if (b.approve) await c.query(`UPDATE mod_approvals SET approved_by = $2, approved_at = now() WHERE id = $1`, [id, s.id]);
       else await c.query(`UPDATE mod_approvals SET rejected_at = now() WHERE id = $1`, [id]);
     }, true);

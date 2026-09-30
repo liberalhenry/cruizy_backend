@@ -3,6 +3,10 @@ import { useEffect, useState, type ReactNode } from 'react';
 import { Banner, Sheet, TextArea, Toggle, useAsync } from '../components/ui';
 import { api, errText } from '../lib/api';
 import { fmtDate, t } from '../lib/texts';
+import { Card, Logo, Reason, useAction } from './common';
+import { MeinZugang, Team } from './team';
+import { Ausweise } from './ausweis';
+import { Aktualisierung } from './updates';
 
 export interface Staff {
   staff: { id: string; name: string; role: 'MOD' | 'BETRIEB'; founder: boolean };
@@ -11,15 +15,17 @@ export interface Staff {
   hashLimit: number;
   hashLocked: boolean;
   mode: 'test' | 'live';
+  version?: string;
 }
 
-type Screen = 'uebersicht' | 'warteschlange' | 'meldungen' | 'hash' | 'freigaben' | 'sperren' | 'widerspruch' | 'protokoll' | 'orte' | 'einreichungen' | 'art18' | 'vorgaenge' | 'verwaltung';
+type Screen = 'uebersicht' | 'warteschlange' | 'meldungen' | 'hash' | 'freigaben' | 'sperren' | 'widerspruch' | 'protokoll' | 'orte' | 'einreichungen' | 'art18' | 'vorgaenge' | 'verwaltung' | 'team' | 'zugang' | 'ausweis' | 'updates';
 
-const NAV: { key: Screen; label: string; betrieb?: boolean }[] = [
+const NAV: { key: Screen; label: string; betrieb?: boolean; owner?: boolean }[] = [
   { key: 'uebersicht', label: 'Tagesübersicht' },
   { key: 'warteschlange', label: 'Warteschlange Zone 1' },
   { key: 'meldungen', label: 'Meldungen' },
   { key: 'hash', label: 'Hash-Treffer' },
+  { key: 'ausweis', label: 'Altersprüfung' },
   { key: 'freigaben', label: 'Zweite Person' },
   { key: 'sperren', label: 'Sperren' },
   { key: 'widerspruch', label: 'Einspruch/Widerspruch' },
@@ -29,62 +35,14 @@ const NAV: { key: Screen; label: string; betrieb?: boolean }[] = [
   { key: 'art18', label: 'Art. 18 DSA' },
   { key: 'protokoll', label: 'Zugriffsprotokoll' },
   { key: 'verwaltung', label: 'Verwaltung', betrieb: true },
+  { key: 'team', label: 'Team', owner: true },
+  { key: 'updates', label: 'Aktualisierung', owner: true },
+  { key: 'zugang', label: 'Mein Zugang' },
 ];
 
 function Ampel({ v }: { v: string }) {
   const c = v === 'rot' ? 'bg-gefahr' : v === 'gelb' ? 'bg-warn' : 'bg-gut';
   return <span className={`inline-block w-3 h-3 rounded-full ${c}`} aria-label={`Ampel ${v}`} />;
-}
-
-function useAction() {
-  const [err, setErr] = useState<string | null>(null);
-  const [ok, setOk] = useState<string | null>(null);
-  const run = async (fn: () => Promise<unknown>, success?: string) => {
-    setErr(null);
-    setOk(null);
-    try {
-      const r = await fn();
-      if (success) setOk(success);
-      return r;
-    } catch (e) {
-      setErr(errText(e));
-      return null;
-    }
-  };
-  const box = (
-    <>
-      {err && (
-        <div className="my-2">
-          <Banner kind="error">{err}</Banner>
-        </div>
-      )}
-      {ok && (
-        <div className="my-2">
-          <Banner kind="ok">{ok}</Banner>
-        </div>
-      )}
-    </>
-  );
-  return { run, box };
-}
-
-/** Grund-Eingabe: ohne Begründung wird nichts ausgeführt (M60). */
-function Reason({ value, onChange, label = 'Begründung (wird protokolliert)', min = 1 }: { value: string; onChange: (v: string) => void; label?: string; min?: number }) {
-  return <TextArea label={label} value={value} onChange={(e) => onChange(e.target.value)} hint={min > 1 ? `mindestens ${min} Zeichen` : undefined} />;
-}
-
-function Card({ title, children, right }: { title?: ReactNode; children: ReactNode; right?: ReactNode }) {
-  return (
-    <section className="card p-4 mb-4">
-      {(title || right) && (
-        <div className="flex items-center gap-2 mb-3">
-          <h2 className="font-semibold flex-1">{title}</h2>
-          {right}
-        </div>
-      )}
-      {children}
-    </section>
-  );
 }
 
 const EMERGENCY = (
@@ -100,15 +58,17 @@ export function Screens({ me, onLogout, reloadMe }: { me: Staff; onLogout: () =>
     <div className="min-h-screen md:flex">
       <aside className="md:w-60 md:min-h-screen bg-flaeche border-b md:border-b-0 md:border-r border-linie">
         <div className="p-4 border-b border-linie">
+          <Logo className="h-6 w-auto mb-3" />
           <p className="font-semibold">{me.staff.name}</p>
           <p className="text-xs muted">
             {me.staff.role}
-            {me.staff.founder ? ' · Gründer' : ''}
+            {me.staff.founder ? ' · Owner' : ''}
           </p>
           {me.mode === 'test' && <p className="text-xs text-warn mt-1">Testbetrieb — nur erfundene Daten</p>}
+          {me.version && <p className="text-xs muted mt-1 font-mono">v{me.version}</p>}
         </div>
         <nav className="flex md:flex-col overflow-x-auto">
-          {NAV.filter((n) => !n.betrieb || isBetrieb).map((n) => (
+          {NAV.filter((n) => (!n.betrieb || isBetrieb) && (!n.owner || me.staff.founder)).map((n) => (
             <button key={n.key} className={`text-left px-4 py-2.5 text-sm whitespace-nowrap ${screen === n.key ? 'bg-flaeche2 text-akzent' : ''}`} onClick={() => setScreen(n.key)}>
               {n.label}
             </button>
@@ -121,17 +81,21 @@ export function Screens({ me, onLogout, reloadMe }: { me: Staff; onLogout: () =>
       <main className="flex-1 p-4 max-w-5xl">
         {screen === 'uebersicht' && <Uebersicht me={me} go={setScreen} />}
         {screen === 'warteschlange' && <Warteschlange />}
-        {screen === 'meldungen' && <Meldungen />}
+        {screen === 'meldungen' && <Meldungen owner={me.staff.founder} />}
         {screen === 'hash' && <Hash me={me} reloadMe={reloadMe} />}
-        {screen === 'freigaben' && <Freigaben />}
-        {screen === 'sperren' && <Sperren />}
+        {screen === 'freigaben' && <Freigaben owner={me.staff.founder} />}
+        {screen === 'sperren' && <Sperren owner={me.staff.founder} />}
         {screen === 'widerspruch' && <Widerspruch />}
         {screen === 'protokoll' && <Protokoll isBetrieb={isBetrieb} />}
         {screen === 'orte' && <Orte />}
         {screen === 'einreichungen' && <Einreichungen />}
-        {screen === 'art18' && <Art18 isBetrieb={isBetrieb} />}
+        {screen === 'art18' && <Art18 isBetrieb={isBetrieb} owner={me.staff.founder} />}
         {screen === 'vorgaenge' && <Vorgaenge />}
         {screen === 'verwaltung' && isBetrieb && <Verwaltung />}
+        {screen === 'team' && me.staff.founder && <Team meId={me.staff.id} />}
+        {screen === 'zugang' && <MeinZugang />}
+        {screen === 'ausweis' && <Ausweise />}
+        {screen === 'updates' && me.staff.founder && <Aktualisierung />}
       </main>
     </div>
   );
@@ -376,7 +340,7 @@ function Warteschlange() {
 
 // ─────────────────────────── M20 · Meldungen ───────────────────────────
 
-function Meldungen() {
+function Meldungen({ owner }: { owner: boolean }) {
   const { data, reload } = useAsync(() => api.get('/mod-api/reports'), []);
   const [open, setOpen] = useState<any | null>(null);
   const [openReason, setOpenReason] = useState('');
@@ -472,7 +436,7 @@ function Meldungen() {
                   ))}
               </div>
             ))}
-            <Card title="Kontext ausklappen (zweite Person)">
+            <Card title={owner ? 'Kontext ausklappen (Owner — ohne zweite Person, wird protokolliert)' : 'Kontext ausklappen (zweite Person)'}>
               {!approvalId ? (
                 <>
                   <Reason value={ctxReason} onChange={setCtxReason} min={5} />
@@ -480,14 +444,20 @@ function Meldungen() {
                     className="btn-secondary"
                     disabled={ctxReason.trim().length < 5}
                     onClick={async () => {
-                      const r: any = await run(() => api.post(`/mod-api/reports/${open.report.id}/context/request`, { reason: ctxReason }), 'Freigabe beantragt. Die zweite Person muss zustimmen.');
-                      if (r) setApprovalId(r.approvalId);
+                      const r: any = await run(
+                        () => api.post(`/mod-api/reports/${open.report.id}/context/request`, { reason: ctxReason }),
+                        owner ? undefined : 'Freigabe beantragt. Die zweite Person muss zustimmen.',
+                      );
+                      if (!r) return;
+                      setApprovalId(r.approvalId);
+                      // Owner: gleich öffnen (Issue #3)
+                      if (r.approved) setCtx(await run(() => api.post(`/mod-api/reports/${open.report.id}/context`, { approvalId: r.approvalId, reason: ctxReason })));
                     }}
                   >
-                    Freigabe beantragen
+                    {owner ? 'Kontext öffnen' : 'Freigabe beantragen'}
                   </button>
                 </>
-              ) : (
+              ) : ctx ? null : (
                 <button className="btn-secondary" onClick={async () => setCtx(await run(() => api.post(`/mod-api/reports/${open.report.id}/context`, { approvalId, reason: ctxReason })))}>
                   Kontext öffnen (nach Freigabe)
                 </button>
@@ -631,7 +601,7 @@ function Hash({ me, reloadMe }: { me: Staff; reloadMe: () => void }) {
             <p>Gleicher Hash bei weiteren Uploads: {open.sameHashUploads}</p>
             <p>Erledigt: {open.done.join(' · ')}</p>
             <p className="muted">Vorläufige Einschränkung des Kontos: {open.restrictAllowed ? 'zulässig' : 'gesperrt (Nr. 31)'}</p>
-            <Card title="Datei ansehen (M30.08) — nur mit Grund und zweiter Person">
+            <Card title={me.staff.founder ? 'Datei ansehen (M30.08) — nur mit Grund; als Owner ohne zweite Person' : 'Datei ansehen (M30.08) — nur mit Grund und zweiter Person'}>
               {!approvalId ? (
                 <>
                   <Reason value={viewReason} onChange={setViewReason} min={20} />
@@ -639,14 +609,19 @@ function Hash({ me, reloadMe }: { me: Staff; reloadMe: () => void }) {
                     className="btn-secondary"
                     disabled={viewReason.trim().length < 20}
                     onClick={async () => {
-                      const r: any = await run(() => api.post(`/mod-api/hash-cases/${open.id}/view/request`, { reason: viewReason }), 'Beantragt.');
-                      if (r) setApprovalId(r.approvalId);
+                      const r: any = await run(() => api.post(`/mod-api/hash-cases/${open.id}/view/request`, { reason: viewReason }), me.staff.founder ? undefined : 'Beantragt.');
+                      if (!r) return;
+                      setApprovalId(r.approvalId);
+                      if (r.approved) {
+                        const v: any = await run(() => api.post(`/mod-api/hash-cases/${open.id}/view`, { approvalId: r.approvalId, reason: viewReason }));
+                        if (v) setImage(v.image);
+                      }
                     }}
                   >
-                    Beantragen
+                    {me.staff.founder ? 'Ansehen' : 'Beantragen'}
                   </button>
                 </>
-              ) : (
+              ) : image ? null : (
                 <button
                   className="btn-secondary"
                   onClick={async () => {
@@ -687,7 +662,7 @@ function Hash({ me, reloadMe }: { me: Staff; reloadMe: () => void }) {
 
 // ─────────────────────────── Freigaben der zweiten Person ───────────────────────────
 
-function Freigaben() {
+function Freigaben({ owner }: { owner: boolean }) {
   const approvals = useAsync(() => api.get('/mod-api/approvals'), []);
   const susp = useAsync(() => api.get('/mod-api/suspensions'), []);
   const [reason, setReason] = useState('');
@@ -696,7 +671,11 @@ function Freigaben() {
   return (
     <>
       <h1 className="text-xl font-semibold mb-4">Freigaben durch die zweite Person</h1>
-      <p className="text-sm muted mb-3">Die eigene Anfrage erscheint hier nie. Es gibt keinen Notfallzugang.</p>
+      <p className="text-sm muted mb-3">
+        {owner
+          ? 'Anfragen anderer Personen. Als Owner brauchst du selbst keine zweite Person — deine Handlungen wirken sofort und stehen als „ohne zweite Person“ im Protokoll.'
+          : 'Die eigene Anfrage erscheint hier nie. Es gibt keinen Notfallzugang.'}
+      </p>
       {box}
       <Reason value={reason} onChange={setReason} />
       <Card title="Kontext und Dateiansicht">
@@ -743,7 +722,7 @@ function Freigaben() {
 
 // ─────────────────────────── M40 · Sperren ───────────────────────────
 
-function Sperren() {
+function Sperren({ owner }: { owner: boolean }) {
   const { data, reload } = useAsync(() => api.get('/mod-api/suspensions'), []);
   const [action, setAction] = useState('restrict');
   const [caseRef, setCaseRef] = useState('');
@@ -751,8 +730,12 @@ function Sperren() {
   const { run, box } = useAction();
   return (
     <>
-      <h1 className="text-xl font-semibold mb-1">Kontosperre (vier Augen)</h1>
-      <p className="text-sm muted mb-4">Ohne Bezug keine Sperre. Wirkt erst nach Freigabe durch eine andere Person.</p>
+      <h1 className="text-xl font-semibold mb-1">{owner ? 'Kontosperre' : 'Kontosperre (vier Augen)'}</h1>
+      <p className="text-sm muted mb-4">
+        {owner
+          ? 'Ohne Bezug keine Sperre. Als Owner wirkt deine Entscheidung sofort — ohne zweite Person, gekennzeichnet im Protokoll.'
+          : 'Ohne Bezug keine Sperre. Wirkt erst nach Freigabe durch eine andere Person.'}
+      </p>
       {box}
       <Card title="Antrag">
         <select className="input mb-2" value={action} onChange={(e) => setAction(e.target.value)}>
@@ -763,8 +746,8 @@ function Sperren() {
         </select>
         <input className="input mb-2" placeholder="Fall- oder Meldenummer (M-… oder T-…)" value={caseRef} onChange={(e) => setCaseRef(e.target.value)} />
         <Reason value={reason} onChange={setReason} label="Grund — geht wörtlich in die Mitteilung" min={10} />
-        <button className="btn-primary" disabled={reason.trim().length < 10 || !caseRef} onClick={() => run(() => api.post('/mod-api/suspensions', { action, caseRef, reason }), 'Beantragt — wartet auf die zweite Person.').then(reload)}>
-          Beantragen
+        <button className="btn-primary" disabled={reason.trim().length < 10 || !caseRef} onClick={() => run(() => api.post('/mod-api/suspensions', { action, caseRef, reason }), owner ? 'Wirksam.' : 'Beantragt — wartet auf die zweite Person.').then(reload)}>
+          {owner ? 'Jetzt wirksam machen' : 'Beantragen'}
         </button>
       </Card>
       <Card title="Verlauf (30 Tage)">
@@ -1234,7 +1217,7 @@ function Einreichungen() {
 
 // ─────────────────────────── M80 · Art. 18 DSA ───────────────────────────
 
-function Art18({ isBetrieb }: { isBetrieb: boolean }) {
+function Art18({ isBetrieb, owner }: { isBetrieb: boolean; owner: boolean }) {
   const { data, reload } = useAsync(() => api.get('/mod-api/art18'), []);
   const [caseRef, setCaseRef] = useState('');
   const [reason, setReason] = useState('');
@@ -1308,7 +1291,7 @@ function Art18({ isBetrieb }: { isBetrieb: boolean }) {
                   Text bestätigen
                 </button>
                 <button className="btn-secondary" disabled={!open.confirmedText} onClick={() => run(() => api.post(`/mod-api/art18/${open.id}/countersign`, { reason: 'Gegenzeichnung nach Prüfung' }), 'Gegengezeichnet.').then(() => show(open.id))}>
-                  Gegenzeichnen (andere Person)
+                  {owner ? 'Gegenzeichnen (als Owner auch den eigenen Entwurf)' : 'Gegenzeichnen (andere Person)'}
                 </button>
               </>
             )}

@@ -21,6 +21,7 @@ import { nextNumber } from '../lib/numbers.js';
 import { hit } from '../lib/rate.js';
 import { t } from '../lib/texts.js';
 import { sendMail } from '../providers/mail.js';
+import { discord } from '../services/discord.js';
 import { blockUser } from './safety.js';
 
 export const REASONS = {
@@ -158,6 +159,19 @@ export async function createReport(opts: {
     }
     await c.query(`INSERT INTO report_events (report_id, status) VALUES ($1, 'received')`, [r!.id]);
     return { id: r!.id as string, number };
+  }).then((res) => {
+    // Issue #6: nur Nummer, Grundkategorie und Herkunft — kein Inhalt, keine Beteiligten
+    discord('meldungen', {
+      title: `Neue Meldung ${res.number}`,
+      level: opts.reason === 'gefahr' ? 'danger' : 'warn',
+      fields: [
+        { name: 'Grund', value: opts.reason },
+        { name: 'Kontext', value: opts.context },
+        { name: 'Eingang', value: opts.fromWeb ? 'Web ohne Konto' : 'App' },
+        ...(opts.reason === 'gefahr' ? [{ name: 'Vorrang', value: 'ja' }] : []),
+      ],
+    });
+    return res;
   });
 }
 
@@ -234,7 +248,12 @@ export default async function reportRoutes(app: FastifyInstance) {
       fromWeb: true,
     });
     if (b.email) {
-      await sendMail({ to: b.email, subject: t('ST-HLF-24', { fallnummer: res.number }), text: t('UI-MAIL-MELDUNG-EINGANG', { fallnummer: res.number }) });
+      await sendMail({
+        to: b.email,
+        subject: t('ST-HLF-24', { fallnummer: res.number }),
+        text: t('UI-MAIL-MELDUNG-EINGANG', { fallnummer: res.number }),
+        design: { heading: t('UI-MAIL-KOPF-EINGANG') },
+      });
     }
     return { number: res.number, hours: Math.round(p('P-FRIST-MELDUNG') / 3600) };
   });
@@ -310,6 +329,7 @@ export default async function reportRoutes(app: FastifyInstance) {
        VALUES ($1, $2, 'entscheidung', $3, $4, $5, $6, now() + make_interval(secs => $7))`,
       [number, a.id, b.reportId ?? null, b.suspensionId ?? null, encStr('tickets', b.text, 'appeal'), decider, p('P-FRIST-WIDERSPRUCH')],
     );
+    discord('meldungen', { title: `Neuer Widerspruch ${number}`, level: 'warn', fields: [{ name: 'Art', value: b.reportId ? 'gegen Entscheidung zu Meldung' : 'gegen Sperre' }] });
     // AK-M07-03: die Bestätigung nennt die geltende Frist
     return { number, hours: Math.round(p('P-FRIST-WIDERSPRUCH') / 3600) };
   });

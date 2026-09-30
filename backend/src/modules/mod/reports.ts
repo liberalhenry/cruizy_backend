@@ -21,7 +21,7 @@ import { purgeVaultEntry, readVault } from '../../services/deletion.js';
 import { rejectPhoto } from '../../services/photo-chain.js';
 import { deleteMessages } from '../chat.js';
 import { sendMail } from '../../providers/mail.js';
-import { ampel, logged, requireStaff } from './core.js';
+import { ampel, logged, needsSecondPerson, requireStaff } from './core.js';
 import { modImgUrl } from './index.js';
 
 export const DECISIONS = ['bleibt', 'inhalt_entfernt', 'eingeschraenkt', 'gesperrt', 'an_behoerde'] as const;
@@ -128,9 +128,17 @@ export default async function reportRoutes(app: FastifyInstance) {
     const b = body(req, z.object({ reason: z.string().min(5) }));
     const r = await one(`SELECT number FROM reports WHERE id = $1`, [id]);
     if (!r) throw notFound();
-    return logged(s, r.number, 'kontext_beantragt', b.reason, async (c) => {
-      const row = (await c.query(`INSERT INTO mod_approvals (kind, ref, requested_by, reason) VALUES ('kontext', $1, $2, $3) RETURNING id`, [id, s.id, b.reason])).rows[0];
-      return { approvalId: row.id };
+    // Issue #3: ein Owner gibt sich selbst frei — gekennzeichnet im Protokoll
+    const self = !needsSecondPerson(s);
+    return logged(s, r.number, self ? 'kontext_ohne_zweite_person' : 'kontext_beantragt', b.reason, async (c) => {
+      const row = (
+        await c.query(
+          `INSERT INTO mod_approvals (kind, ref, requested_by, reason, approved_by, approved_at)
+           VALUES ('kontext', $1, $2, $3, CASE WHEN $4 THEN $2::uuid END, CASE WHEN $4 THEN now() END) RETURNING id`,
+          [id, s.id, b.reason, self],
+        )
+      ).rows[0];
+      return { approvalId: row.id, approved: self };
     }, true);
   });
 
@@ -282,7 +290,14 @@ export async function informParties(reportId: string) {
     await createNotice(r.reporter_id, 'meldung_entscheidung', t('UI-MELDUNG-ENTSCHIEDEN', { fallnummer: r.number }), `${text}\n\n${t('UI-WEGE-DAGEGEN')}`, r.number);
   } else if (r.reporter_contact_enc) {
     const contact = JSON.parse(decStr('tickets', r.reporter_contact_enc, 'report-contact') ?? '{}');
-    if (contact.email) await sendMail({ to: contact.email, subject: t('ST-HLF-24', { fallnummer: r.number }), text: `${text}\n\n${t('UI-WEGE-DAGEGEN')}` });
+    if (contact.email) {
+      await sendMail({
+        to: contact.email,
+        subject: t('ST-HLF-24', { fallnummer: r.number }),
+        text: `${text}\n\n${t('UI-WEGE-DAGEGEN')}`,
+        design: { heading: t('UI-MAIL-KOPF-ENTSCHEIDUNG') },
+      });
+    }
   }
   if (r.target_id && r.decision === 'inhalt_entfernt') {
     await createNotice(

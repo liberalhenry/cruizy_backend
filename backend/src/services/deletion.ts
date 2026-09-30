@@ -81,6 +81,7 @@ export async function deleteAccountNow(accountId: string, opts: { vault?: boolea
     photos: await q(`SELECT original_file, public_file FROM photos WHERE account_id = $1`, [accountId]),
     media: await q(`SELECT file FROM private_media WHERE owner_id = $1`, [accountId]),
     exports: await q(`SELECT file FROM exports WHERE account_id = $1`, [accountId]),
+    idcheck: await q(`SELECT unnest(files) AS file FROM id_reviews WHERE account_id = $1`, [accountId]),
   };
   await tx(async (c) => {
     // Web-Abo endet mit der Löschung (AK-X10-01) — die Berechtigungen hängen am Konto
@@ -92,6 +93,7 @@ export async function deleteAccountNow(accountId: string, opts: { vault?: boolea
   }
   for (const m of files.media) await deleteFile('zone2', m.file);
   for (const e of files.exports) await deleteFile('exports', e.file);
+  for (const f of files.idcheck) await deleteFile('idcheck', f.file);
 }
 
 export async function startDeletion(accountId: string) {

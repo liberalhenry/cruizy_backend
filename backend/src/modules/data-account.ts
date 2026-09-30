@@ -2,6 +2,7 @@
  * Datenkonto (F68, S60): sehen, exportieren, löschen — je ein Tipp, ohne Abo.
  */
 import type { FastifyInstance } from 'fastify';
+import { discord } from '../services/discord.js';
 import { z } from 'zod';
 import { p } from '../config/params.js';
 import { one, q, tx } from '../db/pool.js';
@@ -79,6 +80,7 @@ export default async function dataRoutes(app: FastifyInstance) {
   app.post('/api/data/delete', async (req) => {
     const a = await requireMember(req, { allowDeletionPending: true, allowSuspended: true });
     await startDeletion(a.id);
+    discord('konten', { title: 'Löschung beantragt', level: 'info', description: 'Ein Konto hat die Löschung beantragt (Karenzzeit läuft).' });
     const r = await one(`SELECT deletion_due_at FROM accounts WHERE id = $1`, [a.id]);
     return { deletionDueAt: r!.deletion_due_at };
   });

@@ -3,7 +3,8 @@
  *  * Pflichtangaben aus dem Fall vorbelegt (M80.01); fehlende rot, eine fehlende IP
  *    verhindert die Meldung nicht (M80.03).
  *  * Der Sachverhaltstext muss gelesen und bestätigt werden (M80.02).
- *  * Gegenzeichnung durch eine andere Person (M80.04; Datenbank: countersigned_by <> drafted_by).
+ *  * Gegenzeichnung durch eine andere Person (M80.04) — ein Owner zeichnet auch den eigenen
+ *    Entwurf, gekennzeichnet im Protokoll (Issue #3). Die Datenbank prüft dieselbe Regel.
  *  * Absenden nur BETRIEB, nur nach Gegenzeichnung (M80.05); Vorgangsnummer der Behörde Pflicht (M80.06).
  *  * Nachträge statt Zurückziehen (M80.07). Eine Meldung wird nie gelöscht.
  *
@@ -16,7 +17,7 @@ import { one, q } from '../../db/pool.js';
 import { decStr } from '../../lib/crypto.js';
 import { AppError, bad, conflict, notFound } from '../../lib/errors.js';
 import { body, idParam, params } from '../../lib/http.js';
-import { getSetting, logged, requireStaff, setSetting } from './core.js';
+import { getSetting, logged, needsSecondPerson, requireStaff, setSetting } from './core.js';
 
 async function caseFor(ref: string) {
   const r = await one(`SELECT id, number, created_at, target_id, reason, context FROM reports WHERE number = $1`, [ref.trim()]);
@@ -152,10 +153,15 @@ export default async function art18Routes(app: FastifyInstance) {
     const b = body(req, z.object({ reason: z.string().trim().min(3).max(1000) }));
     const ar = await one(`SELECT * FROM authority_reports WHERE id = $1 AND countersigned_at IS NULL`, [id]);
     if (!ar) throw notFound();
-    if (ar.drafted_by === s.id) throw new AppError(403, 'UI-MOD-EIGENER-ANTRAG', {}, 'eigener_antrag');
+    const self = ar.drafted_by === s.id;
+    if (self && needsSecondPerson(s)) throw new AppError(403, 'UI-MOD-EIGENER-ANTRAG', {}, 'eigener_antrag');
     if (!ar.confirmed_text) throw bad('UI-MOD-TEXT-BESTAETIGEN', {}, 'text_bestaetigen');
-    await logged(s, `art18:${id}`, 'art18_gegengezeichnet', b.reason, async (c) => {
-      await c.query(`UPDATE authority_reports SET countersigned_by = $2, countersigned_at = now() WHERE id = $1 AND drafted_by <> $2`, [id, s.id]);
+    await logged(s, `art18:${id}`, self ? 'art18_gegengezeichnet_ohne_zweite_person' : 'art18_gegengezeichnet', b.reason, async (c) => {
+      await c.query(`UPDATE authority_reports SET countersigned_by = $2, countersigned_at = now() WHERE id = $1 AND (drafted_by <> $2 OR $3)`, [
+        id,
+        s.id,
+        !needsSecondPerson(s),
+      ]);
     }, true);
     return { ok: true };
   });

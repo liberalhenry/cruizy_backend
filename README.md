@@ -53,11 +53,19 @@ docker compose exec api node dist/src/cli/staff-create.js --name "Vorname" --log
 ```
 
 Die Ausgabe zeigt das Einmalpasswort und eine `otpauth://`-Adresse für die Authenticator-App —
-nur dieses eine Mal. Rollen: `MOD` und `BETRIEB`; Gründer sehen die Protokolleinträge des
-jeweils anderen. Weitere Befehle: `--disable --login …` (sperren), `--reset-totp --login …`.
+nur dieses eine Mal. Rollen: `MOD` und `BETRIEB`; Gründer (**Owner**) sehen die Protokolleinträge
+des jeweils anderen. Weitere Befehle: `--disable --login …` (sperren), `--reset-totp --login …`.
 
-Mindestens **zwei** Zugänge sind nötig: Sperren, Kontext ausklappen, Dateiansicht und
-Art.-18-Meldungen brauchen immer eine zweite Person. Es gibt keinen Notfallzugang.
+**Teamverwaltung im Werkzeug:** Den ersten Owner legt der Befehl oben an; danach verwalten Owner
+das Team unter **„Team“** — Zugänge anlegen (Einmalpasswort und QR-Code für die Authenticator-App),
+Name, Rolle und Owner-Status ändern, sperren, neues Passwort oder neuen zweiten Faktor ausstellen,
+löschen. Jede Änderung braucht eine Begründung und steht im Zugriffsprotokoll; es bleibt immer
+mindestens ein aktiver Owner. Unter **„Mein Zugang“** ändert jede Person ihr eigenes Passwort.
+
+**Vier-Augen-Prinzip:** Für MOD- und BETRIEB-Zugänge ohne Owner-Kennzeichen brauchen Sperren,
+Kontext ausklappen, Dateiansicht und Art.-18-Meldungen eine zweite Person. **Owner** handeln dabei
+ohne zweite Person; jede solche Handlung steht als „ohne zweite Person“ im Zugriffsprotokoll. Die
+Regel steht zusätzlich in der Datenbank (Trigger `enforce_second_person`). Es gibt keinen Notfallzugang.
 
 ### Testbetrieb und Echtbetrieb
 
@@ -77,19 +85,58 @@ beim Start, was fehlt — derzeit:
 
 | Offen für den Echtbetrieb | wo es angebunden wird |
 |---|---|
-| Prüfpartner für die Altersprüfung (Stufe 1/2, Fotoprüfung) | `backend/src/providers/verification.ts` (Schnittstelle vorhanden; die Attrappe ist nur im Testbetrieb erreichbar) |
+| Stufe 2 und Fotoprüfung über einen Prüfpartner (Stufe 1 läuft über das Ausweisfoto, siehe unten) | `backend/src/providers/verification.ts` (Schnittstelle vorhanden; die Attrappe ist nur im Testbetrieb erreichbar) |
 | Hash-Abgleich (bekannte Missbrauchsdarstellungen) | `HASH_PROVIDER=http`, `HASH_URL` — danach im Werkzeug `P-HASH-AKTIV` einschalten (geht nur mit hinterlegter Ansprechperson) |
 | Mailversand über einen EU-Dienst | `SMTP_URL` |
 | SMS-Versand | `SMS_PROVIDER=http` mit Vorlage (Sweego-Beispiel in `.env.example`) |
 | Rechtstexte (Impressum, Bedingungen, Datenschutz, Einwilligung) | Platzhalter in `shared/texts/` (IDs `UI-RECHT-*`, `ST-KON-27`) |
 
-### Sicherung, Wiederherstellung, Aktualisierung
+### Altersprüfung per Ausweisfoto
+
+`AGE_PROVIDER=ausweis` (Voreinstellung): Die Person fotografiert ihren Ausweis — Vorderseite, auf Wunsch
+auch die Rückseite. **Nur das Geburtsdatum zählt**; Name, Foto, Adresse und Nummer dürfen abgedeckt sein.
+Der Server liest das Datum selbst (Tesseract im API-Abbild, kein Dritter) — aus der maschinenlesbaren Zone
+mit gültigen Prüfziffern oder aus einem beschrifteten Datum, wenn genug Merkmale eines Ausweises erkennbar
+sind. Sicher volljährig → sofort frei, kein Bild wird gespeichert. Unsicher oder unter 18 → das Bild liegt
+verschlüsselt bereit und ein Mensch entscheidet im Werkzeug unter **„Altersprüfung“**; danach, spätestens
+nach `P-AUSWEIS-AUFBEWAHRUNG` (7 Tage), wird es gelöscht. Ein Ergebnis unter 18 entscheidet immer ein Mensch.
+**Vor dem Echtbetrieb:** die Datenschutzerklärung um die Verarbeitung des Ausweisfotos ergänzen.
+
+### Discord
+
+Nachvollziehbare Ereignisse gehen auf Wunsch an Discord — je Kategorie ein eigener Kanal
+(`DISCORD_WEBHOOK_MODERATION`, `_MELDUNGEN`, `_SICHERHEIT`, `_TEAM`, `_KONTEN`, `_ALTERSPRUEFUNG`, `_SYSTEM`,
+Rückfall `_DEFAULT`; Beschreibung in `.env.example`). Gesendet werden nie personenbezogene Daten von Nutzern
+und nie Begründungstexte — nur Art, Fallnummer, handelnde Person aus dem Team und Zeit.
+
+### Sicherung und Wiederherstellung
 
 ```bash
 bash deploy/backup.sh      # täglich per cron (03:17); verschlüsselt, 14 Tage Aufbewahrung in ./backups
 bash deploy/restore.sh backups/db-….dump.enc backups/media-….tar.gz.enc
-bash deploy/update.sh      # git pull, Sicherung, neu bauen, starten (Migrationen laufen beim Start)
 ```
+
+### Versionen und Aktualisierung
+
+Versionen folgen **Semantic Versioning** (`VERSION`, `CHANGELOG.md`): MAJOR bei inkompatiblen
+Änderungen, MINOR bei neuen Funktionen, PATCH bei Fehlerbehebungen. Neue Version:
+`node scripts/version.mjs minor` (bzw. `patch`/`major`), Changelog ergänzen, auf `main` mergen — der
+Workflow `CI` testet und legt Tag `vX.Y.Z` und das GitHub-Release an.
+
+**Einspielen per Knopf:** Werkzeug → **„Aktualisierung“** (nur Owner). Der Dienst `updater` — der einzige
+mit Zugriff auf Docker, ohne offenen Port — holt den Auftrag ab und führt `deploy/update-run.sh` aus:
+Release holen → Sicherung → bauen → starten → Gesundheit **und** Version prüfen. Scheitert ein Schritt,
+geht es automatisch zurück auf den vorherigen Stand. Das Protokoll jedes Laufs steht im Werkzeug, in
+`deploy/logs/update-<nr>.log` und (falls eingerichtet) im Discord-Kanal „System“. Bei einem privaten
+Repository `GITHUB_TOKEN` (nur Leserecht auf Inhalte) in `.env` eintragen.
+
+```bash
+bash deploy/update.sh          # von Hand: neuestes Release — derselbe Ablauf mit Rückfall
+bash deploy/update.sh 0.2.0    # bestimmte Version
+docker compose up -d --build updater   # nur nötig, wenn sich deploy/updater/Dockerfile ändert
+```
+
+Migrationen sind nur additiv — nach einem Rückfall läuft der alte Stand mit dem neueren Schema weiter.
 
 Die Sicherungen gehören zusätzlich auf einen zweiten Ort (z. B. Hetzner Storage Box):
 `BACKUP_DIR=/mnt/storagebox bash deploy/backup.sh`.
@@ -105,7 +152,7 @@ Hintergrundaufträge laufen nacheinander, damit Nutzeranfragen immer Datenbankve
 
 ## 2 · Lokal entwickeln
 
-Voraussetzungen: Node 22, PostgreSQL 16.
+Voraussetzungen: Node 22, PostgreSQL 16, für die Ausweisprüfung `tesseract-ocr` und `tesseract-ocr-deu`.
 
 ```bash
 createdb cruizy_dev && createdb cruizy_test          # Rolle cruizy/cruizy oder DATABASE_URL anpassen
@@ -119,7 +166,7 @@ cd frontend && npm ci && npm run dev                  # App auf :5173, Werkzeug 
 
 | Befehl (in `backend/`) | Zweck |
 |---|---|
-| `npm test` | 68 Tests gegen eine echte Datenbank (`cruizy_test`, wird neu angelegt) |
+| `npm test` | Tests gegen eine echte Datenbank (`cruizy_test`, wird neu angelegt); die Ausweis-Tests brauchen `tesseract-ocr` + `tesseract-ocr-deu` |
 | `npm run typecheck` | TypeScript für Code und Tests |
 | `npm run check:deps` | keine Analyse-, Werbe- oder Fehler-SDKs Dritter (Backend und Frontend) |
 | `npm run migrate` | Migrationen einspielen |
@@ -148,7 +195,7 @@ Uhrzeitsperre für Hash-Fälle sind absichtlich **keine** Parameter.
 - Erstkontakt nur Text; Bilder erst nach Antwort oder Freigabe; höflicher Ausstieg mit
   5 Sekunden „Rückgängig“; keine Lese- oder Tippanzeige.
 - Moderation: jede Einsicht zuerst ins unveränderliche Zugriffsprotokoll (Datenbank-Trigger),
-  sonst geschieht nichts; Vier-Augen-Prinzip in der Anwendung **und** als Datenbankregel;
+  sonst geschieht nichts; Vier-Augen-Prinzip für Nicht-Owner in der Anwendung **und** als Datenbankregel;
   Hash-Fälle ohne Vorschaubild; keine Suche über private Inhalte; kein Werkzeugzugang von der
   App-Adresse aus.
 - Löschung mit 30 Tagen Karenz, danach vollständig (ein Test prüft jede Tabelle mit

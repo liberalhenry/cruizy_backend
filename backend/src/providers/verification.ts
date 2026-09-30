@@ -3,6 +3,11 @@
  *
  * PRÜFUNG ERFORDERLICH.
  *
+ * „ausweis“ (Issue #7, Voreinstellung): Stufe 1 über ein Ausweisbild, das unser Server
+ * auswertet — nur das Geburtsdatum zählt (services/id-check.ts); ist die Auswertung
+ * unsicher, prüft ein Mensch aus dem Team. Stufe 2 und Fotoprüfung gibt es auf diesem
+ * Weg nicht (im Testbetrieb weiter über die Attrappe).
+ *
  * Ein echter Prüfpartner (EU-Sitz, vertraglich zugesicherte Sofortlöschung —
  * AK-F04-09) wird als weitere Umsetzung dieser Schnittstelle angebunden. Bis
  * dahin gibt es die Attrappe „mock“: eine Seite auf unserem Server, die den
@@ -39,11 +44,27 @@ const mock: VerificationProvider = {
   },
 };
 
+/** Die Attrappe ist im Echtbetrieb gesperrt. */
+export function assertMockAllowed() {
+  if (env().OPERATION_MODE === 'live') throw new Error('Die Attrappe des Prüfpartners ist im Echtbetrieb gesperrt');
+}
+
+const ausweis: VerificationProvider = {
+  name: 'ausweis',
+  methods(kind) {
+    if (kind === 'age1') return ['ausweis'];
+    return env().OPERATION_MODE === 'test' ? mock.methods(kind) : [];
+  },
+  async start(sessionId, kind, method) {
+    if (kind === 'age1' && method === 'ausweis') return { url: `/pruefung/ausweis?s=${sessionId}` };
+    assertMockAllowed();
+    return mock.start(sessionId, kind, method);
+  },
+};
+
 export function provider(): VerificationProvider {
-  const e = env();
-  if (e.AGE_PROVIDER === 'mock' && e.OPERATION_MODE === 'live') {
-    throw new Error('Die Attrappe des Prüfpartners ist im Echtbetrieb gesperrt');
-  }
+  if (env().AGE_PROVIDER === 'ausweis') return ausweis;
+  assertMockAllowed();
   return mock;
 }
 

@@ -14,6 +14,7 @@ import { db, one, q, tx, type Queryable } from '../../db/pool.js';
 import { decrypt, encrypt, randomToken, tokenHash } from '../../lib/crypto.js';
 import { AppError } from '../../lib/errors.js';
 import { localParts } from '../../lib/time.js';
+import { actionLabel, discord } from '../../services/discord.js';
 
 export const STAFF_COOKIE = 'msid';
 export const MAX_SESSION_S = 12 * 3600;
@@ -75,6 +76,14 @@ export async function requireStaff(req: FastifyRequest, role?: 'BETRIEB'): Promi
   return req.staff;
 }
 
+/**
+ * Vier-Augen-Prinzip (Issue #3): Owner (Gründer) geben selbst frei, alle anderen brauchen
+ * eine zweite Person. Die Datenbank prüft dasselbe (Trigger enforce_second_person).
+ */
+export function needsSecondPerson(s: StaffCtx): boolean {
+  return !s.founder;
+}
+
 /** Protokolleintrag — muss vor der Handlung und in derselben Transaktion stehen. */
 export async function logAccess(
   c: Queryable,
@@ -103,10 +112,21 @@ export async function logged<T>(
   fn: (c: Queryable) => Promise<T>,
   special = false,
 ): Promise<T> {
-  return tx(async (c) => {
+  const result = await tx(async (c) => {
     await logAccess(c, staff.id, caseRef, action, reason, special);
     return fn(c);
   });
+  // erst nach dem Festschreiben melden — ohne Begründungstext (Issue #6)
+  discord(caseRef.startsWith('team:') ? 'team' : 'moderation', {
+    title: actionLabel(action),
+    level: special ? 'warn' : 'info',
+    fields: [
+      { name: 'Vorgang', value: caseRef },
+      { name: 'Person', value: staff.name },
+      ...(special ? [{ name: 'Besondere Handlung', value: 'ja' }] : []),
+    ],
+  });
+  return result;
 }
 
 export async function hashCasesToday(staffId: string): Promise<number> {

@@ -85,6 +85,28 @@ services:
     mem_limit: 256m
     networks: [intern]
 
+  # Aktualisierung per Knopf im Werkzeug (Issue #5). Einziger Dienst mit Zugriff auf Docker;
+  # kein offener Port, liest nur Aufträge aus der Datenbank. Siehe deploy/updater/agent.sh.
+  updater:
+    build:
+      context: .
+      dockerfile: deploy/updater/Dockerfile
+    image: cruizy-updater:latest
+    init: true
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DATABASE_URL: postgres://cruizy:${POSTGRES_PASSWORD}@db:5432/cruizy
+      REPO_DIR: /repo
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - .:/repo
+    depends_on:
+      db:
+        condition: service_healthy
+    mem_limit: 256m
+    networks: [intern]
+
 volumes:
   db-data:
   media-data:

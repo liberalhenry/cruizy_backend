@@ -20,6 +20,7 @@ import { classify, runHashCheck } from '../providers/checks.js';
 import { emit } from './hub.js';
 import { sendPush } from './push.js';
 import { t } from '../lib/texts.js';
+import { discord } from './discord.js';
 
 export type ChainOutcome = 'approved' | 'queued' | 'rejected' | 'blocked';
 
@@ -104,7 +105,7 @@ export async function openHashCase(opts: {
   list: string;
 }) {
   const sealed = await copyFile(opts.store, opts.file, 'sealed');
-  await tx(async (c) => {
+  const number = await tx(async (c) => {
     const number = await nextNumber('T', c);
     await c.query(
       `INSERT INTO hash_cases (number, zone, account_ref, sealed_file, hash_value, list_name, deadline_at)
@@ -115,7 +116,10 @@ export async function openHashCase(opts: {
     if (p('P-TREFFER-EINSCHRAENKUNG')) {
       await c.query(`UPDATE accounts SET hash_restricted_at = now() WHERE id = $1`, [opts.accountId]);
     }
+    return number as string;
   });
+  // Issue #6: nur Fallnummer, Zone und Liste — kein Hashwert, kein Konto, kein Bild
+  discord('sicherheit', { title: `Hash-Treffer ${number}`, level: 'danger', fields: [{ name: 'Zone', value: String(opts.zone) }, { name: 'Liste', value: opts.list }] });
 }
 
 /**

@@ -142,19 +142,25 @@ export function Pruefung({ gate }: { gate?: boolean }) {
               </Banner>
             </div>
           )}
+          {state.review && (
+            <div className="mb-3">
+              <Banner kind="info">{t('UI-AUSWEIS-LAEUFT')}</Banner>
+            </div>
+          )}
           <p className="mb-2">{t('ST-FEST-01')}</p>
           <button className="btn-ghost px-0 mb-3" onClick={() => setWhy(!why)} aria-expanded={why}>
             {t('UI-PRUEFUNG-WARUM')}
           </button>
-          {why && <p className="text-sm muted mb-4">{t('ST-VER-10')}</p>}
+          {why && <p className="text-sm muted mb-4">{t(state.provider === 'ausweis' ? 'UI-AUSWEIS-WARUM' : 'ST-VER-10')}</p>}
           <h2 className="font-semibold mb-2">{t('ST-VER-06')}</h2>
           <div className="flex flex-col gap-2" role="radiogroup">
-            {(state.minorLocked ? ['eid'] : state.methods.age1).map((m: string) => (
+            {(state.minorLocked ? state.methods.age1.filter((m: string) => m === 'eid' || m === 'ausweis') : state.methods.age1).map((m: string) => (
               <label key={m} className={`card px-4 py-3 flex items-start gap-3 ${method === m ? 'border-akzent' : ''}`}>
                 <input type="radio" name="weg" className="mt-1 accent-akzent" checked={method === m} onChange={() => setMethod(m)} />
                 <span>
-                  <span className="block">{m === 'eid' ? t('ST-VER-08') : m === 'wallet' ? t('ST-VER-09') : t('ST-VER-07')}</span>
+                  <span className="block">{m === 'eid' ? t('ST-VER-08') : m === 'wallet' ? t('ST-VER-09') : m === 'ausweis' ? t('UI-AUSWEIS-WEG') : t('ST-VER-07')}</span>
                   {m === 'selfie' && <span className="block text-sm muted mt-1">{t('ST-FEST-02')}</span>}
+                  {m === 'ausweis' && <span className="block text-sm muted mt-1">{t('UI-AUSWEIS-ERKL')}</span>}
                 </span>
               </label>
             ))}
@@ -171,7 +177,7 @@ export function Pruefung({ gate }: { gate?: boolean }) {
           )}
         </Page>
         <BottomBar>
-          <button className="btn-primary" disabled={!method || busy} onClick={() => run(() => startCheck('age1', method!, `/pruefung?weiter=${encodeURIComponent(weiter)}`))}>
+          <button className="btn-primary" disabled={!method || busy || state.review} onClick={() => run(() => startCheck('age1', method!, `/pruefung?weiter=${encodeURIComponent(weiter)}`))}>
             {t('ST-CV-07')}
           </button>
           {!gate && (
@@ -280,6 +286,7 @@ export function PruefungFertig() {
     failed: 'ST-FEH-41',
     cancelled: 'ST-FEH-40',
     timeout: 'ST-FEH-42',
+    review: 'UI-AUSWEIS-LAEUFT',
   };
   return (
     <Page>
@@ -297,5 +304,112 @@ export function PruefungFertig() {
         </button>
       )}
     </Page>
+  );
+}
+
+/** Issue #7: Altersprüfung mit einem Foto des Ausweises — es zählt nur das Geburtsdatum. */
+export function PruefungAusweis() {
+  const [params] = useSearchParams();
+  const nav = useNavigate();
+  const { refreshMe } = useApp();
+  const stored = JSON.parse(sessionStorage.getItem('pruefung') ?? 'null');
+  const sid = params.get('s') ?? stored?.sessionId;
+  const weiter: string = stored?.weiter ?? '/ich/profil';
+  const [vorne, setVorne] = useState<File | null>(null);
+  const [hinten, setHinten] = useState<File | null>(null);
+  const [state, setState] = useState<'eingabe' | 'laeuft' | 'retry' | 'review' | 'passed'>('eingabe');
+  const [hours, setHours] = useState(24);
+  const [err, setErr] = useState<string | null>(null);
+
+  const send = async () => {
+    if (!vorne || !sid) return;
+    setErr(null);
+    setState('laeuft');
+    try {
+      const fd = new FormData();
+      fd.append('vorne', vorne, 'vorne.jpg');
+      if (hinten) fd.append('hinten', hinten, 'hinten.jpg');
+      const r = await api.post(`/api/verify/ausweis/${sid}`, fd);
+      if (r.hours) setHours(r.hours);
+      if (r.state === 'retry') {
+        setVorne(null);
+        setHinten(null);
+      }
+      setState(r.state);
+      if (r.state === 'passed') await refreshMe();
+    } catch (e) {
+      setErr(errText(e));
+      setState('eingabe');
+    }
+  };
+
+  const done = () => {
+    sessionStorage.removeItem('pruefung');
+    nav(weiter, { replace: true });
+  };
+
+  const picker = (label: string, file: File | null, set: (f: File | null) => void, required: boolean) => (
+    <label className="card p-4 flex items-center gap-3 cursor-pointer">
+      <input
+        type="file"
+        accept="image/*"
+        capture="environment"
+        className="sr-only"
+        onChange={(e) => {
+          set(e.target.files?.[0] ?? null);
+          // leeren, damit dieselbe Datei nach „Bitte noch einmal“ wieder gewählt werden kann
+          e.target.value = '';
+        }}
+      />
+      <span className={`w-10 h-10 rounded-full grid place-items-center ${file ? 'bg-gut text-grund' : 'bg-flaeche2'}`} aria-hidden>
+        {file ? '✓' : '+'}
+      </span>
+      <span className="flex-1">
+        <span className="block">{label}</span>
+        <span className="block text-sm muted">{file ? file.name : required ? t('UI-FOTO-HINZU') : '—'}</span>
+      </span>
+    </label>
+  );
+
+  if (!sid) return <Page><Banner kind="warn">{t('UI-LINK-UNGUELTIG')}</Banner></Page>;
+
+  if (state === 'passed' || state === 'review') {
+    return (
+      <Page>
+        <Banner kind={state === 'passed' ? 'ok' : 'info'}>{state === 'passed' ? t('UI-AUSWEIS-OK') : t('UI-AUSWEIS-PRUEFUNG', { stunden: hours })}</Banner>
+        <button className="btn-primary w-full mt-4" onClick={done}>
+          {t('ST-KON-12')}
+        </button>
+      </Page>
+    );
+  }
+
+  return (
+    <div className="min-h-screen flex flex-col">
+      <Header title={t('UI-AUSWEIS-UEBERSCHRIFT')} back="/pruefung" />
+      <Page className="flex-1">
+        <p className="mb-2">{t('UI-AUSWEIS-ERKL')}</p>
+        <p className="text-sm muted mb-4">{t('UI-AUSWEIS-ERKL-2')}</p>
+        {state === 'retry' && (
+          <div className="mb-3">
+            <Banner kind="warn">{t('UI-AUSWEIS-NOCHMAL')}</Banner>
+          </div>
+        )}
+        <div className="flex flex-col gap-2">
+          {picker(t('UI-AUSWEIS-VORNE'), vorne, setVorne, true)}
+          {picker(t('UI-AUSWEIS-HINTEN'), hinten, setHinten, false)}
+        </div>
+        {err && (
+          <div className="mt-3">
+            <Banner kind="error">{err}</Banner>
+          </div>
+        )}
+      </Page>
+      <BottomBar>
+        <button className="btn-primary" disabled={!vorne || state === 'laeuft'} onClick={send}>
+          {state === 'laeuft' ? t('UI-AUSWEIS-LAEUFT-JETZT') : t('UI-AUSWEIS-SENDEN')}
+        </button>
+      </BottomBar>
+    </div>
   );
 }

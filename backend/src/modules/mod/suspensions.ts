@@ -4,7 +4,9 @@
  *  * Ohne Bezug (Meldung oder Hash-Fall) keine Sperre (M40.03).
  *  * Freigabe nie durch die antragstellende Person — auch nicht über eine zweite
  *    Sitzung, auch nicht als BETRIEB, kein Notfallzugang (M40.04, Zusage 3).
- *    Zusätzlich erzwingt die Datenbank approved_by <> requested_by.
+ *    Ausnahme (Issue #3): Owner (Gründer) brauchen keine zweite Person — ihr Antrag wirkt
+ *    sofort und steht als „ohne zweite Person“ im Protokoll. Die Datenbank erzwingt dieselbe
+ *    Regel (Trigger enforce_second_person).
  *  * Eine abgelehnte Freigabe bleibt dauerhaft im Fall (M40.05).
  *  * Keine automatische Sperre (Art. 22 DSGVO).
  */
@@ -17,7 +19,7 @@ import { body, idParam, params } from '../../lib/http.js';
 import { t } from '../../lib/texts.js';
 import { closeAllFor, emit } from '../../services/hub.js';
 import { createNotice } from '../../services/notify.js';
-import { logged, requireStaff } from './core.js';
+import { logged, needsSecondPerson, requireStaff, type StaffCtx } from './core.js';
 import { informParties } from './reports.js';
 
 const ACTIONS = ['restrict', 'suspend', 'suspend_delete', 'lift'] as const;
@@ -67,6 +69,55 @@ async function applySuspension(c: Queryable, s: { id: string; account_id: string
   }
 }
 
+/** Freigabe — durch die zweite Person oder, ohne sie, durch einen Owner (Issue #3). */
+async function approveSuspension(s: StaffCtx, id: string, reason: string) {
+  const su = await one(`SELECT * FROM suspensions WHERE id = $1`, [id]);
+  if (!su || su.approved_at || su.rejected_at) throw notFound();
+  // Kein Umweg: dieselbe Kennung — gleich welche Sitzung, gleich welche Rolle — gibt nie frei.
+  // Ausnahme: Owner (Issue #3); das Protokoll kennzeichnet es.
+  const self = su.requested_by === s.id;
+  if (self && needsSecondPerson(s)) throw new AppError(403, 'UI-MOD-EIGENER-ANTRAG', {}, 'eigener_antrag');
+  if (!su.account_id) throw bad('UI-MOD-KEIN-KONTO', {}, 'kein_konto');
+  const ref = su.report_id ? (await one(`SELECT number FROM reports WHERE id = $1`, [su.report_id]))?.number : (await one(`SELECT number FROM hash_cases WHERE id = $1`, [su.hash_case_id]))?.number;
+  const effectiveAt = await logged(s, ref ?? `sperre:${id}`, self ? `sperre_freigegeben_${su.action}_ohne_zweite_person` : `sperre_freigegeben_${su.action}`, reason, async (c) => {
+    const upd = (
+      await c.query(
+        `UPDATE suspensions SET approved_by = $2, approved_at = now() WHERE id = $1 AND approved_at IS NULL AND rejected_at IS NULL AND (requested_by <> $2 OR $3) RETURNING approved_at`,
+        [id, s.id, !needsSecondPerson(s)],
+      )
+    ).rows[0];
+    if (!upd) throw notFound();
+    await applySuspension(c, { id, account_id: su.account_id, action: su.action });
+    if (su.report_id && su.action !== 'lift') {
+      await c.query(
+        `UPDATE reports SET status = 'decided', decision = $2, decided_at = now(), decided_by = $3 WHERE id = $1 AND status IN ('received','in_review')`,
+        [su.report_id, su.action === 'restrict' ? 'eingeschraenkt' : 'gesperrt', su.requested_by],
+      );
+      await c.query(`INSERT INTO report_events (report_id, status, note) VALUES ($1, 'decided', $2)`, [su.report_id, su.action]);
+    }
+    return upd.approved_at as Date;
+  }, true);
+
+  // M40.06: Mitteilung mit Zeitpunkt, Widerspruchsweg und Frist
+  const hours = Math.round(p('P-FRIST-WIDERSPRUCH') / 3600);
+  if (su.action === 'lift') {
+    await createNotice(su.account_id, 'wiederherstellung', t('UI-SPERRE-AUFGEHOBEN-TITEL'), t('UI-SPERRE-AUFGEHOBEN-TEXT'), id);
+  } else {
+    const what = su.action === 'restrict' ? t('UI-DEIN-KONTO-EINGESCHRAENKT') : t('UI-DEIN-KONTO-GESPERRT');
+    await createNotice(
+      su.account_id,
+      'sperre',
+      t('UI-SPERRE-TITEL'),
+      `${t('ST-MEL-23', { inhalt: what, begruendung: su.reason })}\n\n${t('UI-SPERRE-AB', { zeit: new Date(effectiveAt).toISOString() })}\n${t('UI-WIDERSPRUCH-FRIST', { stunden: hours })}${su.action === 'suspend_delete' ? `\n${t('UI-SPERRE-LOESCHUNG')}` : ''}`,
+      id,
+    );
+    emit(su.account_id, 'konto', { moderation: STATE_FOR[su.action as Action] });
+    if (su.action !== 'restrict') closeAllFor(su.account_id);
+  }
+  if (su.report_id && su.action !== 'lift') await informParties(su.report_id);
+  return { ok: true as const, effectiveAt };
+}
+
 export default async function suspensionRoutes(app: FastifyInstance) {
   app.get('/mod-api/suspensions', async (req) => {
     const s = await requireStaff(req);
@@ -97,7 +148,8 @@ export default async function suspensionRoutes(app: FastifyInstance) {
         rejectionReason: r.rejection_reason,
         state: r.approved_at ? 'wirksam' : r.rejected_at ? 'abgelehnt' : 'entwurf',
         // die zweite Person — nie die antragstellende (M40.04)
-        canDecide: !r.approved_at && !r.rejected_at && r.requested_by !== s.id,
+        // Owner auch den eigenen Antrag (Issue #3)
+        canDecide: !r.approved_at && !r.rejected_at && (r.requested_by !== s.id || !needsSecondPerson(s)),
       })),
     };
   });
@@ -124,7 +176,7 @@ export default async function suspensionRoutes(app: FastifyInstance) {
     // Freigabe abgelehnt → ein neuer Anlauf braucht einen neuen Grund (M40, Zustände)
     const same = await one(`SELECT 1 FROM suspensions WHERE account_id = $1 AND rejected_at IS NOT NULL AND lower(reason) = lower($2)`, [cs.accountId, b.reason]);
     if (same) throw bad('UI-MOD-NEUER-GRUND', {}, 'neuer_grund');
-    return logged(s, cs.number, `sperre_beantragt_${b.action}`, b.reason, async (c) => {
+    const created = await logged(s, cs.number, `sperre_beantragt_${b.action}`, b.reason, async (c) => {
       const row = (
         await c.query(
           `INSERT INTO suspensions (account_id, action, reason, report_id, hash_case_id, requested_by) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`,
@@ -132,8 +184,14 @@ export default async function suspensionRoutes(app: FastifyInstance) {
         )
       ).rows[0];
       if (cs.reportId) await c.query(`INSERT INTO report_events (report_id, status, note) VALUES ($1, 'sperre_beantragt', $2)`, [cs.reportId, b.action]);
-      return { id: row.id, state: 'entwurf' };
+      return { id: row.id as string, state: 'entwurf' };
     }, true);
+    // Issue #3: ein Owner braucht keine zweite Person — die Entscheidung wirkt sofort
+    if (!needsSecondPerson(s)) {
+      const r = await approveSuspension(s, created.id, `ohne zweite Person (Owner): ${b.reason}`);
+      return { id: created.id, state: 'wirksam', effectiveAt: r.effectiveAt, selfApproved: true };
+    }
+    return created;
   });
 
   /** M40.04: die zweite Person sieht denselben Fall. */
@@ -164,54 +222,12 @@ export default async function suspensionRoutes(app: FastifyInstance) {
     };
   });
 
-  /** M40.04/06: Freigabe durch die zweite Person — erst dann wirkt die Entscheidung. */
+  /** M40.04/06: Freigabe durch die zweite Person (oder einen Owner) — erst dann wirkt die Entscheidung. */
   app.post('/mod-api/suspensions/:id/approve', async (req) => {
     const s = await requireStaff(req);
     const { id } = params(req, idParam);
     const b = body(req, z.object({ reason: z.string().trim().min(1).max(2000) }));
-    const su = await one(`SELECT * FROM suspensions WHERE id = $1`, [id]);
-    if (!su || su.approved_at || su.rejected_at) throw notFound();
-    // Kein Umweg: dieselbe Kennung — gleich welche Sitzung, gleich welche Rolle — gibt nie frei.
-    if (su.requested_by === s.id) throw new AppError(403, 'UI-MOD-EIGENER-ANTRAG', {}, 'eigener_antrag');
-    if (!su.account_id) throw bad('UI-MOD-KEIN-KONTO', {}, 'kein_konto');
-    const ref = su.report_id ? (await one(`SELECT number FROM reports WHERE id = $1`, [su.report_id]))?.number : (await one(`SELECT number FROM hash_cases WHERE id = $1`, [su.hash_case_id]))?.number;
-    const effectiveAt = await logged(s, ref ?? `sperre:${id}`, `sperre_freigegeben_${su.action}`, b.reason, async (c) => {
-      const upd = (
-        await c.query(
-          `UPDATE suspensions SET approved_by = $2, approved_at = now() WHERE id = $1 AND approved_at IS NULL AND rejected_at IS NULL AND requested_by <> $2 RETURNING approved_at`,
-          [id, s.id],
-        )
-      ).rows[0];
-      if (!upd) throw notFound();
-      await applySuspension(c, { id, account_id: su.account_id, action: su.action });
-      if (su.report_id && su.action !== 'lift') {
-        await c.query(
-          `UPDATE reports SET status = 'decided', decision = $2, decided_at = now(), decided_by = $3 WHERE id = $1 AND status IN ('received','in_review')`,
-          [su.report_id, su.action === 'restrict' ? 'eingeschraenkt' : 'gesperrt', su.requested_by],
-        );
-        await c.query(`INSERT INTO report_events (report_id, status, note) VALUES ($1, 'decided', $2)`, [su.report_id, su.action]);
-      }
-      return upd.approved_at as Date;
-    }, true);
-
-    // M40.06: Mitteilung mit Zeitpunkt, Widerspruchsweg und Frist
-    const hours = Math.round(p('P-FRIST-WIDERSPRUCH') / 3600);
-    if (su.action === 'lift') {
-      await createNotice(su.account_id, 'wiederherstellung', t('UI-SPERRE-AUFGEHOBEN-TITEL'), t('UI-SPERRE-AUFGEHOBEN-TEXT'), id);
-    } else {
-      const what = su.action === 'restrict' ? t('UI-DEIN-KONTO-EINGESCHRAENKT') : t('UI-DEIN-KONTO-GESPERRT');
-      await createNotice(
-        su.account_id,
-        'sperre',
-        t('UI-SPERRE-TITEL'),
-        `${t('ST-MEL-23', { inhalt: what, begruendung: su.reason })}\n\n${t('UI-SPERRE-AB', { zeit: new Date(effectiveAt).toISOString() })}\n${t('UI-WIDERSPRUCH-FRIST', { stunden: hours })}${su.action === 'suspend_delete' ? `\n${t('UI-SPERRE-LOESCHUNG')}` : ''}`,
-        id,
-      );
-      emit(su.account_id, 'konto', { moderation: STATE_FOR[su.action as Action] });
-      if (su.action !== 'restrict') closeAllFor(su.account_id);
-    }
-    if (su.report_id && su.action !== 'lift') await informParties(su.report_id);
-    return { ok: true, effectiveAt };
+    return approveSuspension(s, id, b.reason);
   });
 
   /** M40.05: Ablehnung der Freigabe — mit Begründung, bleibt im Fall. */

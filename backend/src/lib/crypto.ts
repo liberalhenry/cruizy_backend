@@ -25,7 +25,8 @@ export type KeyPurpose =
   | 'index'      // Blindindex (HMAC)
   | 'tokens'     // Bildadressen, Gast-Token
   | 'watermark'  // Muster des unsichtbaren Wasserzeichens
-  | 'totp';      // zweiter Faktor des Moderationswerkzeugs
+  | 'totp'       // zweiter Faktor des Moderationswerkzeugs
+  | 'idcheck';   // Ausweisbilder, solange eine Altersprüfung offen ist (Issue #7)
 
 const keyCache = new Map<KeyPurpose, Buffer>();
 

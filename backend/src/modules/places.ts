@@ -245,6 +245,7 @@ export default async function placeRoutes(app: FastifyInstance) {
       to: b.email,
       subject: t('UI-MAIL-ORT-BETREFF', { nummer: number }),
       text: t('UI-MAIL-ORT-TEXT', { link: `${env().APP_URL}/orte/bestaetigen?token=${token}`, nummer: number }),
+      design: { heading: t('UI-MAIL-KOPF-ADRESSE'), action: { label: t('UI-MAIL-KOPF-ADRESSE'), url: `${env().APP_URL}/orte/bestaetigen?token=${token}` } },
     });
     return { number };
   });

@@ -6,7 +6,7 @@ import { intentionLabel } from '../components/tile';
 import { ReportSheet, useBlock } from '../components/report';
 import { api, errText } from '../lib/api';
 import { useApp } from '../lib/app';
-import { ACTIVITY_TEXT, BAND_TEXT, RESPONSE_TEXT, t } from '../lib/texts';
+import { ACTIVITY_TEXT, BAND_TEXT, RESPONSE_TEXT, fmtDate, t } from '../lib/texts';
 import { IntentionPicker } from './einstieg';
 import { isIosSafariNotInstalled } from '../lib/push';
 
@@ -273,6 +273,11 @@ export function ProfilEditor() {
   const [seeGroups, setSeeGroups] = useState<string[]>(pr?.seeGroups ?? []);
   const [responseRate, setResponseRate] = useState<boolean>(pr?.responseRate?.enabled ?? true);
   const [confirmRR, setConfirmRR] = useState(false);
+  const [intention, setIntention] = useState<{ key: string | null; duration: string | null }>({
+    key: pr?.intention?.key ?? null,
+    duration: pr?.intention?.duration ?? null,
+  });
+  const [intentionBusy, setIntentionBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const [hint, setHint] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -309,6 +314,24 @@ export function ProfilEditor() {
       setErr(errText(e));
     } finally {
       setBusy(false);
+    }
+  };
+
+  // Absicht und Dauer werden sofort gespeichert. Die Auswahl zeigt lokal den gewählten Wert —
+  // vorher stand dort immer der Standardwert, das Antippen einer Dauer schien wirkungslos (Issue #4).
+  const saveIntention = async (key: string | null, duration: string | null) => {
+    const before = intention;
+    setIntention({ key, duration });
+    setIntentionBusy(true);
+    try {
+      const r = await api.put('/api/profile/intention', { key, duration: duration ?? undefined });
+      await refreshMe();
+      if (key && r.expiresAt) toast(t('UI-DAUER-GESPEICHERT', { zeit: fmtDate(r.expiresAt, true) }));
+    } catch (e) {
+      setIntention(before);
+      toast(errText(e));
+    } finally {
+      setIntentionBusy(false);
     }
   };
 
@@ -408,9 +431,10 @@ export function ProfilEditor() {
         <section className="mb-6">
           <h2 className="font-semibold mb-2">{t('ST-KON-48')}</h2>
           <IntentionPicker
-            value={pr.intention?.key ?? null}
-            duration={null}
-            onChange={(k, d) => photoAction(() => api.put('/api/profile/intention', { key: k, duration: d ?? undefined }))}
+            value={intention.key}
+            duration={intention.duration}
+            disabled={intentionBusy}
+            onChange={saveIntention}
           />
           <p className="text-sm muted mt-2">{t('ST-KON-49')}</p>
         </section>

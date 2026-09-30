@@ -142,6 +142,22 @@ describe('Hintergrundaufträge', () => {
     stopJobs();
   });
 
+  it('Profil bearbeiten: die gewählte Dauer der Absicht wird gespeichert und angezeigt (Issue #4)', async () => {
+    const m = await member();
+    const r = await m.c.put('/api/profile/intention', { key: 'absicht3', duration: '2h' });
+    expect(r.status).toBe(200);
+    let me = await m.c.get('/api/profile/me');
+    expect(me.body.profile.intention).toMatchObject({ key: 'absicht3', duration: '2h', hours: 2 });
+    // eine andere Dauer für dieselbe Absicht
+    await m.c.put('/api/profile/intention', { key: 'absicht3', duration: '1h' });
+    me = await m.c.get('/api/profile/me');
+    expect(me.body.profile.intention).toMatchObject({ key: 'absicht3', duration: '1h', hours: 1 });
+    // ohne Angabe gilt der Standardwert der Absicht
+    await m.c.put('/api/profile/intention', { key: 'absicht4' });
+    me = await m.c.get('/api/profile/me');
+    expect(me.body.profile.intention.duration).toBe('2h');
+  });
+
   it('Absicht läuft still ab (F15)', async () => {
     const m = await member();
     await m.c.put('/api/profile/intention', { key: 'abend' });

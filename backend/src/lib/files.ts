@@ -15,7 +15,7 @@ import { randomUUID } from 'node:crypto';
 import { env } from '../config/env.js';
 import { decrypt, encrypt, type KeyPurpose } from './crypto.js';
 
-export type Store = 'zone1-original' | 'zone1-public' | 'zone2' | 'sealed' | 'exports' | 'tickets';
+export type Store = 'zone1-original' | 'zone1-public' | 'zone2' | 'sealed' | 'exports' | 'tickets' | 'idcheck';
 
 const storeKey: Record<Store, KeyPurpose> = {
   'zone1-original': 'zone1',
@@ -24,6 +24,7 @@ const storeKey: Record<Store, KeyPurpose> = {
   sealed: 'sealed',
   exports: 'export',
   tickets: 'tickets',
+  idcheck: 'idcheck',
 };
 
 function dir(store: Store) {

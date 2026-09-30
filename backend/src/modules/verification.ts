@@ -27,7 +27,7 @@ import { loadAccount, requireSession, type AccountCtx } from '../lib/context.js'
 import { randomToken } from '../lib/crypto.js';
 import { AppError, bad, notFound, tooMany } from '../lib/errors.js';
 import { body, params, uuid } from '../lib/http.js';
-import { provider, signWebhook, verifyWebhookSignature, type VerificationKind } from '../providers/verification.js';
+import { assertMockAllowed, provider, signWebhook, verifyWebhookSignature, type VerificationKind } from '../providers/verification.js';
 import { stage2Required, stage2State } from '../services/stage2.js';
 import { emit } from '../services/hub.js';
 import { releaseHeldForStage2 } from './chat.js';
@@ -46,11 +46,15 @@ async function requireConsented(req: Parameters<typeof requireSession>[0]): Prom
   return a;
 }
 
-export async function applyResult(sessionId: string, result: string, providerRef: string | null) {
+export async function applyResult(sessionId: string, result: string, providerRef: string | null, opts: { fromReview?: boolean } = {}) {
   return tx(async (c) => {
-    // Nur ein offener Vorgang ändert einen Zustand (Wiederholung wird verworfen)
+    // Nur ein offener Vorgang ändert einen Zustand (Wiederholung wird verworfen).
+    // „review“ (Ausweis beim Team, Issue #7) schließt nur die Entscheidung des Teams ab.
     const s = (
-      await c.query(`SELECT * FROM verification_sessions WHERE id = $1 AND state = 'pending' FOR UPDATE`, [sessionId])
+      await c.query(`SELECT * FROM verification_sessions WHERE id = $1 AND state = ANY($2) FOR UPDATE`, [
+        sessionId,
+        opts.fromReview ? ['pending', 'review'] : ['pending'],
+      ])
     ).rows[0];
     if (!s) return false;
     const state = ['passed', 'failed', 'unclear', 'minor', 'cancelled'].includes(result) ? result : 'failed';
@@ -123,6 +127,8 @@ export default async function verificationRoutes(app: FastifyInstance) {
       minorDeleteAt: acc.minor_delete_at,
       ageGate: acc.age_gate_required,
       provider: prov.name,
+      // Issue #7: ein Ausweis liegt beim Team
+      review: !!(await one(`SELECT 1 FROM verification_sessions WHERE account_id = $1 AND kind = 'age1' AND state = 'review'`, [a.id])),
     };
   });
 
@@ -135,7 +141,16 @@ export default async function verificationRoutes(app: FastifyInstance) {
     if (b.kind === 'age1') {
       if (a.age1) throw bad('ST-VER-12', {}, 'schon_geprueft'); // AK-F04-10
       // FV-17: Einspruch nur mit dem Ausweis
-      if (a.minorLocked && b.method !== 'eid') throw new AppError(403, 'ST-VER-13', {}, 'nur_ausweis');
+      if (a.minorLocked && b.method !== 'eid' && b.method !== 'ausweis') throw new AppError(403, 'ST-VER-13', {}, 'nur_ausweis');
+      if (b.method === 'ausweis') {
+        const open = await one(`SELECT 1 FROM verification_sessions WHERE account_id = $1 AND kind = 'age1' AND state = 'review'`, [a.id]);
+        if (open) throw new AppError(409, 'UI-AUSWEIS-LAEUFT', {}, 'pruefung_laeuft');
+        const tries = await one(
+          `SELECT count(*)::int AS n FROM verification_sessions WHERE account_id = $1 AND method = 'ausweis' AND created_at > now() - interval '1 day'`,
+          [a.id],
+        );
+        if (tries!.n >= p('P-AUSWEIS-VERSUCHE')) throw tooMany('UI-ZU-VIELE', 'versuche');
+      }
     }
     if (b.kind === 'age2' && a.age2) throw bad('UI-STUFE2-SCHON', {}, 'schon_geprueft');
     if (b.kind === 'face') {
@@ -217,7 +232,7 @@ export default async function verificationRoutes(app: FastifyInstance) {
 
   // ───── Attrappe des Prüfpartners (nur Testbetrieb) ─────
   app.get('/api/pruefpartner-attrappe/:id', async (req, reply) => {
-    provider(); // wirft im Echtbetrieb
+    assertMockAllowed(); // wirft im Echtbetrieb
     const { id } = params(req, z.object({ id: uuid }));
     const s = await one(`SELECT kind, method, state FROM verification_sessions WHERE id = $1`, [id]);
     if (!s) return reply.status(404).send('Nicht gefunden');
@@ -246,7 +261,7 @@ button{display:block;width:100%;min-height:48px;margin:.5rem 0;border-radius:12p
       done(null, Object.fromEntries(new URLSearchParams(String(raw)))),
     );
     scope.post('/api/pruefpartner-attrappe/:id', async (req, reply) => {
-      provider();
+      assertMockAllowed();
       const { id } = params(req, z.object({ id: uuid }));
       const result = String((req.body as Record<string, string>)?.result ?? 'cancelled');
       // Wie ein echter Anbieter: Ergebnis signiert an den Webhook

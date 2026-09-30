@@ -1,0 +1,83 @@
+# Tests bei jedem Push und Pull Request. Auf main zusätzlich: ist die Version in VERSION neu,
+# entstehen Tag vX.Y.Z und ein GitHub-Release mit dem Abschnitt aus CHANGELOG.md (Issue #5).
+# Der Knopf „Aktualisierung“ im Werkzeug spielt genau diese Releases ein.
+name: CI
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: cruizy
+          POSTGRES_PASSWORD: cruizy
+          POSTGRES_DB: cruizy_test
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U cruizy -d cruizy_test"
+          --health-interval 5s --health-timeout 5s --health-retries 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            backend/package-lock.json
+            frontend/package-lock.json
+      - name: Texterkennung für die Altersprüfung per Ausweis
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends tesseract-ocr tesseract-ocr-deu tesseract-ocr-eng fonts-dejavu-core
+      - name: Version einheitlich (SemVer)
+        run: node scripts/version.mjs --check
+      - name: Oberflächentexte aktuell
+        run: python3 shared/texts/build-ui.py && git diff --exit-code shared/texts/ui-de.json
+      - name: Backend
+        working-directory: backend
+        run: |
+          npm ci --no-audit --no-fund
+          npm run check:deps
+          npm run typecheck
+          npm test
+      - name: Frontend
+        working-directory: frontend
+        run: |
+          npm ci --no-audit --no-fund
+          npm run build
+
+  release:
+    needs: test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Release anlegen, wenn die Version neu ist
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          V="$(tr -d '[:space:]' < VERSION)"
+          if git rev-parse -q --verify "refs/tags/v$V" >/dev/null; then
+            echo "v$V ist schon veröffentlicht — nichts zu tun."
+            exit 0
+          fi
+          awk -v v="$V" 'index($0, "## [" v "]") == 1 {f=1; next} f && /^## \[/ {exit} f {print}' CHANGELOG.md > notes.md
+          [ -s notes.md ] || echo "Siehe CHANGELOG.md" > notes.md
+          PRE=""
+          case "$V" in *-*) PRE="--prerelease" ;; esac
+          gh release create "v$V" --target "$GITHUB_SHA" --title "v$V" --notes-file notes.md $PRE

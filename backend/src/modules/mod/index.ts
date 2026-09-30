@@ -12,6 +12,8 @@ import { AppError, bad, tooMany } from '../../lib/errors.js';
 import { getFile, type Store } from '../../lib/files.js';
 import { body, ipKey, params } from '../../lib/http.js';
 import { hit } from '../../lib/rate.js';
+import { discord } from '../../services/discord.js';
+import { appVersion } from '../../lib/version.js';
 import { STAFF_COOKIE, afterHashLock, createStaffSession, hashCasesToday, requireStaff, HASH_CASES_PER_DAY } from './core.js';
 import queueRoutes from './queue.js';
 import reportRoutes from './reports.js';
@@ -23,6 +25,9 @@ import placeRoutes from './places.js';
 import art18Routes from './art18.js';
 import ticketRoutes from './tickets.js';
 import overviewRoutes from './overview.js';
+import teamRoutes from './team.js';
+import idcheckRoutes from './idcheck.js';
+import updateRoutes from './updates.js';
 
 export function modImgUrl(store: Store, file: string, staffId: string) {
   return `/mod-api/img/${sealToken({ k: 'mod', s: store, f: file, st: staffId, e: Date.now() + 5 * 60_000 })}`;
@@ -41,15 +46,28 @@ export default async function modRoutes(app: FastifyInstance) {
 
     mod.post('/mod-api/login', async (req, reply) => {
       const b = body(req, z.object({ login: z.string().max(100), password: z.string().max(500), totp: z.string().max(10) }));
-      if (!hit('mod-login', ipKey(req), 10, 3600_000)) throw tooMany();
+      if (!hit('mod-login', ipKey(req), 10, 3600_000)) {
+        discord('sicherheit', { title: 'Werkzeug: zu viele Anmeldeversuche', level: 'danger', description: 'Anmeldungen von dieser Netzadresse sind für eine Stunde gesperrt.' });
+        throw tooMany();
+      }
       const st = await one(`SELECT * FROM staff WHERE login = $1 AND disabled_at IS NULL`, [b.login.trim().toLowerCase()]);
       const pwOk = await verifyPassword(st?.password_hash, b.password);
-      if (!st || !pwOk) throw bad('UI-ANMELDUNG-FALSCH', {}, 'anmeldung_falsch');
+      // Issue #6: fehlgeschlagene Anmeldungen melden — die eingegebene Kennung nur, wenn es sie gibt
+      const failed = (why: string) =>
+        discord('sicherheit', { title: 'Werkzeug: Anmeldung fehlgeschlagen', level: 'warn', fields: [{ name: 'Grund', value: why }, { name: 'Zugang', value: st ? st.name : 'unbekannte Kennung' }] });
+      if (!st || !pwOk) {
+        failed(st ? 'Passwort falsch' : 'Kennung unbekannt oder gesperrt');
+        throw bad('UI-ANMELDUNG-FALSCH', {}, 'anmeldung_falsch');
+      }
       // M00.01: zweiter Faktor immer, ohne Ausnahme
       const secret = decrypt('totp', st.totp_secret_enc, `staff:${st.id}`).toString();
       const totp = new OTPAuth.TOTP({ secret: OTPAuth.Secret.fromBase32(secret), digits: 6, period: 30 });
-      if (totp.validate({ token: b.totp.replace(/\s/g, ''), window: 1 }) === null) throw bad('UI-ANMELDUNG-FALSCH', {}, 'anmeldung_falsch');
+      if (totp.validate({ token: b.totp.replace(/\s/g, ''), window: 1 }) === null) {
+        failed('zweiter Faktor falsch');
+        throw bad('UI-ANMELDUNG-FALSCH', {}, 'anmeldung_falsch');
+      }
       await createStaffSession(st.id, reply);
+      discord('team', { title: 'Werkzeug: angemeldet', level: 'ok', fields: [{ name: 'Person', value: st.name }, { name: 'Rolle', value: `${st.role}${st.founder ? ' · Owner' : ''}` }] });
       return { ok: true };
     });
 
@@ -73,6 +91,7 @@ export default async function modRoutes(app: FastifyInstance) {
         hashLimit: HASH_CASES_PER_DAY,
         hashLocked: afterHashLock(),
         mode: env().OPERATION_MODE,
+        version: appVersion(),
       };
     });
 
@@ -82,10 +101,14 @@ export default async function modRoutes(app: FastifyInstance) {
       const tok = openToken<{ k: string; s: Store; f: string; st: string; e: number }>(token);
       if (!tok || tok.k !== 'mod' || tok.st !== s.id || tok.e < Date.now()) return reply.status(404).send();
       // Zone 2 ist für das Werkzeug nicht lesbar — nur Kopien im Fall („sealed“) und Zone 1 (AK-M01-04/05)
-      if (!['sealed', 'zone1-original', 'tickets'].includes(tok.s)) return reply.status(404).send();
+      // „idcheck“: Ausweisbilder einer offenen Altersprüfung (Issue #7)
+      if (!['sealed', 'zone1-original', 'tickets', 'idcheck'].includes(tok.s)) return reply.status(404).send();
+      // gelöscht (z. B. Ausweisbild nach der Entscheidung) → nicht mehr vorhanden
+      const data = await getFile(tok.s, tok.f).catch(() => null);
+      if (!data) return reply.status(404).send();
       reply.header('content-type', 'image/jpeg');
       reply.header('cache-control', 'no-store');
-      return reply.send(await getFile(tok.s, tok.f));
+      return reply.send(data);
     });
 
     await mod.register(queueRoutes);
@@ -98,5 +121,8 @@ export default async function modRoutes(app: FastifyInstance) {
     await mod.register(art18Routes);
     await mod.register(ticketRoutes);
     await mod.register(overviewRoutes);
+    await mod.register(teamRoutes);
+    await mod.register(idcheckRoutes);
+    await mod.register(updateRoutes);
   });
 }

@@ -44,6 +44,11 @@ const schema = z.object({
   /* E-Mail über SMTP (EU-Dienst, z. B. Sweego). Leer = Ausgabe ins Protokoll (nur Testbetrieb). */
   SMTP_URL: z.string().default(''),
   MAIL_FROM: z.string().default('Benachrichtigung <no-reply@example.invalid>'),
+  /**
+   * Issue #9: voll = HTML-Mails mit Logo; dezent = gleiche Gestaltung ohne Logo und Namen.
+   * Betreff und Vorschauzeile sind in beiden Fällen neutral (AK-F02-06).
+   */
+  MAIL_BRANDING: z.enum(['voll', 'dezent']).default('voll'),
 
   /*
    * SMS: 'log' (nur Testbetrieb) oder 'http' — ein beliebiger EU-Versanddienst per
@@ -67,7 +72,11 @@ const schema = z.object({
   VAPID_SUBJECT: z.string().default('mailto:technik@example.invalid'),
 
   /* Prüfpartner Altersprüfung (F04, Z-03) und Fotoprüfung (F06) */
-  AGE_PROVIDER: z.enum(['mock']).default('mock'),
+  /**
+   * ausweis = Ausweisbild, Auswertung des Geburtsdatums auf dem eigenen Server, unsicher → Team (Issue #7).
+   * mock    = Attrappe eines Prüfpartners, nur im Testbetrieb.
+   */
+  AGE_PROVIDER: z.enum(['ausweis', 'mock']).default('ausweis'),
   AGE_WEBHOOK_SECRET: z.string().default(''),
 
   /* Prüfkette (M-02) */
@@ -88,6 +97,27 @@ const schema = z.object({
   /* Karte: Adresse eines selbst betriebenen oder EU-Kachelservers. Leer = schematische Karte. */
   MAP_TILE_URL: z.string().default(''),
   MAP_ATTRIBUTION: z.string().default(''),
+
+  /*
+   * Discord-Webhooks (Issue #6): je Kategorie ein Kanal. Leer = Kategorie aus bzw. DEFAULT.
+   * Gesendet werden nie personenbezogene Daten von Nutzern (siehe services/discord.ts).
+   */
+  DISCORD_WEBHOOK_DEFAULT: z.string().default(''),
+  DISCORD_WEBHOOK_MODERATION: z.string().default(''),
+  DISCORD_WEBHOOK_MELDUNGEN: z.string().default(''),
+  DISCORD_WEBHOOK_SICHERHEIT: z.string().default(''),
+  DISCORD_WEBHOOK_TEAM: z.string().default(''),
+  DISCORD_WEBHOOK_KONTEN: z.string().default(''),
+  DISCORD_WEBHOOK_ALTERSPRUEFUNG: z.string().default(''),
+  DISCORD_WEBHOOK_SYSTEM: z.string().default(''),
+
+  /* Aktualisierung per Knopf (Issue #5): Quelle der Releases, Token nur für private Repositorys */
+  UPDATE_REPO: z
+    .string()
+    .default('')
+    .transform((v) => v.trim() || 'liberalhenry/cruizy_backend')
+    .pipe(z.string().regex(/^[\w.-]+\/[\w.-]+$/, 'UPDATE_REPO: Form besitzer/repository')),
+  GITHUB_TOKEN: z.string().default(''),
 
   LOG_LEVEL: z.string().default('info'),
 });

@@ -41,7 +41,8 @@ export async function deliverRelay(msg: z.infer<typeof relaySchema>) {
       const phone = normalizePhone(r.to);
       if (phone) await sendSms({ to: phone, text, reason: 'checkin' });
     } else if (/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(r.to)) {
-      await sendMail({ to: r.to, subject: t('UI-CHECKIN-MAIL-BETREFF'), text });
+      // an Dritte: immer die neutrale Fassung — kein Logo, kein Name (AK-F55-15)
+      await sendMail({ to: r.to, subject: t('UI-CHECKIN-MAIL-BETREFF'), text, design: { variant: 'neutral' } });
     }
   }
 }
