@@ -79,6 +79,8 @@ docker compose exec api node dist/src/seed/testdaten.js --clear  # wieder entfer
 ```
 
 Anmeldung dann mit `test1@example.invalid` … `test40@example.invalid`, Passwort `testpasswort-123`.
+Alle Profile sind vollständig; test4 … test40 haben ein fertiges Cruizy-Date-Profil, test1 … test3 nicht
+(zum Ausprobieren des Onboardings). Ein erneuter Aufruf vervollständigt schon vorhandene Testkonten.
 
 `OPERATION_MODE=live` startet **nur**, wenn nichts mehr auf Attrappen läuft. Der Server nennt
 beim Start, was fehlt — derzeit:
@@ -88,7 +90,7 @@ beim Start, was fehlt — derzeit:
 | Stufe 2 und Fotoprüfung über einen Prüfpartner (Stufe 1 läuft über das Ausweisfoto, siehe unten) | `backend/src/providers/verification.ts` (Schnittstelle vorhanden; die Attrappe ist nur im Testbetrieb erreichbar) |
 | Hash-Abgleich (bekannte Missbrauchsdarstellungen) | `HASH_PROVIDER=http`, `HASH_URL` — danach im Werkzeug `P-HASH-AKTIV` einschalten (geht nur mit hinterlegter Ansprechperson) |
 | Mailversand über einen EU-Dienst | `SMTP_URL` |
-| SMS-Versand | `SMS_PROVIDER=http` mit Vorlage (Sweego-Beispiel in `.env.example`) |
+| Codes an Telefonnummern (Telegram-Bot statt SMS) | `TELEGRAM_MODE=polling`, `TELEGRAM_BOT_TOKEN`, `TELEGRAM_BOT_NAME` (siehe unten) |
 | Rechtstexte (Impressum, Bedingungen, Datenschutz, Einwilligung) | Platzhalter in `shared/texts/` (IDs `UI-RECHT-*`, `ST-KON-27`) |
 
 ### Altersprüfung per Ausweisfoto
@@ -101,6 +103,33 @@ sind. Sicher volljährig → sofort frei, kein Bild wird gespeichert. Unsicher o
 verschlüsselt bereit und ein Mensch entscheidet im Werkzeug unter **„Altersprüfung“**; danach, spätestens
 nach `P-AUSWEIS-AUFBEWAHRUNG` (7 Tage), wird es gelöscht. Ein Ergebnis unter 18 entscheidet immer ein Mensch.
 **Vor dem Echtbetrieb:** die Datenschutzerklärung um die Verarbeitung des Ausweisfotos ergänzen.
+
+### Telegram-Bot (Codes und Mitteilungen)
+
+Codes an Telefonnummern und Check-in-Nachrichten gehen über einen Telegram-Bot — SMS gibt es nicht mehr.
+Bot bei [@BotFather](https://t.me/BotFather) anlegen (`/newbot`), Namen und Beschreibung neutral halten
+(ohne Produktnamen — der Bot steht im Telegram der Person), dann in `.env`:
+
+```bash
+TELEGRAM_MODE=polling            # holt Nachrichten selbst ab — kein offener Eingang nötig
+TELEGRAM_BOT_TOKEN=123456:ABC…   # von @BotFather
+TELEGRAM_BOT_NAME=mein_hinweis_bot
+# oder: TELEGRAM_MODE=webhook und TELEGRAM_WEBHOOK_SECRET (mind. 16 Zeichen) — Eingang /api/telegram/webhook
+```
+
+Ablauf für die Person: Bot öffnen → „Starten“ → **„Nummer teilen“**. Telegram bestätigt, dass es die
+eigene Nummer ist; erst dann kommen Codes an. Wartende Codes gehen sofort nach dem Verbinden hinaus.
+Unter **Einstellungen → Auch außerhalb der App** lassen sich zusätzlich alle Mitteilungen per Telegram
+oder E-Mail bekommen (Voreinstellung aus, ohne Inhalt; Sicherheitsmitteilungen nie mit Inhalt).
+
+### Support und Datenfreigabe
+
+Nachrichten an das Support-Team landen im Werkzeug unter **„Vorgänge“**. Antworten stehen bei Personen
+mit Konto immer in der App (auf Wunsch mit Hinweis per E-Mail ohne Inhalt); geantwortet wird nur in der
+App. Im geöffneten Vorgang kann das Team um **Datenfreigabe** bitten — Konto-, Profil- oder
+Diagnosedaten, mit Begründung. Sichtbar wird davon erst etwas, wenn die Person in der App zustimmt;
+die Freigabe gilt `P-SUPPORT-FREIGABE` (7 Tage), ist jederzeit widerrufbar und endet mit dem Abschluss.
+Jede Einsicht steht im Zugriffsprotokoll. Nachrichten, Fotos, Standort und Ausweisbilder gehören nie dazu.
 
 ### Discord
 
