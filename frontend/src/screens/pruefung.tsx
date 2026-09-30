@@ -1,7 +1,7 @@
 /** S34: Altersprüfung und Community-Vertrag (gebündelt), Fotoprüfung, Stufe 2. */
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Banner, BottomBar, Header, Page } from '../components/ui';
+import { Banner, BottomBar, Header, Page, Steps } from '../components/ui';
 import { api, errText } from '../lib/api';
 import { useApp } from '../lib/app';
 import { t } from '../lib/texts';
@@ -133,7 +133,7 @@ export function Pruefung({ gate }: { gate?: boolean }) {
       <div className="min-h-screen flex flex-col">
         <Header title={t('ST-CV-00')} back={!gate} />
         <Page className="flex-1">
-          <p className="text-xs muted mb-2">{t('UI-SCHRITT', { n: 1, von: 2 })}</p>
+          <Steps n={1} of={2} className="mb-3" />
           {state.minorLocked && (
             <div className="mb-3">
               <Banner kind="warn">
@@ -197,7 +197,7 @@ export function Pruefung({ gate }: { gate?: boolean }) {
       <div className="min-h-screen flex flex-col">
         <Header title={t('ST-CV-01')} back={!gate} />
         <Page className="flex-1">
-          <p className="text-xs muted mb-2">{t('UI-SCHRITT', { n: 2, von: 2 })}</p>
+          <Steps n={2} of={2} className="mb-3" />
           <p className="mb-4">{t('ST-CV-02')}</p>
           <div className="flex flex-col gap-2">
             {ids.map((id, i) => (

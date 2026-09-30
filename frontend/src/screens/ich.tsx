@@ -34,13 +34,23 @@ export function Ich() {
     <>
       <Header title={t('UI-TAB-ICH')} />
       <Page>
-        <button className="card p-4 w-full flex items-center gap-4 text-left mb-4" onClick={() => nav('/ich/profil/bearbeiten')} aria-label={t('UI-PROFIL-BEARBEITEN')}>
-          <Avatar name={p.name} color={p.color} photo={photo} size={56} />
-          <span className="flex-1">
-            <span className="block text-lg font-semibold">{p.name}</span>
-            <span className="block text-sm muted">{intentionLabel(p.intention)}</span>
+        <button
+          className="card group relative overflow-hidden p-5 w-full flex items-center gap-4 text-left mb-4 transition hover:border-[#3a4254]"
+          onClick={() => nav('/ich/profil/bearbeiten')}
+          aria-label={t('UI-PROFIL-BEARBEITEN')}
+        >
+          {/* Schimmer in der eigenen Profilfarbe */}
+          <span className="absolute -left-10 -top-16 w-48 h-48 rounded-full opacity-20 blur-3xl" style={{ background: p.color }} aria-hidden="true" />
+          <span className="relative rounded-full p-[3px] bg-gradient-to-br from-akzent to-akzent/10">
+            <span className="block rounded-full ring-2 ring-flaeche">
+              <Avatar name={p.name} color={p.color} photo={photo} size={64} />
+            </span>
           </span>
-          <span className="muted">›</span>
+          <span className="relative flex-1 min-w-0">
+            <span className="block font-display text-2xl font-bold tracking-tight truncate">{p.name}</span>
+            <span className="block text-sm muted truncate">{intentionLabel(p.intention)}</span>
+          </span>
+          <Icon name="edit" className="relative w-5 h-5 text-leise transition group-hover:text-akzent" />
         </button>
 
         <CompletenessCard />

@@ -48,24 +48,29 @@ function TabBar() {
     { to: '/ich', label: t('UI-TAB-ICH'), icon: 'me', badge: unread, dot: dot.ich },
   ] as { to: string; label: string; icon: string; badge?: number; dot?: boolean }[];
   return (
-    <nav className="fixed bottom-0 inset-x-0 z-30 bg-flaeche/95 backdrop-blur border-t border-linie safe-bottom" aria-label={t('UI-APP-HAUPTNAVIGATION')}>
-      <div className={`max-w-2xl mx-auto grid ${tabs.length === 5 ? 'grid-cols-5' : 'grid-cols-4'}`}>
+    <nav className="fixed bottom-0 inset-x-0 z-30 px-3 pb-2 safe-bottom pointer-events-none" aria-label={t('UI-APP-HAUPTNAVIGATION')}>
+      <div
+        className={`pointer-events-auto max-w-md mx-auto grid ${tabs.length === 5 ? 'grid-cols-5' : 'grid-cols-4'} rounded-[22px] border border-white/[0.07] bg-[#161a22]/95 backdrop-blur-xl p-1`}
+        style={{ boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05), 0 18px 40px -12px rgba(0,0,0,0.85)' }}
+      >
         {tabs.map((x) => (
           <NavLink
             key={x.to}
             to={x.to}
-            className={({ isActive }) => `relative flex flex-col items-center justify-center gap-0.5 min-h-[56px] text-xs ${isActive ? 'text-akzent' : 'text-leise'}`}
+            className={({ isActive }) =>
+              `relative flex flex-col items-center justify-center gap-0.5 min-h-[54px] rounded-[18px] text-[11px] font-medium tracking-wide transition ${isActive ? 'text-akzent bg-akzent/10' : 'text-leise hover:text-text'}`
+            }
           >
             {({ isActive }) => (
               <>
-                {x.to === '/ich' ? <MeIcon active={isActive} /> : <Icon name={x.icon} className="w-6 h-6" />}
+                {x.to === '/ich' ? <MeIcon active={isActive} /> : <Icon name={x.icon} className={`w-6 h-6 transition ${isActive ? '-translate-y-px' : ''}`} />}
                 <span>{x.label}</span>
                 {!!x.badge && (
-                  <span className="absolute top-1 left-1/2 ml-2 min-w-[18px] h-[18px] px-1 rounded-full bg-gefahr text-white text-[11px] font-semibold grid place-items-center" aria-label={t('UI-APP-NEU', { zahl: x.badge })}>
+                  <span className="absolute top-1 left-1/2 ml-2 min-w-[18px] h-[18px] px-1 rounded-full bg-gefahr text-white text-[11px] font-semibold grid place-items-center ring-2 ring-[#161a22]" aria-label={t('UI-APP-NEU', { zahl: x.badge })}>
                     {x.badge > 99 ? '99+' : x.badge}
                   </span>
                 )}
-                {!x.badge && x.dot && <span className="absolute top-1.5 left-1/2 ml-3 w-2.5 h-2.5 rounded-full bg-gefahr" aria-label={t('UI-APP-NEUES')} />}
+                {!x.badge && x.dot && <span className="absolute top-1.5 left-1/2 ml-3 w-2.5 h-2.5 rounded-full bg-gefahr ring-2 ring-[#161a22]" aria-label={t('UI-APP-NEUES')} />}
               </>
             )}
           </NavLink>
@@ -81,7 +86,7 @@ function Shell({ children }: { children: ReactNode }) {
   const nav = useLocation();
   const due = me?.profile?.account?.deletionDueAt;
   return (
-    <div className="min-h-screen pb-[72px]">
+    <div className="min-h-screen pb-[92px]">
       {due && !nav.pathname.startsWith('/ich/daten') && (
         <div className="bg-warn/15 border-b border-warn/40 text-sm px-4 py-2 flex items-center gap-3">
           <span className="flex-1">{t('ST-DAT-13', { datum: new Date(due).toLocaleDateString('de-DE') })}</span>
@@ -140,6 +145,10 @@ export default function App() {
   const loc = useLocation();
 
   useEffect(() => onHideChange(setHidden), []);
+  // Gestaltung der App nur, solange sie sichtbar ist — die Tarnansicht sieht aus wie eine fremde App
+  useEffect(() => {
+    document.documentElement.classList.toggle('app-look', !hidden);
+  }, [hidden]);
   // Issue #11: App-Sperre — beim Start und nach der Zeit im Hintergrund verdeckt
   useEffect(() => installAppLock(), []);
   useEffect(() => installHideTriggers(config?.params.hideMs ?? 1000), [config]);

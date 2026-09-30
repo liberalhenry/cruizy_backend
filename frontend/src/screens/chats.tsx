@@ -1112,7 +1112,10 @@ function Message({ m, otherName, onChange, onOpenOnce }: { m: any; otherName?: s
     return <p className="self-center text-xs muted text-center px-4">{t(key, { name: m.actorIsMe ? t('UI-CHAT-DU') : otherName ?? '' })}</p>;
   }
   const side = m.mine ? 'self-end items-end' : 'self-start items-start';
-  const bubble = m.mine ? 'bg-akzentdunkel text-white' : 'bg-flaeche2';
+  // eigene Blasen im Akzent mit Verlauf, fremde ruhig; die Ecke zur Seite hin zeigt, wer spricht
+  const bubble = m.mine
+    ? 'bg-gradient-to-br from-[#3d86dd] to-akzentdunkel text-white rounded-br-md shadow-[0_6px_18px_-10px_rgba(90,169,255,0.7)]'
+    : 'bg-flaeche2 border border-white/[0.05] rounded-bl-md';
   return (
     <div className={`flex flex-col max-w-[80%] ${side}`}>
       {(m.kind === 'text' || m.kind === 'exit') && <div className={`rounded-2xl px-3 py-2 whitespace-pre-wrap break-words ${bubble} ${m.kind === 'exit' ? 'italic' : ''}`}>{m.text}</div>}

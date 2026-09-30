@@ -26,18 +26,32 @@ function genderLabel(g: { category: string | null; text: string | null } | null,
 /** Fotobereich mit Seitenzahl als Text („2 von 5“). */
 function Photos({ photos, fallback }: { photos: { url: string; blurred: boolean }[]; fallback: ReactNode }) {
   const [i, setI] = useState(0);
-  if (!photos.length) return <div className="aspect-[3/4] max-h-[60vh] w-full rounded-xl overflow-hidden">{fallback}</div>;
+  if (!photos.length) return <div className="aspect-[3/4] max-h-[60vh] w-full rounded-3xl overflow-hidden">{fallback}</div>;
   const p = photos[Math.min(i, photos.length - 1)];
   return (
-    <div className="relative">
-      <img src={p.url} alt="" className="w-full max-h-[60vh] object-cover rounded-xl bg-flaeche2" />
-      {p.blurred && <p className="absolute bottom-2 left-2 right-2 text-xs bg-black/60 rounded-lg px-2 py-1">{t('ST-VER-23')}</p>}
+    <div>
+      <div className="relative overflow-hidden rounded-3xl bg-flaeche2 shadow-[0_24px_50px_-24px_rgba(0,0,0,0.9)]">
+        <img key={p.url} src={p.url} alt="" className="w-full max-h-[60vh] object-cover animate-einblenden" />
+        {photos.length > 1 && (
+          <>
+            {/* Fortschritt oben wie bei Geschichten; die Knöpfe unten bleiben für Tastatur und Vorlesen */}
+            <div className="absolute top-2.5 inset-x-3 flex gap-1" aria-hidden="true">
+              {photos.map((_, k) => (
+                <span key={k} className={`h-[3px] flex-1 rounded-full transition ${k === i ? 'bg-white' : k < i ? 'bg-white/60' : 'bg-white/25'}`} />
+              ))}
+            </div>
+            <button className="absolute inset-y-0 left-0 w-1/3" tabIndex={-1} aria-hidden="true" onClick={() => setI(Math.max(0, i - 1))} />
+            <button className="absolute inset-y-0 right-0 w-1/3" tabIndex={-1} aria-hidden="true" onClick={() => setI(Math.min(photos.length - 1, i + 1))} />
+          </>
+        )}
+        {p.blurred && <p className="absolute bottom-3 left-3 right-3 text-xs bg-black/65 backdrop-blur rounded-xl px-3 py-2">{t('ST-VER-23')}</p>}
+      </div>
       {photos.length > 1 && (
         <div className="flex items-center justify-between mt-2">
           <button className="btn-ghost" disabled={i === 0} onClick={() => setI(i - 1)} aria-label={t('UI-PROFIL-FOTO-ZURUECK')}>
             ‹
           </button>
-          <span className="text-sm muted">{t('UI-PROFIL-FOTO-VON', { n: i + 1, von: photos.length })}</span>
+          <span className="zahl text-sm muted">{t('UI-PROFIL-FOTO-VON', { n: i + 1, von: photos.length })}</span>
           <button className="btn-ghost" disabled={i >= photos.length - 1} onClick={() => setI(i + 1)} aria-label={t('UI-PROFIL-FOTO-WEITER')}>
             ›
           </button>
@@ -85,9 +99,9 @@ function ProfileBody({ p, own }: { p: any; own?: boolean }) {
       />
       <div className="mt-4 flex items-start gap-2">
         <div className="flex-1">
-          <h2 className="text-2xl font-semibold">
+          <h2 className="text-3xl font-bold tracking-tight">
             {p.name}
-            {p.age ? <span className="font-normal">, {p.age}</span> : null}
+            {p.age ? <span className="font-light text-leise">, {p.age}</span> : null}
           </h2>
           <p className="muted text-sm">
             {p.km !== null && p.km !== undefined ? fmtKm(p.km) : own ? t('UI-PROFIL-DU') : ''}
