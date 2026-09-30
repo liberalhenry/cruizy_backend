@@ -257,3 +257,42 @@ export const STARTERS = {
     'Hi, schön dich hier zu sehen. Was treibt dich so um?',
   ],
 } as const;
+
+/**
+ * Kategorien für Veranstaltungen (Issue #16) — Mehrfachauswahl bis 4. Symbole nur als Deko.
+ */
+export const EVENT_CATEGORIES = [
+  { key: 'party', label: 'Party', icon: '🎉' },
+  { key: 'club', label: 'Clubnacht', icon: '🪩' },
+  { key: 'festival', label: 'Festival', icon: '🎪' },
+  { key: 'konzert', label: 'Konzert', icon: '🎤' },
+  { key: 'privatparty', label: 'Private Party', icon: '🏠' },
+  { key: 'bar', label: 'Bar & Kneipe', icon: '🍸' },
+  { key: 'essen', label: 'Essen & Brunch', icon: '🍽️' },
+  { key: 'pride', label: 'CSD & Pride', icon: '🏳️‍🌈' },
+  { key: 'drag', label: 'Drag & Show', icon: '👑' },
+  { key: 'kultur', label: 'Kultur, Film & Lesung', icon: '🎭' },
+  { key: 'stammtisch', label: 'Stammtisch & Treffen', icon: '💬' },
+  { key: 'sport', label: 'Sport & Outdoor', icon: '🏃' },
+  { key: 'workshop', label: 'Workshop & Talk', icon: '🧠' },
+  { key: 'sauna', label: 'Sauna & Wellness', icon: '🧖' },
+  { key: 'fetisch', label: 'Fetisch', icon: '⛓️' },
+  { key: 'reise', label: 'Reise & Ausflug', icon: '🧳' },
+  { key: 'sonstiges', label: 'Sonstiges', icon: '✨' },
+] as const;
+export const EVENT_CATEGORY_KEYS = new Set<string>(EVENT_CATEGORIES.map((x) => x.key));
+export const EVENT_CATEGORY_MAX = 4;
+
+/** Art des Veranstalters (Issue #16). */
+export const ORGANIZER_KINDS = [
+  { key: 'bar', label: 'Bar / Kneipe' },
+  { key: 'club', label: 'Club' },
+  { key: 'restaurant', label: 'Restaurant / Café' },
+  { key: 'konzerthaus', label: 'Konzert- oder Veranstaltungshaus' },
+  { key: 'sauna', label: 'Sauna' },
+  { key: 'kollektiv', label: 'Kollektiv / Partyreihe' },
+  { key: 'verein', label: 'Verein / Initiative' },
+  { key: 'agentur', label: 'Agentur / Veranstalter' },
+  { key: 'privat', label: 'Privatperson' },
+] as const;
+export const ORGANIZER_KIND_KEYS = new Set<string>(ORGANIZER_KINDS.map((x) => x.key));

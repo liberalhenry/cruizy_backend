@@ -55,12 +55,12 @@ describe('Ungelesen (#14)', () => {
   it('zählt ungelesene Gespräche und Anfragen — nur für einen selbst', async () => {
     const { a, b, conv } = await talking();
     let u = await b.c.get('/api/conversations/unread');
-    expect(u.body).toEqual({ conversations: 0, requests: 1 });
+    expect(u.body).toEqual({ conversations: 0, requests: 1, events: 0 });
     const list = await b.c.get('/api/conversations');
     expect(list.body.conversations.find((c: { id: string }) => c.id === conv).unread).toBe(1);
     await b.c.get(`/api/conversations/${conv}`); // Öffnen = gelesen
     u = await b.c.get('/api/conversations/unread');
-    expect(u.body).toEqual({ conversations: 0, requests: 0 });
+    expect(u.body).toEqual({ conversations: 0, requests: 0, events: 0 });
     await b.c.post(`/api/conversations/${conv}/messages`, { text: 'Antwort' });
     await b.c.post(`/api/conversations/${conv}/messages`, { text: 'noch eine' });
     const ua = await a.c.get('/api/conversations/unread');

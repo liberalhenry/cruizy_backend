@@ -85,7 +85,7 @@ export async function computeClusters() {
 async function upcomingEvents(placeIds: string[] | null, ref: LatLng | null, accountId: string) {
   const rows = await q(
     `SELECT e.id, e.title, e.starts_at, e.ends_at, e.status, e.place_id, pl.name AS place_name, pl.lat, pl.lng,
-            EXISTS (SELECT 1 FROM event_rsvps r WHERE r.event_id = e.id AND r.account_id = $1) AS mine
+            EXISTS (SELECT 1 FROM event_rsvps r WHERE r.event_id = e.id AND r.account_id = $1 AND r.status = 'angenommen') AS mine
        FROM events e LEFT JOIN places pl ON pl.id = e.place_id
       WHERE e.status IN ('approved','cancelled') AND e.ends_at > now() AND e.starts_at < now() + interval '8 days'
         AND ($2::uuid[] IS NULL OR e.place_id = ANY($2))
@@ -101,7 +101,7 @@ async function upcomingEvents(placeIds: string[] | null, ref: LatLng | null, acc
     if (e.mine) {
       // FV-50: die Zahl der Zusagen sehen nur Zusagende — ohne blockierte Personen (AK-X06-01)
       const c = await one(
-        `SELECT count(*)::int AS n FROM event_rsvps r WHERE r.event_id = $1 AND NOT EXISTS (
+        `SELECT count(*)::int AS n FROM event_rsvps r WHERE r.event_id = $1 AND r.status = 'angenommen' AND NOT EXISTS (
            SELECT 1 FROM blocks b WHERE b.revoked_at IS NULL AND ((b.blocker_id = $2 AND b.blocked_id = r.account_id) OR (b.blocker_id = r.account_id AND b.blocked_id = $2)))`,
         [e.id, accountId],
       );

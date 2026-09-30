@@ -33,6 +33,7 @@ import { metric } from '../services/metrics.js';
 import { openHashCase } from '../services/photo-chain.js';
 import { activityBand, currentIntention, initialOf, isBlockedEitherWay, canSee } from '../services/profiles.js';
 import { sendPush } from '../services/push.js';
+import { eventChatUnread } from './veranstalter.js';
 import { recomputeResponseRates } from '../services/response-rate.js';
 import { stage2Required, stage2Satisfied } from '../services/stage2.js';
 import { dropImageCache } from './media.js';
@@ -499,7 +500,8 @@ export default async function chatRoutes(app: FastifyInstance) {
                 AND m.created_at > coalesce(CASE WHEN c.user_low = $1 THEN c.low_read_at ELSE c.high_read_at END, '-infinity'))`,
       [a.id],
     );
-    return { conversations: rows.filter((r) => r.mine).length, requests: rows.filter((r) => !r.mine).length };
+    // Issue #16: Chats mit Veranstaltern bzw. Gästen zählen getrennt
+    return { conversations: rows.filter((r) => r.mine).length, requests: rows.filter((r) => !r.mine).length, events: await eventChatUnread(a.id) };
   });
 
   app.post('/api/conversations/:id/read', async (req) => {

@@ -1763,6 +1763,10 @@
   "s": "ENTWURF",
   "t": "TelefonSeelsorge: 0800 111 0 111 und 0800 111 0 222"
  },
+ "UI-MOD-NUR-EIGENE": {
+  "s": "ENTWURF",
+  "t": "Empfehlen lassen sich nur eigene Veranstaltungen von Cruizy."
+ },
  "UI-MOD-ORT-GESPERRT": {
   "s": "ENTWURF",
   "t": "Dieser Ort wurde auf eigenen Wunsch entfernt und wird nicht wieder aufgenommen."
@@ -2942,6 +2946,142 @@
  "UI-UPDATE-UNBEKANNT": {
   "s": "ENTWURF",
   "t": "Diese Version gibt es nicht als Release."
+ },
+ "UI-VA-ABGELEHNT": {
+  "s": "ENTWURF",
+  "t": "Der Veranstalter hat deine Anfrage nicht angenommen."
+ },
+ "UI-VA-BEGINN-VORBEI": {
+  "s": "ENTWURF",
+  "t": "Der Beginn liegt in der Vergangenheit."
+ },
+ "UI-VA-BILDER-MAX": {
+  "s": "ENTWURF",
+  "t": "Höchstens {max} Bilder je Veranstaltung."
+ },
+ "UI-VA-CHAT-ZU": {
+  "s": "ENTWURF",
+  "t": "Dieser Chat ist geschlossen."
+ },
+ "UI-VA-EIGENE": {
+  "s": "ENTWURF",
+  "t": "Das ist deine eigene Veranstaltung."
+ },
+ "UI-VA-EINREICHUNGEN-MAX": {
+  "s": "ENTWURF",
+  "t": "Du hast schon {max} Veranstaltungen in Prüfung. Warte bitte, bis das Team entschieden hat."
+ },
+ "UI-VA-ENDE": {
+  "s": "ENTWURF",
+  "t": "Das Ende muss nach dem Beginn liegen."
+ },
+ "UI-VA-ERST-ABSAGEN": {
+  "s": "ENTWURF",
+  "t": "Sag die Veranstaltung zuerst ab — die Gäste sollen es erfahren."
+ },
+ "UI-VA-FRIST-LANG": {
+  "s": "ENTWURF",
+  "t": "Die Absagefrist darf höchstens {std} Stunden betragen."
+ },
+ "UI-VA-FRIST-VORBEI": {
+  "s": "ENTWURF",
+  "t": "Die Absagefrist ist vorbei. Schreib dem Veranstalter, wenn du doch nicht kommen kannst."
+ },
+ "UI-VA-N-ABGELEHNT": {
+  "s": "ENTWURF",
+  "t": "Für „{titel}“ hat es diesmal nicht geklappt."
+ },
+ "UI-VA-N-ABGELEHNT-TITEL": {
+  "s": "ENTWURF",
+  "t": "Anfrage nicht angenommen"
+ },
+ "UI-VA-N-ABGESAGT": {
+  "s": "ENTWURF",
+  "t": "„{titel}“ findet nicht statt."
+ },
+ "UI-VA-N-ABGESAGT-TITEL": {
+  "s": "ENTWURF",
+  "t": "Veranstaltung abgesagt"
+ },
+ "UI-VA-N-ANFRAGE": {
+  "s": "ENTWURF",
+  "t": "Jemand möchte zu „{titel}“ kommen. Nimm die Anfrage in deiner Gästeliste an oder lehne sie ab."
+ },
+ "UI-VA-N-ANFRAGE-TITEL": {
+  "s": "ENTWURF",
+  "t": "Neue Anfrage für deine Veranstaltung"
+ },
+ "UI-VA-N-ANGENOMMEN": {
+  "s": "ENTWURF",
+  "t": "Der Veranstalter hat dich für „{titel}“ angenommen. Bei Fragen kannst du ihm jetzt schreiben."
+ },
+ "UI-VA-N-ANGENOMMEN-TITEL": {
+  "s": "ENTWURF",
+  "t": "Du bist dabei"
+ },
+ "UI-VA-N-FREIGEGEBEN": {
+  "s": "ENTWURF",
+  "t": "„{titel}“ ist jetzt in „Heute“ zu sehen."
+ },
+ "UI-VA-N-FREIGEGEBEN-TITEL": {
+  "s": "ENTWURF",
+  "t": "Veranstaltung freigegeben"
+ },
+ "UI-VA-N-NICHT-FREIGEGEBEN": {
+  "s": "ENTWURF",
+  "t": "„{titel}“ können wir so nicht veröffentlichen. {grund}"
+ },
+ "UI-VA-N-NICHT-FREIGEGEBEN-TITEL": {
+  "s": "ENTWURF",
+  "t": "Veranstaltung nicht freigegeben"
+ },
+ "UI-VA-N-NICHT-VERIFIZIERT": {
+  "s": "ENTWURF",
+  "t": "Wir konnten dich (noch) nicht als Veranstalter verifizieren. {grund}"
+ },
+ "UI-VA-N-NICHT-VERIFIZIERT-TITEL": {
+  "s": "ENTWURF",
+  "t": "Verifizierung als Veranstalter"
+ },
+ "UI-VA-N-VERIFIZIERT": {
+  "s": "ENTWURF",
+  "t": "Deine Veranstaltungen erscheinen ab jetzt ohne Wartezeit in „Heute“ — mit dem Zeichen „verifiziert“."
+ },
+ "UI-VA-N-VERIFIZIERT-TITEL": {
+  "s": "ENTWURF",
+  "t": "Du bist als Veranstalter verifiziert"
+ },
+ "UI-VA-NICHT-AENDERBAR": {
+  "s": "ENTWURF",
+  "t": "Abgesagte oder vergangene Veranstaltungen lassen sich nicht mehr ändern."
+ },
+ "UI-VA-ORT-FEHLT": {
+  "s": "ENTWURF",
+  "t": "Bitte wähl einen Ort."
+ },
+ "UI-VA-PIN-WEIT": {
+  "s": "ENTWURF",
+  "t": "Die Stecknadel liegt zu weit vom gewählten Ort entfernt."
+ },
+ "UI-VA-SCHON-BEANTRAGT": {
+  "s": "ENTWURF",
+  "t": "Du hast die Verifizierung schon beantragt."
+ },
+ "UI-VA-TEXT-LANG": {
+  "s": "ENTWURF",
+  "t": "Die Beschreibung darf höchstens {zeichen} Zeichen haben."
+ },
+ "UI-VA-VOLL": {
+  "s": "ENTWURF",
+  "t": "Leider ausgebucht — es gibt keine freien Plätze mehr."
+ },
+ "UI-VA-ZU-LANG": {
+  "s": "ENTWURF",
+  "t": "Eine Veranstaltung dauert höchstens 14 Tage."
+ },
+ "UI-VA-ZU-WEIT": {
+  "s": "ENTWURF",
+  "t": "Veranstaltungen gehen höchstens {monate} Monate im Voraus."
  },
  "UI-VERFALL-NICHT-DU": {
   "s": "ENTWURF",

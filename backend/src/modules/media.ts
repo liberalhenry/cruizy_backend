@@ -116,6 +116,20 @@ export default async function mediaRoutes(app: FastifyInstance) {
       return send(reply, data, tok.e);
     }
 
+    // Issue #16: Bilder einer Veranstaltung — für alle, die die Veranstaltung sehen dürfen
+    if (tok.k === 'event') {
+      const im = await one(
+        `SELECT ei.file, e.status, e.host_id, e.ampel FROM event_images ei JOIN events e ON e.id = ei.event_id WHERE ei.id = $1`,
+        [tok.id],
+      );
+      if (!im) return deny(reply);
+      if (im.host_id !== acc.id && (!['approved', 'cancelled'].includes(im.status) || (im.ampel === 'rot' && !acc.age1))) return deny(reply);
+      const k = `e:${im.file}`;
+      let data = cacheGet(k);
+      if (!data) cachePut(k, (data = await getFile('zone1-public', im.file)));
+      return send(reply, data, tok.e);
+    }
+
     if (tok.k === 'own') {
       const ph = await one(`SELECT original_file FROM photos WHERE id = $1 AND account_id = $2 AND status <> 'blocked'`, [tok.id, acc.id]);
       if (!ph) return deny(reply);

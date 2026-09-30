@@ -75,6 +75,11 @@ export const EXPORT_SECTIONS: Record<string, string> = {
   albums: 'alben',
   profile_visits: 'profilbesuche',
   trips: 'reisen',
+  organizers: 'veranstalter',
+  events: 'eigene_veranstaltungen',
+  event_images: 'nicht exportiert: Bilder eigener Veranstaltungen sind in der App sichtbar',
+  event_chats: 'veranstaltungs_chats',
+  event_chat_messages: 'veranstaltungs_chats',
   health_reminders: 'test_erinnerung',
   health_profile: 'gesundheitsangaben',
 };
@@ -262,7 +267,14 @@ export async function collectExport(accountId: string) {
     antwortquote_wertung: await q(`SELECT received_at AS eingegangen, deadline_at AS frist, answered_at AS beantwortet, excluded AS ausgenommen FROM first_message_stats WHERE recipient_id = $1`, [accountId]),
     mitteilungen: await q(`SELECT title AS titel, body AS text, ref AS nummer, created_at AS am, first_shown_at AS angezeigt FROM notices WHERE account_id = $1`, [accountId]),
     mitteilungen_geraete: (await one(`SELECT count(*)::int AS n FROM push_subscriptions WHERE account_id = $1`, [accountId]))!.n,
-    zusagen: await q(`SELECT e.title AS ereignis, e.starts_at AS beginn, r.created_at AS zugesagt FROM event_rsvps r JOIN events e ON e.id = r.event_id WHERE r.account_id = $1`, [accountId]),
+    zusagen: await q(`SELECT e.title AS ereignis, e.starts_at AS beginn, r.status, r.created_at AS zugesagt, r.cancelled_at AS abgesagt FROM event_rsvps r JOIN events e ON e.id = r.event_id WHERE r.account_id = $1`, [accountId]),
+    // Issue #16
+    veranstalter: await one(`SELECT name, kind AS art, city AS ort, website, status, created_at AS beantragt FROM organizers WHERE account_id = $1`, [accountId]),
+    eigene_veranstaltungen: await q(`SELECT title AS titel, starts_at AS beginn, ends_at AS ende, status, area AS ort, address AS adresse, capacity AS plaetze FROM events WHERE host_id = $1`, [accountId]),
+    veranstaltungs_chats: (await q(`SELECT event_id, guest_id, body_enc, created_at FROM event_chat_messages WHERE sender_id = $1`, [accountId])).map((m) => ({
+      text: decStr('messages', m.body_enc, `echat:${m.event_id}:${m.guest_id}`),
+      am: m.created_at,
+    })),
     gruppennachrichten: (await q(`SELECT event_id, body_enc, created_at FROM event_group_messages WHERE sender_id = $1`, [accountId])).map((g) => ({
       text: decStr('messages', g.body_enc, `grp:${g.event_id}`),
       am: g.created_at,

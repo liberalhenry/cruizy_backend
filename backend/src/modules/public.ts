@@ -6,7 +6,7 @@
 import type { FastifyInstance } from 'fastify';
 import { env } from '../config/env.js';
 import { p } from '../config/params.js';
-import { BODY_TYPES, GENDER_CATEGORIES, INTENTIONS, KINK_GROUPS, POSITIONS, TRAIT_GROUPS } from '../services/catalogs.js';
+import { BODY_TYPES, EVENT_CATEGORIES, EVENT_CATEGORY_MAX, GENDER_CATEGORIES, INTENTIONS, KINK_GROUPS, ORGANIZER_KINDS, POSITIONS, TRAIT_GROUPS } from '../services/catalogs.js';
 import { allowedDurations } from '../services/intentions.js';
 import { vapidPublicKey } from '../services/push.js';
 import { CONSENT_VERSION } from './auth.js';
@@ -92,6 +92,17 @@ export default async function publicRoutes(app: FastifyInstance) {
       positions: POSITIONS,
       bodyTypes: BODY_TYPES,
       kinks: KINK_GROUPS.map((g) => ({ group: g.group, items: g.items.map(([key, name]) => ({ key, name })) })),
+      events: {
+        categories: EVENT_CATEGORIES,
+        categoryMax: EVENT_CATEGORY_MAX,
+        organizerKinds: ORGANIZER_KINDS,
+        monthsAhead: p('P-VERANSTALTUNG-MONATE'),
+        images: p('P-VERANSTALTUNG-BILDER'),
+        textMax: p('P-VERANSTALTUNG-TEXT'),
+        radius: p('P-VERANSTALTUNG-RADIUS'),
+        radii: p('P-VERANSTALTUNG-RADIEN'),
+        cancelMaxHours: p('P-ABSAGEFRIST-MAX'),
+      },
     };
   });
 
