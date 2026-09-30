@@ -432,7 +432,7 @@ function DateToday() {
         </p>
         <DateProfileCard p={cur} onLike={setLike} onReport={() => setReport(true)} />
       </div>
-      <div className="fixed bottom-[76px] inset-x-0 z-20 flex justify-center pointer-events-none">
+      <div className="fixed bottom-[88px] inset-x-0 z-20 flex justify-center pointer-events-none">
         <button className="pointer-events-auto w-16 h-16 rounded-full bg-flaeche border border-linie shadow-xl grid place-items-center hover:bg-flaeche2" onClick={pass} aria-label={t('UI-DATE-WEITER')} title={t('UI-DATE-WEITER-TASTE')}>
           <Icon name="close" className="w-7 h-7" />
         </button>

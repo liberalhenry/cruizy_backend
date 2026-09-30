@@ -11,6 +11,19 @@ Werkzeug → „Aktualisierung“ (Owner) oder `bash deploy/update.sh`.
 
 ## [Unveröffentlicht]
 
+### Geändert
+- **Neue Gestaltung der App („Nachtstadt“):** eigene Schriften (Bricolage Grotesque für Überschriften, Figtree
+  für Text), im Paket mitgeliefert — kein Abruf bei Dritten. Tiefer Hintergrund mit leichtem Lichtschimmer von
+  oben und feinem Korn; Knöpfe, Karten, Eingabefelder, Schalter und Hinweise mit mehr Tiefe; Reiterleiste als
+  schwebende Leiste; größere Titel auf den Reitern; Blätter fahren von unten ein; Rasterkacheln erscheinen
+  nacheinander; Chat-Blasen mit Richtung; Schrittanzeige als Balken; Gast-Einstieg mit Radar um den eigenen
+  Punkt; Profilkarte unter „Ich“ als Kopfbereich. Die Tarnansicht bleibt unverändert, weniger Bewegung wird
+  weiter beachtet. Das Werkzeug übernimmt die Bausteine, behält aber seine Schrift.
+- Profilfotos: Fortschrittsbalken oben und Tippen links/rechts zum Blättern.
+
+### Behoben
+- Profil: der Hinweis „Geprüft, aber ohne Gesicht …“ lag über der Seitenzahl „1 von 4“.
+
 ## [0.5.0] – 2026-09-30
 
 ### Neu

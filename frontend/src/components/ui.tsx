@@ -55,7 +55,7 @@ export function Header({ title, back, right, sub }: { title: string; back?: bool
   const nav = useNavigate();
   const tap = useRef(tripleTap(1000)).current;
   return (
-    <header className="sticky top-0 z-20 bg-grund/95 backdrop-blur border-b border-linie safe-top">
+    <header className="sticky top-0 z-20 bg-grund/90 backdrop-blur-xl border-b border-white/[0.06] safe-top">
       <div className="flex items-center gap-1 px-2 min-h-[56px]">
         {back ? (
           <button className="btn-ghost px-2" onClick={() => (typeof back === 'string' ? nav(back) : nav(-1))} aria-label={t('UI-APP-ZURUECK')}>
@@ -64,7 +64,8 @@ export function Header({ title, back, right, sub }: { title: string; back?: bool
         ) : (
           <span className="w-2" />
         )}
-        <h1 className="flex-1 text-lg font-semibold truncate select-none" onClick={tap}>
+        {/* Reiter-Seiten (ohne Zurück) tragen den Titel größer — Unterseiten ordnen sich darunter */}
+        <h1 className={`flex-1 font-bold tracking-tight truncate select-none ${back ? 'text-xl' : 'text-[26px] leading-none pl-2'}`} onClick={tap}>
           {title}
         </h1>
         {right}
@@ -74,14 +75,28 @@ export function Header({ title, back, right, sub }: { title: string; back?: bool
   );
 }
 
+/** Schrittanzeige: Balken je Schritt plus Text („Schritt 2 von 3“) für das Vorlesen. */
+export function Steps({ n, of, className = 'px-4 pb-3' }: { n: number; of: number; className?: string }) {
+  return (
+    <div className={className}>
+      <div className="flex gap-1.5" aria-hidden="true">
+        {Array.from({ length: of }).map((_, k) => (
+          <span key={k} className={`h-1 flex-1 rounded-full transition ${k < n ? 'bg-akzent' : 'bg-white/10'} ${k === n - 1 ? 'shadow-[0_0_10px_rgba(90,169,255,0.6)]' : ''}`} />
+        ))}
+      </div>
+      <p className="text-xs muted mt-1.5">{t('UI-SCHRITT', { n, von: of })}</p>
+    </div>
+  );
+}
+
 export function Page({ children, className = '' }: { children: ReactNode; className?: string }) {
-  return <main className={`px-4 py-4 max-w-2xl mx-auto w-full ${className}`}>{children}</main>;
+  return <main className={`px-4 py-4 max-w-2xl mx-auto w-full animate-auftritt ${className}`}>{children}</main>;
 }
 
 /** Hauptaktion fest am unteren Rand (Hauptaktionen im unteren Drittel). */
 export function BottomBar({ children }: { children: ReactNode }) {
   return (
-    <div className="sticky bottom-0 z-10 bg-grund/95 backdrop-blur border-t border-linie px-4 py-3 safe-bottom">
+    <div className="sticky bottom-0 z-10 bg-grund/95 backdrop-blur-xl border-t border-white/[0.06] px-4 py-3 safe-bottom">
       <div className="max-w-2xl mx-auto flex flex-col gap-2">{children}</div>
     </div>
   );
@@ -97,13 +112,19 @@ export function Sheet({ open, onClose, title, children }: { open: boolean; onClo
   if (!open) return null;
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center" role="dialog" aria-modal="true" aria-label={title}>
-      <button className="absolute inset-0 bg-black/60" aria-label={t('UI-APP-SCHLIESSEN')} onClick={onClose} />
-      <div className="relative w-full max-w-2xl max-h-[88vh] overflow-y-auto rounded-t-2xl bg-flaeche border-t border-linie safe-bottom">
-        <div className="sticky top-0 bg-flaeche flex items-center gap-2 px-4 pt-3 pb-2 border-b border-linie">
-          <div className="flex-1 font-semibold">{title}</div>
-          <button className="btn-ghost px-2" onClick={onClose} aria-label={t('UI-APP-SCHLIESSEN')}>
-            <Icon name="close" />
-          </button>
+      <button className="absolute inset-0 bg-black/60 backdrop-blur-[2px] animate-einblenden" aria-label={t('UI-APP-SCHLIESSEN')} onClick={onClose} />
+      <div
+        className="relative w-full max-w-2xl max-h-[88vh] overflow-y-auto rounded-t-[28px] bg-flaeche border-t border-white/[0.08] safe-bottom animate-hochfahren"
+        style={{ boxShadow: '0 -20px 50px -20px rgba(0,0,0,0.9)' }}
+      >
+        <div className="sticky top-0 z-10 bg-flaeche/95 backdrop-blur px-4 pt-2 pb-2 border-b border-linie/70">
+          <div className="mx-auto mb-1.5 h-1 w-10 rounded-full bg-white/15" aria-hidden="true" />
+          <div className="flex items-center gap-2">
+            <div className="flex-1 font-display text-lg font-semibold tracking-tight">{title}</div>
+            <button className="btn-ghost px-2" onClick={onClose} aria-label={t('UI-APP-SCHLIESSEN')}>
+              <Icon name="close" />
+            </button>
+          </div>
         </div>
         <div className="p-4">{children}</div>
       </div>
@@ -127,9 +148,9 @@ export function Toggle({ checked, onChange, label, hint, disabled }: { checked: 
         aria-checked={checked}
         disabled={disabled}
         onClick={() => onChange(!checked)}
-        className={`relative shrink-0 w-12 h-7 rounded-full border transition ${checked ? 'bg-akzent border-akzent' : 'bg-flaeche2 border-linie'} disabled:opacity-50`}
+        className={`relative shrink-0 w-12 h-7 rounded-full border transition ${checked ? 'bg-akzent border-akzent shadow-[0_0_16px_-4px_rgba(90,169,255,0.7)]' : 'bg-flaeche2 border-linie'} disabled:opacity-50`}
       >
-        <span className={`absolute top-0.5 w-6 h-6 rounded-full bg-text transition ${checked ? 'left-[22px]' : 'left-0.5'}`} />
+        <span className={`absolute top-0.5 w-6 h-6 rounded-full transition-all shadow-[0_1px_3px_rgba(0,0,0,0.5)] ${checked ? 'left-[22px] bg-white' : 'left-0.5 bg-text/90'}`} />
       </button>
     </div>
   );
@@ -174,13 +195,16 @@ export function TextArea({ label, hint, error, ...props }: { label: string; hint
 
 export function Banner({ kind = 'info', children, action }: { kind?: 'info' | 'warn' | 'error' | 'ok'; children: ReactNode; action?: ReactNode }) {
   const cls = {
-    info: 'bg-flaeche2 border-linie',
-    warn: 'bg-warn/10 border-warn/40',
-    error: 'bg-gefahr/10 border-gefahr/40',
-    ok: 'bg-gut/10 border-gut/40',
+    info: 'bg-flaeche2/70 border-linie before:bg-akzent/70',
+    warn: 'bg-warn/[0.07] border-warn/30 before:bg-warn',
+    error: 'bg-gefahr/[0.08] border-gefahr/35 before:bg-gefahr',
+    ok: 'bg-gut/[0.07] border-gut/30 before:bg-gut',
   }[kind];
   return (
-    <div className={`rounded-xl border px-4 py-3 text-sm ${cls}`} role={kind === 'error' ? 'alert' : 'status'}>
+    <div
+      className={`relative overflow-hidden rounded-xl border pl-5 pr-4 py-3 text-sm leading-relaxed before:absolute before:left-0 before:inset-y-0 before:w-1 ${cls}`}
+      role={kind === 'error' ? 'alert' : 'status'}
+    >
       <div>{children}</div>
       {action && <div className="mt-2">{action}</div>}
     </div>
@@ -201,7 +225,8 @@ export function Avatar({ name, initial, color, photo, blurred, size = 48 }: { na
 
 export function Empty({ text, action }: { text: ReactNode; action?: ReactNode }) {
   return (
-    <div className="card p-6 text-center">
+    <div className="card p-8 text-center">
+      <div className="mx-auto mb-3 w-10 h-10 rounded-full border border-dashed border-linie" aria-hidden="true" />
       <p className="muted">{text}</p>
       {action && <div className="mt-4">{action}</div>}
     </div>
@@ -209,14 +234,14 @@ export function Empty({ text, action }: { text: ReactNode; action?: ReactNode })
 }
 
 export function Skeleton({ className = '' }: { className?: string }) {
-  return <div className={`animate-pulse rounded-xl bg-flaeche2 ${className}`} />;
+  return <div className={`animate-pulse rounded-xl bg-gradient-to-r from-flaeche2 via-[#262c39] to-flaeche2 ${className}`} />;
 }
 
 export function Choice<T extends string>({ options, value, onChange, name }: { options: { value: T; label: ReactNode; hint?: ReactNode }[]; value: T | null; onChange: (v: T) => void; name: string }) {
   return (
     <div role="radiogroup" className="flex flex-col gap-2">
       {options.map((o) => (
-        <label key={o.value} className={`card px-4 py-3 flex items-start gap-3 cursor-pointer ${value === o.value ? 'border-akzent' : ''}`}>
+        <label key={o.value} className={`card px-4 py-3 flex items-start gap-3 cursor-pointer transition ${value === o.value ? '!border-akzent/80 ring-4 ring-akzent/10' : 'hover:border-[#3a4254]'}`}>
           <input type="radio" name={name} className="mt-1 accent-akzent" checked={value === o.value} onChange={() => onChange(o.value)} />
           <span className="flex-1">
             <span className="block">{o.label}</span>
@@ -235,13 +260,13 @@ export function ListCard({ children }: { children: ReactNode }) {
 export function RowLink({ to, label, hint, badge, onClick }: { to?: string; label: ReactNode; hint?: ReactNode; badge?: ReactNode; onClick?: () => void }) {
   const nav = useNavigate();
   return (
-    <button className="row hover:bg-flaeche2" onClick={() => (onClick ? onClick() : to && nav(to))}>
+    <button className="row group hover:bg-white/[0.03]" onClick={() => (onClick ? onClick() : to && nav(to))}>
       <span className="flex-1 py-3">
-        <span className="block">{label}</span>
-        {hint && <span className="block text-sm muted">{hint}</span>}
+        <span className="block font-medium">{label}</span>
+        {hint && <span className="block text-sm muted leading-snug mt-0.5">{hint}</span>}
       </span>
       {badge}
-      <span className="muted">›</span>
+      <Icon name="back" className="w-4 h-4 rotate-180 text-leise/70 transition group-hover:translate-x-0.5 group-hover:text-leise" />
     </button>
   );
 }
@@ -249,7 +274,12 @@ export function RowLink({ to, label, hint, badge, onClick }: { to?: string; labe
 export function Section({ title, children }: { title?: ReactNode; children: ReactNode }) {
   return (
     <section className="mb-6">
-      {title && <h2 className="text-sm uppercase tracking-wide muted mb-2">{title}</h2>}
+      {title && (
+        <h2 className="flex items-center gap-2 text-[12px] font-semibold uppercase tracking-[0.14em] text-leise mb-2.5">
+          <span className="h-px w-3 bg-akzent" aria-hidden="true" />
+          {title}
+        </h2>
+      )}
       {children}
     </section>
   );

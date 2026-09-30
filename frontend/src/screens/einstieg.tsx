@@ -1,7 +1,7 @@
 /** Einstieg: S01 Gast · S02 So läuft es hier · S03 Konto · S04 Einwilligung · S05 Profil anlegen · S06 Home-Bildschirm · Wiederherstellung. */
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { Banner, BottomBar, Choice, Field, Header, Icon, Page, Sheet } from '../components/ui';
+import { Banner, BottomBar, Choice, Field, Header, Icon, Page, Sheet, Steps } from '../components/ui';
 import { Tile, TileSkeletonGrid, type TileData } from '../components/tile';
 import { api, ApiError, errText } from '../lib/api';
 import { useApp } from '../lib/app';
@@ -71,9 +71,14 @@ export function Gast() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <div className="sticky top-0 z-10 bg-flaeche border-b border-linie px-4 py-3 safe-top">
-        <p className="text-sm">{t('ST-KON-01')}</p>
-        {!over && <p className="text-xs muted mt-1">{t('ST-KON-02', { minuten: minutes })}</p>}
+      <div className="sticky top-0 z-10 bg-grund/90 backdrop-blur-xl border-b border-white/[0.06] px-4 py-3 safe-top flex items-center gap-3">
+        <p className="flex-1 text-sm leading-snug">{t('ST-KON-01')}</p>
+        {!over && (
+          <p className="zahl shrink-0 rounded-full border border-akzent/30 bg-akzent/10 text-akzent text-xs font-medium px-2.5 py-1 flex items-center gap-1.5">
+            <Icon name="clock" className="w-3.5 h-3.5" />
+            {t('ST-KON-02', { minuten: minutes })}
+          </p>
+        )}
       </div>
       <Page className="flex-1">
         {config?.mode === 'test' && (
@@ -86,8 +91,19 @@ export function Gast() {
           <Banner>{t('ST-KON-03')}</Banner>
         ) : needsCity ? (
           <div className="flex flex-col gap-3">
-            <p>{t('ST-REC-01')}</p>
-            <p className="text-sm muted">{t('ST-REC-02')}</p>
+            {/* Nähe als Bild: ein ruhiges Radar um den eigenen Punkt */}
+            <div className="relative mx-auto my-4 w-44 h-44 grid place-items-center" aria-hidden="true">
+              {[0, 1, 2].map((k) => (
+                <span key={k} className="absolute inset-0 rounded-full border border-akzent/40 animate-radar" style={{ animationDelay: `${k * 1.1}s` }} />
+              ))}
+              <span className="absolute inset-8 rounded-full border border-white/[0.06]" />
+              <span className="absolute inset-16 rounded-full border border-white/[0.08]" />
+              <span className="relative w-12 h-12 rounded-full grid place-items-center bg-akzent text-grund shadow-[0_0_30px_rgba(90,169,255,0.7)]">
+                <Icon name="pin" className="w-6 h-6" />
+              </span>
+            </div>
+            <h2 className="text-3xl font-bold leading-tight tracking-tight text-center">{t('ST-REC-01')}</h2>
+            <p className="text-sm muted text-center mb-1">{t('ST-REC-02')}</p>
             <button className="btn-primary" onClick={useLocationNow}>
               {t('ST-REC-03')}
             </button>
@@ -141,7 +157,7 @@ export function Willkommen() {
   const nav = useNavigate();
   return (
     <div className="min-h-screen flex flex-col">
-      <Header title={t('ST-KON-10')} back="/" sub={<p className="px-4 pb-2 text-xs muted">{t('UI-SCHRITT', { n: 1, von: 3 })}</p>} />
+      <Header title={t('ST-KON-10')} back="/" sub={<Steps n={1} of={3} />} />
       <Page className="flex-1">
         <p className="mb-6">{t('ST-KON-11')}</p>
         <ul className="flex flex-col gap-4">
@@ -255,7 +271,7 @@ export function Konto() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Header title={title} back={mode === 'registrieren' ? '/willkommen' : '/'} sub={mode === 'registrieren' ? <p className="px-4 pb-2 text-xs muted">{t('UI-SCHRITT', { n: 2, von: 3 })}</p> : undefined} />
+      <Header title={title} back={mode === 'registrieren' ? '/willkommen' : '/'} sub={mode === 'registrieren' ? <Steps n={2} of={3} /> : undefined} />
       <Page className="flex-1">
         {err && (
           <div className="mb-3">
@@ -577,7 +593,7 @@ export function ProfilAnlegen() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Header title={t('ST-KON-40')} sub={<p className="px-4 pb-2 text-xs muted">{t('UI-SCHRITT', { n: 3, von: 3 })}</p>} />
+      <Header title={t('ST-KON-40')} sub={<Steps n={3} of={3} />} />
       <Page className="flex-1">
         <p className="mb-4 muted">{t('ST-KON-41')}</p>
         <Choice

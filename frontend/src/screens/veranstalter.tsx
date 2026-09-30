@@ -678,7 +678,7 @@ export function VeranstaltungChat() {
         {data && <p className="text-xs muted text-center mb-2">{t(data.role === 'veranstalter' ? 'UI-VA-CHAT-ERKL-VERANSTALTER' : 'UI-VA-CHAT-ERKL-GAST')}</p>}
         {data?.messages.map((m: any) => (
           <div key={m.id} className={`max-w-[80%] ${m.mine ? 'self-end' : 'self-start'}`}>
-            <div className={`rounded-2xl px-3 py-2 whitespace-pre-wrap ${m.mine ? 'bg-akzentdunkel text-white' : 'bg-flaeche2'}`}>{m.text}</div>
+            <div className={`rounded-2xl px-3 py-2 whitespace-pre-wrap ${m.mine ? 'bg-gradient-to-br from-[#3d86dd] to-akzentdunkel text-white rounded-br-md' : 'bg-flaeche2 border border-white/[0.05] rounded-bl-md'}`}>{m.text}</div>
             <p className={`text-[11px] muted ${m.mine ? 'text-right' : ''}`}>{fmtTime(m.createdAt)}</p>
           </div>
         ))}
