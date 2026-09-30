@@ -54,6 +54,30 @@ async function expireMessages() {
   }
 }
 
+/**
+ * Einmal-Bilder (Issue #26): nach dem Ansehen (plus kurzem Meldefenster) und nach
+ * P-EINMAL-VERFALL ungeöffnet wird die Datei endgültig gelöscht. Die Nachricht bleibt als
+ * Platzhalter („Angesehen“ / „Abgelaufen“) stehen. Gemeldete Bilder liegen als Kopie im Fall.
+ */
+export async function purgeOnceImages() {
+  await q(
+    `UPDATE messages SET once_expired_at = now()
+      WHERE once AND once_viewed_at IS NULL AND once_expired_at IS NULL AND created_at < now() - make_interval(secs => $1)`,
+    [p('P-EINMAL-VERFALL')],
+  );
+  const rows = await q(
+    `SELECT pm.id, pm.file FROM private_media pm JOIN messages m ON m.media_id = pm.id
+      WHERE m.once AND pm.file IS NOT NULL
+        AND ((m.once_purge_at IS NOT NULL AND m.once_purge_at <= now()) OR m.once_expired_at IS NOT NULL)
+      LIMIT 500`,
+  );
+  for (const r of rows) {
+    await q(`UPDATE private_media SET file = NULL WHERE id = $1`, [r.id]);
+    await deleteFile('zone2', r.file);
+  }
+  await q(`UPDATE messages SET once_purge_at = NULL WHERE once AND once_purge_at IS NOT NULL AND once_purge_at <= now()`);
+}
+
 /** Archiv (F46): beendete Gespräche nach P-ARCHIV bei beiden gelöscht. */
 async function purgeArchive() {
   const rows = await q(`SELECT id FROM conversations WHERE state = 'ended' AND ended_at < now() - make_interval(secs => $1) LIMIT 200`, [p('P-ARCHIV')]);
@@ -276,6 +300,7 @@ const JOBS: Job[] = [
   { name: 'checkins', everyS: () => 30, run: runCheckins },
   { name: 'exits', everyS: () => MIN, run: sweepExits },
   { name: 'messages_expiry', everyS: () => MIN, run: expireMessages },
+  { name: 'once_images', everyS: () => MIN, run: purgeOnceImages },
   { name: 'archive', everyS: () => 5 * MIN, run: purgeArchive },
   { name: 'blocks', everyS: () => MIN, run: finalizeBlocks },
   { name: 'intentions', everyS: () => MIN, run: expireIntentions },

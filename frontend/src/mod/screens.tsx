@@ -426,6 +426,7 @@ function Meldungen({ owner }: { owner: boolean }) {
                 <p className="muted mb-1">{it.kind}</p>
                 {it.content?.text && <p className="whitespace-pre-wrap">{it.content.text}</p>}
                 {it.content?.name && <p>Name: {it.content.name}</p>}
+                {it.audio && <audio controls preload="none" src={it.audio} className="mt-2 w-full" />}
                 {it.image &&
                   (reveal[it.id] ? (
                     <img src={it.image} alt="" className="max-h-80 object-contain mt-2" />

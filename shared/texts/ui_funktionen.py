@@ -64,6 +64,87 @@ NEU = {
   'UI-FILTER-BEREICH-AN': 'Bereich festlegen',
   'UI-FILTER-ODER': 'Mindestens eins davon',
 
+  # ───── #14 Ungelesen ─────
+  'UI-CHATS-UNGELESEN': '{zahl} ungelesen',
+  'UI-CHAT-NEUE-NACHRICHTEN': 'Neue Nachrichten',
+
+  # ───── #21 Vorlagen und Emojis ─────
+  'UI-VORLAGEN': 'Vorlagen',
+  'UI-VORLAGEN-TITEL': 'Vorformulierte Nachrichten',
+  'UI-VORLAGEN-ERKL': 'Ein Tipp sendet den Text so, wie er hier steht.',
+  'UI-VORLAGEN-LEER': 'Noch keine Vorlagen. Leg dir Antworten auf Fragen an, die immer wieder kommen.',
+  'UI-VORLAGEN-NEU': 'Neue Vorlage',
+  'UI-VORLAGEN-BEARBEITEN': 'Bearbeiten',
+  'UI-VORLAGEN-FERTIG': 'Fertig',
+  'UI-VORLAGEN-MAX': 'Höchstens {max} Vorlagen.',
+  'UI-VORLAGEN-PLATZHALTER': 'z. B. „Ich bin eher spontan unterwegs – schreib mir einfach, wenn du in der Nähe bist.“',
+  'UI-EMOJI': 'Emoji',
+  'UI-EMOJI-GRUPPE-1': 'Smileys',
+  'UI-EMOJI-GRUPPE-2': 'Gesten',
+  'UI-EMOJI-GRUPPE-3': 'Herzen',
+  'UI-EMOJI-GRUPPE-4': 'Unterwegs',
+  'UI-EMOJI-GRUPPE-5': 'Essen und Trinken',
+  'UI-EMOJI-GRUPPE-6': 'Symbole',
+
+  # ───── #23 Alben ─────
+  'UI-ALBEN': 'Private Alben',
+  'UI-ALBEN-ERKL': 'Bis zu {max} Alben mit je {bilder} Bildern. Du teilst sie im Chat mit einem Tipp — sehen kann sie nur, wem du sie zeigst.',
+  'UI-ALBEN-MAX': 'Höchstens {max} Alben.',
+  'UI-ALBEN-NEU': 'Neues Album',
+  'UI-ALBEN-NAME': 'Name des Albums',
+  'UI-ALBEN-UMBENENNEN': 'Umbenennen',
+  'UI-ALBEN-LOESCHEN': 'Album löschen',
+  'UI-ALBEN-LOESCHEN-FRAGE': 'Album mit allen Bildern löschen? Wer es gerade sehen darf, sieht es danach nicht mehr.',
+  'UI-ALBEN-BILDER': '{zahl} Bilder',
+  'UI-ALBEN-WAEHLEN': 'Welches Album teilen?',
+  'UI-ALBEN-LEER-TEILEN': 'Leg zuerst ein Album mit Bildern an.',
+  'UI-ALBEN-GETEILT': 'Album geteilt.',
+  'UI-ALBUM-GETEILT-VON': '{name} teilt ein Album mit dir: „{album}“',
+
+  # ───── #26 Einmal-Bilder ─────
+  'UI-EINMAL': 'Einmal ansehen',
+  'UI-EINMAL-HINWEIS': 'Das Bild verschwindet nach dem Ansehen. Screenshots oder Fotos vom Bildschirm können wir aber nicht verhindern. Schick nur, was du wirklich teilen willst.',
+  'UI-EINMAL-VERSTANDEN': 'Verstanden',
+  'UI-EINMAL-KACHEL': 'Einmal-Bild · Tippen zum Ansehen',
+  'UI-EINMAL-ANGESEHEN': 'Angesehen',
+  'UI-EINMAL-ABGELAUFEN': 'Abgelaufen',
+  'UI-EINMAL-GESENDET': 'Einmal-Bild · Gesendet',
+  'UI-EINMAL-ANZEIGE': 'Verschwindet nach dem Ansehen, kann aber abfotografiert werden.',
+  'UI-EINMAL-NOCH': 'noch {sekunden} s',
+  'UI-EINMAL-WEG': 'Dieses Bild ist nicht mehr verfügbar.',
+  'UI-EINMAL-SENDEN': 'Als Einmal-Bild senden',
+
+  # ───── #28 Sprachnachrichten ─────
+  'UI-SPRACHE': 'Sprachnachricht',
+  'UI-SPRACHE-HALTEN': 'Zum Aufnehmen gedrückt halten — oder tippen zum Starten',
+  'UI-SPRACHE-NIMMT-AUF': 'Aufnahme läuft · {zeit}',
+  'UI-SPRACHE-WISCHEN': '‹ Zum Abbrechen wischen',
+  'UI-SPRACHE-STOPP': 'Stopp',
+  'UI-SPRACHE-ABBRECHEN': 'Abbrechen',
+  'UI-SPRACHE-SENDEN': 'Senden',
+  'UI-SPRACHE-LOESCHEN': 'Löschen',
+  'UI-SPRACHE-ANHOEREN': 'Anhören',
+  'UI-SPRACHE-ERST-ANTWORT': 'Sprachnachrichten gehen, sobald er geantwortet hat.',
+  'UI-SPRACHE-AUS': 'Diese Person empfängt gerade keine Sprachnachrichten.',
+  'UI-SPRACHE-ZU-LANG': 'Höchstens {sekunden} Sekunden.',
+  'UI-SPRACHE-ZU-GROSS': 'Die Aufnahme ist zu groß (höchstens {mb} MB).',
+  'UI-SPRACHE-LEER': 'Die Aufnahme ist leer.',
+  'UI-SPRACHE-FORMAT': 'Diese Aufnahme können wir nicht verarbeiten.',
+  'UI-SPRACHE-NICHT-MOEGLICH': 'Sprachnachrichten sind gerade nicht möglich.',
+  'UI-SPRACHE-MIKRO-ABGELEHNT': 'Das Mikrofon ist gesperrt. Erlaube es in den Einstellungen deines Browsers für diese Seite.',
+  'UI-SPRACHE-MIKRO-FEHLT': 'Kein Mikrofon gefunden.',
+  'UI-SPRACHE-HTTPS': 'Aufnahmen gehen nur über eine sichere Verbindung (https).',
+  'UI-SPRACHE-BROWSER': 'Dieser Browser kann keine Aufnahmen machen.',
+  'UI-SPRACHE-TEMPO': 'Tempo {tempo}',
+  'UI-EINST-SPRACHE': 'Sprachnachrichten empfangen',
+  'UI-EINST-SPRACHE-ERKL': 'Aus: Niemand kann dir Sprachnachrichten schicken. Das gilt auch in Cruizy Date.',
+
+  # ───── #30 Gesprächsstarter ─────
+  'UI-STARTER-TITEL': 'Ideen für den Anfang',
+  'UI-STARTER-ANDERE': 'Andere Vorschläge',
+  'UI-EINST-STARTER': 'Gesprächsstarter anzeigen',
+  'UI-EINST-STARTER-ERKL': 'In neuen Chats schlagen wir dir ein paar Einstiege vor — aus dem, was im Profil der anderen Person steht. Nichts davon verlässt unseren Server.',
+
   # ───── #18 Travel (Grundlage für das Raster) ─────
   'UI-TRAVEL-BEENDEN': 'Zurück zu meinem Ort',
   'UI-TRAVEL-BALD-REIHE': 'Bald in der Gegend',
@@ -73,4 +154,5 @@ NEU = {
 # Bestehende Texte, die sich durch die Issues ändern
 ERSETZT = {
   'UI-FOTOS-MAX': 'Mehr als {max} Fotos gehen nicht.',
+  'UI-ALBUM-MEINS': 'Private Alben',
 }

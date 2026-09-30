@@ -221,28 +221,39 @@ export function validName(name: string, max: number): boolean {
 }
 
 /**
- * Eisbrecher-Vorlagen (F44, FV-59) — ENTWURF bis A-40. Feste Vorlagen, gefüllt
- * nur mit strukturierten Angaben, die das Profil der Gegenseite sichtbar zeigt.
- * Keine generative KI (AK-F44-02).
+ * Gesprächsstarter (F44, FV-59, Issue #30) — ENTWURF bis A-40. Regel- und vorlagenbasiert,
+ * keine generative KI, keine Daten an Dritte (AK-F44-02). Gefüllt nur mit Angaben, die das
+ * Profil der Gegenseite öffentlich zeigt: Interessen, Bio, Absicht. Nie Kinks, Position,
+ * Gesundheit, Religion, Politik oder Inhalte privater Alben. Keine sexuellen Inhalte.
+ * Priorität: gemeinsame Interessen > Interessen der Person > Bio > Absicht > allgemein.
  */
-export const ICEBREAKERS = {
-  merkmal: [
-    'Hey {name}, ich sehe, du magst auch {merkmal}. Was gefällt dir daran am meisten?',
-    '{merkmal} steht bei uns beiden im Profil. Hast du einen Tipp für mich?',
-    'Hi {name}, {merkmal} — wie bist du dazu gekommen?',
+export const STARTERS = {
+  gemeinsam: [
+    'Wir mögen beide {interesse} – was war dein letztes Highlight?',
+    '{interesse} steht bei uns beiden im Profil. Hast du einen Tipp für mich?',
+    'Noch jemand mit {interesse}! Wie bist du dazu gekommen?',
   ],
-  absicht: [
-    'Hi {name}, du bist gerade bei „{absicht}“. Ich auch. Wie sieht dein Tag aus?',
-    'Hey {name}, „{absicht}“ passt bei mir gerade auch. Lust, ein bisschen zu schreiben?',
+  interesse: [
+    '{interesse} steht bei dir drin – wie bist du dazu gekommen?',
+    'Was gefällt dir an {interesse} am meisten?',
+    'Ich hab gesehen: {interesse}. Erzähl mal, was dich daran reizt.',
   ],
-  ort: [
-    'Hi {name}, warst du schon mal im {ort}? Ich überlege, da mal hinzugehen.',
-    'Hey {name}, kennst du {ort}? Wäre ein guter Ort für einen ersten Kaffee.',
+  bio: [
+    'Deine Bio hat mich neugierig gemacht – erzähl mal mehr!',
+    'Ich hab deine Beschreibung gelesen und hätte da ein paar Fragen. Darf ich?',
+    'Was von dem, was in deinem Profil steht, sollte ich als Erstes wissen?',
   ],
+  absicht: {
+    abend: ['Du bist heute Abend unterwegs – schon einen Plan?', 'Heute Abend noch was vor? Ich überlege gerade, wohin.'],
+    schreiben: ['Lust, ein bisschen zu schreiben? Wie war dein Tag?', 'Hi! Du schreibst gern – ich auch. Was beschäftigt dich gerade?'],
+    absicht3: ['Hey, wie sieht dein Tag gerade aus?', 'Hi! Spontan unterwegs? Erzähl mal.'],
+    absicht4: ['Hi! Wie läuft’s bei dir gerade?', 'Hey, was hast du heute noch vor?'],
+  } as Record<string, string[]>,
   allgemein: [
-    'Hi {name}, schön, dich hier zu sehen. Wie läuft dein Tag?',
-    'Hey {name}, was hat dich heute zum Lächeln gebracht?',
-    'Hallo {name}, ich wollte einfach mal Hallo sagen.',
-    'Hi {name}, was machst du am liebsten an einem freien Abend?',
+    'Hey, wie läuft dein Tag so?',
+    'Was machst du am liebsten am Wochenende?',
+    'Hi! Was hat dich heute zum Lächeln gebracht?',
+    'Hey, was hörst du gerade für Musik?',
+    'Hi, schön dich hier zu sehen. Was treibt dich so um?',
   ],
 } as const;

@@ -105,7 +105,7 @@ export function Ich() {
           <RowLink to="/ich/mitteilungen" label={t('ST-SIC-50')} badge={unread ? <span className="rounded-full bg-akzent text-grund px-2 text-xs">{unread}</span> : undefined} />
           <RowLink to="/ich/profil/bearbeiten" label={t('UI-ICH-PROFIL')} hint={t('UI-PROFIL-BEARBEITEN')} />
           <RowLink to="/ich/merkliste" label={t('UI-ICH-MERKLISTE')} />
-          <RowLink to="/album" label={t('UI-ALBUM-MEINS')} />
+          <RowLink to="/alben" label={t('UI-ALBUM-MEINS')} />
           <RowLink to="/ich/sicherheit" label={t('ST-SIC-01')} hint={t('ST-SIC-02')} />
           <RowLink to="/ich/daten" label={t('ST-DAT-01')} />
           <RowLink to="/ich/abo" label={t('UI-ICH-ABO')} />
@@ -1040,6 +1040,8 @@ export function Einstellungen() {
         <Section title={t('UI-TAB-CHATS')}>
           <div className="card p-4 flex flex-col gap-3">
             <Toggle checked={s.disappearingDefault} onChange={(v) => patch({ disappearingDefault: v })} label={t('ST-CHAT-30')} hint={t('ST-CHAT-31')} />
+            <Toggle checked={s.voiceReceive !== false} onChange={(v) => patch({ voiceReceive: v })} label={t('UI-EINST-SPRACHE')} hint={t('UI-EINST-SPRACHE-ERKL')} />
+            <Toggle checked={s.startersEnabled !== false} onChange={(v) => patch({ startersEnabled: v })} label={t('UI-EINST-STARTER')} hint={t('UI-EINST-STARTER-ERKL')} />
             <div>
               <p className="mb-2">{media[0]}</p>
               <Choice

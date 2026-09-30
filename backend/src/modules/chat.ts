@@ -4,8 +4,9 @@
  * PRÜFUNG ERFORDERLICH — Zugriff je Gespräch, Medien-Schranke, Stufe 2.
  *
  *  * Keine Nachrichtenlimits (AK-F41-01); Absender sieht nur „gesendet“ (AK-F41-02);
- *    keine Lesebestätigung, kein „schreibt gerade“, keine Rückmeldung über das
- *    Anzeigen an den Server (F52) — ungelesen zählt das Gerät selbst.
+ *    keine Lesebestätigung, kein „schreibt gerade“ (F52). Den eigenen Lesestand kennt
+ *    der Server nur, damit ungelesene Gespräche auf allen Geräten markiert sind (Issue #14) —
+ *    die Gegenseite erfährt ihn nie.
  *  * Erstnachrichten landen in „Anfragen“, ohne Mitteilung und ohne Zählmarke (F42).
  *  * Medien nach der Einstellung der empfangenden Person (FV-57, FV-96), serverseitig
  *    erzwungen, auch bei direktem Aufruf (AK-F43-01).
@@ -21,12 +22,13 @@ import { AppError, bad, notFound } from '../lib/errors.js';
 import { deleteFile, putFile } from '../lib/files.js';
 import { body, idParam, params, uuid } from '../lib/http.js';
 import { prepare } from '../lib/images.js';
+import { prepareAudio } from '../lib/audio.js';
 import { isoWeek } from '../lib/time.js';
 import { t } from '../lib/texts.js';
 import { runHashCheck } from '../providers/checks.js';
-import { ICEBREAKERS, INTENTIONS, traitName } from '../services/catalogs.js';
+import { STARTERS, traitName } from '../services/catalogs.js';
 import { emit } from '../services/hub.js';
-import { imgUrl } from '../services/media-tokens.js';
+import { audioUrl, imgUrl } from '../services/media-tokens.js';
 import { metric } from '../services/metrics.js';
 import { openHashCase } from '../services/photo-chain.js';
 import { activityBand, currentIntention, initialOf, isBlockedEitherWay, canSee } from '../services/profiles.js';
@@ -58,12 +60,29 @@ interface ConvRow {
   pending_exit_at: Date | null;
   last_message_at: Date;
   created_at: Date;
+  low_read_at: Date | null;
+  high_read_at: Date | null;
 }
 
 const other = (c: ConvRow, me: string) => (c.user_low === me ? c.user_high : c.user_low);
 const myTextAt = (c: ConvRow, me: string) => (c.user_low === me ? c.low_text_at : c.high_text_at);
 const theirTextAt = (c: ConvRow, me: string) => (c.user_low === me ? c.high_text_at : c.low_text_at);
 const bothWrote = (c: ConvRow) => !!c.low_text_at && !!c.high_text_at;
+const myReadAt = (c: ConvRow, me: string) => (c.user_low === me ? c.low_read_at : c.high_read_at);
+
+/** Nachrichten der Gegenseite, die zugestellt sind und nach dem eigenen Lesestand kamen (Issue #14). */
+const UNREAD_SQL = `m.sender_id IS NOT NULL AND m.sender_id <> $2 AND m.kind <> 'system'
+  AND (m.expires_at IS NULL OR m.expires_at > now())
+  AND (m.kind NOT IN ('image','audio') OR m.delivery IN ('sent','held_stage2'))`;
+
+export async function markRead(convId: string, me: string) {
+  await q(
+    `UPDATE conversations SET low_read_at = CASE WHEN user_low = $2 THEN now() ELSE low_read_at END,
+                              high_read_at = CASE WHEN user_high = $2 THEN now() ELSE high_read_at END
+      WHERE id = $1 AND (user_low = $2 OR user_high = $2)`,
+    [convId, me],
+  );
+}
 
 /** Gespräch für eine beteiligte Person — verschwindet bei Blockierung (AK-F61-01). */
 async function convFor(convId: string, me: string, client: Queryable = db()): Promise<ConvRow> {
@@ -173,10 +192,19 @@ async function messageView(m: any, me: string, conv: ConvRow) {
   if (m.kind === 'text' || m.kind === 'exit') {
     return { ...base, text: decStr('messages', m.body_enc, `msg:${conv.id}`) };
   }
+  if (m.kind === 'image' && m.once) {
+    // Issue #26: Einmal-Bild — nie eine Adresse in der Liste, nur der Zustand
+    const state = m.once_viewed_at ? 'angesehen' : m.once_expired_at || !m.file ? 'abgelaufen' : 'neu';
+    const closed = !mine && m.delivery === 'held_stage2';
+    return { ...base, image: null, once: { state }, closed };
+  }
   if (m.kind === 'image') {
     // Absender: immer „gesendet“ (AK-F43-12). Empfänger mit Stufe-2-Pflicht: geschlossene Kachel (FV-86).
     const closed = !mine && m.delivery === 'held_stage2';
     return { ...base, image: closed ? null : imgUrl('chat', m.id, me), closed };
+  }
+  if (m.kind === 'audio') {
+    return { ...base, audio: m.file ? { url: audioUrl(m.id, me), durationMs: m.duration_ms ?? 0 } : null };
   }
   if (m.kind === 'place') {
     const pl = await one(`SELECT id, name, kind, district FROM places WHERE id = $1 AND removed_at IS NULL`, [m.place_id]);
@@ -199,7 +227,7 @@ export async function conversationSummary(c: ConvRow, me: string) {
   );
   const available = !!pr && pr.status === 'active' && !pr.deletion_requested_at && pr.moderation_state !== 'suspended';
   const last = await one(
-    `SELECT kind, body_enc, sender_id, system_code FROM messages
+    `SELECT kind, body_enc, sender_id, system_code, once FROM messages
       WHERE conversation_id = $1 AND (expires_at IS NULL OR expires_at > now())
         AND (delivery = 'sent' OR sender_id = $2 OR delivery = 'held_stage2')
       ORDER BY created_at DESC LIMIT 1`,
@@ -207,6 +235,10 @@ export async function conversationSummary(c: ConvRow, me: string) {
   );
   let preview: string | null = null;
   if (last?.kind === 'text' || last?.kind === 'exit') preview = decStr('messages', last.body_enc, `msg:${c.id}`)?.split('\n')[0] ?? null;
+  const unread = await one(
+    `SELECT count(*)::int AS n FROM messages m WHERE m.conversation_id = $1 AND ${UNREAD_SQL} AND ($3::timestamptz IS NULL OR m.created_at > $3)`,
+    [c.id, me, myReadAt(c, me)],
+  );
   const box =
     c.state === 'ended' ? 'archiv' : c.initiator_id === me || myTextAt(c, me) ? 'gespraeche' : 'anfragen';
   const pendingRequest =
@@ -227,7 +259,8 @@ export async function conversationSummary(c: ConvRow, me: string) {
         }
       : { id: null, name: null, unavailable: true },
     lastAt: c.last_message_at,
-    last: last ? { kind: last.kind, mine: last.sender_id === me, text: preview, system: last.system_code } : null,
+    last: last ? { kind: last.kind, mine: last.sender_id === me, text: preview, system: last.system_code, once: !!last.once } : null,
+    unread: unread!.n,
     disappearing: !!c.disappearing_by,
     disappearingMine: c.disappearing_by === me,
     state: c.state,
@@ -332,7 +365,7 @@ export async function deleteHeldImages(convId: string, senderId?: string) {
 /** Gespräch samt Bildern löschen (Archivablauf, endgültige Blockierung, Kontolöschung). */
 export async function purgeConversation(convId: string, client: Queryable = db()) {
   const files = await q(
-    `SELECT pm.id, pm.file FROM messages m JOIN private_media pm ON pm.id = m.media_id WHERE m.conversation_id = $1 AND pm.kind = 'chat'`,
+    `SELECT pm.id, pm.file FROM messages m JOIN private_media pm ON pm.id = m.media_id WHERE m.conversation_id = $1 AND pm.kind IN ('chat','audio')`,
     [convId],
     client,
   );
@@ -428,6 +461,17 @@ function validText(text: string) {
   return s;
 }
 
+/**
+ * Sprachnachrichten (Issue #28): erst, wenn beide geschrieben haben (Erstkontakt nur Text),
+ * und nur, wenn die empfangende Person sie nicht abgeschaltet hat.
+ */
+export async function voiceGate(c: ConvRow, sender: string): Promise<'ok' | 'erstkontakt' | 'aus' | 'beendet'> {
+  if (c.state !== 'open') return 'beendet';
+  if (!bothWrote(c)) return 'erstkontakt';
+  const pr = await one(`SELECT voice_receive FROM profiles WHERE account_id = $1`, [other(c, sender)]);
+  return pr?.voice_receive === false ? 'aus' : 'ok';
+}
+
 export default async function chatRoutes(app: FastifyInstance) {
   app.get('/api/conversations', async (req) => {
     const a = await requireMember(req, { allowDeletionPending: true });
@@ -445,17 +489,41 @@ export default async function chatRoutes(app: FastifyInstance) {
     return { conversations: list };
   });
 
+  /** Issue #14: ungelesene Gespräche — Zählmarke im Reiter „Chats“, getrennt nach Gesprächen und Anfragen. */
+  app.get('/api/conversations/unread', async (req) => {
+    const a = await requireMember(req, { allowDeletionPending: true });
+    const rows = await q(
+      `SELECT c.id, (c.initiator_id = $1 OR (c.user_low = $1 AND c.low_text_at IS NOT NULL) OR (c.user_high = $1 AND c.high_text_at IS NOT NULL)) AS mine
+         FROM conversations c
+        WHERE (c.user_low = $1 OR c.user_high = $1) AND c.state = 'open'
+          AND NOT EXISTS (SELECT 1 FROM blocks b WHERE b.revoked_at IS NULL
+                AND ((b.blocker_id = c.user_low AND b.blocked_id = c.user_high) OR (b.blocker_id = c.user_high AND b.blocked_id = c.user_low)))
+          AND EXISTS (SELECT 1 FROM messages m WHERE m.conversation_id = c.id AND ${UNREAD_SQL.replace(/\$2/g, '$1')}
+                AND m.created_at > coalesce(CASE WHEN c.user_low = $1 THEN c.low_read_at ELSE c.high_read_at END, '-infinity'))`,
+      [a.id],
+    );
+    return { conversations: rows.filter((r) => r.mine).length, requests: rows.filter((r) => !r.mine).length };
+  });
+
+  app.post('/api/conversations/:id/read', async (req) => {
+    const a = await requireMember(req, { allowDeletionPending: true });
+    const { id } = params(req, idParam);
+    await convFor(id, a.id);
+    await markRead(id, a.id);
+    return { ok: true };
+  });
+
   app.get('/api/conversations/:id', async (req) => {
     const a = await requireMember(req, { allowDeletionPending: true });
     const { id } = params(req, idParam);
     const c = await convFor(id, a.id);
     const before = (req.query as { before?: string }).before;
     const msgs = await q(
-      `SELECT * FROM messages
-        WHERE conversation_id = $1 AND (expires_at IS NULL OR expires_at > now())
-          AND (sender_id = $2 OR sender_id IS NULL OR delivery IN ('sent','held_stage2') OR kind <> 'image')
-          AND ($3::timestamptz IS NULL OR created_at < $3)
-        ORDER BY created_at DESC LIMIT 200`,
+      `SELECT m.*, pm.file FROM messages m LEFT JOIN private_media pm ON pm.id = m.media_id
+        WHERE m.conversation_id = $1 AND (m.expires_at IS NULL OR m.expires_at > now())
+          AND (m.sender_id = $2 OR m.sender_id IS NULL OR m.delivery IN ('sent','held_stage2') OR m.kind NOT IN ('image','audio'))
+          AND ($3::timestamptz IS NULL OR m.created_at < $3)
+        ORDER BY m.created_at DESC LIMIT 200`,
       [c.id, a.id, before ?? null],
     );
     const views = [];
@@ -466,7 +534,15 @@ export default async function chatRoutes(app: FastifyInstance) {
     const hasBlurred = await one(`SELECT 1 FROM photos WHERE account_id = $1 AND status = 'approved' AND blurred LIMIT 1`, [a.id]);
     const firstIncoming = c.initiator_id !== a.id && !myTextAt(c, a.id);
     const from = firstIncoming ? await one(`SELECT from_outside FROM conversations WHERE id = $1`, [c.id]) : null;
+    // Issue #14: Öffnen markiert als gelesen — nur für mich
+    if (!before) await markRead(c.id, a.id);
+    const voice = await voiceGate(c, a.id);
+    const me = await one(`SELECT starters_enabled, once_hint_seen FROM profiles WHERE account_id = $1`, [a.id]);
     return {
+      voiceAllowed: voice === 'ok',
+      voiceBlocked: voice === 'ok' ? null : voice,
+      startersEnabled: me?.starters_enabled ?? true,
+      onceHintSeen: me?.once_hint_seen ?? false,
       conversation: summary,
       messages: views,
       // Die sendende Seite sieht nur, ob der Knopf in Stellung 1 gesperrt ist (FV-57, Ablauf 4)
@@ -575,6 +651,8 @@ export default async function chatRoutes(app: FastifyInstance) {
       if (!r?.age2_at) delivery = 'held_stage2'; // FV-86: geschlossene Kachel, der Absender erfährt nichts
     }
     const clientRef = fields.clientRef?.slice(0, 64) ?? null;
+    // Issue #26: Einmal-Bild — gleiche Schranken, gleiche Aufbereitung, nur einmal abrufbar
+    const once = fields.once === 'true';
     const mid = await tx(async (cl) => {
       const media = await one(
         `INSERT INTO private_media (owner_id, kind, file, width, height, hash_state) VALUES ($1, 'chat', $2, $3, $4, $5) RETURNING id`,
@@ -582,11 +660,12 @@ export default async function chatRoutes(app: FastifyInstance) {
         cl,
       );
       const m = await one(
-        `INSERT INTO messages (conversation_id, sender_id, kind, media_id, delivery, expires_at, client_ref)
-         VALUES ($1, $2, 'image', $3, $4, $5, $6) RETURNING id`,
-        [c.id, a.id, media!.id, delivery, disappearingExpiry(c), clientRef],
+        `INSERT INTO messages (conversation_id, sender_id, kind, media_id, delivery, expires_at, client_ref, once)
+         VALUES ($1, $2, 'image', $3, $4, $5, $6, $7) RETURNING id`,
+        [c.id, a.id, media!.id, delivery, disappearingExpiry(c), clientRef, once],
         cl,
       );
+      if (once) await cl.query(`UPDATE profiles SET once_hint_seen = true WHERE account_id = $1`, [a.id]);
       if (gate.kind === 'request') {
         // FV-96: eine Anfrage je Gespräch — weitere Bilder warten hinter derselben (AK-F43-08)
         await cl.query(
@@ -603,6 +682,62 @@ export default async function chatRoutes(app: FastifyInstance) {
     emit(a.id, 'nachricht', { conversationId: c.id });
     // Absender sieht in jedem Fall „gesendet“ (AK-F43-12)
     return { messageId: mid, status: 'gesendet' };
+  });
+
+  /** Sprachnachricht (Issue #28) — erst nach der ersten Antwort, nur wenn die Gegenseite sie empfängt. */
+  app.post('/api/conversations/:id/audio', async (req) => {
+    const a = await requireCleared(req);
+    const { id } = params(req, idParam);
+    const c = await convFor(id, a.id);
+    const to = other(c, a.id);
+    await checkCanWrite(a, c, to);
+    const gate = await voiceGate(c, a.id);
+    if (gate === 'erstkontakt') throw new AppError(403, 'UI-SPRACHE-ERST-ANTWORT', {}, 'erstkontakt_nur_text');
+    if (gate === 'aus') throw new AppError(403, 'UI-SPRACHE-AUS', {}, 'sprache_aus');
+    const { buffer, fields } = await readUpload(req);
+    const audio = await prepareAudio(buffer, { maxSeconds: p('P-SPRACHE-MAX'), maxMb: p('P-SPRACHE-MB') });
+    const file = await putFile('zone2', audio.data);
+    const clientRef = fields.clientRef?.slice(0, 64) ?? null;
+    const mid = await tx(async (cl) => {
+      const media = await one(
+        `INSERT INTO private_media (owner_id, kind, file, hash_state, mime) VALUES ($1, 'audio', $2, 'skipped', $3) RETURNING id`,
+        [a.id, file, audio.mime],
+        cl,
+      );
+      const m = await one(
+        `INSERT INTO messages (conversation_id, sender_id, kind, media_id, delivery, expires_at, client_ref, duration_ms)
+         VALUES ($1, $2, 'audio', $3, 'sent', $4, $5, $6) RETURNING id`,
+        [c.id, a.id, media!.id, disappearingExpiry(c), clientRef, audio.durationMs],
+        cl,
+      );
+      await cl.query(`UPDATE conversations SET last_message_at = now() WHERE id = $1`, [c.id]);
+      await metric(a.id, 'message_sent', cl);
+      return m!.id as string;
+    });
+    await notifyNewMessage(c, a.id, null);
+    return { messageId: mid, status: 'gesendet', durationMs: audio.durationMs };
+  });
+
+  /**
+   * Einmal-Bild öffnen (Issue #26): genau einmal. Liefert eine einmalig gültige Adresse;
+   * die Datei wird kurz danach endgültig gelöscht (P-EINMAL-MELDEFENSTER, damit eine Meldung
+   * aus dem Anzeigefenster noch eine Kopie sichern kann).
+   */
+  app.post('/api/conversations/:id/messages/:mid/open', async (req) => {
+    const a = await requireMember(req);
+    const { id, mid } = params(req, z.object({ id: uuid, mid: uuid }));
+    await convFor(id, a.id);
+    if (!(await stage2Satisfied(a))) throw new AppError(403, 'ST-VER-41', {}, 'stufe2_noetig');
+    const m = await one(
+      `UPDATE messages SET once_viewed_at = now(), once_purge_at = now() + make_interval(secs => $3)
+        WHERE id = $1 AND conversation_id = $2 AND once AND sender_id <> $4 AND delivery = 'sent'
+          AND once_viewed_at IS NULL AND once_expired_at IS NULL
+        RETURNING id, sender_id`,
+      [mid, id, p('P-EINMAL-MELDEFENSTER'), a.id],
+    );
+    if (!m) throw new AppError(410, 'UI-EINMAL-WEG', {}, 'einmal_weg');
+    emit(m.sender_id, 'nachricht', { conversationId: id });
+    return { url: imgUrl('once', mid, a.id, undefined, 60), seconds: p('P-EINMAL-ANZEIGE') };
   });
 
   app.post('/api/conversations/:id/media-request', async (req) => {
@@ -730,42 +865,41 @@ export default async function chatRoutes(app: FastifyInstance) {
     return { ok: true };
   });
 
-  // ───── Eisbrecher (F44) ─────
+  // ───── Gesprächsstarter (F44, Issue #30) ─────
   app.get('/api/icebreakers/:id', async (req) => {
     const a = await requireMember(req);
     const { id } = params(req, idParam);
-    const page = Number((req.query as { page?: string }).page ?? 0) || 0;
     if (!(await canSee(a.id, id))) throw notFound();
     const [low, high] = pair(a.id, id);
     const conv = await one(`SELECT id FROM conversations WHERE user_low = $1 AND user_high = $2`, [low, high]);
-    if (conv && (await one(`SELECT 1 FROM messages WHERE conversation_id = $1 AND kind IN ('text','image','exit') LIMIT 1`, [conv.id]))) {
-      return { suggestions: [] }; // AK-F44-03: mit Verlauf kein Einstieg mehr
+    if (conv && (await one(`SELECT 1 FROM messages WHERE conversation_id = $1 AND kind IN ('text','image','exit','audio') LIMIT 1`, [conv.id]))) {
+      return { suggestions: [] }; // AK-F44-03: nur im leeren Chat
     }
     const me = await one(`SELECT traits FROM profiles WHERE account_id = $1`, [a.id]);
-    const them = await one(`SELECT name, traits, intention, intention_expires_at FROM profiles WHERE account_id = $1`, [id]);
-    const shared = (them.traits as number[]).filter((x) => (me?.traits ?? []).includes(x));
-    const intention = currentIntention(them);
-    const intentionText = intention ? t(INTENTIONS.find((i) => i.key === intention.key)!.textId) : null;
-    const loc = await one(`SELECT cell_lat, cell_lng, city_id FROM locations WHERE account_id = $1`, [a.id]);
-    const places = await q(
-      `SELECT name FROM places WHERE removed_at IS NULL ${loc?.cell_lat != null ? `AND abs(lat - $1) < 0.2 AND abs(lng - $2) < 0.3` : ''} ORDER BY random() LIMIT 2`,
-      loc?.cell_lat != null ? [loc.cell_lat, loc.cell_lng] : [],
-    );
-    // FV-59: gemeinsame Merkmale → Absicht → Orte → allgemein; innerhalb einer Stufe zufällig
-    const fill = (tpl: string, vars: Record<string, string>) => tpl.replace(/\{(\w+)\}/g, (_, k) => vars[k] ?? '');
-    const shuffle = <T,>(arr: readonly T[]) => [...arr].sort(() => Math.random() - 0.5);
-    const out: string[] = [];
-    for (const tr of shuffle(shared)) {
-      const tpl = shuffle(ICEBREAKERS.merkmal)[0];
-      out.push(fill(tpl, { name: them.name, merkmal: traitName(tr) ?? '' }));
-    }
-    if (intentionText) for (const tpl of shuffle(ICEBREAKERS.absicht)) out.push(fill(tpl, { name: them.name, absicht: intentionText }));
-    for (const pl of places) out.push(fill(shuffle(ICEBREAKERS.ort)[0], { name: them.name, ort: pl.name }));
-    for (const tpl of shuffle(ICEBREAKERS.allgemein)) out.push(fill(tpl, { name: them.name }));
-    const unique = [...new Set(out)];
-    const start = (page * 3) % Math.max(unique.length, 1);
-    return { suggestions: unique.slice(start, start + 3).concat(unique.slice(0, Math.max(0, start + 3 - unique.length))) };
+    const them = await one(`SELECT traits, free_text, intention, intention_expires_at FROM profiles WHERE account_id = $1`, [id]);
+    return { suggestions: buildStarters({ mine: me?.traits ?? [], theirs: them?.traits ?? [], bio: them?.free_text ?? '', intention: them ? currentIntention(them)?.key ?? null : null }) };
   });
+}
+
+/**
+ * Gesprächsstarter aus den öffentlichen Angaben der Gegenseite (Issue #30).
+ * 2–3 Vorschläge, jeder aus einer anderen Quelle; fehlt eine Quelle, springt „allgemein“ ein.
+ */
+export function buildStarters(input: { mine: number[]; theirs: number[]; bio: string; intention: string | null }, rnd: () => number = Math.random): string[] {
+  const pick = <T,>(arr: readonly T[]) => arr[Math.floor(rnd() * arr.length)];
+  const fill = (tpl: string, vars: Record<string, string>) => tpl.replace(/\{(\w+)\}/g, (_, k) => vars[k] ?? '');
+  const shared = input.theirs.filter((x) => input.mine.includes(x));
+  const onlyTheirs = input.theirs.filter((x) => !input.mine.includes(x));
+  const sources: string[] = [];
+  if (shared.length) sources.push(fill(pick(STARTERS.gemeinsam), { interesse: traitName(pick(shared)) ?? '' }));
+  if (onlyTheirs.length) sources.push(fill(pick(STARTERS.interesse), { interesse: traitName(pick(onlyTheirs)) ?? '' }));
+  if (input.bio.trim().length >= 20) sources.push(pick(STARTERS.bio));
+  if (input.intention && STARTERS.absicht[input.intention]) sources.push(pick(STARTERS.absicht[input.intention]));
+  const out = sources.slice(0, 3);
+  const general = [...STARTERS.allgemein].sort(() => rnd() - 0.5);
+  while (out.length < 3 && general.length) out.push(general.shift()!);
+  // mindestens zwei, höchstens drei
+  return out.slice(0, Math.max(2, Math.min(3, out.length)));
 }
 
 export { other as otherParticipant, type ConvRow };

@@ -9,7 +9,7 @@ import { api } from './lib/api';
 import { Einwilligung, Gast, HomeBildschirm, Konto, PasswortNeu, ProfilAnlegen, Willkommen, Wiederherstellung, WiederherstellungAbbrechen } from './screens/einstieg';
 import { Naehe, Suche } from './screens/naehe';
 import { FotoHinzufuegen, ProfilEditor, ProfilEigen, ProfilFremd } from './screens/profil';
-import { AlbumAnsicht, Chat, Chats, EigenesAlbum } from './screens/chats';
+import { AlbumAnsicht, AlbumBearbeiten, Alben, Chat, Chats } from './screens/chats';
 import { Pruefung, PruefungAusweis, PruefungFertig } from './screens/pruefung';
 import { Ereignis, Heute, Ort } from './screens/heute';
 import { Abo, Blockiert, CheckIn, Daten, Einstellungen, Hilfe, Ich, KontoSichern, Meldungen, Merkliste, Mitteilungen, Sicherheit, Treffpunkt, Verstecken } from './screens/ich';
@@ -257,7 +257,9 @@ export default function App() {
       <Route path="/suche" element={<Suche />} />
       <Route path="/profil/:id" element={<ProfilFremd />} />
       <Route path="/chats/:id" element={<Chat />} />
-      <Route path="/album" element={<EigenesAlbum />} />
+      <Route path="/album" element={<Navigate to="/alben" replace />} />
+      <Route path="/alben" element={<Alben />} />
+      <Route path="/alben/:albumId" element={<AlbumBearbeiten />} />
       <Route path="/album/:shareId" element={<AlbumAnsicht />} />
       <Route path="/pruefung" element={<Pruefung />} />
       <Route path="/orte/:id" element={<Ort />} />

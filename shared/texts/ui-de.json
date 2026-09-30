@@ -31,6 +31,54 @@
   "s": "ENTWURF",
   "t": "„{absicht}“ erneuern"
  },
+ "UI-ALBEN": {
+  "s": "ENTWURF",
+  "t": "Private Alben"
+ },
+ "UI-ALBEN-BILDER": {
+  "s": "ENTWURF",
+  "t": "{zahl} Bilder"
+ },
+ "UI-ALBEN-ERKL": {
+  "s": "ENTWURF",
+  "t": "Bis zu {max} Alben mit je {bilder} Bildern. Du teilst sie im Chat mit einem Tipp — sehen kann sie nur, wem du sie zeigst."
+ },
+ "UI-ALBEN-GETEILT": {
+  "s": "ENTWURF",
+  "t": "Album geteilt."
+ },
+ "UI-ALBEN-LEER-TEILEN": {
+  "s": "ENTWURF",
+  "t": "Leg zuerst ein Album mit Bildern an."
+ },
+ "UI-ALBEN-LOESCHEN": {
+  "s": "ENTWURF",
+  "t": "Album löschen"
+ },
+ "UI-ALBEN-LOESCHEN-FRAGE": {
+  "s": "ENTWURF",
+  "t": "Album mit allen Bildern löschen? Wer es gerade sehen darf, sieht es danach nicht mehr."
+ },
+ "UI-ALBEN-MAX": {
+  "s": "ENTWURF",
+  "t": "Höchstens {max} Alben."
+ },
+ "UI-ALBEN-NAME": {
+  "s": "ENTWURF",
+  "t": "Name des Albums"
+ },
+ "UI-ALBEN-NEU": {
+  "s": "ENTWURF",
+  "t": "Neues Album"
+ },
+ "UI-ALBEN-UMBENENNEN": {
+  "s": "ENTWURF",
+  "t": "Umbenennen"
+ },
+ "UI-ALBEN-WAEHLEN": {
+  "s": "ENTWURF",
+  "t": "Welches Album teilen?"
+ },
  "UI-ALBUM-ANGEBOTEN": {
   "s": "ENTWURF",
   "t": "Album angeboten"
@@ -42,6 +90,10 @@
  "UI-ALBUM-FREIGABEN": {
   "s": "ENTWURF",
   "t": "Freigaben"
+ },
+ "UI-ALBUM-GETEILT-VON": {
+  "s": "ENTWURF",
+  "t": "{name} teilt ein Album mit dir: „{album}“"
  },
  "UI-ALBUM-HINZU": {
   "s": "ENTWURF",
@@ -57,7 +109,7 @@
  },
  "UI-ALBUM-MEINS": {
   "s": "ENTWURF",
-  "t": "Mein privates Album"
+  "t": "Private Alben"
  },
  "UI-ALBUM-NICHT-JETZT": {
   "s": "ENTWURF",
@@ -299,6 +351,10 @@
   "s": "ENTWURF",
   "t": "Nachricht"
  },
+ "UI-CHAT-NEUE-NACHRICHTEN": {
+  "s": "ENTWURF",
+  "t": "Neue Nachrichten"
+ },
  "UI-CHAT-ORT": {
   "s": "ENTWURF",
   "t": "Treffpunkt"
@@ -326,6 +382,10 @@
  "UI-CHATS-NICHT-MEHR-DA": {
   "s": "ENTWURF",
   "t": "Profil nicht mehr verfügbar"
+ },
+ "UI-CHATS-UNGELESEN": {
+  "s": "ENTWURF",
+  "t": "{zahl} ungelesen"
  },
  "UI-CHATS-WAS-SIND-ANFRAGEN": {
   "s": "ENTWURF",
@@ -527,6 +587,50 @@
   "s": "ENTWURF",
   "t": "Bitte prüf deine Eingabe."
  },
+ "UI-EINMAL": {
+  "s": "ENTWURF",
+  "t": "Einmal ansehen"
+ },
+ "UI-EINMAL-ABGELAUFEN": {
+  "s": "ENTWURF",
+  "t": "Abgelaufen"
+ },
+ "UI-EINMAL-ANGESEHEN": {
+  "s": "ENTWURF",
+  "t": "Angesehen"
+ },
+ "UI-EINMAL-ANZEIGE": {
+  "s": "ENTWURF",
+  "t": "Verschwindet nach dem Ansehen, kann aber abfotografiert werden."
+ },
+ "UI-EINMAL-GESENDET": {
+  "s": "ENTWURF",
+  "t": "Einmal-Bild · Gesendet"
+ },
+ "UI-EINMAL-HINWEIS": {
+  "s": "ENTWURF",
+  "t": "Das Bild verschwindet nach dem Ansehen. Screenshots oder Fotos vom Bildschirm können wir aber nicht verhindern. Schick nur, was du wirklich teilen willst."
+ },
+ "UI-EINMAL-KACHEL": {
+  "s": "ENTWURF",
+  "t": "Einmal-Bild · Tippen zum Ansehen"
+ },
+ "UI-EINMAL-NOCH": {
+  "s": "ENTWURF",
+  "t": "noch {sekunden} s"
+ },
+ "UI-EINMAL-SENDEN": {
+  "s": "ENTWURF",
+  "t": "Als Einmal-Bild senden"
+ },
+ "UI-EINMAL-VERSTANDEN": {
+  "s": "ENTWURF",
+  "t": "Verstanden"
+ },
+ "UI-EINMAL-WEG": {
+  "s": "ENTWURF",
+  "t": "Dieses Bild ist nicht mehr verfügbar."
+ },
  "UI-EINST-AUFFINDBAR": {
   "s": "ENTWURF",
   "t": "Über die Namenssuche auffindbar"
@@ -554,6 +658,22 @@
  "UI-EINST-RUHE-VON": {
   "s": "ENTWURF",
   "t": "Ruhezeit von"
+ },
+ "UI-EINST-SPRACHE": {
+  "s": "ENTWURF",
+  "t": "Sprachnachrichten empfangen"
+ },
+ "UI-EINST-SPRACHE-ERKL": {
+  "s": "ENTWURF",
+  "t": "Aus: Niemand kann dir Sprachnachrichten schicken. Das gilt auch in Cruizy Date."
+ },
+ "UI-EINST-STARTER": {
+  "s": "ENTWURF",
+  "t": "Gesprächsstarter anzeigen"
+ },
+ "UI-EINST-STARTER-ERKL": {
+  "s": "ENTWURF",
+  "t": "In neuen Chats schlagen wir dir ein paar Einstiege vor — aus dem, was im Profil der anderen Person steht. Nichts davon verlässt unseren Server."
  },
  "UI-EINW-ABGELEHNT": {
   "s": "ENTWURF",
@@ -586,6 +706,34 @@
  "UI-EIS-TITEL": {
   "s": "ENTWURF",
   "t": "Ein Einstieg"
+ },
+ "UI-EMOJI": {
+  "s": "ENTWURF",
+  "t": "Emoji"
+ },
+ "UI-EMOJI-GRUPPE-1": {
+  "s": "ENTWURF",
+  "t": "Smileys"
+ },
+ "UI-EMOJI-GRUPPE-2": {
+  "s": "ENTWURF",
+  "t": "Gesten"
+ },
+ "UI-EMOJI-GRUPPE-3": {
+  "s": "ENTWURF",
+  "t": "Herzen"
+ },
+ "UI-EMOJI-GRUPPE-4": {
+  "s": "ENTWURF",
+  "t": "Unterwegs"
+ },
+ "UI-EMOJI-GRUPPE-5": {
+  "s": "ENTWURF",
+  "t": "Essen und Trinken"
+ },
+ "UI-EMOJI-GRUPPE-6": {
+  "s": "ENTWURF",
+  "t": "Symbole"
  },
  "UI-ENTSCHEIDUNG-AN-BEHOERDE": {
   "s": "ENTWURF",
@@ -2091,6 +2239,90 @@
   "s": "ENTWURF",
   "t": "Eine Entscheidung zu deinem Konto"
  },
+ "UI-SPRACHE": {
+  "s": "ENTWURF",
+  "t": "Sprachnachricht"
+ },
+ "UI-SPRACHE-ABBRECHEN": {
+  "s": "ENTWURF",
+  "t": "Abbrechen"
+ },
+ "UI-SPRACHE-ANHOEREN": {
+  "s": "ENTWURF",
+  "t": "Anhören"
+ },
+ "UI-SPRACHE-AUS": {
+  "s": "ENTWURF",
+  "t": "Diese Person empfängt gerade keine Sprachnachrichten."
+ },
+ "UI-SPRACHE-BROWSER": {
+  "s": "ENTWURF",
+  "t": "Dieser Browser kann keine Aufnahmen machen."
+ },
+ "UI-SPRACHE-ERST-ANTWORT": {
+  "s": "ENTWURF",
+  "t": "Sprachnachrichten gehen, sobald er geantwortet hat."
+ },
+ "UI-SPRACHE-FORMAT": {
+  "s": "ENTWURF",
+  "t": "Diese Aufnahme können wir nicht verarbeiten."
+ },
+ "UI-SPRACHE-HALTEN": {
+  "s": "ENTWURF",
+  "t": "Zum Aufnehmen gedrückt halten — oder tippen zum Starten"
+ },
+ "UI-SPRACHE-HTTPS": {
+  "s": "ENTWURF",
+  "t": "Aufnahmen gehen nur über eine sichere Verbindung (https)."
+ },
+ "UI-SPRACHE-LEER": {
+  "s": "ENTWURF",
+  "t": "Die Aufnahme ist leer."
+ },
+ "UI-SPRACHE-LOESCHEN": {
+  "s": "ENTWURF",
+  "t": "Löschen"
+ },
+ "UI-SPRACHE-MIKRO-ABGELEHNT": {
+  "s": "ENTWURF",
+  "t": "Das Mikrofon ist gesperrt. Erlaube es in den Einstellungen deines Browsers für diese Seite."
+ },
+ "UI-SPRACHE-MIKRO-FEHLT": {
+  "s": "ENTWURF",
+  "t": "Kein Mikrofon gefunden."
+ },
+ "UI-SPRACHE-NICHT-MOEGLICH": {
+  "s": "ENTWURF",
+  "t": "Sprachnachrichten sind gerade nicht möglich."
+ },
+ "UI-SPRACHE-NIMMT-AUF": {
+  "s": "ENTWURF",
+  "t": "Aufnahme läuft · {zeit}"
+ },
+ "UI-SPRACHE-SENDEN": {
+  "s": "ENTWURF",
+  "t": "Senden"
+ },
+ "UI-SPRACHE-STOPP": {
+  "s": "ENTWURF",
+  "t": "Stopp"
+ },
+ "UI-SPRACHE-TEMPO": {
+  "s": "ENTWURF",
+  "t": "Tempo {tempo}"
+ },
+ "UI-SPRACHE-WISCHEN": {
+  "s": "ENTWURF",
+  "t": "‹ Zum Abbrechen wischen"
+ },
+ "UI-SPRACHE-ZU-GROSS": {
+  "s": "ENTWURF",
+  "t": "Die Aufnahme ist zu groß (höchstens {mb} MB)."
+ },
+ "UI-SPRACHE-ZU-LANG": {
+  "s": "ENTWURF",
+  "t": "Höchstens {sekunden} Sekunden."
+ },
  "UI-STANDORT-ANDERE-SEHEN": {
   "s": "ENTWURF",
   "t": "Andere sehen nur: unter 1 km · 1–3 km · 3–10 km · über 10 km."
@@ -2102,6 +2334,14 @@
  "UI-STANDORT-STADT-ERKL": {
   "s": "ENTWURF",
   "t": "Ohne Standort zeigen wir Profile aus dieser Stadt — ohne Entfernungen."
+ },
+ "UI-STARTER-ANDERE": {
+  "s": "ENTWURF",
+  "t": "Andere Vorschläge"
+ },
+ "UI-STARTER-TITEL": {
+  "s": "ENTWURF",
+  "t": "Ideen für den Anfang"
  },
  "UI-STUFE-AUS": {
   "s": "ENTWURF",
@@ -2342,6 +2582,42 @@
  "UI-VERSTECKT-TITEL": {
   "s": "ENTWURF",
   "t": "Einkaufsliste"
+ },
+ "UI-VORLAGEN": {
+  "s": "ENTWURF",
+  "t": "Vorlagen"
+ },
+ "UI-VORLAGEN-BEARBEITEN": {
+  "s": "ENTWURF",
+  "t": "Bearbeiten"
+ },
+ "UI-VORLAGEN-ERKL": {
+  "s": "ENTWURF",
+  "t": "Ein Tipp sendet den Text so, wie er hier steht."
+ },
+ "UI-VORLAGEN-FERTIG": {
+  "s": "ENTWURF",
+  "t": "Fertig"
+ },
+ "UI-VORLAGEN-LEER": {
+  "s": "ENTWURF",
+  "t": "Noch keine Vorlagen. Leg dir Antworten auf Fragen an, die immer wieder kommen."
+ },
+ "UI-VORLAGEN-MAX": {
+  "s": "ENTWURF",
+  "t": "Höchstens {max} Vorlagen."
+ },
+ "UI-VORLAGEN-NEU": {
+  "s": "ENTWURF",
+  "t": "Neue Vorlage"
+ },
+ "UI-VORLAGEN-PLATZHALTER": {
+  "s": "ENTWURF",
+  "t": "z. B. „Ich bin eher spontan unterwegs – schreib mir einfach, wenn du in der Nähe bist.“"
+ },
+ "UI-VORLAGEN-TITEL": {
+  "s": "ENTWURF",
+  "t": "Vorformulierte Nachrichten"
  },
  "UI-WARTEFRIST": {
   "s": "ENTWURF",

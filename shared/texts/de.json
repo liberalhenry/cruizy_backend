@@ -141,7 +141,7 @@
  },
  "ST-CHAT-03": {
   "s": "ENTWURF",
-  "t": "Hier landen erste Nachrichten von Leuten, mit denen du noch nicht geschrieben hast. Sie lösen keine Mitteilung aus."
+  "t": "Hier landen erste Nachrichten von Leuten, mit denen du noch nicht geschrieben hast. Sie lösen keine Push-Mitteilung aus — ein roter Punkt zeigt dir, dass etwas Neues da ist."
  },
  "ST-CHAT-04": {
   "s": "ENTWURF",
@@ -949,7 +949,7 @@
  },
  "ST-LEER-10": {
   "s": "ENTWURF",
-  "t": "Keine neuen Anfragen. Wer dir zum ersten Mal schreibt, landet hier — ohne Mitteilung und ohne Zähler."
+  "t": "Keine neuen Anfragen. Wer dir zum ersten Mal schreibt, landet hier — ohne Push-Mitteilung."
  },
  "ST-LEER-11": {
   "s": "ENTWURF",

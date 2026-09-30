@@ -106,7 +106,8 @@ export default async function reportRoutes(app: FastifyInstance) {
           kind: it.kind,
           content: it.snapshot_enc ? JSON.parse(decrypt('sealed', it.snapshot_enc, 'report').toString()) : null,
           // M-10: gemeldete Bilder zunächst unscharf — scharf erst nach bewusstem Tipp (in der Oberfläche)
-          image: it.sealed_file ? modImgUrl('sealed', it.sealed_file, s.id) : null,
+          image: it.sealed_file && it.kind !== 'sprachnachricht' ? modImgUrl('sealed', it.sealed_file, s.id) : null,
+          audio: it.sealed_file && it.kind === 'sprachnachricht' ? modImgUrl('sealed', it.sealed_file, s.id, 'audio/mp4') : null,
         })),
         reporter: reporterStats ? { earlierReports: reporterStats.n, withoutViolation: reporterStats.ohne_verstoss } : { web: r.from_web },
         target: target
@@ -153,7 +154,7 @@ export default async function reportRoutes(app: FastifyInstance) {
     if (!ap) throw new AppError(403, 'UI-MOD-ZWEITE-PERSON', {}, 'freigabe_fehlt');
     const r = await one(`SELECT number FROM reports WHERE id = $1`, [id]);
     return logged(s, r!.number, 'kontext_geoeffnet', b.reason, async (c) => {
-      const items = (await c.query(`SELECT original_ref FROM report_items WHERE report_id = $1 AND kind IN ('nachricht','bild_gespraech')`, [id])).rows;
+      const items = (await c.query(`SELECT original_ref FROM report_items WHERE report_id = $1 AND kind IN ('nachricht','bild_gespraech','einmal_bild','sprachnachricht')`, [id])).rows;
       const out = [];
       for (const it of items) {
         const m = (await c.query(`SELECT conversation_id, created_at FROM messages WHERE id = $1`, [it.original_ref])).rows[0];
@@ -189,7 +190,7 @@ export default async function reportRoutes(app: FastifyInstance) {
     await logged(s, r.number, `meldung_${b.decision}`, b.reason, async (c) => {
       if (b.decision === 'inhalt_entfernt') {
         const items = (await c.query(`SELECT kind, original_ref FROM report_items WHERE report_id = $1`, [id])).rows;
-        const msgIds = items.filter((i) => ['nachricht', 'bild_gespraech'].includes(i.kind)).map((i) => i.original_ref);
+        const msgIds = items.filter((i) => ['nachricht', 'bild_gespraech', 'einmal_bild', 'sprachnachricht'].includes(i.kind)).map((i) => i.original_ref);
         await deleteMessages(msgIds);
         for (const i of items.filter((x) => x.kind === 'gruppennachricht')) await c.query(`DELETE FROM event_group_messages WHERE id = $1`, [i.original_ref]);
         for (const i of items.filter((x) => x.kind === 'bild_album')) {

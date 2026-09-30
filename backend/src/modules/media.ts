@@ -116,12 +116,13 @@ export default async function mediaRoutes(app: FastifyInstance) {
     }
 
     if (tok.k === 'album') {
-      const m = await one(`SELECT id, owner_id, file FROM private_media WHERE id = $1 AND kind = 'album'`, [tok.id]);
+      const m = await one(`SELECT id, owner_id, file, album_id FROM private_media WHERE id = $1 AND kind = 'album'`, [tok.id]);
       if (!m) return deny(reply);
       if (m.owner_id !== acc.id) {
         const share = await one(
-          `SELECT 1 FROM album_shares WHERE owner_id = $1 AND viewer_id = $2 AND state = 'accepted'`,
-          [m.owner_id, acc.id],
+          // Issue #23: nur das geteilte Album — nicht alle Alben der Person
+          `SELECT 1 FROM album_shares WHERE owner_id = $1 AND viewer_id = $2 AND album_id = $3 AND state = 'accepted'`,
+          [m.owner_id, acc.id, m.album_id],
         );
         // AK-F48-04: nach dem Ende der Freigabe keine Albumbilder mehr
         if (!share || (await isBlockedEitherWay(m.owner_id, acc.id))) return deny(reply);
@@ -131,12 +132,31 @@ export default async function mediaRoutes(app: FastifyInstance) {
       return send(reply, await getFile('zone2', m.file), tok.e);
     }
 
+    if (tok.k === 'once') {
+      // Issue #26: genau ein Abruf — danach liefert der Server nichts mehr
+      const msg = await one(
+        `UPDATE messages m SET once_served_at = now()
+           FROM conversations c, private_media pm
+          WHERE m.id = $1 AND m.once AND m.once_served_at IS NULL AND m.once_viewed_at IS NOT NULL
+            AND m.sender_id <> $2 AND c.id = m.conversation_id AND (c.user_low = $2 OR c.user_high = $2)
+            AND pm.id = m.media_id AND pm.file IS NOT NULL
+          RETURNING pm.file, m.sender_id`,
+        [tok.id, acc.id],
+      );
+      if (!msg || (await isBlockedEitherWay(acc.id, msg.sender_id))) return deny(reply);
+      reply.header('cache-control', 'no-store');
+      const data = await applyWatermark(await privateVersion(await getFile('zone2', msg.file)), acc.id);
+      reply.header('content-type', 'image/jpeg');
+      reply.header('content-disposition', 'inline');
+      return reply.send(data);
+    }
+
     if (tok.k === 'chat') {
       const msg = await one(
         `SELECT m.id, m.sender_id, m.delivery, m.expires_at, pm.file, c.user_low, c.user_high
            FROM messages m JOIN private_media pm ON pm.id = m.media_id
            JOIN conversations c ON c.id = m.conversation_id
-          WHERE m.id = $1 AND m.kind = 'image'`,
+          WHERE m.id = $1 AND m.kind = 'image' AND NOT m.once`,
         [tok.id],
       );
       if (!msg || (msg.user_low !== acc.id && msg.user_high !== acc.id)) return deny(reply);
@@ -150,5 +170,51 @@ export default async function mediaRoutes(app: FastifyInstance) {
     }
 
     return deny(reply);
+  });
+
+  /**
+   * Sprachnachrichten (Issue #28) — gleiche Prüfung wie Bilder im Gespräch. Mit Range-Anfragen,
+   * ohne die Safari (auch iOS) Audio nicht abspielt.
+   */
+  app.get('/api/audio/:token', async (req, reply) => {
+    const { token } = params(req, z.object({ token: z.string().max(2000) }));
+    const tok = readImgToken(token);
+    const acc = await loadAccount(req);
+    if (!tok || !acc || acc.id !== tok.r) return deny(reply);
+    let file: string | null = null;
+    if (tok.k === 'audio') {
+      const msg = await one(
+        `SELECT m.sender_id, m.delivery, m.expires_at, pm.file, c.user_low, c.user_high
+           FROM messages m JOIN private_media pm ON pm.id = m.media_id JOIN conversations c ON c.id = m.conversation_id
+          WHERE m.id = $1 AND m.kind = 'audio'`,
+        [tok.id],
+      );
+      if (!msg || (msg.user_low !== acc.id && msg.user_high !== acc.id)) return deny(reply);
+      if (msg.expires_at && new Date(msg.expires_at) < new Date()) return deny(reply);
+      const other = msg.user_low === acc.id ? msg.user_high : msg.user_low;
+      if (await isBlockedEitherWay(acc.id, other)) return deny(reply);
+      file = msg.file;
+    }
+    if (!file) return deny(reply);
+    const data = await getFile('zone2', file);
+    reply.header('content-type', 'audio/mp4');
+    reply.header('accept-ranges', 'bytes');
+    reply.header('cache-control', 'private, max-age=600');
+    const range = /^bytes=(\d*)-(\d*)$/.exec(String(req.headers.range ?? ''));
+    if (range) {
+      const size = data.length;
+      let start = range[1] ? Number(range[1]) : size - Number(range[2] || 0);
+      let end = range[1] && range[2] ? Number(range[2]) : size - 1;
+      if (!range[1] && range[2]) end = size - 1;
+      start = Math.max(0, start);
+      end = Math.min(size - 1, end);
+      if (start > end || start >= size) {
+        reply.header('content-range', `bytes */${size}`);
+        return reply.status(416).send();
+      }
+      reply.header('content-range', `bytes ${start}-${end}/${size}`);
+      return reply.status(206).send(data.subarray(start, end + 1));
+    }
+    return reply.send(data);
   });
 }

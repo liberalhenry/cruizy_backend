@@ -38,7 +38,7 @@ export async function moveConversationsToVault(accountId: string) {
     const out: VaultMessage[] = [];
     for (const m of msgs) {
       let sealedFile: string | null = null;
-      if (m.kind === 'image' && m.file && (m.delivery === 'sent' || m.sender_id === counterpart)) {
+      if ((m.kind === 'image' || m.kind === 'audio') && m.file && (m.delivery === 'sent' || m.sender_id === counterpart)) {
         sealedFile = await copyFile('zone2', m.file, 'sealed');
       }
       out.push({

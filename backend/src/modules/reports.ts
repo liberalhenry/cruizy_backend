@@ -55,17 +55,19 @@ async function snapshotItems(reporter: string, context: string, contextId: strin
       // AK-X11-02: bereits verfallene Nachrichten lassen sich nicht mehr melden
       if (!m || (contextId && m.conversation_id !== contextId)) throw bad('UI-MELDEN-INHALT-WEG', {}, 'inhalt_weg');
       if (m.sender_id === reporter) continue;
-      if (m.kind === 'image' && m.delivery !== 'sent' && m.delivery !== 'held_stage2') continue;
+      if ((m.kind === 'image' || m.kind === 'audio') && m.delivery !== 'sent' && m.delivery !== 'held_stage2') continue;
       let sealed: string | null = null;
       let text: string | null = null;
-      if (m.kind === 'image') {
+      if (m.kind === 'image' || m.kind === 'audio') {
         const pm = await one(`SELECT file FROM private_media WHERE id = $1`, [m.media_id]);
-        if (pm) sealed = await copyFile('zone2', pm.file, 'sealed');
+        // Einmal-Bild (Issue #26): nur solange die Datei noch da ist — dann bleibt eine Kopie für die Prüfung
+        if (pm?.file) sealed = await copyFile('zone2', pm.file, 'sealed');
+        else if (m.once) throw bad('UI-MELDEN-INHALT-WEG', {}, 'inhalt_weg');
       } else if (m.body_enc) {
         text = decStr('messages', m.body_enc, `msg:${m.conversation_id}`);
       }
       out.push({
-        kind: m.kind === 'image' ? 'bild_gespraech' : 'nachricht',
+        kind: m.kind === 'image' ? (m.once ? 'einmal_bild' : 'bild_gespraech') : m.kind === 'audio' ? 'sprachnachricht' : 'nachricht',
         snapshot: encStr('sealed', JSON.stringify({ text, at: m.created_at, kind: m.kind }), 'report'),
         sealed,
         ref: m.id,
@@ -73,7 +75,7 @@ async function snapshotItems(reporter: string, context: string, contextId: strin
       });
     } else if (it.kind === 'album_image') {
       const pm = await one(
-        `SELECT pm.* FROM private_media pm JOIN album_shares s ON s.owner_id = pm.owner_id
+        `SELECT pm.* FROM private_media pm JOIN album_shares s ON s.owner_id = pm.owner_id AND s.album_id = pm.album_id
           WHERE pm.id = $1 AND pm.kind = 'album' AND s.viewer_id = $2 AND s.state = 'accepted'`,
         [it.id, reporter],
       );

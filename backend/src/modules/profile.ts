@@ -113,6 +113,9 @@ export async function ownProfile(accountId: string) {
       nameSearchable: r.name_searchable,
       gridRadiusKm: r.grid_radius_km,
       gridExpand: r.grid_expand,
+      voiceReceive: r.voice_receive,
+      startersEnabled: r.starters_enabled,
+      onceHintSeen: r.once_hint_seen,
     },
     location: {
       level: r.level ?? 'grob',
@@ -209,6 +212,9 @@ export default async function profileRoutes(app: FastifyInstance) {
             checkinEffect: z.enum(['nichts', 'benachrichtigen']).optional(),
             nameSearchable: z.boolean().optional(),
             gridExpand: z.boolean().optional(),
+            voiceReceive: z.boolean().optional(),
+            startersEnabled: z.boolean().optional(),
+            onceHintSeen: z.boolean().optional(),
           })
           .optional(),
       }),
@@ -302,6 +308,9 @@ export default async function profileRoutes(app: FastifyInstance) {
       if (s.checkinEffect) set('checkin_effect', s.checkinEffect);
       if (s.nameSearchable !== undefined) set('name_searchable', s.nameSearchable);
       if (s.gridExpand !== undefined) set('grid_expand', s.gridExpand);
+      if (s.voiceReceive !== undefined) set('voice_receive', s.voiceReceive);
+      if (s.startersEnabled !== undefined) set('starters_enabled', s.startersEnabled);
+      if (s.onceHintSeen !== undefined) set('once_hint_seen', s.onceHintSeen);
     }
     if (sets.length) await q(`UPDATE profiles SET ${sets.join(', ')}, updated_at = now() WHERE account_id = $1`, vals);
     if (s?.mediaReceive === 'immer') {
