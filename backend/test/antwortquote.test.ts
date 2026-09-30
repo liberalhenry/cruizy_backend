@@ -64,7 +64,8 @@ describe('Berechnung', () => {
     expect(me.body.profile.responseRate.band).toBe(2);
     const view = await list[0].s.c.get(`/api/profiles/${target.id}`);
     expect(view.body.profile.response).toBe(2);
-    expect(JSON.stringify(view.body)).not.toMatch(/83|0\.83|pct|counted|answered/);
+    // nur Feldnamen und Zahlenwerte prüfen — Kennungen und Bild-Token enthalten zufällig auch „83“
+    expect(JSON.stringify(view.body)).not.toMatch(/"(pct|counted|answered)"|:0\.83\b|:83[,}]/);
   });
 
   it('Ausschlüsse: blockiert, gemeldet, gesperrt, zurückgezogen, laufende Frist, Massennachrichten', async () => {

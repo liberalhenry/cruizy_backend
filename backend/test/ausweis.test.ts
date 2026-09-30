@@ -132,7 +132,9 @@ describe.skipIf(!ocr)('Ablauf: Ausweis hochladen (Issue #7)', () => {
     expect(readdirSync(storeDir('idcheck')).length).toBe(before);
     // gespeichert ist weder ein Datum noch ein Text aus dem Ausweis
     const s = await one(`SELECT * FROM verification_sessions WHERE id = $1`, [sid]);
-    expect(JSON.stringify(s)).not.toContain('1990');
+    // Kennungen (UUIDs) ausgenommen — sie könnten zufällig „1990“ enthalten
+    const { id: _id, account_id: _acc, ...rest } = s!;
+    expect(JSON.stringify(rest)).not.toContain('1990');
   });
 
   it('unlesbar: erst neu fotografieren, dann prüft das Team — Entscheidung löscht die Bilder', async () => {

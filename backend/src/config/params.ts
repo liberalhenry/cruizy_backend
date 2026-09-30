@@ -117,7 +117,7 @@ export const PARAMETER = {
   'P-DATE-PAUSE-TAGE': { wert: 14, einheit: 'Tage ohne Aktivität bis zur Auto-Pause', quelle: 'Issue #19' },
   'P-DATE-MELDUNGEN-SPERRE': { wert: 3, einheit: 'berechtigte Date-Meldungen bis zur Date-Sperre', quelle: 'Issue #19' },
   'P-DATE-REGIONEN': {
-    wert: { modus: 'alle', staedte: [] as string[], radiusKm: 60, schwelle: 150 },
+    wert: { modus: 'alle', staedte: [], radiusKm: 60, schwelle: 150 } as { modus: 'alle' | 'liste'; staedte: string[]; radiusKm: number; schwelle: number },
     einheit: 'Freischaltung: alle | liste (Städte-IDs, Umkreis, Warteliste-Schwelle für automatische Freischaltung)',
     quelle: 'Issue #19',
   },
