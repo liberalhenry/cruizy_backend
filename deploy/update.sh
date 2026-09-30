@@ -12,4 +12,6 @@ if [[ -z "$VERSION" ]]; then
   [[ -n "$VERSION" ]] || { echo "Kein Release gefunden."; exit 1; }
 fi
 cp deploy/update-run.sh /tmp/cruizy-update-run.sh   # das Skript ändert sich beim Auschecken
+# Die Kopie liegt in /tmp — ohne REPO_DIR würde sie dort statt im Repository arbeiten
+export REPO_DIR="$(pwd)"
 exec bash /tmp/cruizy-update-run.sh "$VERSION"

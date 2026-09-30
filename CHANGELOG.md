@@ -11,6 +11,10 @@ Werkzeug → „Aktualisierung“ (Owner) oder `bash deploy/update.sh`.
 
 ## [Unveröffentlicht]
 
+### Behoben
+- `deploy/update.sh` von Hand brach mit „not a git repository“ ab: das Skript lief als Kopie in `/tmp`
+  und suchte das Repository dort. Der Knopf im Werkzeug war nicht betroffen.
+
 ## [0.4.0] – 2026-09-30
 
 ### Neu
