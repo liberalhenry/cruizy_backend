@@ -603,6 +603,110 @@
   "s": "ENTWURF",
   "t": "Bitte warte kurz, bevor du einen neuen Code anforderst."
  },
+ "UI-DATE": {
+  "s": "ENTWURF",
+  "t": "Date"
+ },
+ "UI-DATE-ALTER-BIS": {
+  "s": "ENTWURF",
+  "t": "bis"
+ },
+ "UI-DATE-ALTER-VON": {
+  "s": "ENTWURF",
+  "t": "Alter von"
+ },
+ "UI-DATE-ARBEITGEBER": {
+  "s": "ENTWURF",
+  "t": "Arbeitgeber (freiwillig)"
+ },
+ "UI-DATE-ARBEITGEBER-ERKL": {
+  "s": "ENTWURF",
+  "t": "Nur wenn du möchtest."
+ },
+ "UI-DATE-ART9-CHECK": {
+  "s": "ENTWURF",
+  "t": "Ich willige ausdrücklich in die Verarbeitung meiner biometrischen Daten für diesen Abgleich ein (Art. 9 Abs. 2 lit. a DSGVO)."
+ },
+ "UI-DATE-ART9-OK": {
+  "s": "ENTWURF",
+  "t": "Einwilligen und weiter"
+ },
+ "UI-DATE-ART9-TEXT": {
+  "s": "ENTWURF",
+  "t": "Für den Abgleich wird dein Selfie einmalig von unserem Prüfdienst mit deinem ersten Date-Foto verglichen. Das Selfie und daraus berechnete Gesichtsmerkmale werden nicht gespeichert. Wir speichern nur das Ergebnis (bestanden oder nicht) und den Zeitpunkt. Du kannst die Einwilligung jederzeit widerrufen, indem du Cruizy Date verlässt."
+ },
+ "UI-DATE-ART9-TITEL": {
+  "s": "ENTWURF",
+  "t": "Einwilligung (biometrische Daten)"
+ },
+ "UI-DATE-AUDIO-PROMPT": {
+  "s": "ENTWURF",
+  "t": "Audio-Antwort"
+ },
+ "UI-DATE-AUDIO-PROMPT-ERKL": {
+  "s": "ENTWURF",
+  "t": "Freiwillig: Beantworte eine Frage mit deiner Stimme."
+ },
+ "UI-DATE-AUF-WARTELISTE": {
+  "s": "ENTWURF",
+  "t": "Auf die Warteliste"
+ },
+ "UI-DATE-AUFNAHME-SPEICHERN": {
+  "s": "ENTWURF",
+  "t": "Speichern"
+ },
+ "UI-DATE-AUTO-PAUSIERT": {
+  "s": "ENTWURF",
+  "t": "Du warst eine Weile nicht da — deshalb haben wir Cruizy Date pausiert. Einfach fortsetzen."
+ },
+ "UI-DATE-BADGE-GRID": {
+  "s": "ENTWURF",
+  "t": "Date-Zeichen im Raster zeigen"
+ },
+ "UI-DATE-BADGE-GRID-ERKL": {
+  "s": "ENTWURF",
+  "t": "Andere Date-Mitglieder sehen auf deiner Kachel, dass du auch bei Cruizy Date bist. Alle anderen sehen es nie."
+ },
+ "UI-DATE-BERUF": {
+  "s": "ENTWURF",
+  "t": "Beruf"
+ },
+ "UI-DATE-CHATS-LEER": {
+  "s": "ENTWURF",
+  "t": "Noch keine Date-Matches. Wenn ihr euch gegenseitig likt, landet euer Chat hier."
+ },
+ "UI-DATE-DEALBREAKER": {
+  "s": "ENTWURF",
+  "t": "Deal-Breaker"
+ },
+ "UI-DATE-DEALBREAKER-ERKL": {
+  "s": "ENTWURF",
+  "t": "Wen du antippst, schlagen wir dir nicht vor — und umgekehrt."
+ },
+ "UI-DATE-DEIN-FOTO": {
+  "s": "ENTWURF",
+  "t": "Foto"
+ },
+ "UI-DATE-DU-HAST-GELIKT": {
+  "s": "ENTWURF",
+  "t": "Du hast diese Person gelikt."
+ },
+ "UI-DATE-DU-HAST-GELIKT-EL": {
+  "s": "ENTWURF",
+  "t": "Du hast gelikt"
+ },
+ "UI-DATE-EIGENES-INTERESSE": {
+  "s": "ENTWURF",
+  "t": "Eigenes hinzufügen"
+ },
+ "UI-DATE-EINRICHTEN": {
+  "s": "ENTWURF",
+  "t": "Date einrichten"
+ },
+ "UI-DATE-EINSTELLUNGEN": {
+  "s": "ENTWURF",
+  "t": "Date-Einstellungen"
+ },
  "UI-DATE-EINWILLIGUNG-NOETIG": {
   "s": "ENTWURF",
   "t": "Bitte stimm der Verarbeitung für die Gesichtsverifizierung zu."
@@ -611,25 +715,333 @@
   "s": "ENTWURF",
   "t": "Das gibt es im Profil nicht mehr."
  },
+ "UI-DATE-ENTFERNUNG": {
+  "s": "ENTWURF",
+  "t": "Höchstens so weit weg"
+ },
  "UI-DATE-ERST-FOTOS": {
   "s": "ENTWURF",
   "t": "Lade zuerst deine Date-Fotos hoch — das erste wird mit dem Selfie abgeglichen."
+ },
+ "UI-DATE-FEHLT-NOCH": {
+  "s": "ENTWURF",
+  "t": "Damit dein Profil gezeigt wird, fehlt noch:"
+ },
+ "UI-DATE-FERTIG-HEUTE": {
+  "s": "ENTWURF",
+  "t": "Das war’s für heute. Morgen warten neue Vorschläge auf dich."
+ },
+ "UI-DATE-FERTIG-HEUTE-ERKL": {
+  "s": "ENTWURF",
+  "t": "Jeden Tag bis zu {zahl} Vorschläge — ausgewählt nach dem, was euch verbindet."
+ },
+ "UI-DATE-FORTSETZEN": {
+  "s": "ENTWURF",
+  "t": "Fortsetzen"
+ },
+ "UI-DATE-FOTO-ABGELEHNT": {
+  "s": "ENTWURF",
+  "t": "Dieses Foto passt nicht zu Date."
+ },
+ "UI-DATE-FOTO-ERSTES": {
+  "s": "ENTWURF",
+  "t": "Gesicht"
+ },
+ "UI-DATE-FOTO-PRUEFUNG": {
+  "s": "ENTWURF",
+  "t": "in Prüfung"
+ },
+ "UI-DATE-FOTO-VON": {
+  "s": "ENTWURF",
+  "t": "Foto {nr} von {name}"
+ },
+ "UI-DATE-FOTO-VOR": {
+  "s": "ENTWURF",
+  "t": "Nach vorn"
+ },
+ "UI-DATE-FOTO-ZURUECK": {
+  "s": "ENTWURF",
+  "t": "Nach hinten"
+ },
+ "UI-DATE-FOTOS-ERKL": {
+  "s": "ENTWURF",
+  "t": "{min} bis {max} Fotos, getrennt von deinem Raster-Profil. Auf dem ersten muss dein Gesicht gut zu erkennen sein — es wird mit deinem Selfie abgeglichen. Reihenfolge per Ziehen oder mit den Pfeilen."
  },
  "UI-DATE-FOTOS-MAX": {
   "s": "ENTWURF",
   "t": "Höchstens {max} Fotos."
  },
+ "UI-DATE-FOTOS-SFW": {
+  "s": "ENTWURF",
+  "t": "Date-Profile sind immer jugendfrei. Jedes Foto wird wie Profilfotos geprüft."
+ },
+ "UI-DATE-FOTOS-TITEL": {
+  "s": "ENTWURF",
+  "t": "Deine Date-Fotos"
+ },
+ "UI-DATE-FREIGESCHALTET": {
+  "s": "ENTWURF",
+  "t": "Willkommen bei Cruizy Date!"
+ },
+ "UI-DATE-FREISCHALTEN": {
+  "s": "ENTWURF",
+  "t": "Date freischalten"
+ },
+ "UI-DATE-FREIWILLIG-NICHT-MATCHING": {
+  "s": "ENTWURF",
+  "t": "freiwillig, zählt nicht fürs Matching"
+ },
+ "UI-DATE-GELIKT": {
+  "s": "ENTWURF",
+  "t": "Like an {name} gesendet."
+ },
+ "UI-DATE-GELIKT-AUDIO": {
+  "s": "ENTWURF",
+  "t": "hat deine Aufnahme gelikt"
+ },
+ "UI-DATE-GELIKT-FOTO": {
+  "s": "ENTWURF",
+  "t": "hat ein Foto gelikt"
+ },
+ "UI-DATE-GELIKT-PROMPT": {
+  "s": "ENTWURF",
+  "t": "hat deine Antwort auf „{prompt}“ gelikt"
+ },
+ "UI-DATE-GESPEICHERT": {
+  "s": "ENTWURF",
+  "t": "Gespeichert."
+ },
  "UI-DATE-GESPERRT": {
   "s": "ENTWURF",
   "t": "Dein Zugang zu Cruizy Date ist gesperrt. Die Cruizy-Hauptseite kannst du weiterhin nutzen."
+ },
+ "UI-DATE-GEWAEHLT": {
+  "s": "ENTWURF",
+  "t": "{zahl} von {max} gewählt"
+ },
+ "UI-DATE-HAT-DICH-GELIKT": {
+  "s": "ENTWURF",
+  "t": "hat dich schon gelikt"
+ },
+ "UI-DATE-HAT-GELIKT-EL": {
+  "s": "ENTWURF",
+  "t": "Hat bei dir gelikt"
+ },
+ "UI-DATE-HEUTE": {
+  "s": "ENTWURF",
+  "t": "Heute"
+ },
+ "UI-DATE-ICH-ERKL": {
+  "s": "ENTWURF",
+  "t": "Ernsthaftes Dating, Einstellungen, Reiter ein- oder ausblenden"
+ },
+ "UI-DATE-IHR-SEID-MATCH": {
+  "s": "ENTWURF",
+  "t": "Ihr seid ein Match."
+ },
+ "UI-DATE-INTENTION-ERKL": {
+  "s": "ENTWURF",
+  "t": "Cruizy Date ist für ernsthaftes Kennenlernen. Eine Casual-Option gibt es hier bewusst nicht."
+ },
+ "UI-DATE-INTENTION-FRAGE": {
+  "s": "ENTWURF",
+  "t": "Was suchst du?"
+ },
+ "UI-DATE-INTERESSEN": {
+  "s": "ENTWURF",
+  "t": "Hobbys und Interessen ({min}–{max})"
  },
  "UI-DATE-INTERESSEN-ANZAHL": {
   "s": "ENTWURF",
   "t": "Wähl {min} bis {max} Interessen."
  },
+ "UI-DATE-KACHEL": {
+  "s": "ENTWURF",
+  "t": "Auch bei Cruizy Date"
+ },
+ "UI-DATE-KAMERA-ABGELEHNT": {
+  "s": "ENTWURF",
+  "t": "Der Zugriff auf die Kamera wurde abgelehnt. Erlaube ihn in den Browser- oder Geräteeinstellungen und versuch es erneut."
+ },
+ "UI-DATE-KAMERA-AUS": {
+  "s": "ENTWURF",
+  "t": "Kamera ausschalten"
+ },
+ "UI-DATE-KAMERA-BELEGT": {
+  "s": "ENTWURF",
+  "t": "Die Kamera wird gerade von einer anderen App benutzt."
+ },
+ "UI-DATE-KAMERA-BILD": {
+  "s": "ENTWURF",
+  "t": "Kamerabild"
+ },
+ "UI-DATE-KAMERA-BROWSER": {
+  "s": "ENTWURF",
+  "t": "Dieser Browser kann die Kamera nicht öffnen. Nimm die Kamera-App über den Link darunter."
+ },
+ "UI-DATE-KAMERA-FEHLT": {
+  "s": "ENTWURF",
+  "t": "Keine Kamera gefunden."
+ },
+ "UI-DATE-KAMERA-HTTPS": {
+  "s": "ENTWURF",
+  "t": "Die Kamera geht nur über eine sichere Verbindung (https)."
+ },
+ "UI-DATE-KAMERA-RUECKFALL": {
+  "s": "ENTWURF",
+  "t": "Kamera startet nicht? Foto mit der Kamera-App aufnehmen"
+ },
+ "UI-DATE-KAMERA-STARTEN": {
+  "s": "ENTWURF",
+  "t": "Kamera starten"
+ },
+ "UI-DATE-KODEX-1": {
+  "s": "ENTWURF",
+  "t": "Ich bin hier, weil ich ernsthaft daten möchte."
+ },
+ "UI-DATE-KODEX-2": {
+  "s": "ENTWURF",
+  "t": "Ich suche in Cruizy Date keine Hookups oder Sex-Dates."
+ },
+ "UI-DATE-KODEX-3": {
+  "s": "ENTWURF",
+  "t": "Ich bin ehrlich in meinem Profil und respektvoll im Umgang."
+ },
+ "UI-DATE-KODEX-4": {
+  "s": "ENTWURF",
+  "t": "Ich schicke keine intimen Inhalte ohne Zustimmung."
+ },
+ "UI-DATE-KODEX-5": {
+  "s": "ENTWURF",
+  "t": "Mir ist klar: Wer gegen diese Regeln verstößt, verliert den Zugang zu Cruizy Date."
+ },
+ "UI-DATE-KODEX-CHECK": {
+  "s": "ENTWURF",
+  "t": "Ich stimme dem Date-Kodex zu."
+ },
+ "UI-DATE-KODEX-OK": {
+  "s": "ENTWURF",
+  "t": "Cruizy Date freischalten"
+ },
+ "UI-DATE-KODEX-TITEL": {
+  "s": "ENTWURF",
+  "t": "Der Date-Kodex"
+ },
+ "UI-DATE-KOMMENTAR": {
+  "s": "ENTWURF",
+  "t": "Kommentar (freiwillig)"
+ },
+ "UI-DATE-KOMMENTAR-BSP": {
+  "s": "ENTWURF",
+  "t": "Sag, was dir gefällt …"
+ },
  "UI-DATE-KOMMENTAR-LANG": {
   "s": "ENTWURF",
   "t": "Ein Kommentar darf höchstens {zeichen} Zeichen haben."
+ },
+ "UI-DATE-L-HEADLINE": {
+  "s": "ENTWURF",
+  "t": "Cruizy Date – für mehr als heute Abend."
+ },
+ "UI-DATE-L-HINWEIS": {
+  "s": "ENTWURF",
+  "t": "Cruizy Date ist ausschließlich für ernsthaftes Dating. Hookups, Sex-Dates und Casual-Treffen gehören nicht hierher. Dafür ist die Cruizy-Hauptseite da."
+ },
+ "UI-DATE-L-PUNKT-1": {
+  "s": "ENTWURF",
+  "t": "Verifizierte Gesichter: Jedes Profil zeigt, wer wirklich dahintersteckt."
+ },
+ "UI-DATE-L-PUNKT-2": {
+  "s": "ENTWURF",
+  "t": "Persönliche Profile mit Stimme, Hobbys und dem, was dir wichtig ist."
+ },
+ "UI-DATE-L-PUNKT-3": {
+  "s": "ENTWURF",
+  "t": "Tägliche Vorschläge, die zu dir passen, statt endlosem Scrollen."
+ },
+ "UI-DATE-L-SUB": {
+  "s": "ENTWURF",
+  "t": "Hier geht es um echtes Dating. Um Menschen, die jemanden kennenlernen wollen, nicht nur für eine Nacht."
+ },
+ "UI-DATE-LIKE-AUDIO": {
+  "s": "ENTWURF",
+  "t": "Diese Aufnahme liken"
+ },
+ "UI-DATE-LIKE-FOTO": {
+  "s": "ENTWURF",
+  "t": "Dieses Foto liken"
+ },
+ "UI-DATE-LIKE-PROMPT": {
+  "s": "ENTWURF",
+  "t": "Diese Antwort liken"
+ },
+ "UI-DATE-LIKE-SENDEN": {
+  "s": "ENTWURF",
+  "t": "Like senden"
+ },
+ "UI-DATE-LIKE-TITEL": {
+  "s": "ENTWURF",
+  "t": "{name} liken"
+ },
+ "UI-DATE-LIKES": {
+  "s": "ENTWURF",
+  "t": "Likes"
+ },
+ "UI-DATE-LIKES-ANZAHL": {
+  "s": "ENTWURF",
+  "t": "Personen haben dich gelikt."
+ },
+ "UI-DATE-LIKES-LEER": {
+  "s": "ENTWURF",
+  "t": "Noch keine Likes. Ein vollständiges Profil mit Voice-Intro hilft."
+ },
+ "UI-DATE-LIKES-PREMIUM": {
+  "s": "ENTWURF",
+  "t": "Mit Premium siehst du, wer dich gelikt hat, worauf und mit welchem Kommentar — und kannst direkt zurückliken."
+ },
+ "UI-DATE-LIKES-TIPP": {
+  "s": "ENTWURF",
+  "t": "Tipp: Wer dich gelikt hat, taucht bevorzugt in deinen Tagesvorschlägen auf."
+ },
+ "UI-DATE-MATCH-TEXT": {
+  "s": "ENTWURF",
+  "t": "Du und {name} habt euch gegenseitig gelikt."
+ },
+ "UI-DATE-MATCH-TITEL": {
+  "s": "ENTWURF",
+  "t": "Es ist ein Match!"
+ },
+ "UI-DATE-MIN-BERUF": {
+  "s": "ENTWURF",
+  "t": "Beruf"
+ },
+ "UI-DATE-MIN-FOTOS": {
+  "s": "ENTWURF",
+  "t": "mindestens 3 Fotos"
+ },
+ "UI-DATE-MIN-INTENTION": {
+  "s": "ENTWURF",
+  "t": "Was du suchst"
+ },
+ "UI-DATE-MIN-KODEX": {
+  "s": "ENTWURF",
+  "t": "Date-Kodex"
+ },
+ "UI-DATE-MIN-PROMPTS": {
+  "s": "ENTWURF",
+  "t": "mindestens 2 Fragen"
+ },
+ "UI-DATE-MIN-VERIFIZIERUNG": {
+  "s": "ENTWURF",
+  "t": "Gesichtsverifizierung"
+ },
+ "UI-DATE-MIN-VOICE": {
+  "s": "ENTWURF",
+  "t": "Voice-Intro"
+ },
+ "UI-DATE-MINIMUM-FEHLT": {
+  "s": "ENTWURF",
+  "t": "Dein Profil ist unvollständig und wird gerade nicht vorgeschlagen."
  },
  "UI-DATE-N-ENTSPERRT": {
   "s": "ENTWURF",
@@ -667,45 +1079,373 @@
   "s": "ENTWURF",
   "t": "Neues Match in Cruizy Date"
  },
+ "UI-DATE-NEU-VERIFIZIEREN": {
+  "s": "ENTWURF",
+  "t": "Neues erstes Foto — bitte verifiziere dein Gesicht noch einmal."
+ },
+ "UI-DATE-NOCH-FOTOS": {
+  "s": "ENTWURF",
+  "t": "Noch {zahl} Fotos"
+ },
+ "UI-DATE-NSFW-ABGELEHNT": {
+  "s": "ENTWURF",
+  "t": "Bild abgelehnt."
+ },
+ "UI-DATE-NSFW-ABLEHNEN": {
+  "s": "ENTWURF",
+  "t": "Ablehnen"
+ },
+ "UI-DATE-NSFW-ANSEHEN": {
+  "s": "ENTWURF",
+  "t": "Ansehen"
+ },
  "UI-DATE-NSFW-EINMAL": {
   "s": "ENTWURF",
   "t": "Einmal-Bilder, die intime Inhalte zeigen könnten, gehen in Date-Chats erst, wenn die andere Person sie erlaubt hat."
  },
+ "UI-DATE-NSFW-ERKL": {
+  "s": "ENTWURF",
+  "t": "Nicht verboten, aber nur mit deiner Zustimmung."
+ },
+ "UI-DATE-NSFW-ERLAUBEN": {
+  "s": "ENTWURF",
+  "t": "Ansehen und künftig erlauben"
+ },
+ "UI-DATE-NSFW-FREIGABE": {
+  "s": "ENTWURF",
+  "t": "Nur nach Freigabe (empfohlen)"
+ },
+ "UI-DATE-NSFW-FREIGABE-ERKL": {
+  "s": "ENTWURF",
+  "t": "Solche Bilder kommen unscharf an. Du entscheidest je Chat."
+ },
+ "UI-DATE-NSFW-HINWEIS": {
+  "s": "ENTWURF",
+  "t": "Dieses Bild könnte intime Inhalte zeigen."
+ },
+ "UI-DATE-NSFW-JA": {
+  "s": "ENTWURF",
+  "t": "Ja"
+ },
+ "UI-DATE-NSFW-JA-ERKL": {
+  "s": "ENTWURF",
+  "t": "Bilder kommen ohne Unschärfe an."
+ },
  "UI-DATE-NSFW-NEIN": {
   "s": "ENTWURF",
-  "t": "Die andere Person empfängt in Date-Chats keine Bilder, die intime Inhalte zeigen könnten."
+  "t": "Nein"
+ },
+ "UI-DATE-NSFW-NEIN-ERKL": {
+  "s": "ENTWURF",
+  "t": "Solche Bilder können dir in Date-Chats nicht geschickt werden."
+ },
+ "UI-DATE-NSFW-TITEL": {
+  "s": "ENTWURF",
+  "t": "Intime Inhalte in Date-Chats"
  },
  "UI-DATE-NUR-MITGLIEDER": {
   "s": "ENTWURF",
   "t": "Das siehst du nur mit freigeschaltetem Cruizy Date."
  },
+ "UI-DATE-PAUSE-ERKL": {
+  "s": "ENTWURF",
+  "t": "Dein Profil bleibt erhalten, wird aber niemandem vorgeschlagen. Matches und Chats bleiben."
+ },
+ "UI-DATE-PAUSE-TITEL": {
+  "s": "ENTWURF",
+  "t": "Pause"
+ },
+ "UI-DATE-PAUSIEREN": {
+  "s": "ENTWURF",
+  "t": "Date pausieren"
+ },
+ "UI-DATE-PAUSIERT": {
+  "s": "ENTWURF",
+  "t": "Cruizy Date ist pausiert. Dein Profil bleibt erhalten, wird aber niemandem vorgeschlagen."
+ },
+ "UI-DATE-POSE": {
+  "s": "ENTWURF",
+  "t": "Deine Pose:"
+ },
  "UI-DATE-POSE-ABGELAUFEN": {
   "s": "ENTWURF",
   "t": "Die Aufgabe ist abgelaufen. Hol dir eine neue Pose."
+ },
+ "UI-DATE-PRAEF-TITEL": {
+  "s": "ENTWURF",
+  "t": "Wen möchtest du kennenlernen?"
  },
  "UI-DATE-PREMIUM": {
   "s": "ENTWURF",
   "t": "Das gehört zu Premium."
  },
+ "UI-DATE-PREMIUM-ANSEHEN": {
+  "s": "ENTWURF",
+  "t": "Premium ansehen"
+ },
+ "UI-DATE-PROFIL-ANSEHEN": {
+  "s": "ENTWURF",
+  "t": "Date-Profil ansehen"
+ },
+ "UI-DATE-PROFIL-BEARBEITEN": {
+  "s": "ENTWURF",
+  "t": "Date-Profil bearbeiten"
+ },
+ "UI-DATE-PROFIL-TITEL": {
+  "s": "ENTWURF",
+  "t": "Dein Date-Profil"
+ },
+ "UI-DATE-PROMPT-ANTWORT": {
+  "s": "ENTWURF",
+  "t": "Deine Antwort"
+ },
+ "UI-DATE-PROMPT-NEU": {
+  "s": "ENTWURF",
+  "t": "Weitere Frage"
+ },
+ "UI-DATE-PROMPTS": {
+  "s": "ENTWURF",
+  "t": "Fragen ({min}–{max})"
+ },
  "UI-DATE-PROMPTS-ANZAHL": {
   "s": "ENTWURF",
   "t": "Beantworte {min} bis {max} Fragen."
+ },
+ "UI-DATE-REITER-ZEIGEN": {
+  "s": "ENTWURF",
+  "t": "Date in der Navigation zeigen"
+ },
+ "UI-DATE-REITER-ZEIGEN-ERKL": {
+  "s": "ENTWURF",
+  "t": "Aus: Der Reiter „Date“ verschwindet. Jederzeit wieder einblendbar — hier oder unter „Ich“."
+ },
+ "UI-DATE-S-FOTOS": {
+  "s": "ENTWURF",
+  "t": "Fotos"
+ },
+ "UI-DATE-S-INTENTION": {
+  "s": "ENTWURF",
+  "t": "Was du suchst"
+ },
+ "UI-DATE-S-KODEX": {
+  "s": "ENTWURF",
+  "t": "Date-Kodex"
+ },
+ "UI-DATE-S-PRAEFERENZEN": {
+  "s": "ENTWURF",
+  "t": "Präferenzen"
+ },
+ "UI-DATE-S-PROFIL": {
+  "s": "ENTWURF",
+  "t": "Profil"
+ },
+ "UI-DATE-S-VERIFIZIERUNG": {
+  "s": "ENTWURF",
+  "t": "Gesichtsverifizierung"
  },
  "UI-DATE-SCHON-GELIKT": {
   "s": "ENTWURF",
   "t": "Du hast diese Person schon gelikt."
  },
+ "UI-DATE-SCHRITT": {
+  "s": "ENTWURF",
+  "t": "Schritt {nr} von {gesamt}: {name}"
+ },
+ "UI-DATE-SELFIE-AUFNEHMEN": {
+  "s": "ENTWURF",
+  "t": "Selfie aufnehmen"
+ },
+ "UI-DATE-SO-SIEHT-ES-AUS": {
+  "s": "ENTWURF",
+  "t": "So sehen andere Date-Mitglieder dein Profil."
+ },
+ "UI-DATE-SPEICHERN-WEITER": {
+  "s": "ENTWURF",
+  "t": "Speichern und weiter"
+ },
  "UI-DATE-SUCHE-LANG": {
   "s": "ENTWURF",
   "t": "„Was ich suche“ darf höchstens {zeichen} Zeichen haben."
+ },
+ "UI-DATE-SUPERLIKE": {
+  "s": "ENTWURF",
+  "t": "Super-Like"
+ },
+ "UI-DATE-SUPERLIKE-ERKL": {
+  "s": "ENTWURF",
+  "t": "Du erscheinst bei der Person weiter oben."
+ },
+ "UI-DATE-TEIL-FOTOS": {
+  "s": "ENTWURF",
+  "t": "Fotos"
+ },
+ "UI-DATE-TEIL-PRAEFERENZEN": {
+  "s": "ENTWURF",
+  "t": "Präferenzen"
+ },
+ "UI-DATE-TEIL-PROFIL": {
+  "s": "ENTWURF",
+  "t": "Profil"
+ },
+ "UI-DATE-TEIL-VERIFIZIERUNG": {
+  "s": "ENTWURF",
+  "t": "Verifizierung"
+ },
+ "UI-DATE-TEIL-VORSCHAU": {
+  "s": "ENTWURF",
+  "t": "Vorschau"
+ },
+ "UI-DATE-TITEL": {
+  "s": "ENTWURF",
+  "t": "Cruizy Date"
+ },
+ "UI-DATE-UNMATCH": {
+  "s": "ENTWURF",
+  "t": "Match auflösen"
+ },
+ "UI-DATE-UNMATCH-ERKL": {
+  "s": "ENTWURF",
+  "t": "Der Chat verschwindet für euch beide aus Date. War er durch das Match entstanden, endet er. Blockieren wirkt wie überall in Cruizy."
+ },
+ "UI-DATE-VERIFIZIERT": {
+  "s": "ENTWURF",
+  "t": "Gesicht verifiziert"
+ },
+ "UI-DATE-VERIFIZIERT-OK": {
+  "s": "ENTWURF",
+  "t": "Verifiziert"
+ },
+ "UI-DATE-VERIFIZIERT-OK-ERKL": {
+  "s": "ENTWURF",
+  "t": "Dein Gesicht ist bestätigt. Andere sehen das Häkchen in deinem Date-Profil."
+ },
+ "UI-DATE-VERIFIZIERUNG-DATENSCHUTZ": {
+  "s": "ENTWURF",
+  "t": "Das Selfie verlässt nach dem Abgleich keinen Speicher — gespeichert werden nur Ergebnis und Zeitpunkt."
+ },
+ "UI-DATE-VERIFIZIERUNG-ERKL": {
+  "s": "ENTWURF",
+  "t": "Ein Selfie mit einer zufälligen Pose. Wir gleichen es mit deinem ersten Date-Foto ab — so sind alle Gesichter bei Cruizy Date echt."
+ },
+ "UI-DATE-VERIFIZIERUNG-KEIN-ABGLEICH": {
+  "s": "ENTWURF",
+  "t": "Das Selfie passt nicht zu deinem ersten Date-Foto. Prüf das Foto oder versuch es erneut."
  },
  "UI-DATE-VERIFIZIERUNG-NICHT-VERFUEGBAR": {
   "s": "ENTWURF",
   "t": "Die Gesichtsverifizierung ist gerade nicht verfügbar. Bitte versuch es später noch einmal."
  },
+ "UI-DATE-VERIFIZIERUNG-POSE": {
+  "s": "ENTWURF",
+  "t": "Die Pose war nicht zu erkennen. Versuch es mit einer neuen Pose."
+ },
+ "UI-DATE-VERIFIZIERUNG-TITEL": {
+  "s": "ENTWURF",
+  "t": "Zeig, dass du es bist"
+ },
+ "UI-DATE-VERLASSEN": {
+  "s": "ENTWURF",
+  "t": "Date verlassen"
+ },
+ "UI-DATE-VERLASSEN-ERKL": {
+  "s": "ENTWURF",
+  "t": "Löscht dein Date-Profil mit allen Fotos, Aufnahmen, Likes und Matches. Dein normales Cruizy-Konto bleibt."
+ },
+ "UI-DATE-VERLASSEN-FRAGE": {
+  "s": "ENTWURF",
+  "t": "Wirklich alle Date-Daten löschen? Das lässt sich nicht rückgängig machen."
+ },
+ "UI-DATE-VERLASSEN-JETZT": {
+  "s": "ENTWURF",
+  "t": "Endgültig verlassen"
+ },
+ "UI-DATE-VERLASSEN-TIPPEN": {
+  "s": "ENTWURF",
+  "t": "Zur Bestätigung VERLASSEN eintippen"
+ },
+ "UI-DATE-VOICE-ERKL": {
+  "s": "ENTWURF",
+  "t": "Pflicht: Stell dich in bis zu {s} Sekunden vor. Aufnehmen, anhören, neu aufnehmen."
+ },
+ "UI-DATE-VOICE-FEHLT": {
+  "s": "ENTWURF",
+  "t": "Nimm noch dein Voice-Intro auf."
+ },
+ "UI-DATE-VOICE-INTRO": {
+  "s": "ENTWURF",
+  "t": "Voice-Intro"
+ },
+ "UI-DATE-VORSCHLAG-VON": {
+  "s": "ENTWURF",
+  "t": "Vorschlag {nr} von {gesamt}"
+ },
  "UI-DATE-WARTELISTE": {
   "s": "ENTWURF",
   "t": "Wir starten Cruizy Date Stadt für Stadt. Du bist dabei, sobald es bei dir losgeht."
+ },
+ "UI-DATE-WARTELISTE-DABEI": {
+  "s": "ENTWURF",
+  "t": "Du stehst auf der Warteliste für {stadt}. Wir melden uns, sobald es bei dir losgeht."
+ },
+ "UI-DATE-WAS-ICH-SUCHE": {
+  "s": "ENTWURF",
+  "t": "Was ich suche"
+ },
+ "UI-DATE-WEITER": {
+  "s": "ENTWURF",
+  "t": "Weiter (nicht interessiert)"
+ },
+ "UI-DATE-WEITER-BTN": {
+  "s": "ENTWURF",
+  "t": "Weiter"
+ },
+ "UI-DATE-WEITER-STOEBERN": {
+  "s": "ENTWURF",
+  "t": "Weiter entdecken"
+ },
+ "UI-DATE-WEITER-TASTE": {
+  "s": "ENTWURF",
+  "t": "Weiter — Taste ← oder X, auf dem Handy nach links wischen"
+ },
+ "UI-DATE-WERT-ALCOHOL": {
+  "s": "ENTWURF",
+  "t": "Alkohol"
+ },
+ "UI-DATE-WERT-KIDS": {
+  "s": "ENTWURF",
+  "t": "Kinderwunsch"
+ },
+ "UI-DATE-WERT-POLITICS": {
+  "s": "ENTWURF",
+  "t": "Politik"
+ },
+ "UI-DATE-WERT-RELATIONSHIPMODEL": {
+  "s": "ENTWURF",
+  "t": "Beziehungsmodell"
+ },
+ "UI-DATE-WERT-RELIGION": {
+  "s": "ENTWURF",
+  "t": "Religion"
+ },
+ "UI-DATE-WERT-SMOKING": {
+  "s": "ENTWURF",
+  "t": "Rauchen"
+ },
+ "UI-DATE-WERT-SPORT": {
+  "s": "ENTWURF",
+  "t": "Sport"
+ },
+ "UI-DATE-WERTE": {
+  "s": "ENTWURF",
+  "t": "Werte und Lebensstil"
+ },
+ "UI-DATE-ZUM-CHAT": {
+  "s": "ENTWURF",
+  "t": "Zum Chat"
+ },
+ "UI-DATE-ZURUECK-ZU-DATE": {
+  "s": "ENTWURF",
+  "t": "Zurück zu Cruizy Date"
  },
  "UI-DATEN-ALBUM": {
   "s": "ENTWURF",
@@ -2906,6 +3646,10 @@
  "UI-TAB-CHATS": {
   "s": "ENTWURF",
   "t": "Chats"
+ },
+ "UI-TAB-DATE": {
+  "s": "ENTWURF",
+  "t": "Date"
  },
  "UI-TAB-ICH": {
   "s": "ENTWURF",

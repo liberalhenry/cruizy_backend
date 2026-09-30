@@ -4,6 +4,7 @@ import { Banner, Sheet, TextArea, Toggle, useAsync } from '../components/ui';
 import { api, errText } from '../lib/api';
 import { fmtDate, t } from '../lib/texts';
 import { EventDetail, Veranstalter, VeranstaltungenPruefen } from './veranstaltungen';
+import { DateAdmin } from './date';
 import { Card, Logo, Reason, useAction } from './common';
 import { MeinZugang, Team } from './team';
 import { Ausweise } from './ausweis';
@@ -19,7 +20,7 @@ export interface Staff {
   version?: string;
 }
 
-type Screen = 'uebersicht' | 'warteschlange' | 'meldungen' | 'hash' | 'freigaben' | 'sperren' | 'widerspruch' | 'protokoll' | 'orte' | 'einreichungen' | 'veranstalter' | 'veranstaltungen' | 'art18' | 'vorgaenge' | 'verwaltung' | 'team' | 'zugang' | 'ausweis' | 'updates';
+type Screen = 'uebersicht' | 'warteschlange' | 'meldungen' | 'hash' | 'freigaben' | 'sperren' | 'widerspruch' | 'protokoll' | 'orte' | 'einreichungen' | 'veranstalter' | 'veranstaltungen' | 'date' | 'art18' | 'vorgaenge' | 'verwaltung' | 'team' | 'zugang' | 'ausweis' | 'updates';
 
 const NAV: { key: Screen; label: string; betrieb?: boolean; owner?: boolean }[] = [
   { key: 'uebersicht', label: 'Tagesübersicht' },
@@ -35,6 +36,7 @@ const NAV: { key: Screen; label: string; betrieb?: boolean; owner?: boolean }[] 
   { key: 'einreichungen', label: 'Freigabe Termine' },
   { key: 'veranstaltungen', label: 'Veranstaltungen prüfen' },
   { key: 'veranstalter', label: 'Veranstalter' },
+  { key: 'date', label: 'Cruizy Date' },
   { key: 'art18', label: 'Art. 18 DSA' },
   { key: 'protokoll', label: 'Zugriffsprotokoll' },
   { key: 'verwaltung', label: 'Verwaltung', betrieb: true },
@@ -94,6 +96,7 @@ export function Screens({ me, onLogout, reloadMe }: { me: Staff; onLogout: () =>
         {screen === 'einreichungen' && <Einreichungen />}
         {screen === 'veranstaltungen' && <VeranstaltungenPruefen />}
         {screen === 'veranstalter' && <Veranstalter />}
+        {screen === 'date' && <DateAdmin />}
         {screen === 'art18' && <Art18 isBetrieb={isBetrieb} owner={me.staff.founder} />}
         {screen === 'vorgaenge' && <Vorgaenge />}
         {screen === 'verwaltung' && isBetrieb && <Verwaltung />}
@@ -514,6 +517,7 @@ function Meldungen({ owner }: { owner: boolean }) {
                 <option value="eingeschraenkt">Einschränken (Antrag, zweite Person)</option>
                 <option value="gesperrt">Sperren (Antrag, zweite Person)</option>
                 <option value="an_behoerde">An Behörde (Art. 18 vorbereiten)</option>
+                <option value="date_verstoss">Date-Verstoß (zählt zur Date-Sperre, Hauptkonto bleibt)</option>
               </select>
               <Reason value={decReason} onChange={setDecReason} label="Begründung — geht wörtlich an die Beteiligten" min={10} />
               <div className="flex gap-2 flex-wrap">

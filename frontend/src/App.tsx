@@ -11,6 +11,7 @@ import { Einwilligung, Gast, HomeBildschirm, Konto, PasswortNeu, ProfilAnlegen, 
 import { Naehe, Suche } from './screens/naehe';
 import { Besucher, Gesundheit } from './screens/extras';
 import { Reisen } from './screens/reisen';
+import { DateEinstellungen, DateHome, DateOnboarding, DateProfil, DateUser } from './screens/date';
 import { Veranstalter, VeranstalterVerifizieren, VeranstaltungBearbeiten, VeranstaltungChat, VeranstaltungVerwalten } from './screens/veranstalter';
 import { FotoHinzufuegen, ProfilEditor, ProfilEigen, ProfilFremd } from './screens/profil';
 import { AlbumAnsicht, AlbumBearbeiten, Alben, Chat, Chats } from './screens/chats';
@@ -37,16 +38,18 @@ function MeIcon({ active }: { active: boolean }) {
 }
 
 function TabBar() {
-  const { convBadge, unread, dot } = useApp();
+  const { convBadge, unread, dot, date } = useApp();
   const tabs = [
     { to: '/naehe', label: t('UI-TAB-NAEHE'), icon: 'grid' },
     { to: '/heute', label: t('ST-HEU-01'), icon: 'today' },
+    // Issue #19: fester Reiter „Date“ für alle — ausblendbar in den Einstellungen
+    ...(date.enabled && !date.hidden ? [{ to: '/date', label: t('UI-TAB-DATE'), icon: 'heart', dot: date.dot }] : []),
     { to: '/chats', label: t('UI-TAB-CHATS'), icon: 'chat', badge: convBadge, dot: dot.chats },
     { to: '/ich', label: t('UI-TAB-ICH'), icon: 'me', badge: unread, dot: dot.ich },
-  ];
+  ] as { to: string; label: string; icon: string; badge?: number; dot?: boolean }[];
   return (
     <nav className="fixed bottom-0 inset-x-0 z-30 bg-flaeche/95 backdrop-blur border-t border-linie safe-bottom" aria-label={t('UI-APP-HAUPTNAVIGATION')}>
-      <div className="max-w-2xl mx-auto grid grid-cols-4">
+      <div className={`max-w-2xl mx-auto grid ${tabs.length === 5 ? 'grid-cols-5' : 'grid-cols-4'}`}>
         {tabs.map((x) => (
           <NavLink
             key={x.to}
@@ -218,6 +221,12 @@ export default function App() {
       <Route path="/naehe" element={<Shell><Naehe /></Shell>} />
       <Route path="/heute" element={<Shell><Heute /></Shell>} />
       <Route path="/chats" element={<Shell><Chats /></Shell>} />
+      <Route path="/date" element={<Shell><DateHome /></Shell>} />
+      <Route path="/date/likes" element={<Shell><DateHome /></Shell>} />
+      <Route path="/date/onboarding" element={<DateOnboarding />} />
+      <Route path="/date/profil" element={<DateProfil />} />
+      <Route path="/date/einstellungen" element={<DateEinstellungen />} />
+      <Route path="/date/u/:id" element={<DateUser />} />
       <Route path="/ich" element={<Shell><Ich /></Shell>} />
       <Route path="/suche" element={<Suche />} />
       <Route path="/profil/:id" element={<ProfilFremd />} />

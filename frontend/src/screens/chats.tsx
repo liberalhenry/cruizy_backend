@@ -17,7 +17,11 @@ import { VeranstaltungsChats } from './veranstalter';
 
 export function Chats() {
   const nav = useNavigate();
-  const [box, setBox] = useState<'gespraeche' | 'anfragen' | 'veranstaltungen' | 'archiv'>(() => (new URLSearchParams(location.search).get('reiter') === 'veranstaltungen' ? 'veranstaltungen' : 'gespraeche'));
+  const [box, setBox] = useState<'gespraeche' | 'date' | 'anfragen' | 'veranstaltungen' | 'archiv'>(() => {
+    const r = new URLSearchParams(location.search).get('reiter');
+    return r === 'veranstaltungen' || r === 'date' ? r : 'gespraeche';
+  });
+  const { date: dateState } = useApp();
   const [eventUnread, setEventUnread] = useState(0);
   const [list, setList] = useState<any[] | null>(null);
   const [err, setErr] = useState<string | null>(null);
@@ -50,12 +54,15 @@ export function Chats() {
     return on('veranstaltung_chat', f);
   }, []);
 
-  const rows = (list ?? []).filter((c) => c.box === box);
+  // Issue #19: „Date“ zeigt Date-Matches; sie stehen auch unter „Gespräche“ (= alle)
+  const rows = (list ?? []).filter((c) => (box === 'date' ? !!c.date && c.box !== 'archiv' : c.box === box));
   // Issue #14: ungelesene Gespräche je Reiter — der Lesestand kommt vom Server (nur der eigene)
   const counts: Record<string, number> = {
     gespraeche: (list ?? []).filter((c) => c.box === 'gespraeche' && c.unread > 0).length,
     anfragen: (list ?? []).filter((c) => c.box === 'anfragen' && c.unread > 0).length,
+    date: (list ?? []).filter((c) => !!c.date && c.unread > 0).length,
   };
+  const showDateTab = dateState.status === 'aktiv' || dateState.status === 'pausiert' || (list ?? []).some((c) => !!c.date);
 
   return (
     <>
@@ -69,6 +76,12 @@ export function Chats() {
                 {counts[b] > 0 && <span className="ml-1 rounded-full bg-gefahr text-white px-1.5 text-xs" aria-label={t('UI-CHATS-UNGELESEN', { zahl: counts[b] })}>{counts[b]}</span>}
               </button>
             ))}
+            {showDateTab && (
+              <button role="tab" aria-selected={box === 'date'} className={`chip min-h-tap ${box === 'date' ? 'border-rose-400 text-rose-300' : ''}`} onClick={() => setBox('date')}>
+                ♥ {t('UI-DATE')}
+                {counts.date > 0 && <span className="ml-1 rounded-full bg-gefahr text-white px-1.5 text-xs" aria-label={t('UI-CHATS-UNGELESEN', { zahl: counts.date })}>{counts.date}</span>}
+              </button>
+            )}
             <button role="tab" aria-selected={box === 'veranstaltungen'} className={`chip min-h-tap shrink-0 ${box === 'veranstaltungen' ? 'border-akzent text-akzent' : ''}`} onClick={() => setBox('veranstaltungen')}>
               🎟️ {t('UI-VA-CHATS')}
               {eventUnread > 0 && <span className="ml-1 w-2 h-2 rounded-full bg-gefahr inline-block" aria-label={t('UI-CHATS-UNGELESEN', { zahl: eventUnread })} />}
@@ -103,7 +116,7 @@ export function Chats() {
           </div>
         ) : rows.length === 0 ? (
           <Empty
-            text={t(box === 'gespraeche' ? 'ST-LEER-11' : box === 'anfragen' ? 'ST-LEER-10' : 'ST-LEER-12')}
+            text={t(box === 'date' ? 'UI-DATE-CHATS-LEER' : box === 'gespraeche' ? 'ST-LEER-11' : box === 'anfragen' ? 'ST-LEER-10' : 'ST-LEER-12')}
             action={
               box === 'gespraeche' ? (
                 <button className="btn-secondary" onClick={() => nav('/naehe')}>
@@ -126,6 +139,7 @@ export function Chats() {
                     <span className="flex-1 min-w-0">
                       <span className="flex items-center gap-2">
                         <span className={`truncate ${fresh ? 'font-semibold text-text' : ''}`}>{c.other.name ?? t('UI-CHATS-NICHT-MEHR-DA')}</span>
+                        {c.date && <span className="shrink-0 rounded-full bg-rose-500/15 text-rose-300 px-1.5 text-[10px] font-semibold">♥ {t('UI-DATE')}</span>}
                         {c.disappearing && <Icon name="clock" className="w-4 h-4 muted shrink-0" />}
                       </span>
                       <span className={`block text-sm truncate ${fresh ? 'text-text' : 'muted'}`}>{preview(c)}</span>
@@ -169,7 +183,7 @@ export function Chats() {
           )}
         </div>
       </Sheet>
-      <ReportSheet open={!!reportFor} onClose={() => setReportFor(null)} targetId={reportFor?.other?.id} targetName={reportFor?.other?.name} context="gespraech" contextId={reportFor?.id} onBlocked={load} />
+      <ReportSheet open={!!reportFor} onClose={() => setReportFor(null)} targetId={reportFor?.other?.id} targetName={reportFor?.other?.name} context="gespraech" contextId={reportFor?.id} onBlocked={load} dateChat={!!reportFor?.date} />
       {sheet}
     </>
   );
@@ -455,6 +469,7 @@ export function Chat() {
             {conv.endedByMe ? t('ST-CHAT-12') : t('ST-CHAT-13', { name: otherInfo?.name ?? t('UI-DIE-PERSON') })} {t('ST-CHAT-20')}
           </Banner>
         )}
+        {data?.date && <DateChatHeader d={data.date} convId={id!} onChange={load} />}
         {data?.fromOutside && <Banner>{t('ST-STO-46')}</Banner>}
         {conv?.mediaRequest && (
           <Banner
@@ -823,6 +838,7 @@ export function Chat() {
       <ReportSheet
         open={sheet === 'report'}
         onClose={() => setSheet(null)}
+        dateChat={!!data?.date}
         targetId={otherInfo?.id}
         targetName={otherInfo?.name}
         context="gespraech"
@@ -1008,6 +1024,86 @@ function AlbumPickerSheet({ open, onClose, onPick }: { open: boolean; onClose: (
   );
 }
 
+/** Issue #19: angepinntes geliktes Element und Kommentar im Date-Chat. */
+function DateChatHeader({ d, convId, onChange }: { d: any; convId: string; onChange: () => void }) {
+  const [menu, setMenu] = useState(false);
+  const { toast, refreshCounts } = useApp();
+  void convId;
+  return (
+    <div className="rounded-2xl border border-rose-400/40 bg-rose-500/5 p-3 flex flex-col gap-2">
+      <div className="flex items-center gap-2">
+        <span className="rounded-full bg-rose-500/15 text-rose-300 px-2 py-0.5 text-xs font-semibold">♥ {t('UI-DATE')}</span>
+        <span className="text-xs muted flex-1">{t(d.existedBefore ? 'UI-SYS-DATE-MATCH-BESTEHEND' : 'UI-SYS-DATE-MATCH')}</span>
+        <button className="btn-ghost px-2 min-h-0 py-1" onClick={() => setMenu(true)} aria-label={t('UI-APP-MENUE')}>
+          <Icon name="more" className="w-4 h-4" />
+        </button>
+      </div>
+      {d.likes.map((l: any, i: number) => (
+        <div key={i} className="flex gap-2 items-center text-sm">
+          {l.element?.kind === 'foto' && l.element.url ? <img src={l.element.url} alt="" className="w-10 h-12 rounded-lg object-cover" /> : <span className="w-10 text-center text-xl">{l.element?.kind === 'audio' ? '🎙️' : '💬'}</span>}
+          <span className="flex-1 min-w-0">
+            <span className="block text-xs muted">{l.mine ? t('UI-DATE-DU-HAST-GELIKT-EL') : t('UI-DATE-HAT-GELIKT-EL')}</span>
+            {l.element?.kind === 'prompt' && <span className="block truncate">{l.element.prompt} — {l.element.answer}</span>}
+            {l.comment && <span className="block italic">„{l.comment}“</span>}
+          </span>
+        </div>
+      ))}
+      <Sheet open={menu} onClose={() => setMenu(false)} title={t('UI-DATE')}>
+        <p className="text-sm muted mb-3">{t('UI-DATE-UNMATCH-ERKL')}</p>
+        <button
+          className="btn-danger w-full"
+          onClick={async () => {
+            try {
+              await api.post(`/api/date/matches/${d.matchId}/unmatch`);
+              setMenu(false);
+              refreshCounts();
+              onChange();
+            } catch (e) {
+              toast(errText(e));
+            }
+          }}
+        >
+          {t('UI-DATE-UNMATCH')}
+        </button>
+      </Sheet>
+    </div>
+  );
+}
+
+/** Issue #19: Bild, das intime Inhalte zeigen könnte — serverseitig unscharf, bis die empfangende Person entscheidet. */
+function NsfwImage({ m, onChange }: { m: any; onChange: () => void }) {
+  const { toast } = useApp();
+  const convId = useParams().id;
+  const decide = async (decision: 'ansehen' | 'erlauben' | 'ablehnen') => {
+    try {
+      await api.post(`/api/conversations/${convId}/messages/${m.id}/nsfw`, { decision });
+      onChange();
+    } catch (e) {
+      toast(errText(e));
+    }
+  };
+  if (m.nsfw.state === 'abgelehnt') return <div className="rounded-2xl px-3 py-3 bg-flaeche2 text-sm muted">{t('UI-DATE-NSFW-ABGELEHNT')}</div>;
+  return (
+    <div className="rounded-2xl overflow-hidden bg-flaeche2 w-64 max-w-full">
+      <div className="relative">
+        <img src={m.image} alt="" className="w-full max-h-72 object-cover" draggable={false} onContextMenu={(e) => e.preventDefault()} />
+        <div className="absolute inset-0 grid place-items-center bg-black/30 p-3 text-center text-sm font-medium">{t('UI-DATE-NSFW-HINWEIS')}</div>
+      </div>
+      <div className="flex flex-col gap-1 p-2">
+        <button className="btn-secondary min-h-[40px] text-sm" onClick={() => decide('ansehen')}>
+          {t('UI-DATE-NSFW-ANSEHEN')}
+        </button>
+        <button className="btn-secondary min-h-[40px] text-sm" onClick={() => decide('erlauben')}>
+          {t('UI-DATE-NSFW-ERLAUBEN')}
+        </button>
+        <button className="btn-ghost min-h-[40px] text-sm" onClick={() => decide('ablehnen')}>
+          {t('UI-DATE-NSFW-ABLEHNEN')}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 function Message({ m, otherName, onChange, onOpenOnce }: { m: any; otherName?: string; onChange: () => void; onOpenOnce: (id: string) => void }) {
   const nav = useNavigate();
   const [full, setFull] = useState(false);
@@ -1043,8 +1139,10 @@ function Message({ m, otherName, onChange, onOpenOnce }: { m: any; otherName?: s
           </div>
         )
       )}
+      {m.kind === 'image' && !m.once && m.nsfw && m.nsfw.state !== 'frei' && <NsfwImage m={m} onChange={onChange} />}
       {m.kind === 'image' &&
         !m.once &&
+        !(m.nsfw && m.nsfw.state !== 'frei') &&
         (m.image ? (
           <>
             <button onClick={() => setFull(true)} aria-label={t('UI-CHAT-BILD')}>

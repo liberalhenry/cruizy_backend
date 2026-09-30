@@ -34,15 +34,17 @@ export function ReportSheet({
   contextId,
   items = [],
   onBlocked,
+  dateChat,
 }: {
   open: boolean;
   onClose: () => void;
   targetId?: string | null;
   targetName?: string | null;
-  context: 'profil' | 'gespraech' | 'album' | 'gruppe' | 'ort' | 'ereignis' | 'veranstaltung_chat';
+  context: 'profil' | 'gespraech' | 'album' | 'gruppe' | 'ort' | 'ereignis' | 'veranstaltung_chat' | 'date';
   contextId?: string;
   items?: ReportItem[];
   onBlocked?: () => void;
+  dateChat?: boolean;
 }) {
   const nav = useNavigate();
   const [reason, setReason] = useState<string | null>(null);
@@ -114,7 +116,8 @@ export function ReportSheet({
           <fieldset>
             <legend className="font-semibold mb-2">{t('ST-MEL-02')}</legend>
             <div className="flex flex-col gap-1">
-              {REPORT_REASONS.map((r) => (
+              {/* Issue #19: in Date und in Date-Chats zusätzlich „passt nicht zu Date“ */}
+              {(context === 'date' || dateChat ? [{ key: 'passt_nicht_zu_date', textId: 'UI-MEL-DATE' }, ...REPORT_REASONS] : REPORT_REASONS).map((r) => (
                 <label key={r.key} className="flex items-center gap-3 min-h-tap">
                   <input type="radio" name="grund" className="accent-akzent w-5 h-5" checked={reason === r.key} onChange={() => setReason(r.key)} />
                   {t(r.textId)}

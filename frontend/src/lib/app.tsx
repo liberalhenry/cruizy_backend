@@ -48,6 +48,8 @@ interface Ctx {
   convBadge: number;
   /** roter Punkt ohne Zahl (z. B. ungelesene Anfragen, neue Profilbesucher) */
   dot: { chats: boolean; ich: boolean };
+  /** Issue #19: Cruizy Date — Reiter sichtbar?, Status, Punkt bei neuen Likes/Matches */
+  date: { enabled: boolean; hidden: boolean; status: string | null; dot: boolean };
   refreshCounts: () => void;
   toast: (text: string, action?: { label: string; run: () => void }, ms?: number) => void;
   logout: () => Promise<void>;
@@ -75,6 +77,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [unread, setUnread] = useState(0);
   const [convBadge, setConvBadge] = useState(0);
   const [dot, setDot] = useState<{ chats: boolean; ich: boolean }>({ chats: false, ich: false });
+  const [date, setDate] = useState<{ enabled: boolean; hidden: boolean; status: string | null; dot: boolean }>({ enabled: false, hidden: false, status: null, dot: false });
   const [toasts, setToasts] = useState<ToastState[]>([]);
 
   const toast = useCallback((text: string, action?: { label: string; run: () => void }, ms = 5000) => {
@@ -94,6 +97,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
         // Issue #16: Chats mit Veranstaltern/Gästen ebenfalls als Punkt
         setDot((d) => ({ ...d, chats: r.requests > 0 || (r.events ?? 0) > 0 }));
       })
+      .catch(() => {});
+    api
+      .get('/api/date/me')
+      .then((r) => setDate({ enabled: !!r.enabled, hidden: !!r.hidden, status: r.status ?? null, dot: !!r.badges && (r.badges.likes > 0 || r.badges.matches > 0) }))
       .catch(() => {});
     // Issue #27: neue Profilbesucher als Punkt am Reiter „Ich“ — gebündelt, keine Push je Besuch
     api
@@ -161,6 +168,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       on('mitteilung', () => refreshCounts()),
       on('nachricht', () => refreshCounts()),
       on('veranstaltung_chat', () => refreshCounts()),
+      on('date', () => refreshCounts()),
       on('konto', () => refreshMe()),
       on('foto', () => refreshMe()),
     ];
@@ -168,8 +176,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, [phase, refreshCounts, refreshMe]);
 
   const value = useMemo(
-    () => ({ config, phase, me, refreshMe, online, unread, convBadge, dot, refreshCounts, toast, logout }),
-    [config, phase, me, refreshMe, online, unread, convBadge, dot, refreshCounts, toast, logout],
+    () => ({ config, phase, me, refreshMe, online, unread, convBadge, dot, date, refreshCounts, toast, logout }),
+    [config, phase, me, refreshMe, online, unread, convBadge, dot, date, refreshCounts, toast, logout],
   );
 
   return (

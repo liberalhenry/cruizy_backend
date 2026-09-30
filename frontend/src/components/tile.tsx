@@ -17,6 +17,7 @@ export interface TileData {
   verified: boolean;
   travel?: { mode: 'auto' | 'flug'; km: number | null } | null;
   soon?: { from: string; to: string; place: string } | null;
+  /** Issue #19: Date-Mitglied — nur für andere Date-Mitglieder gesetzt */
   date?: boolean;
 }
 
@@ -33,6 +34,7 @@ export function tileLabel(x: TileData) {
     x.km !== null ? fmtKm(x.km) : null,
     x.approx ? t('ST-STO-41') : null,
     x.isNew ? t('UI-RASTER-NEU') : null,
+    x.date ? t('UI-DATE-KACHEL') : null,
     intentionLabel(x.intention),
     x.response === 1 ? t('ST-PRO-10') : null,
     x.verified ? t('UI-APP-GEPRUEFT') : null,
@@ -58,6 +60,11 @@ export function Tile({ x, onClick, compact }: { x: TileData; onClick: () => void
         )}
         <div className="absolute top-1.5 left-1.5 flex gap-1">
           {x.isNew && <span className="rounded-full bg-akzent text-grund text-[10px] font-semibold px-1.5 py-0.5 uppercase tracking-wide">{t('UI-RASTER-NEU')}</span>}
+          {x.date && (
+            <span className="rounded-full bg-rose-400 text-grund text-[10px] font-semibold px-1.5 py-0.5" title={t('UI-DATE-KACHEL')}>
+              ♥ {t('UI-DATE')}
+            </span>
+          )}
           {x.travel && (
             <span className="rounded-full bg-warn text-grund text-[11px] px-1.5 py-0.5" aria-hidden="true">
               {x.travel.mode === 'flug' ? '✈' : '🚗'}

@@ -219,6 +219,12 @@ export function ProfilFremd() {
           <button className="btn-primary" onClick={() => nav(`/chats/neu?an=${id}`)}>
             {t('UI-PROFIL-SCHREIBEN')}
           </button>
+          {/* Issue #19: nur, wenn beide Date-Mitglieder sind (vom Server entschieden) */}
+          {p.dateProfile && (
+            <button className="btn-secondary !border-rose-400/60 !text-rose-200" onClick={() => nav(`/date/u/${id}`)}>
+              ♥ {t('UI-DATE-PROFIL-ANSEHEN')}
+            </button>
+          )}
           <button className="btn-ghost" onClick={bookmark}>
             {p.bookmarked ? t('UI-PROFIL-NICHT-MERKEN') : t('ST-PRO-50')}
           </button>
