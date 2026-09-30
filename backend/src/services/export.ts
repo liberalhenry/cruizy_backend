@@ -94,6 +94,10 @@ export const EXPORT_SECTIONS: Record<string, string> = {
   event_chat_messages: 'veranstaltungs_chats',
   health_reminders: 'test_erinnerung',
   health_profile: 'gesundheitsangaben',
+  // Issues #32, #35, #37
+  telegram_chats: 'benachrichtigungen (Telegram: nur, ob verbunden)',
+  telegram_link_tokens: 'nicht exportiert: Einmal-Link zum Verbinden (höchstens 30 Minuten)',
+  support_data_requests: 'hilfe_vorgaenge (Datenfreigaben; Diagnosedaten nur während der Freigabe gespeichert)',
 };
 
 export async function collectExport(accountId: string) {
@@ -279,6 +283,8 @@ export async function collectExport(accountId: string) {
     antwortquote_wertung: await q(`SELECT received_at AS eingegangen, deadline_at AS frist, answered_at AS beantwortet, excluded AS ausgenommen FROM first_message_stats WHERE recipient_id = $1`, [accountId]),
     mitteilungen: await q(`SELECT title AS titel, body AS text, ref AS nummer, created_at AS am, first_shown_at AS angezeigt FROM notices WHERE account_id = $1`, [accountId]),
     mitteilungen_geraete: (await one(`SELECT count(*)::int AS n FROM push_subscriptions WHERE account_id = $1`, [accountId]))!.n,
+    // Issue #32/#35: nur, ob Telegram verbunden ist — die Chat-Kennung bleibt verschlüsselt beim Server
+    telegram_verbunden: !!(await one(`SELECT 1 FROM telegram_chats WHERE account_id = $1 OR (phone_hash IS NOT NULL AND phone_hash = $2)`, [accountId, acc.phone_hash ?? null])),
     zusagen: await q(`SELECT e.title AS ereignis, e.starts_at AS beginn, r.status, r.created_at AS zugesagt, r.cancelled_at AS abgesagt FROM event_rsvps r JOIN events e ON e.id = r.event_id WHERE r.account_id = $1`, [accountId]),
     // Issue #19 — ohne Gesichtsmerkmale: gespeichert sind nur Ergebnis und Zeitpunkt der Verifizierung
     date: {
@@ -326,6 +332,15 @@ export async function collectExport(accountId: string) {
           von: m.author === 'team' ? 'Team' : 'du',
           text: decStr('tickets', m.body_enc, 'ticket'),
           am: m.created_at,
+        })),
+        // Issue #37: Anfragen des Teams nach Daten und deine Entscheidung
+        datenfreigaben: (await q(`SELECT scope, reason, status, created_at, decided_at, expires_at FROM support_data_requests WHERE ticket_id = $1 ORDER BY created_at`, [tk.id])).map((r) => ({
+          bereiche: r.scope,
+          begruendung: r.reason,
+          status: r.status,
+          angefragt: r.created_at,
+          entschieden: r.decided_at,
+          gueltig_bis: r.expires_at,
         })),
       })),
     ),

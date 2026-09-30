@@ -4,11 +4,60 @@ Alle nennenswerten Änderungen stehen hier. Format nach [Keep a Changelog](https
 Versionsnummern nach [Semantic Versioning](https://semver.org/lang/de/):
 **MAJOR** bei inkompatiblen Änderungen, **MINOR** bei neuen Funktionen, **PATCH** bei Fehlerbehebungen.
 
-Neue Version: `node scripts/version.mjs minor` (bzw. `patch`/`major`), Einträge unter der neuen Überschrift
-ergänzen, auf `main` mergen — der Workflow `CI` legt Tag und GitHub-Release an. Einspielen auf dem Server:
+Jeder auf `main` gemergte Pull Request wird zum Release. Einträge unter „Unveröffentlicht“ sammeln; die Stufe
+steuert ein Label am Pull Request (`major`, `minor`, `patch` — ohne Label `patch`, `kein-release` lässt ihn aus).
+Wer die Version selbst setzen will: `node scripts/version.mjs minor` (bzw. `patch`/`major`) im Pull Request. Einspielen auf dem Server:
 Werkzeug → „Aktualisierung“ (Owner) oder `bash deploy/update.sh`.
 
 ## [Unveröffentlicht]
+
+## [0.4.0] – 2026-09-30
+
+### Neu
+- **Telegram-Bot statt SMS** (#32): Codes an Telefonnummern (neues Gerät, Passwort vergessen, zweiter Weg)
+  und Check-in-Nachrichten gehen über einen Telegram-Bot. Die Nummer wird im Bot mit „Nummer teilen“
+  verbunden — nur die eigene (Telegram bestätigt sie); Codes an eine noch nicht verbundene Nummer warten
+  verschlüsselt, bis sie verbunden ist. `/stop` trennt alles. Betrieb per Abholen (`polling`, ohne offenen
+  Eingang) oder Webhook mit Geheimnis. Gespeichert werden nur die verschlüsselte Chat-Kennung und Blindindizes.
+- **Mitteilungen per E-Mail oder Telegram** (#35): jede Mitteilung auf Wunsch zusätzlich per Mail und/oder
+  Telegram (Verbinden per Einmal-Link aus den Einstellungen). Voreinstellung: aus und ohne Inhalt — nur ein
+  Hinweis mit Link in die App; Inhalt nur auf ausdrücklichen Wunsch, Sicherheitsmitteilungen nie mit Inhalt.
+- **Support-Portal** (#37): „Dem Support-Team schreiben“ direkt unter „Ich“, Postfach mit Verlauf und
+  „Neu“-Markierung, Antworten nur in der App; auf Wunsch Hinweis per E-Mail (ohne Inhalt). Im Werkzeug kann
+  das Team um **Datenfreigabe** bitten (Konto-, Profil-, Diagnosedaten) — sichtbar erst nach Zustimmung der
+  Person, befristet (`P-SUPPORT-FREIGABE`, 7 Tage), jederzeit widerrufbar, endet mit dem Abschluss; jede
+  Einsicht im Zugriffsprotokoll. Diagnosedaten liefert das Gerät erst bei der Freigabe.
+- **Cruizy-Date-Beispielnutzer und vollständige Profile** (#34): `npm run seed:test` füllt alle 40
+  Testprofile vollständig (4 Fotos, Text, Maße, Körpertyp, Position, Interessen, Absicht, Fotoprüfung) —
+  auch schon vorhandene — und legt für test4 … test40 fertige Date-Profile samt Likes an.
+
+### Geändert
+- **Mitteilungen** (#36): kein Download als Textdatei mehr; stattdessen führt ein Knopf dorthin, wo es
+  weitergeht (Meldungen, Veranstaltung, Chat, Hilfe-Vorgang, Datenkopie …).
+- **Verstecken** (#38): zurück in die App in jeder Tarnung gleich wie beim Verstecken — dreimal schnell
+  oben tippen (oder zweimal Escape), dann die PIN; ohne PIN sofort. Vor dem Verstecken zeigt die App, wie
+  es zurückgeht.
+- **Heute** (#39): Aufbau wie „Nähe“ und „Chats“ — Liste/Karte, Standort und Eintragen als Symbole in der
+  Kopfzeile, eine Chip-Reihe (Umkreis, Filter mit Zähler, Sortierung, aktive Filter zum Entfernen),
+  Zeitraum und Kategorien im Filterblatt; nur noch der kühle Akzent statt Gold.
+- **Release nach jedem Merge:** Jeder auf `main` gemergte Pull Request erzeugt ein Release. Hat er die
+  Version nicht selbst erhöht, erhöht der Workflow sie (Label `major`/`minor`/`patch`, ohne Label `patch`;
+  `kein-release` lässt ihn aus), legt den Versionscommit auf `main` ab und nimmt den Titel ins Changelog,
+  wenn unter „Unveröffentlicht“ nichts steht.
+- Hilfe: mit Konto steht die Antwort des Teams immer in der App; „per E-Mail“ heißt nur noch „Hinweis
+  per E-Mail“. Ohne Konto bleibt die Antwort per E-Mail.
+
+### Behoben
+- Werkzeug → Cruizy Date: Date-Fotos wurden nicht angezeigt (#33). Dazu: alle Date-Fotos je Mitglied im
+  Mitgliederblatt, Name in der Prüfliste, Date-Fotos als Kopie im Fall bei Date-Meldungen.
+- Vorgang schließen im Werkzeug schlug fehl (Aufbewahrungsfrist wurde falsch übergeben).
+- Push zu neuen Veranstaltungen führte auf eine Adresse, die es nicht gibt.
+
+### Beim Einspielen beachten
+- `SMS_*` entfällt. Für Codes an Telefonnummern einen Bot bei @BotFather anlegen und in `.env`
+  `TELEGRAM_MODE=polling`, `TELEGRAM_BOT_TOKEN` und `TELEGRAM_BOT_NAME` eintragen (siehe `.env.example`).
+  Ohne Bot landen diese Codes nur im Protokoll; der Echtbetrieb startet dann nicht.
+- Migration `013_v040` ist additiv.
 
 ## [0.3.0] – 2026-09-30
 

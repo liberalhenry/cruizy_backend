@@ -100,6 +100,12 @@ export async function deleteAccountNow(accountId: string, opts: { vault?: boolea
   }
   await tx(async (c) => {
     await c.query(`DELETE FROM events WHERE host_id = $1`, [accountId]);
+    // Issue #32/#35: Telegram-Verbindung des Kontos und seiner Nummer
+    await c.query(
+      `DELETE FROM telegram_chats WHERE account_id = $1 OR phone_hash = (SELECT phone_hash FROM accounts WHERE id = $1 AND phone_hash IS NOT NULL)`,
+      [accountId],
+    );
+    await c.query(`DELETE FROM telegram_outbox WHERE phone_hash = (SELECT phone_hash FROM accounts WHERE id = $1 AND phone_hash IS NOT NULL)`, [accountId]);
     // Web-Abo endet mit der Löschung (AK-X10-01) — die Berechtigungen hängen am Konto
     await c.query(`DELETE FROM accounts WHERE id = $1`, [accountId]);
   });

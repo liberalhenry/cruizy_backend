@@ -1,7 +1,7 @@
 /** Reiter „Ich“: S50 Übersicht · S51 Sicherheit · S52 Check-in · S53 Treffpunkt · S54 Verstecken ·
  * S55 Mitteilungen · S56 Meldungen · S60 Daten · S61/S62 Abo · S63 Einstellungen · S72 Blockiert ·
  * Merkliste · Hilfe und Kontakt · Konto sichern. */
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Avatar, Banner, BottomBar, Choice, Empty, Field, Header, Icon, ListCard, Page, RowLink, Section, Sheet, Skeleton, TextArea, Toggle, useAsync } from '../components/ui';
 import { Tile, intentionLabel, type TileData } from '../components/tile';
@@ -15,6 +15,8 @@ import { fmtDate, fmtKm, parts, plain, t } from '../lib/texts';
 import { LocationSheet } from './naehe';
 import { SymbolPicker } from './einstieg';
 import { CompletenessCard, PremiumTest } from './extras';
+import { TelegramHint } from '../components/telegram';
+import { collectDiagnostics } from '../lib/diagnostics';
 
 // ─────────────────────────── S50 · Übersicht ───────────────────────────
 
@@ -118,6 +120,7 @@ export function Ich() {
           <RowLink to="/ich/daten" label={t('ST-DAT-01')} />
           <RowLink to="/ich/abo" label={t('UI-ICH-ABO')} />
           <RowLink to="/ich/einstellungen" label={t('UI-ICH-EINSTELLUNGEN')} />
+          <RowLink to="/ich/hilfe?neu=1" label={t('UI-SUP-SCHREIBEN')} hint={t('UI-SUP-SCHREIBEN-ERKL')} />
           <RowLink to="/ich/hilfe" label={t('ST-HLF-01')} />
           <RowLink to="/rechtliches/uebersicht" label={t('UI-ICH-RECHTLICHES')} />
         </ListCard>
@@ -211,7 +214,8 @@ export function Sicherheit() {
 // ─────────────────────────── S52 · Check-in ───────────────────────────
 
 interface Recipient {
-  kind: 'sms' | 'email';
+  // Issue #32: Telefonnummern bekommen die Nachricht über den Telegram-Bot
+  kind: 'telegram' | 'email';
   to: string;
 }
 
@@ -376,13 +380,24 @@ export function CheckIn() {
                     onClick={() => {
                       const v = newR.trim();
                       if (!v) return;
-                      setRecipients([...recipients, { kind: v.includes('@') ? 'email' : 'sms', to: v }]);
+                      setRecipients([...recipients, { kind: v.includes('@') ? 'email' : 'telegram', to: v }]);
                       setNewR('');
                     }}
                   >
                     <Icon name="plus" />
                   </button>
                 </div>
+                {recipients.some((r) => r.kind === 'telegram') && config?.telegramBot && (
+                  <div className="card p-3 text-sm flex flex-col gap-2">
+                    <p>{t('UI-TG-CHECKIN-HINWEIS')}</p>
+                    <div className="flex gap-2 items-center">
+                      <span className="flex-1 font-mono text-xs break-all">{config.telegramBot}</span>
+                      <button className="btn-secondary" onClick={() => navigator.clipboard?.writeText(config.telegramBot!).then(() => toast(t('UI-APP-KOPIERT')))}>
+                        {t('UI-TG-LINK-KOPIEREN')}
+                      </button>
+                    </div>
+                  </div>
+                )}
                 <TextArea label={t('UI-CHECKIN-NACHRICHT')} value={message} maxLength={600} onChange={(e) => setMessage(e.target.value)} hint={t('UI-CHECKIN-NACHRICHT-HINWEIS')} />
                 <p className="text-sm muted">{plain('ST-CHK-09')}</p>
                 <Toggle checked={deposit} onChange={setDeposit} label={t('ST-CHK-15')} hint={!deposit ? t('ST-CHK-16') : undefined} />
@@ -484,6 +499,8 @@ export function Verstecken() {
   const [has, setHas] = useState(hasPin());
   const [lock, setLockState] = useState(lockSettings());
   const [kind, setKind] = useState(currentDisguise());
+  // Issue #38: vor dem Verstecken zeigen, wie es zurückgeht
+  const [before, setBefore] = useState(false);
   useEffect(() => {
     if (location.hash === '#symbol') document.getElementById('symbol')?.scrollIntoView();
   }, []);
@@ -499,7 +516,10 @@ export function Verstecken() {
           <p className="text-sm muted mb-3">{t('UI-TARN-ERKL')}</p>
           <SymbolPicker onChange={(k) => setKind(k as typeof kind)} />
           <p className="text-sm mt-3">
-            <span className="muted">{t('UI-TARN-ZURUECK')}</span> {t(gesture[kind])}
+            <span className="muted">{t('UI-TARN-ZURUECK')}</span> {t('UI-TARN-ZURUECK-ALLE')}
+          </p>
+          <p className="text-sm mt-1">
+            <span className="muted">{t('UI-TARN-AUSSERDEM')}</span> {t(gesture[kind])}
           </p>
           <p className="text-xs muted mt-2">{t('UI-VERSTECKEN-WEB-GRENZE')}</p>
         </section>
@@ -570,15 +590,50 @@ export function Verstecken() {
           </div>
         </section>
 
-        <button className="btn-secondary w-full mt-4" onClick={hideNow}>
+        <button className="btn-secondary w-full mt-4" onClick={() => setBefore(true)}>
           {t('UI-VERSTECKEN-JETZT')}
         </button>
       </Page>
+      <Sheet open={before} onClose={() => setBefore(false)} title={t('UI-TARN-VORHER-TITEL')}>
+        <p className="mb-2">{t('UI-TARN-ZURUECK-ALLE')}</p>
+        <p className="text-sm muted mb-3">
+          {t('UI-TARN-AUSSERDEM')} {t(gesture[kind])}
+        </p>
+        {!has && <Banner kind="warn">{t('UI-TARN-OHNE-PIN')}</Banner>}
+        <button
+          className="btn-primary w-full mt-3"
+          onClick={() => {
+            setBefore(false);
+            hideNow();
+          }}
+        >
+          {t('UI-TARN-VORHER-OK')}
+        </button>
+      </Sheet>
     </div>
   );
 }
 
 // ─────────────────────────── S55 · Mitteilungen ───────────────────────────
+
+/** Beschriftung des Knopfs „Dorthin“ (Issue #36) — sprechend, wo das Ziel bekannt ist. */
+function noticeTargetLabel(n: { kind: string; target: string }): string {
+  if (n.kind === 'checkin') return t('ST-CHK-03');
+  const byPath: [string, string][] = [
+    ['/ich/meldungen', 'UI-MELDUNGEN-TITEL'],
+    ['/ich/daten', 'ST-DAT-01'],
+    ['/ich/hilfe', 'ST-HLF-01'],
+    ['/ich/gesundheit', 'UI-TEST-BEREICH'],
+    ['/ich/sicherheit', 'ST-SIC-01'],
+    ['/ereignisse/', 'UI-MITTEILUNG-ZUR-VERANSTALTUNG'],
+    ['/veranstalter', 'UI-VA-BEREICH'],
+    ['/chats', 'UI-MITTEILUNG-ZUM-CHAT'],
+    ['/date', 'UI-DATE-TITEL'],
+    ['/pruefung', 'UI-MITTEILUNG-ZUR-PRUEFUNG'],
+  ];
+  const hit = byPath.find(([p]) => n.target.startsWith(p));
+  return hit ? `${t(hit[1])} ›` : t('UI-MITTEILUNG-DORTHIN');
+}
 
 export function Mitteilungen() {
   const nav = useNavigate();
@@ -640,41 +695,17 @@ export function Mitteilungen() {
                 {t('UI-WHR-DAS-WAR-ICH-NICHT')}
               </button>
             )}
-            {open.kind === 'checkin' && (
-              <button className="btn-primary" onClick={() => nav(`/sicherheit/check-in?frage=${open.ref}`)}>
-                {t('ST-CHK-03')}
+            {/* Issue #36: ein Knopf dorthin, wo es weitergeht — statt Download als Textdatei */}
+            {open.target && (
+              <button className="btn-primary" onClick={() => nav(open.target)}>
+                {noticeTargetLabel(open)}
               </button>
             )}
-            {['sperre', 'entscheidung_betroffen', 'meldung_entscheidung', 'widerspruch', 'foto'].includes(open.kind) && (
-              <button className="btn-secondary" onClick={() => nav('/ich/meldungen')}>
-                {t('UI-MELDUNGEN-TITEL')}
-              </button>
+            {open.kind === 'test_erinnerung' && open.ref && (
+              <a className="btn-secondary" href={open.ref} target="_blank" rel="noopener noreferrer">
+                {t('UI-TEST-TESTSTELLEN')} ↗
+              </a>
             )}
-            {open.kind === 'test_erinnerung' && (
-              <>
-                {open.ref && (
-                  <a className="btn-secondary" href={open.ref} target="_blank" rel="noopener noreferrer">
-                    {t('UI-TEST-TESTSTELLEN')} ↗
-                  </a>
-                )}
-                <button className="btn-primary" onClick={() => nav('/ich/gesundheit')}>
-                  {t('UI-TEST-BEREICH')}
-                </button>
-              </>
-            )}
-            {open.kind === 'export_bereit' && (
-              <button className="btn-secondary" onClick={() => nav('/ich/daten')}>
-                {t('ST-DAT-01')}
-              </button>
-            )}
-            {open.kind === 'hilfe_antwort' && (
-              <button className="btn-secondary" onClick={() => nav('/ich/hilfe')}>
-                {t('ST-HLF-01')}
-              </button>
-            )}
-            <a className="btn-ghost" href={`/api/notices/${open.id}/file`} download>
-              {t('UI-APP-SPEICHERN-DATEI')}
-            </a>
           </div>
         )}
       </Sheet>
@@ -1033,6 +1064,68 @@ export function Abo() {
 
 // ─────────────────────────── S63 · Einstellungen ───────────────────────────
 
+/** Issue #35: Mitteilungen zusätzlich per E-Mail oder Telegram. */
+function NotifyChannels({ settings: s, patch }: { settings: any; patch: (x: Record<string, unknown>) => Promise<void> }) {
+  const { me, toast } = useApp();
+  const tg = useAsync(() => api.get('/api/telegram'), []);
+  const hasEmail = !!me?.profile?.account?.hasEmail;
+  const connect = async () => {
+    try {
+      const r = await api.post('/api/telegram/link');
+      window.open(r.url, '_blank', 'noopener');
+    } catch (e) {
+      toast(errText(e));
+    }
+  };
+  return (
+    <Section title={t('UI-NF-TITEL')}>
+      <div className="card p-4 flex flex-col gap-2">
+        <p className="text-sm muted">{t('UI-NF-ERKL')}</p>
+        <Toggle
+          checked={s.notifyEmail}
+          disabled={!hasEmail && !s.notifyEmail}
+          onChange={(v) => patch({ notifyEmail: v })}
+          label={t('UI-NF-EMAIL')}
+          hint={hasEmail ? t('UI-NF-EMAIL-HINT') : t('UI-NF-EMAIL-FEHLT')}
+        />
+        {tg.data && !tg.data.available ? (
+          <p className="text-sm muted">{t('UI-NF-TELEGRAM-AUS')}</p>
+        ) : tg.data?.linked ? (
+          <>
+            <Toggle checked={s.notifyTelegram} onChange={(v) => patch({ notifyTelegram: v })} label={t('UI-NF-TELEGRAM')} />
+            <button
+              className="btn-ghost self-start px-0"
+              onClick={async () => {
+                await api.del('/api/telegram/link').catch(() => {});
+                tg.reload();
+                patch({});
+              }}
+            >
+              {t('UI-NF-TELEGRAM-TRENNEN')}
+            </button>
+          </>
+        ) : tg.data ? (
+          <div className="flex flex-col gap-1">
+            <span>{t('UI-NF-TELEGRAM')}</span>
+            <span className="text-sm muted">{t('UI-NF-TELEGRAM-VERBINDEN-ERKL')}</span>
+            <div className="flex gap-2 mt-1">
+              <button className="btn-secondary" onClick={connect}>
+                {t('UI-NF-TELEGRAM-VERBINDEN')} ↗
+              </button>
+              <button className="btn-ghost" onClick={() => (tg.reload(), patch({}))}>
+                {t('UI-NF-GEPRUEFT')}
+              </button>
+            </div>
+          </div>
+        ) : null}
+        {(s.notifyEmail || s.notifyTelegram) && (
+          <Toggle checked={s.notifyContent} onChange={(v) => patch({ notifyContent: v })} label={t('UI-NF-INHALT')} hint={t('UI-NF-INHALT-HINT')} />
+        )}
+      </div>
+    </Section>
+  );
+}
+
 export function Einstellungen() {
   const nav = useNavigate();
   const { me, config, refreshMe, toast } = useApp();
@@ -1092,6 +1185,7 @@ export function Einstellungen() {
             </div>
           </div>
         </Section>
+        <NotifyChannels settings={s} patch={patch} />
         <Section title={t('UI-TAB-CHATS')}>
           <div className="card p-4 flex flex-col gap-3">
             <Toggle checked={s.disappearingDefault} onChange={(v) => patch({ disappearingDefault: v })} label={t('ST-CHAT-30')} hint={t('ST-CHAT-31')} />
@@ -1169,6 +1263,7 @@ export function KontoSichern() {
   const [addValue, setAddValue] = useState('');
   const [addCode, setAddCode] = useState('');
   const [addSent, setAddSent] = useState(false);
+  const [addTelegram, setAddTelegram] = useState<string | null | undefined>(undefined);
   const [oldPw, setOldPw] = useState('');
   const [newPw, setNewPw] = useState('');
   const run = async (fn: () => Promise<void>) => {
@@ -1215,12 +1310,13 @@ export function KontoSichern() {
               </div>
             ) : !addSent ? (
               <>
-                <Field label={add === 'email' ? t('UI-KONTO-EMAIL') : t('UI-KONTO-NUMMER')} value={addValue} onChange={(e) => setAddValue(e.target.value)} hint={t('ST-KON-33')} />
+                <Field label={add === 'email' ? t('UI-KONTO-EMAIL') : t('UI-KONTO-NUMMER-TELEGRAM')} value={addValue} onChange={(e) => setAddValue(e.target.value)} hint={t('ST-KON-33')} />
                 <button
                   className="btn-primary"
                   onClick={() =>
                     run(async () => {
-                      await api.post(`/api/auth/add/${add}`, add === 'email' ? { email: addValue } : { phone: addValue });
+                      const r = await api.post(`/api/auth/add/${add}`, add === 'email' ? { email: addValue } : { phone: addValue });
+                      setAddTelegram(add === 'phone' ? (r.telegram ?? null) : undefined);
                       setAddSent(true);
                     })
                   }
@@ -1230,6 +1326,7 @@ export function KontoSichern() {
               </>
             ) : (
               <>
+                {addTelegram !== undefined && <TelegramHint url={addTelegram} />}
                 <Field label={t('UI-KONTO-CODE')} inputMode="numeric" value={addCode} onChange={(e) => setAddCode(e.target.value)} />
                 <button
                   className="btn-primary"
@@ -1379,16 +1476,161 @@ export function Merkliste() {
 
 // ─────────────────────────── Hilfe und Kontakt (F75) ───────────────────────────
 
+/** Issue #37: ein Vorgang im Support-Postfach — Verlauf, Antwort nur in der App, Datenfreigabe. */
+function SupportTicket({ tk, statusLabel, initiallyOpen, onChange }: { tk: any; statusLabel: string; initiallyOpen: boolean; onChange: () => void }) {
+  const { me, config, toast, refreshCounts } = useApp();
+  const [open, setOpen] = useState(initiallyOpen);
+  const [reply, setReply] = useState('');
+  const [busy, setBusy] = useState(false);
+  const ref = useRef<HTMLLIElement>(null);
+  const days = Math.round((config?.params.supportReleaseS ?? 7 * 86400) / 86400);
+  useEffect(() => {
+    if (initiallyOpen) ref.current?.scrollIntoView({ block: 'start' });
+  }, [initiallyOpen]);
+  useEffect(() => {
+    if (open && tk.unread) api.post(`/api/help/tickets/${tk.id}/read`).then(() => (onChange(), refreshCounts())).catch(() => {});
+  }, [open, tk.unread, tk.id]);
+  const act = async (fn: () => Promise<unknown>) => {
+    setBusy(true);
+    try {
+      await fn();
+      onChange();
+    } catch (e) {
+      toast(errText(e));
+    } finally {
+      setBusy(false);
+    }
+  };
+  const openRequests = tk.dataRequests.filter((r: any) => r.status === 'offen');
+  return (
+    <li ref={ref} className="card overflow-hidden">
+      <button className="w-full text-left p-3 flex items-center gap-2" onClick={() => setOpen(!open)} aria-expanded={open}>
+        <span className="flex-1">
+          <span className="block font-semibold">
+            {tk.number}
+            {(tk.unread > 0 || openRequests.length > 0) && <span className="ml-2 rounded-full bg-akzent text-grund px-2 text-xs">{t('UI-SUP-NEU')}</span>}
+          </span>
+          <span className="block text-sm muted">
+            {statusLabel} · {fmtDate(tk.createdAt)}
+          </span>
+        </span>
+        <span className="muted">{open ? '▾' : '›'}</span>
+      </button>
+      {open && (
+        <div className="px-3 pb-3 flex flex-col gap-2">
+          <div className="flex flex-col gap-2">
+            <Bubble mine text={tk.text} at={tk.createdAt} />
+            {tk.messages.map((m: any, i: number) => (
+              <Bubble key={i} mine={!m.fromTeam} text={m.text} at={m.at} />
+            ))}
+          </div>
+          {tk.dataRequests.map((r: any) => (
+            <div key={r.id} className={`rounded-lg border p-3 text-sm flex flex-col gap-2 ${r.status === 'offen' ? 'border-akzent' : 'border-linie'}`}>
+              <p className="font-semibold">{t('UI-SUP-FREIGABE-TITEL')}</p>
+              {r.status === 'offen' && <p>{t('UI-SUP-FREIGABE-ERKL', { tage: days })}</p>}
+              <ul className="list-disc pl-5">
+                {r.scope.map((sc: string) => (
+                  <li key={sc}>{t(`UI-SUP-BEREICH-${sc.toUpperCase()}`)}</li>
+                ))}
+              </ul>
+              <p>
+                <span className="muted">{t('UI-SUP-GRUND')}</span> {r.reason}
+              </p>
+              <p className="muted">{t(`UI-SUP-STATUS-${r.status}`, { bis: r.expiresAt ? fmtDate(r.expiresAt, true) : '' })}</p>
+              {r.status === 'offen' && (
+                <div className="flex gap-2">
+                  <button
+                    className="btn-primary flex-1"
+                    disabled={busy}
+                    onClick={() =>
+                      act(async () =>
+                        api.post(`/api/help/data-requests/${r.id}`, {
+                          decision: 'freigeben',
+                          diagnostics: r.scope.includes('diagnose') ? await collectDiagnostics() : undefined,
+                        }),
+                      )
+                    }
+                  >
+                    {t('UI-SUP-FREIGEBEN')}
+                  </button>
+                  <button className="btn-secondary flex-1" disabled={busy} onClick={() => act(() => api.post(`/api/help/data-requests/${r.id}`, { decision: 'ablehnen' }))}>
+                    {t('UI-SUP-ABLEHNEN')}
+                  </button>
+                </div>
+              )}
+              {r.status === 'freigegeben' && (
+                <button className="btn-secondary self-start" disabled={busy} onClick={() => act(() => api.post(`/api/help/data-requests/${r.id}/revoke`))}>
+                  {t('UI-SUP-WIDERRUFEN')}
+                </button>
+              )}
+            </div>
+          ))}
+          {tk.status === 'abgeschlossen' ? (
+            <p className="text-sm muted">{t('UI-SUP-ABGESCHLOSSEN')}</p>
+          ) : (
+            <>
+              <div className="flex gap-2 items-end">
+                <textarea
+                  className="input min-h-[3rem]"
+                  rows={2}
+                  placeholder={t('UI-SUP-ANTWORT-PLATZHALTER')}
+                  value={reply}
+                  maxLength={config?.params.ticketMax ?? 4000}
+                  onChange={(e) => setReply(e.target.value)}
+                  aria-label={t('UI-HILFE-ANTWORTEN')}
+                />
+                <button
+                  className="btn-primary"
+                  disabled={busy || !reply.trim()}
+                  onClick={() =>
+                    act(async () => {
+                      await api.post(`/api/help/tickets/${tk.id}/reply`, { text: reply });
+                      setReply('');
+                    })
+                  }
+                >
+                  {t('UI-APP-SENDEN')}
+                </button>
+              </div>
+              <Toggle
+                checked={tk.notifyEmail}
+                disabled={!me?.profile?.account?.hasEmail && !tk.notifyEmail}
+                onChange={(v) => act(() => api.patch(`/api/help/tickets/${tk.id}`, { notifyEmail: v }))}
+                label={t('UI-SUP-MAIL-HINWEIS-SCHALTER')}
+                hint={t('UI-SUP-NUR-APP')}
+              />
+            </>
+          )}
+        </div>
+      )}
+    </li>
+  );
+}
+
+function Bubble({ mine, text, at }: { mine: boolean; text: string; at: string }) {
+  return (
+    <div className={`max-w-[85%] rounded-2xl px-3 py-2 text-sm whitespace-pre-wrap ${mine ? 'self-end bg-akzent/15' : 'self-start bg-flaeche2'}`}>
+      <span className="block text-xs muted mb-0.5">
+        {mine ? t('UI-SUP-DU') : t('UI-SUP-TEAM')} · {fmtDate(at, true)}
+      </span>
+      {text}
+    </div>
+  );
+}
+
 export function Hilfe({ publicMode }: { publicMode?: boolean }) {
   const nav = useNavigate();
-  const { phase, config } = useApp();
+  const { phase, config, me } = useApp();
+  const [search] = useSearchParams();
   const loggedIn = phase === 'mitglied' && !publicMode;
+  // Issue #37: /ich/hilfe?vorgang=H-… öffnet den Vorgang, ?neu=1 gleich das Formular
+  const focus = search.get('vorgang');
   const [faq, setFaq] = useState<number | null>(null);
-  const [form, setForm] = useState(false);
+  const [form, setForm] = useState(search.get('neu') === '1');
+  const [notifyEmail, setNotifyEmail] = useState(false);
   const [category, setCategory] = useState<number | null>(null);
   const [danger, setDanger] = useState(false);
   const [text, setText] = useState('');
-  const [replyWay, setReplyWay] = useState<'app' | 'email'>(loggedIn ? 'app' : 'email');
   const [email, setEmail] = useState('');
   const [file, setFile] = useState<File | null>(null);
   const [done, setDone] = useState<string | null>(null);
@@ -1396,14 +1638,16 @@ export function Hilfe({ publicMode }: { publicMode?: boolean }) {
   const [lookup, setLookup] = useState('');
   const [lookupRes, setLookupRes] = useState<string | null>(null);
   const mine = useAsync(() => (loggedIn ? api.get('/api/help/tickets') : Promise.resolve({ tickets: [] })), [loggedIn, done]);
-  const [reply, setReply] = useState<Record<string, string>>({});
   const statusLabels = parts('ST-HLF-18');
   const statusIndex: Record<string, number> = { eingegangen: 0, in_bearbeitung: 1, beantwortet: 2, abgeschlossen: 3 };
 
   const submit = async () => {
     setErr(null);
     try {
-      const r = await api.post('/api/help/tickets', { category, text, replyWay, email: replyWay === 'email' && email ? email : undefined });
+      const r = await api.post(
+        '/api/help/tickets',
+        loggedIn ? { category, text, notifyEmail } : { category, text, replyWay: 'email', email: email || undefined },
+      );
       if (r.redirect === 'widerspruch') {
         setErr(t('ST-HLF-23'));
         return;
@@ -1451,34 +1695,10 @@ export function Hilfe({ publicMode }: { publicMode?: boolean }) {
             </button>
             {!loggedIn && <p className="text-sm muted mt-3">{t('ST-HLF-20')}</p>}
             {loggedIn && (mine.data?.tickets?.length ?? 0) > 0 && (
-              <Section title={t('UI-HILFE-MEINE')}>
+              <Section title={t('UI-SUP-POSTFACH')}>
                 <ul className="flex flex-col gap-2">
                   {mine.data!.tickets.map((tk: any) => (
-                    <li key={tk.id} className="card p-3">
-                      <p className="font-semibold">{tk.number}</p>
-                      <p className="text-sm muted">{statusLabels[statusIndex[tk.status]] ?? tk.status}</p>
-                      <p className="text-sm mt-1 whitespace-pre-wrap">{tk.text}</p>
-                      {tk.messages.map((m: any, i: number) => (
-                        <p key={i} className={`text-sm mt-2 whitespace-pre-wrap ${m.fromTeam ? 'border-l-2 border-akzent pl-2' : ''}`}>
-                          {m.text}
-                        </p>
-                      ))}
-                      {tk.status !== 'abgeschlossen' && (
-                        <div className="flex gap-2 mt-2">
-                          <input className="input" value={reply[tk.id] ?? ''} onChange={(e) => setReply({ ...reply, [tk.id]: e.target.value })} aria-label={t('UI-HILFE-ANTWORTEN')} />
-                          <button
-                            className="btn-secondary"
-                            onClick={async () => {
-                              await api.post(`/api/help/tickets/${tk.id}/reply`, { text: reply[tk.id] });
-                              setReply({ ...reply, [tk.id]: '' });
-                              mine.reload();
-                            }}
-                          >
-                            {t('UI-APP-SENDEN')}
-                          </button>
-                        </div>
-                      )}
-                    </li>
+                    <SupportTicket key={tk.id} tk={tk} statusLabel={statusLabels[statusIndex[tk.status]] ?? tk.status} initiallyOpen={tk.number === focus} onChange={mine.reload} />
                   ))}
                 </ul>
               </Section>
@@ -1548,19 +1768,23 @@ export function Hilfe({ publicMode }: { publicMode?: boolean }) {
                 <fieldset>
                   <legend className="label">{t('ST-HLF-10')}</legend>
                   {loggedIn ? (
-                    <Choice
-                      name="weg"
-                      value={replyWay}
-                      onChange={setReplyWay}
-                      options={[
-                        { value: 'app', label: t('ST-HLF-11') },
-                        { value: 'email', label: t('ST-HLF-12') },
-                      ]}
-                    />
+                    <>
+                      <p className="text-sm">{t('ST-HLF-11')}</p>
+                      <Toggle
+                        checked={notifyEmail}
+                        disabled={!me?.profile?.account?.hasEmail}
+                        onChange={setNotifyEmail}
+                        label={t('UI-SUP-MAIL-HINWEIS-SCHALTER')}
+                        hint={me?.profile?.account?.hasEmail ? t('UI-SUP-MAIL-HINWEIS-ERKL') : t('UI-NF-EMAIL-FEHLT')}
+                      />
+                      <p className="text-sm muted">{t('UI-SUP-NUR-APP')}</p>
+                    </>
                   ) : (
-                    <p className="text-sm muted">{t('ST-HLF-22')}</p>
+                    <>
+                      <p className="text-sm muted">{t('ST-HLF-22')}</p>
+                      <Field label={t('UI-KONTO-EMAIL')} type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+                    </>
                   )}
-                  {(replyWay === 'email' || !loggedIn) && <Field label={t('UI-KONTO-EMAIL')} type="email" value={email} onChange={(e) => setEmail(e.target.value)} />}
                 </fieldset>
                 <p className="text-sm muted">{t('ST-HLF-13')}</p>
                 <p className="text-sm muted">{t('ST-HLF-14')}</p>

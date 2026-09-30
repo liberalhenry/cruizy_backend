@@ -845,11 +845,11 @@
  },
  "ST-KON-29": {
   "s": "ENTWURF",
-  "t": "Sicherheitsmitteilungen stehen nur hier in der App, nie im Text einer E-Mail oder SMS."
+  "t": "Sicherheitsmitteilungen stehen nur hier in der App, nie im Text einer E-Mail oder einer Telegram-Nachricht."
  },
  "ST-KON-30": {
   "s": "ENTWURF",
-  "t": "Per E-Mail oder SMS melden wir uns nur, wenn du es angestoßen hast oder nach einem Sicherheitsvorfall — ohne unseren Namen im Betreff oder in der SMS."
+  "t": "Per E-Mail oder Telegram melden wir uns nur, wenn du es angestoßen hast, es eingeschaltet hast oder nach einem Sicherheitsvorfall — ohne unseren Namen im Betreff oder in der Nachricht."
  },
  "ST-KON-31": {
   "s": "ENTWURF",
@@ -1377,7 +1377,7 @@
  },
  "ST-SIC-31": {
   "s": "ENTWURF",
-  "t": "In der Web-App erkennt das Telefon kein Tippen auf die Rückseite. Tippe stattdessen dreimal schnell auf den Titel oben oder drücke am Rechner zweimal die Escape-Taste. Zurück kommst du mit deiner PIN."
+  "t": "In der Web-App erkennt das Telefon kein Tippen auf die Rückseite. Tippe stattdessen dreimal schnell auf den Titel oben oder drücke am Rechner zweimal die Escape-Taste. Zurück geht es genauso — dreimal oben tippen oder zweimal Escape — und dann deine PIN."
  },
  "ST-SIC-32": {
   "s": "ENTWURF",

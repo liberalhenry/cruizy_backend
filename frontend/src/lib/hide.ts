@@ -91,7 +91,8 @@ export function resetHideState() {
 export function installHideTriggers(windowMs: number) {
   let escAt = 0;
   const onKey = (e: KeyboardEvent) => {
-    if (e.key !== 'Escape') return;
+    // versteckt: zweimal Escape führt zurück (Issue #38, in der Tarnansicht) — nicht erneut verstecken
+    if (e.key !== 'Escape' || isHidden()) return;
     const now = Date.now();
     if (now - escAt < windowMs) hideNow();
     escAt = now;

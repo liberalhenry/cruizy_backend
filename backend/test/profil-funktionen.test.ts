@@ -1,4 +1,5 @@
 /** Vollständigkeit (#29), Profilbesucher (#27), Test-Erinnerung (#25). */
+import { flushForwards } from '../src/services/notice-forward.js';
 import { describe, expect, it } from 'vitest';
 import { setParam } from '../src/config/params.js';
 import { one, q } from '../src/db/pool.js';
@@ -137,6 +138,8 @@ describe('Test-Erinnerung (#25)', () => {
     await m.c.post('/api/push/subscribe', { endpoint: `https://push.example.invalid/${m.id}`, keys: { p256dh: 'x', auth: 'y' } }).catch(() => null);
     await q(`INSERT INTO push_subscriptions (account_id, endpoint, p256dh, auth) VALUES ($1, $2, 'x', 'y') ON CONFLICT DO NOTHING`, [m.id, `https://push.example.invalid/h/${m.id}`]);
     await sendHealthReminders();
+    // die Push-Mitteilung geht ohne Warten hinaus — erst abwarten, dann prüfen
+    await flushForwards();
     const push = [...sentPushes].reverse().find((x) => x.accountId === m.id);
     expect(push!.payload.title).toBe('Du hast eine Erinnerung.');
     const notice = await one(`SELECT title, body, ref FROM notices WHERE account_id = $1 AND kind = 'test_erinnerung'`, [m.id]);

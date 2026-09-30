@@ -31,6 +31,8 @@ import { closeReview } from '../modules/mod/idcheck.js';
 import { discord } from '../services/discord.js';
 import { sendHealthReminders } from '../modules/health.js';
 import { recomputeResponseRates } from '../services/response-rate.js';
+import { purgeTelegram } from '../services/telegram.js';
+import { expireDataRequests } from '../services/support.js';
 
 interface Job {
   name: string;
@@ -310,6 +312,8 @@ const JOBS: Job[] = [
   { name: 'metrics_archive', everyS: () => 6 * HOUR, run: archiveMonth },
   { name: 'weekly_summary', everyS: () => 6 * HOUR, run: weekly },
   { name: 'params', everyS: () => MIN, run: reloadParams },
+  { name: 'telegram', everyS: () => 10 * MIN, run: purgeTelegram },
+  { name: 'support_requests', everyS: () => 10 * MIN, run: expireDataRequests },
 ];
 
 const lastRun = new Map<string, number>();

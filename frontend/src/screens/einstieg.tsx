@@ -5,6 +5,7 @@ import { Banner, BottomBar, Choice, Field, Header, Icon, Page, Sheet } from '../
 import { Tile, TileSkeletonGrid, type TileData } from '../components/tile';
 import { api, ApiError, errText } from '../lib/api';
 import { useApp } from '../lib/app';
+import { TelegramHint } from '../components/telegram';
 import { INTENTION_TEXT, parts, t } from '../lib/texts';
 import { isIosSafariNotInstalled } from '../lib/push';
 
@@ -193,6 +194,8 @@ export function Konto() {
   const [err, setErr] = useState<string | null>(null);
   const [whyOpen, setWhyOpen] = useState(false);
   const [sentAt, setSentAt] = useState(0);
+  // Issue #32: Code an eine Telefonnummer → per Telegram
+  const [telegram, setTelegram] = useState<string | null | undefined>(undefined);
   const [now, setNow] = useState(Date.now());
   const pwMin = config?.params.pwMin ?? 12;
   const resendS = config?.params.codeResendS ?? 60;
@@ -225,11 +228,13 @@ export function Konto() {
         const r = await api.post('/api/auth/login', { identifier: email, password });
         if (r.next === 'code' || r.next === 'geraet') {
           setToken(r.token);
+          setTelegram('telegram' in r ? r.telegram : undefined);
           setStep(r.next === 'code' ? 'code' : 'geraet');
           setSentAt(Date.now());
         } else await refreshMe();
       } else {
-        await api.post('/api/auth/reset/request', { identifier: email });
+        const r = await api.post('/api/auth/reset/request', { identifier: email });
+        setTelegram(r.weg === 'telegram' ? r.telegram : undefined);
         setStep('gesendet');
       }
     });
@@ -316,13 +321,26 @@ export function Konto() {
         {(step === 'code' || step === 'geraet') && (
           <div className="flex flex-col gap-3">
             <p>{step === 'geraet' ? t('UI-KONTO-GERAETECODE') : t('UI-KONTO-CODE-GESENDET')}</p>
+            {telegram !== undefined && <TelegramHint url={telegram} />}
             <CodeInput value={code} onChange={setCode} />
             <button className="btn-ghost self-start px-0" disabled={now - sentAt < resendS * 1000 || busy} onClick={resend}>
               {now - sentAt < resendS * 1000 ? t('UI-KONTO-NEU-SENDEN-IN', { s: Math.ceil((resendS * 1000 - (now - sentAt)) / 1000) }) : t('UI-KONTO-NEU-SENDEN')}
             </button>
           </div>
         )}
-        {step === 'gesendet' && <Banner kind="ok">{t('UI-KONTO-VERGESSEN-GESENDET')}</Banner>}
+        {step === 'gesendet' && (
+          <div className="flex flex-col gap-3">
+            <Banner kind="ok">{t('UI-KONTO-VERGESSEN-GESENDET')}</Banner>
+            {telegram !== undefined && (
+              <>
+                <TelegramHint url={telegram} />
+                <Link className="btn-primary" to="/passwort">
+                  {t('UI-KONTO-CODE-EINGEBEN')}
+                </Link>
+              </>
+            )}
+          </div>
+        )}
       </Page>
       <BottomBar>
         {step === 'form' && (

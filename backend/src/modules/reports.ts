@@ -115,7 +115,7 @@ async function snapshotItems(reporter: string, context: string, contextId: strin
   return out;
 }
 
-async function snapshotProfile(target: string) {
+async function snapshotProfile(target: string, withDate = false) {
   const pr = await one(`SELECT name, free_text FROM profiles WHERE account_id = $1`, [target]);
   const photos = await q(`SELECT id, original_file FROM photos WHERE account_id = $1 AND status = 'approved' ORDER BY position LIMIT 8`, [target]);
   const out = [
@@ -123,6 +123,14 @@ async function snapshotProfile(target: string) {
   ];
   for (const ph of photos) {
     out.push({ kind: 'profilfoto', snapshot: null as unknown as Buffer, sealed: await copyFile('zone1-original', ph.original_file, 'sealed'), ref: ph.id, owner: target });
+  }
+  // Issue #33: bei einer Date-Meldung auch die Date-Fotos als Kopie im Fall
+  if (withDate) {
+    const datePhotos = await q(`SELECT id, file FROM date_photos WHERE account_id = $1 AND status = 'approved' ORDER BY position LIMIT 6`, [target]);
+    for (const ph of datePhotos) {
+      const sealed = await copyFile('zone1-public', ph.file, 'sealed').catch(() => null);
+      if (sealed) out.push({ kind: 'datefoto', snapshot: null as unknown as Buffer, sealed, ref: ph.id, owner: target });
+    }
   }
   return out;
 }
@@ -221,7 +229,7 @@ export default async function reportRoutes(app: FastifyInstance) {
     } else if ((b.context === 'profil' || b.context === 'date') && target) {
       const exists = await one(`SELECT 1 FROM profiles WHERE account_id = $1`, [target]);
       if (!exists) throw notFound();
-      items = (await snapshotProfile(target)) as typeof items;
+      items = (await snapshotProfile(target, b.context === 'date')) as typeof items;
     } else if (b.context === 'ereignis' && b.contextId) {
       // Issue #16: Veranstaltung melden — betroffen ist, wer sie eingestellt hat
       const e = await one(`SELECT host_id FROM events WHERE id = $1`, [b.contextId]);

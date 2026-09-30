@@ -11,6 +11,7 @@ import { initPush } from './services/push.js';
 import { startupProblems, testModeProblems } from './startup.js';
 import { discord } from './services/discord.js';
 import { appVersion } from './lib/version.js';
+import { startTelegram, stopTelegram } from './services/telegram.js';
 
 async function main() {
   const e = env();
@@ -35,6 +36,8 @@ async function main() {
   const app = await buildApp();
   await app.listen({ port: e.PORT, host: e.HOST });
   await startJobs();
+  // Issue #32: Telegram-Bot (Abholen oder Webhook)
+  await startTelegram();
   discord('system', {
     title: 'Server gestartet',
     level: 'ok',
@@ -48,6 +51,7 @@ async function main() {
   const shutdown = async (sig: string) => {
     console.log(`${sig} — fahre herunter`);
     stopJobs();
+    stopTelegram();
     await app.close().catch(() => {});
     await closeDb().catch(() => {});
     process.exit(0);

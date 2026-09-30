@@ -1,5 +1,5 @@
 /**
- * Einmalcodes per E-Mail oder SMS (FV-13, Z-10).
+ * Einmalcodes per E-Mail oder — an Mobilnummern — über den Telegram-Bot (FV-13, Z-10, Issue #32).
  * Codes liegen nur als Hash vor, gelten P-CODE-GUELTIG und P-CODE-VERSUCHE Versuche.
  */
 import { p } from '../config/params.js';
@@ -7,7 +7,7 @@ import { one, q, type Queryable, db } from '../db/pool.js';
 import { codeHash, safeEqual, sixDigitCode, blindIndex } from '../lib/crypto.js';
 import { t } from '../lib/texts.js';
 import { sendMail } from '../providers/mail.js';
-import { sendSms, type SmsReason } from '../providers/sms.js';
+import { sendToPhone, type PhoneReason } from './telegram.js';
 import { hit } from '../lib/rate.js';
 
 export type CodePurpose = 'verify_email' | 'verify_phone' | 'login_phone' | 'reset' | 'add_email' | 'add_phone';
@@ -77,7 +77,7 @@ export async function mayMail(target: string, purpose: string, windowS: number):
   return true;
 }
 
-/** P-SMS-SPERRE: 60 s Abstand, höchstens 5 Codes am Tag je Nummer (AK-Z10-06). */
+/** P-SMS-SPERRE: 60 s Abstand, höchstens 5 Codes am Tag je Nummer (AK-Z10-06) — gilt für Telegram weiter. */
 export async function maySms(phone: string): Promise<boolean> {
   const { abstand, proTag } = p('P-SMS-SPERRE');
   const th = blindIndex('send', phone);
@@ -103,9 +103,10 @@ export async function mailCode(to: string, code: string) {
   });
 }
 
-export async function smsCode(to: string, code: string, reason: SmsReason) {
+/** Code an eine Mobilnummer über den Telegram-Bot (Issue #32). Ist die Nummer nicht verbunden, wartet er dort. */
+export async function phoneCode(to: string, code: string, reason: PhoneReason) {
   if (!(await maySms(to))) return false;
-  await sendSms({ to, text: t('ST-SMS-02', { code }), reason });
+  await sendToPhone(to, t('ST-SMS-02', { code }), reason);
   return true;
 }
 

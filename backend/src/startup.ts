@@ -12,7 +12,9 @@ export function startupProblems(): string[] {
   const out: string[] = [];
   if (e.AGE_PROVIDER === 'mock') out.push('Altersprüfung läuft über die Attrappe (AGE_PROVIDER=mock) — kein Prüfpartner angebunden.');
   if (!e.SMTP_URL) out.push('Kein Mailversand eingerichtet (SMTP_URL leer) — Mails landen nur im Protokoll.');
-  if (e.SMS_PROVIDER === 'log') out.push('Kein SMS-Versand eingerichtet (SMS_PROVIDER=log).');
+  // Issue #32: Codes an Mobilnummern gehen über den Telegram-Bot
+  if (e.TELEGRAM_MODE === 'log' || !e.TELEGRAM_BOT_TOKEN || !e.TELEGRAM_BOT_NAME) out.push('Kein Telegram-Bot eingerichtet (TELEGRAM_MODE, TELEGRAM_BOT_TOKEN, TELEGRAM_BOT_NAME) — Codes an Mobilnummern landen nur im Protokoll.');
+  if (e.TELEGRAM_MODE === 'webhook' && e.TELEGRAM_WEBHOOK_SECRET.length < 16) out.push('TELEGRAM_MODE=webhook braucht TELEGRAM_WEBHOOK_SECRET (mindestens 16 Zeichen).');
   if (e.CLASSIFIER === 'mock-allow') out.push('Klassifikator-Attrappe gibt alles frei (CLASSIFIER=mock-allow).');
   // Issue #19: die Attrappe der Gesichtsverifizierung gibt jedem Selfie recht
   if (p('P-DATE-AKTIV') && e.DATE_FACE_PROVIDER === 'stub') out.push('Cruizy Date: Gesichtsverifizierung läuft über die Attrappe (DATE_FACE_PROVIDER=stub) — Anbieter anbinden oder DATE_FACE_PROVIDER=none.');

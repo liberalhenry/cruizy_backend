@@ -1,5 +1,11 @@
-# Tests bei jedem Push und Pull Request. Auf main zusätzlich: ist die Version in VERSION neu,
-# entstehen Tag vX.Y.Z und ein GitHub-Release mit dem Abschnitt aus CHANGELOG.md (Issue #5).
+# Tests bei jedem Push und Pull Request. Auf main zusätzlich: nach jedem gemergten Pull Request entsteht
+# ein Release — Tag vX.Y.Z und GitHub-Release mit dem Abschnitt aus CHANGELOG.md (Issue #5).
+#   * Hat der Pull Request die Version in VERSION schon erhöht, gilt genau diese.
+#   * Sonst erhöht der Workflow sie selbst und legt die Änderung als Commit auf main ab (VERSION,
+#     package.json, CHANGELOG.md — der Knopf „Aktualisierung“ prüft, dass VERSION zum Tag passt).
+#     Stufe über ein Label am Pull Request: major, minor oder patch (ohne Label: patch);
+#     kein-release lässt ihn aus. Stand nichts unter „Unveröffentlicht“, steht der Titel im Changelog.
+#   * Direkte Pushes auf main ohne Pull Request: Release nur, wenn VERSION neu ist.
 # Der Knopf „Aktualisierung“ im Werkzeug spielt genau diese Releases ein.
 name: CI
 
@@ -63,21 +69,66 @@ jobs:
     runs-on: ubuntu-24.04
     permissions:
       contents: write
+      pull-requests: read
+    # Releases nacheinander — zwei schnelle Merges dürfen sich nicht dieselbe Nummer nehmen
+    concurrency:
+      group: release-main
+      cancel-in-progress: false
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: main
           fetch-depth: 0
-      - name: Release anlegen, wenn die Version neu ist
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Release anlegen (nach jedem gemergten Pull Request)
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          set -euo pipefail
+          # Ist main schon weiter, übernimmt der Lauf des neueren Commits — der enthält diesen mit.
+          if [ "$(git rev-parse HEAD)" != "$GITHUB_SHA" ]; then
+            echo "main ist schon weiter als $GITHUB_SHA — der nächste Lauf legt das Release an."
+            exit 0
+          fi
           V="$(tr -d '[:space:]' < VERSION)"
+          TARGET="$GITHUB_SHA"
+          # zu welchem gemergten Pull Request gehört dieser Commit?
+          PR_NUMBER="$(gh api "repos/$GITHUB_REPOSITORY/commits/$GITHUB_SHA/pulls" --jq '[.[] | select(.merged_at != null)][0].number // empty')"
+          if git rev-parse -q --verify "refs/tags/v$V" >/dev/null; then
+            if [ -z "$PR_NUMBER" ]; then
+              echo "v$V ist schon veröffentlicht und kein gemergter Pull Request gehört zu diesem Commit — nichts zu tun."
+              exit 0
+            fi
+            LABELS="$(gh api "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER" --jq '[.labels[].name | ascii_downcase] | join(",")')"
+            PR_TITLE="$(gh api "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER" --jq '.title')"
+            case ",$LABELS," in
+              *,kein-release,*) echo "Label kein-release — kein Release für #$PR_NUMBER."; exit 0 ;;
+              *,major,*) BUMP=major ;;
+              *,minor,*) BUMP=minor ;;
+              *) BUMP=patch ;;
+            esac
+            node scripts/version.mjs "$BUMP" --note "$PR_TITLE (#$PR_NUMBER)"
+            node scripts/version.mjs --check
+            V="$(tr -d '[:space:]' < VERSION)"
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add VERSION CHANGELOG.md backend/package.json backend/package-lock.json frontend/package.json frontend/package-lock.json
+            git commit -m "Version $V (#$PR_NUMBER) [skip ci]"
+            if ! git push origin HEAD:main; then
+              echo "::error::Versionscommit ließ sich nicht auf main schieben (Schutzregel für main?). Der Workflow braucht dafür Schreibrecht auf main."
+              exit 1
+            fi
+            TARGET="$(git rev-parse HEAD)"
+          fi
           if git rev-parse -q --verify "refs/tags/v$V" >/dev/null; then
             echo "v$V ist schon veröffentlicht — nichts zu tun."
             exit 0
           fi
           awk -v v="$V" 'index($0, "## [" v "]") == 1 {f=1; next} f && /^## \[/ {exit} f {print}' CHANGELOG.md > notes.md
           [ -s notes.md ] || echo "Siehe CHANGELOG.md" > notes.md
+          if [ -n "$PR_NUMBER" ]; then printf '\nPull Request: #%s\n' "$PR_NUMBER" >> notes.md; fi
           PRE=""
           case "$V" in *-*) PRE="--prerelease" ;; esac
-          gh release create "v$V" --target "$GITHUB_SHA" --title "v$V" --notes-file notes.md $PRE
+          gh release create "v$V" --target "$TARGET" --title "v$V" --notes-file notes.md $PRE

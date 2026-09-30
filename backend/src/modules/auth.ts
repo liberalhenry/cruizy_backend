@@ -46,12 +46,12 @@ import { AppError, bad, tooMany } from '../lib/errors.js';
 import { body, ipKey } from '../lib/http.js';
 import { hit } from '../lib/rate.js';
 import { t } from '../lib/texts.js';
-import { checkCode, issueCode, lastCodeAt, mailCode, mayMail, smsCode } from '../services/codes.js';
+import { checkCode, issueCode, lastCodeAt, mailCode, mayMail, phoneCode } from '../services/codes.js';
 import { createNotice } from '../services/notify.js';
 import { sendMail } from '../providers/mail.js';
 import { discord } from '../services/discord.js';
 import { sendPush } from '../services/push.js';
-import { sendSms } from '../providers/sms.js';
+import { botLink, sendToPhone } from '../services/telegram.js';
 import { metric } from '../services/metrics.js';
 import { closeAllFor } from '../services/hub.js';
 
@@ -176,7 +176,7 @@ export default async function authRoutes(app: FastifyInstance) {
     if (!phone) throw bad('UI-NUMMER-UNGUELTIG', {}, 'nummer_ungueltig');
     const h = blindIndex('phone', phone);
     const existing = await one(`SELECT id, phone_verified_at FROM accounts WHERE phone_hash = $1`, [h]);
-    if (existing && existing.phone_verified_at) return { token: pending(null, 'verify_phone'), next: 'code' };
+    if (existing && existing.phone_verified_at) return { token: pending(null, 'verify_phone'), next: 'code', telegram: botLink() };
     const pwHash = await hashPassword(b.password);
     let accountId: string;
     if (existing) {
@@ -191,8 +191,8 @@ export default async function authRoutes(app: FastifyInstance) {
       accountId = row!.id;
     }
     const code = await issueCode({ accountId, purpose: 'verify_phone' });
-    await smsCode(phone, code, 'anlegen');
-    return { token: pending(accountId, 'verify_phone'), next: 'code' };
+    await phoneCode(phone, code, 'anlegen');
+    return { token: pending(accountId, 'verify_phone'), next: 'code', telegram: botLink() };
   });
 
   app.post('/api/auth/verify', async (req, reply) => {
@@ -225,7 +225,7 @@ export default async function authRoutes(app: FastifyInstance) {
     if (!acc) return { ok: true };
     const code = await issueCode({ accountId: tok.a, purpose: tok.k });
     if (tok.k === 'verify_email') await mailCode(decStr('pii', acc.email_enc, 'email')!, code);
-    else await smsCode(decStr('pii', acc.phone_enc, 'phone')!, code, tok.k === 'login_phone' ? 'neues_geraet' : 'anlegen');
+    else await phoneCode(decStr('pii', acc.phone_enc, 'phone')!, code, tok.k === 'login_phone' ? 'neues_geraet' : 'anlegen');
     return { ok: true };
   });
 
@@ -249,16 +249,16 @@ export default async function authRoutes(app: FastifyInstance) {
     if (found.kind === 'phone') {
       if (!acc.phone_verified_at) {
         const code = await issueCode({ accountId: acc.id, purpose: 'verify_phone' });
-        await smsCode(found.value, code, 'anlegen');
-        return { next: 'code', token: pending(acc.id, 'verify_phone') };
+        await phoneCode(found.value, code, 'anlegen');
+        return { next: 'code', token: pending(acc.id, 'verify_phone'), telegram: botLink() };
       }
-      // Z-10: SMS-Code bei der Anmeldung auf einem neuen Gerät
+      // Z-10: Code bei der Anmeldung auf einem neuen Gerät — per Telegram (Issue #32)
       const d = deviceId(req, reply);
       const known = await one(`SELECT 1 FROM known_devices WHERE account_id = $1 AND device_hash = $2`, [acc.id, deviceHash(d)]);
       if (!known) {
         const code = await issueCode({ accountId: acc.id, purpose: 'login_phone' });
-        await smsCode(found.value, code, 'neues_geraet');
-        return { next: 'geraet', token: pending(acc.id, 'login_phone') };
+        await phoneCode(found.value, code, 'neues_geraet');
+        return { next: 'geraet', token: pending(acc.id, 'login_phone'), telegram: botLink() };
       }
     }
     return finishLogin(req, reply, acc.id);
@@ -306,11 +306,11 @@ export default async function authRoutes(app: FastifyInstance) {
         }
       } else if (found.kind === 'phone' && found.row.phone_verified_at) {
         const code = await issueCode({ accountId: found.row.id, purpose: 'reset' });
-        await smsCode(found.value, code, 'wiederherstellung');
+        await phoneCode(found.value, code, 'wiederherstellung');
       }
     }
     // gleiche Antwort in jedem Fall
-    return { ok: true, weg: found.kind === 'phone' ? 'sms' : 'mail' };
+    return { ok: true, weg: found.kind === 'phone' ? 'telegram' : 'mail', telegram: found.kind === 'phone' ? botLink() : null };
   });
 
   app.post('/api/auth/reset/complete', async (req, reply) => {
@@ -553,9 +553,9 @@ export default async function authRoutes(app: FastifyInstance) {
     const taken = await one(`SELECT id FROM accounts WHERE phone_hash = $1 AND id <> $2`, [h, a.id]);
     if (!taken) {
       const code = await issueCode({ accountId: a.id, purpose: 'add_phone', targetHash: h, targetEnc: encStr('pii', phone, 'phone') });
-      await smsCode(phone, code, 'anlegen');
+      await phoneCode(phone, code, 'anlegen');
     }
-    return { ok: true };
+    return { ok: true, telegram: botLink() };
   });
 
   app.post('/api/auth/add/confirm', async (req) => {
@@ -664,6 +664,7 @@ export default async function authRoutes(app: FastifyInstance) {
   });
 }
 
-export async function smsArt34(phone: string) {
-  await sendSms({ to: phone, text: t('ST-SMS-01'), reason: 'art34' });
+/** Art. 34 DSGVO: Hinweis an eine Mobilnummer — über den Telegram-Bot (Issue #32). */
+export async function phoneArt34(phone: string) {
+  await sendToPhone(phone, t('ST-SMS-01'), 'art34');
 }

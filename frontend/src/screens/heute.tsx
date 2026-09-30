@@ -2,6 +2,10 @@
  * S40/S41 Heute (Issue #15): Veranstaltungen mit Umkreis, Zeitraum, Kategorien, „bald“ oder „nah“,
  * empfohlene Veranstaltungen von Cruizy, heute geöffnete Orte, Karte (Issue #17).
  * S42 Ort · S43 Veranstaltung mit Zusage, Anfrage, Absagefrist, Chat mit dem Veranstalter (Issue #16).
+ *
+ * Issue #39: Aufbau wie „Nähe“ und „Chats“ — Kopfzeile mit Symbolen rechts (Liste/Karte, Standort,
+ * Eintragen), darunter eine Reihe Chips (Umkreis, Filter mit Zähler, Sortierung, aktive Filter zum
+ * Entfernen); Zeitraum und Kategorien im Filterblatt; nur der eine kühle Akzent, kein Gold.
  */
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
@@ -132,12 +136,14 @@ function FeaturedCard({ e }: { e: any }) {
   const nav = useNavigate();
   const cats = useCategories();
   return (
-    <button className="relative w-full h-56 rounded-2xl overflow-hidden text-left border border-[#f5c451]/40 shadow-lg" onClick={() => nav(`/ereignisse/${e.id}`)}>
+    <button className="relative w-full h-56 rounded-xl2 overflow-hidden text-left border border-akzent/40" onClick={() => nav(`/ereignisse/${e.id}`)}>
       {e.cover ? <img src={e.cover} alt="" className="absolute inset-0 w-full h-full object-cover" /> : <span className="absolute inset-0 bg-gradient-to-br from-akzentdunkel to-grund" />}
       <span className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
-      <span className="absolute top-3 left-3 rounded-full bg-[#f5c451] text-grund text-xs font-semibold px-2.5 py-1">★ {t('UI-VA-EMPFOHLEN')}</span>
-      <span className="absolute top-3 right-3 rounded-lg bg-black/60 px-2 py-1 text-center leading-tight">
-        <span className="block text-[11px] uppercase text-[#f5c451]">{new Date(e.startsAt).toLocaleDateString('de-DE', { month: 'short' }).replace('.', '')}</span>
+      <span className="absolute top-3 left-3 rounded-full bg-akzent text-grund text-xs font-semibold px-2.5 py-1 inline-flex items-center gap-1">
+        <Icon name="star" className="w-3.5 h-3.5" /> {t('UI-VA-EMPFOHLEN')}
+      </span>
+      <span className="absolute top-3 right-3 rounded-lg bg-grund/80 border border-linie px-2 py-1 text-center leading-tight">
+        <span className="block text-[11px] uppercase text-akzent">{new Date(e.startsAt).toLocaleDateString('de-DE', { month: 'short' }).replace('.', '')}</span>
         <span className="block text-lg font-bold">{new Date(e.startsAt).getDate()}</span>
       </span>
       <span className="absolute bottom-0 inset-x-0 p-4">
@@ -181,10 +187,34 @@ function RadiusSheet({ open, onClose, value, onPick }: { open: boolean; onClose:
   );
 }
 
-function CategorySheet({ open, onClose, value, onChange }: { open: boolean; onClose: () => void; value: string[]; onChange: (v: string[]) => void }) {
+/** Filterblatt (Issue #39): Zeitraum und Kategorien an einem Ort — wie der Filter in „Nähe“. */
+function FilterSheet({
+  open,
+  onClose,
+  value,
+  onChange,
+  when,
+  onWhen,
+}: {
+  open: boolean;
+  onClose: () => void;
+  value: string[];
+  onChange: (v: string[]) => void;
+  when: When;
+  onWhen: (w: When) => void;
+}) {
   const cats = useCategories();
   return (
-    <Sheet open={open} onClose={onClose} title={t('UI-VA-KATEGORIEN')}>
+    <Sheet open={open} onClose={onClose} title={t('UI-FILTER')}>
+      <h3 className="text-sm uppercase tracking-wide muted mb-2">{t('UI-HEUTE-ZEITRAUM')}</h3>
+      <div className="flex flex-wrap gap-2 mb-5" role="radiogroup" aria-label={t('UI-HEUTE-ZEITRAUM')}>
+        {WHEN.map((w) => (
+          <button key={w} role="radio" aria-checked={when === w} className={`chip min-h-tap ${when === w ? 'border-akzent text-akzent bg-akzent/10' : ''}`} onClick={() => onWhen(w)}>
+            {t(`UI-HEUTE-WANN-${w.toUpperCase()}`)}
+          </button>
+        ))}
+      </div>
+      <h3 className="text-sm uppercase tracking-wide muted mb-2">{t('UI-VA-KATEGORIEN')}</h3>
       <div className="flex flex-wrap gap-2">
         {cats.list.map((c) => {
           const on = value.includes(c.key);
@@ -201,8 +231,14 @@ function CategorySheet({ open, onClose, value, onChange }: { open: boolean; onCl
         })}
       </div>
       <div className="flex gap-2 mt-4">
-        <button className="btn-secondary flex-1" onClick={() => onChange([])}>
-          {t('UI-HEUTE-ALLE-KATEGORIEN')}
+        <button
+          className="btn-secondary flex-1"
+          onClick={() => {
+            onChange([]);
+            onWhen('alle');
+          }}
+        >
+          {t('UI-FILTER-ALLE-ENTFERNEN')}
         </button>
         <button className="btn-primary flex-1" onClick={onClose}>
           {t('UI-APP-ERLEDIGT')}
@@ -224,7 +260,7 @@ export function Heute() {
   const [when, setWhen] = useState<When>(() => readPref('heute-wann', 'alle'));
   const [cats, setCats] = useState<string[]>(() => readPref('heute-kategorien', []));
   const [radius, setRadius] = useState<number | null>(() => readPref('heute-umkreis', null));
-  const [sheet, setSheet] = useState<'umkreis' | 'kategorien' | 'ort' | null>(null);
+  const [sheet, setSheet] = useState<'umkreis' | 'filter' | 'ort' | null>(null);
   const [today, setToday] = useState<any | null>(null);
   const [list, setList] = useState<any | null>(null);
   const [more, setMore] = useState<any[]>([]);
@@ -295,26 +331,34 @@ export function Heute() {
     return out;
   }, [events, sort]);
 
+  const catInfo = useCategories();
+  const activeFilters = cats.length + (when !== 'alle' ? 1 : 0);
+  // Issue #39: eine Chip-Reihe wie in „Nähe“ — aktive Filter lassen sich einzeln entfernen
   const filterBar = (
-    <div className="scroll-x flex gap-2 px-4 pb-2">
-      <button className={`chip min-h-tap shrink-0 ${radius ? 'border-akzent text-akzent' : ''}`} onClick={() => setSheet('umkreis')} aria-label={t('UI-HEUTE-UMKREIS')}>
+    <div className="scroll-x flex items-center gap-2 px-4 pb-2">
+      <button className={`chip min-h-tap ${radius ? 'border-akzent text-akzent' : ''}`} onClick={() => setSheet('umkreis')} aria-label={t('UI-HEUTE-UMKREIS')}>
         <Icon name="pin" className="w-4 h-4" />
-        {effRadius >= 1000 ? t('UI-HEUTE-DACH') : fmtKm(effRadius)} ▾
+        {effRadius >= 1000 ? t('UI-HEUTE-DACH') : fmtKm(effRadius)}
       </button>
-      <button className={`chip min-h-tap shrink-0 ${cats.length ? 'border-akzent text-akzent' : ''}`} onClick={() => setSheet('kategorien')}>
+      <button className={`chip min-h-tap ${activeFilters ? 'border-akzent text-akzent' : ''}`} onClick={() => setSheet('filter')}>
         <Icon name="filter" className="w-4 h-4" />
-        {cats.length ? t('UI-HEUTE-KATEGORIEN-N', { zahl: cats.length }) : t('UI-VA-KATEGORIEN')} ▾
+        {t('UI-FILTER')}
+        {activeFilters > 0 && <span className="rounded-full bg-akzent text-grund px-1.5 text-xs">{activeFilters}</span>}
       </button>
       {view === 'liste' && (
-        <button className="chip min-h-tap shrink-0" onClick={() => setSort(sort === 'bald' ? 'naehe' : 'bald')} aria-label={t('UI-HEUTE-SORTIERUNG')}>
+        <button className="chip min-h-tap" onClick={() => setSort(sort === 'bald' ? 'naehe' : 'bald')} aria-label={t('UI-HEUTE-SORTIERUNG')}>
           <Icon name="sort" className="w-4 h-4" />
           {t(sort === 'bald' ? 'UI-HEUTE-BALD' : 'UI-HEUTE-NAH')}
         </button>
       )}
-      <span className="w-px bg-linie shrink-0 my-1" />
-      {WHEN.map((w) => (
-        <button key={w} aria-pressed={when === w} className={`chip min-h-tap shrink-0 ${when === w ? 'border-akzent text-akzent bg-akzent/10' : ''}`} onClick={() => setWhen(w)}>
-          {t(`UI-HEUTE-WANN-${w.toUpperCase()}`)}
+      {when !== 'alle' && (
+        <button className="chip min-h-tap border-akzent" onClick={() => setWhen('alle')} aria-label={`${t('UI-FILTER-ENTFERNEN')}: ${t(`UI-HEUTE-WANN-${when.toUpperCase()}`)}`}>
+          {t(`UI-HEUTE-WANN-${when.toUpperCase()}`)} ✕
+        </button>
+      )}
+      {cats.map((c) => (
+        <button key={c} className="chip min-h-tap border-akzent" onClick={() => setCats(cats.filter((x) => x !== c))} aria-label={`${t('UI-FILTER-ENTFERNEN')}: ${catInfo.label(c)}`}>
+          {catInfo.icon(c)} {catInfo.label(c)} ✕
         </button>
       ))}
     </div>
@@ -326,32 +370,28 @@ export function Heute() {
         title={t('ST-HEU-01')}
         right={
           <>
+            <button
+              className="btn-ghost px-2"
+              onClick={() => setView(view === 'liste' ? 'karte' : 'liste')}
+              aria-label={t(view === 'liste' ? 'UI-HEUTE-KARTE' : 'UI-HEUTE-ENTDECKEN')}
+              aria-pressed={view === 'karte'}
+            >
+              <Icon name={view === 'liste' ? 'map' : 'list'} />
+            </button>
             <LocationChip onOpen={() => setSheet('ort')} />
             <button className="btn-ghost px-2" onClick={() => nav('/veranstalter')} aria-label={t('UI-VA-EINTRAGEN')}>
               <Icon name="plus" />
             </button>
           </>
         }
-        sub={
-          <>
-            <div className="flex gap-1 mx-4 mb-2 p-1 rounded-xl bg-flaeche2 border border-linie" role="tablist">
-              {(['liste', 'karte'] as const).map((v) => (
-                <button key={v} role="tab" aria-selected={view === v} className={`flex-1 rounded-lg min-h-[40px] flex items-center justify-center gap-2 text-sm ${view === v ? 'bg-akzent text-grund font-semibold' : 'muted'}`} onClick={() => setView(v)}>
-                  <Icon name={v === 'karte' ? 'map' : 'list'} className="w-4 h-4" />
-                  {t(v === 'karte' ? 'UI-HEUTE-KARTE' : 'UI-HEUTE-ENTDECKEN')}
-                </button>
-              ))}
-            </div>
-            {filterBar}
-          </>
-        }
+        sub={filterBar}
       />
       {view === 'karte' ? (
-        <div className="px-3 pt-3" style={{ height: 'calc(100dvh - 250px)', minHeight: 360 }}>
+        <div className="px-3 pt-3 max-w-4xl mx-auto" style={{ height: 'calc(100dvh - 200px)', minHeight: 360 }}>
           <EventMap center={today?.center ?? null} focus={focus} filters={{ cats, when }} onPick={setPreview} places={today?.places} clusters={today?.clusters} />
         </div>
       ) : (
-        <Page>
+        <Page className="max-w-4xl">
           {err && !list && <Banner kind="error">{err}</Banner>}
           {list && !list.hasRef && (
             <div className="mb-4">
@@ -370,19 +410,17 @@ export function Heute() {
 
           {open.length > 0 && (when === 'alle' || when === 'heute') && (
             <section className="mb-6">
-              <h2 className="font-semibold mb-2 flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-gut" /> {t('UI-HEUTE-OFFEN')}
-              </h2>
-              <div className="scroll-x flex gap-2 -mx-4 px-4">
+              <h2 className="font-semibold mb-2">{t('UI-HEUTE-OFFEN')}</h2>
+              <div className="flex gap-2 overflow-x-auto pb-1 -mx-4 px-4 snap-x">
                 {open.map((p: any) => (
-                  <button key={p.id} className="card shrink-0 w-44 p-3 text-left hover:bg-flaeche2" onClick={() => nav(`/orte/${p.id}`)}>
+                  <button key={p.id} className="card shrink-0 w-44 p-3 text-left hover:bg-flaeche2 snap-start" onClick={() => nav(`/orte/${p.id}`)}>
                     <span className="block font-semibold truncate">
                       {p.name} {p.confirmed && <span className="text-akzent">✓</span>}
                     </span>
                     <span className="block text-xs muted truncate">
                       {kindLabel(p.kind)} · {p.district}
                     </span>
-                    <span className="block text-xs mt-1">
+                    <span className="block text-xs mt-1 text-gut">
                       {p.hoursToday?.length ? p.hoursToday.map((s: string[]) => s.join('–')).join(', ') : ''}
                       {p.km !== null && p.km !== undefined ? ` · ${fmtKm(p.km)}` : ''}
                     </span>
@@ -441,8 +479,8 @@ export function Heute() {
           )}
 
           <Link to="/veranstalter" className="card mt-6 p-4 flex items-center gap-3 hover:bg-flaeche2">
-            <span className="text-2xl" aria-hidden="true">
-              🎟️
+            <span className="w-10 h-10 rounded-full bg-akzent/15 text-akzent grid place-items-center shrink-0" aria-hidden="true">
+              <Icon name="calendar" />
             </span>
             <span className="flex-1">
               <span className="block font-semibold">{t('UI-VA-DU-VERANSTALTEST')}</span>
@@ -458,7 +496,7 @@ export function Heute() {
         {preview && <MapPreview id={preview.id} />}
       </Sheet>
       <RadiusSheet open={sheet === 'umkreis'} onClose={() => setSheet(null)} value={effRadius} onPick={setRadius} />
-      <CategorySheet open={sheet === 'kategorien'} onClose={() => setSheet(null)} value={cats} onChange={setCats} />
+      <FilterSheet open={sheet === 'filter'} onClose={() => setSheet(null)} value={cats} onChange={setCats} when={when} onWhen={setWhen} />
       <LocationSheet
         open={sheet === 'ort'}
         onClose={() => {

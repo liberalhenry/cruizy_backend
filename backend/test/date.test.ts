@@ -331,6 +331,32 @@ describe.skipIf(!(await audioAvailable()))('Cruizy Date', () => {
     setParam('P-DATE-MELDUNGEN-SPERRE', 3);
   });
 
+  it('Werkzeug zeigt Date-Fotos — in der Prüfliste und je Mitglied (Issue #33)', async () => {
+    const m = await dateMember({ name: 'Fotomodell' });
+    const s = await staff();
+    const list = await s.c.get(`/mod-api/date/members/${m.id}/photos`);
+    expect(list.status).toBe(200);
+    expect(list.body.items.length).toBe(3);
+    const img = await s.c.get(list.body.items[0].image);
+    expect(img.status).toBe(200);
+    expect(img.headers['content-type']).toBe('image/jpeg');
+    expect(img.raw.length).toBeGreaterThan(100);
+    // ein Foto in der Warteschlange: Bild lädt, Name steht dabei
+    await q(`UPDATE date_photos SET status = 'queued' WHERE id = $1`, [list.body.items[1].id]);
+    const queued = await s.c.get('/mod-api/date/photos');
+    const item = queued.body.items.find((x: { id: string }) => x.id === list.body.items[1].id);
+    expect(item.name).toBe('Fotomodell');
+    expect((await s.c.get(item.image)).status).toBe(200);
+    // Mitglieder-Sicht bleibt zu
+    expect((await m.c.get(list.body.items[0].image)).status).toBe(401);
+    // Date-Meldung: Date-Fotos liegen als Kopie im Fall
+    const reporter = await dateMember({ name: 'Meldet' });
+    const r = await reporter.c.post('/api/reports', { reason: 'passt_nicht_zu_date', context: 'date', targetId: m.id, items: [] });
+    const rep = await one(`SELECT id FROM reports WHERE number = $1`, [r.body.number]);
+    const n = await one(`SELECT count(*)::int AS n FROM report_items WHERE report_id = $1 AND kind = 'datefoto'`, [rep!.id]);
+    expect(n!.n).toBe(2);
+  });
+
   it('Auto-Pause nach Inaktivität, Reaktivierung beim Anmelden; Pausieren; Verlassen löscht alles', async () => {
     const m = await dateMember({ name: 'Pause' });
     await q(`UPDATE date_access SET last_active_at = now() - interval '20 days' WHERE account_id = $1`, [m.id]);

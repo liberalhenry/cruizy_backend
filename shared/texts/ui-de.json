@@ -195,6 +195,10 @@
   "s": "ENTWURF",
   "t": "Kopieren"
  },
+ "UI-APP-KOPIERT": {
+  "s": "ENTWURF",
+  "t": "Kopiert."
+ },
  "UI-APP-LAEDT": {
   "s": "ENTWURF",
   "t": "Lädt …"
@@ -1837,7 +1841,7 @@
  },
  "UI-FAQ-08-A": {
   "s": "ENTWURF",
-  "t": "Mit dem schnellen Ausblenden: dreimal schnell auf den Titel oben tippen oder zweimal Escape drücken. Die App wechselt sofort auf eine neutrale Seite."
+  "t": "Mit dem schnellen Ausblenden: dreimal schnell auf den Titel oben tippen oder zweimal Escape drücken. Die App wechselt sofort auf eine neutrale Seite. Zurück geht es genauso: dreimal schnell oben auf den Bildschirm tippen (oder zweimal Escape) und die PIN eingeben."
  },
  "UI-FAQ-08-F": {
   "s": "ENTWURF",
@@ -2263,6 +2267,10 @@
   "s": "ENTWURF",
   "t": "Diese Woche"
  },
+ "UI-HEUTE-ZEITRAUM": {
+  "s": "ENTWURF",
+  "t": "Zeitraum"
+ },
  "UI-HILFE-ANTWORTEN": {
   "s": "ENTWURF",
   "t": "Antworten"
@@ -2431,6 +2439,10 @@
   "s": "ENTWURF",
   "t": "Code"
  },
+ "UI-KONTO-CODE-EINGEBEN": {
+  "s": "ENTWURF",
+  "t": "Code eingeben"
+ },
  "UI-KONTO-CODE-GESENDET": {
   "s": "ENTWURF",
   "t": "Wir haben dir einen Code geschickt. Gib ihn hier ein."
@@ -2457,7 +2469,7 @@
  },
  "UI-KONTO-GERAETECODE": {
   "s": "ENTWURF",
-  "t": "Neues Gerät: Wir haben dir einen Code per SMS geschickt."
+  "t": "Neues Gerät: Wir haben dir einen Code per Telegram geschickt."
  },
  "UI-KONTO-GESPERRT": {
   "s": "ENTWURF",
@@ -2482,6 +2494,10 @@
  "UI-KONTO-NUMMER": {
   "s": "ENTWURF",
   "t": "Telefonnummer"
+ },
+ "UI-KONTO-NUMMER-TELEGRAM": {
+  "s": "ENTWURF",
+  "t": "Telefonnummer (Codes per Telegram)"
  },
  "UI-KONTO-PASSWORT": {
   "s": "ENTWURF",
@@ -2651,9 +2667,25 @@
   "s": "ENTWURF",
   "t": "Du kannst höchstens {max} Merkmale wählen."
  },
+ "UI-MITTEILUNG-DORTHIN": {
+  "s": "ENTWURF",
+  "t": "Dorthin ›"
+ },
  "UI-MITTEILUNG-UNGELESEN": {
   "s": "ENTWURF",
   "t": "ungelesen"
+ },
+ "UI-MITTEILUNG-ZUM-CHAT": {
+  "s": "ENTWURF",
+  "t": "Zum Chat"
+ },
+ "UI-MITTEILUNG-ZUR-PRUEFUNG": {
+  "s": "ENTWURF",
+  "t": "Zur Prüfung"
+ },
+ "UI-MITTEILUNG-ZUR-VERANSTALTUNG": {
+  "s": "ENTWURF",
+  "t": "Zur Veranstaltung"
  },
  "UI-MOD-ABGLEICH-FEHLT": {
   "s": "ENTWURF",
@@ -2818,6 +2850,78 @@
  "UI-NEU-ANMELDEN": {
   "s": "ENTWURF",
   "t": "Bitte gib zur Sicherheit noch einmal dein Passwort oder einen Code ein."
+ },
+ "UI-NF-EMAIL": {
+  "s": "ENTWURF",
+  "t": "Per E-Mail"
+ },
+ "UI-NF-EMAIL-FEHLT": {
+  "s": "ENTWURF",
+  "t": "Dafür brauchst du eine bestätigte E-Mail-Adresse (unter „Konto sichern“)."
+ },
+ "UI-NF-EMAIL-HINT": {
+  "s": "ENTWURF",
+  "t": "An deine bestätigte E-Mail-Adresse."
+ },
+ "UI-NF-ERKL": {
+  "s": "ENTWURF",
+  "t": "Jede Mitteilung, die hier ankommt, bekommst du auf Wunsch zusätzlich per E-Mail oder Telegram. Antworten geht weiterhin nur in der App."
+ },
+ "UI-NF-GEPRUEFT": {
+  "s": "ENTWURF",
+  "t": "Aktualisieren"
+ },
+ "UI-NF-IN-DER-APP": {
+  "s": "ENTWURF",
+  "t": "In der App ansehen"
+ },
+ "UI-NF-INHALT": {
+  "s": "ENTWURF",
+  "t": "Inhalt mitschicken"
+ },
+ "UI-NF-INHALT-HINT": {
+  "s": "ENTWURF",
+  "t": "Sonst kommt nur ein Hinweis ohne Inhalt mit Link in die App. Sicherheitsmitteilungen gehen immer ohne Inhalt hinaus."
+ },
+ "UI-NF-MAIL-BETREFF": {
+  "s": "ENTWURF",
+  "t": "Neue Mitteilung"
+ },
+ "UI-NF-MAIL-VORSCHAU": {
+  "s": "ENTWURF",
+  "t": "Es gibt etwas Neues für dich."
+ },
+ "UI-NF-OHNE-INHALT": {
+  "s": "ENTWURF",
+  "t": "Es gibt eine neue Mitteilung für dich. Du findest sie, wenn du dich anmeldest."
+ },
+ "UI-NF-TELEGRAM": {
+  "s": "ENTWURF",
+  "t": "Per Telegram"
+ },
+ "UI-NF-TELEGRAM-AUS": {
+  "s": "ENTWURF",
+  "t": "Telegram ist auf diesem Server noch nicht eingerichtet."
+ },
+ "UI-NF-TELEGRAM-FEHLT": {
+  "s": "ENTWURF",
+  "t": "Verbinde zuerst Telegram."
+ },
+ "UI-NF-TELEGRAM-TRENNEN": {
+  "s": "ENTWURF",
+  "t": "Telegram trennen"
+ },
+ "UI-NF-TELEGRAM-VERBINDEN": {
+  "s": "ENTWURF",
+  "t": "Mit Telegram verbinden"
+ },
+ "UI-NF-TELEGRAM-VERBINDEN-ERKL": {
+  "s": "ENTWURF",
+  "t": "Öffnet unseren Bot in Telegram. Tippe dort auf „Starten“ — fertig. Der Link gilt 30 Minuten."
+ },
+ "UI-NF-TITEL": {
+  "s": "ENTWURF",
+  "t": "Auch außerhalb der App"
  },
  "UI-NICHT-VERFUEGBAR": {
   "s": "ENTWURF",
@@ -3607,6 +3711,134 @@
   "s": "ENTWURF",
   "t": "Mindestens {zahl} Zeichen."
  },
+ "UI-SUP-ABGESCHLOSSEN": {
+  "s": "ENTWURF",
+  "t": "Dieser Vorgang ist abgeschlossen. Schreib uns gern eine neue Nachricht."
+ },
+ "UI-SUP-ABLEHNEN": {
+  "s": "ENTWURF",
+  "t": "Ablehnen"
+ },
+ "UI-SUP-ANFRAGE-OFFEN": {
+  "s": "ENTWURF",
+  "t": "Es gibt schon eine offene Anfrage in diesem Vorgang."
+ },
+ "UI-SUP-ANTWORT-PLATZHALTER": {
+  "s": "ENTWURF",
+  "t": "Antwort an das Team …"
+ },
+ "UI-SUP-BEREICH-DIAGNOSE": {
+  "s": "ENTWURF",
+  "t": "Diagnosedaten dieses Geräts — App-Version, Browser, Bildschirm, Sprache, Mitteilungs- und Speicherstatus, letzte Fehlermeldungen der App"
+ },
+ "UI-SUP-BEREICH-KONTO": {
+  "s": "ENTWURF",
+  "t": "Kontodaten — Anmeldeweg, Status, bestätigte Wege (gekürzt), Geräte- und Sitzungsanzahl, Abo"
+ },
+ "UI-SUP-BEREICH-PROFIL": {
+  "s": "ENTWURF",
+  "t": "Profildaten — Name, Alter, Absicht, Fotoanzahl, Einstellungen, Date-Status (kein Standort, keine Nachrichten)"
+ },
+ "UI-SUP-DU": {
+  "s": "ENTWURF",
+  "t": "Du"
+ },
+ "UI-SUP-FREIGABE-ERKL": {
+  "s": "ENTWURF",
+  "t": "Damit wir dir helfen können, möchten wir folgende Daten sehen. Ohne deine Zustimmung sehen wir nichts davon. Die Freigabe gilt {tage} Tage, und du kannst sie jederzeit zurücknehmen."
+ },
+ "UI-SUP-FREIGABE-TITEL": {
+  "s": "ENTWURF",
+  "t": "Das Team bittet um Einsicht"
+ },
+ "UI-SUP-FREIGEBEN": {
+  "s": "ENTWURF",
+  "t": "Freigeben"
+ },
+ "UI-SUP-GRUND": {
+  "s": "ENTWURF",
+  "t": "Begründung des Teams:"
+ },
+ "UI-SUP-KEINE-FREIGABE": {
+  "s": "ENTWURF",
+  "t": "Dafür gibt es keine gültige Freigabe."
+ },
+ "UI-SUP-LEER": {
+  "s": "ENTWURF",
+  "t": "Noch keine Anfragen."
+ },
+ "UI-SUP-MAIL-HINWEIS": {
+  "s": "ENTWURF",
+  "t": "Im Vorgang {fallnummer} gibt es etwas Neues für dich. Lesen und antworten kannst du in der App."
+ },
+ "UI-SUP-MAIL-HINWEIS-ERKL": {
+  "s": "ENTWURF",
+  "t": "Die E-Mail sagt nur, dass es eine Antwort gibt — lesen und antworten kannst du hier."
+ },
+ "UI-SUP-MAIL-HINWEIS-SCHALTER": {
+  "s": "ENTWURF",
+  "t": "Bei Antworten per E-Mail benachrichtigen"
+ },
+ "UI-SUP-N-FREIGABE": {
+  "s": "ENTWURF",
+  "t": "Das Support-Team bittet um Einsicht in einige Daten, um dir helfen zu können. Du entscheidest in der App, ob du sie freigibst."
+ },
+ "UI-SUP-N-FREIGABE-TITEL": {
+  "s": "ENTWURF",
+  "t": "Frage zu deiner Anfrage {fallnummer}"
+ },
+ "UI-SUP-NEU": {
+  "s": "ENTWURF",
+  "t": "Neu"
+ },
+ "UI-SUP-NUR-APP": {
+  "s": "ENTWURF",
+  "t": "Antworten kannst du nur hier in der App — nicht per E-Mail."
+ },
+ "UI-SUP-POSTFACH": {
+  "s": "ENTWURF",
+  "t": "Deine Anfragen"
+ },
+ "UI-SUP-SCHREIBEN": {
+  "s": "ENTWURF",
+  "t": "Dem Support-Team schreiben"
+ },
+ "UI-SUP-SCHREIBEN-ERKL": {
+  "s": "ENTWURF",
+  "t": "Ein Mensch aus unserem Team liest jede Nachricht. Die Antwort kommt hier in der App."
+ },
+ "UI-SUP-STATUS-abgelaufen": {
+  "s": "ENTWURF",
+  "t": "abgelaufen"
+ },
+ "UI-SUP-STATUS-abgelehnt": {
+  "s": "ENTWURF",
+  "t": "abgelehnt"
+ },
+ "UI-SUP-STATUS-freigegeben": {
+  "s": "ENTWURF",
+  "t": "freigegeben bis {bis}"
+ },
+ "UI-SUP-STATUS-offen": {
+  "s": "ENTWURF",
+  "t": "wartet auf deine Entscheidung"
+ },
+ "UI-SUP-STATUS-widerrufen": {
+  "s": "ENTWURF",
+  "t": "zurückgenommen"
+ },
+ "UI-SUP-TEAM": {
+  "s": "ENTWURF",
+  "t": "Support-Team"
+ },
+ "UI-SUP-TITEL": {
+  "s": "ENTWURF",
+  "t": "Support"
+ },
+ "UI-SUP-WIDERRUFEN": {
+  "s": "ENTWURF",
+  "t": "Freigabe zurücknehmen"
+ },
  "UI-SYS-": {
   "s": "ENTWURF",
   "t": ""
@@ -3691,6 +3923,10 @@
   "s": "ENTWURF",
   "t": "So"
  },
+ "UI-TARN-AUSSERDEM": {
+  "s": "ENTWURF",
+  "t": "Außerdem:"
+ },
  "UI-TARN-ERKL": {
   "s": "ENTWURF",
   "t": "Symbol und Name auf dem Home-Bildschirm — und die App, die nach dem Verstecken erscheint. Beides passt zusammen, damit nichts auffällt."
@@ -3711,13 +3947,29 @@
   "s": "ENTWURF",
   "t": "Den Monatsnamen lange drücken und die PIN eingeben."
  },
+ "UI-TARN-OHNE-PIN": {
+  "s": "ENTWURF",
+  "t": "Du hast noch keine PIN. Dann kann jede Person mit dieser Geste zurück in die App."
+ },
  "UI-TARN-TITEL": {
   "s": "ENTWURF",
   "t": "Tarnung"
  },
+ "UI-TARN-VORHER-OK": {
+  "s": "ENTWURF",
+  "t": "Verstanden — jetzt verstecken"
+ },
+ "UI-TARN-VORHER-TITEL": {
+  "s": "ENTWURF",
+  "t": "So kommst du zurück"
+ },
  "UI-TARN-ZURUECK": {
   "s": "ENTWURF",
   "t": "Zurück in die App:"
+ },
+ "UI-TARN-ZURUECK-ALLE": {
+  "s": "ENTWURF",
+  "t": "Dreimal schnell oben auf den Bildschirm tippen (am Computer: zweimal Escape) und die PIN eingeben. Ohne PIN geht es sofort zurück."
  },
  "UI-TEAM-KENNUNG-VERGEBEN": {
   "s": "ENTWURF",
@@ -3834,6 +4086,66 @@
  "UI-TESTBETRIEB-HINWEIS": {
   "s": "ENTWURF",
   "t": "Testbetrieb — bitte nur erfundene Angaben und keine echten Fotos von dir."
+ },
+ "UI-TG-CHECKIN-HINWEIS": {
+  "s": "ENTWURF",
+  "t": "Nachrichten an Telefonnummern gehen über Telegram. Deine Vertrauensperson muss den Bot einmal öffnen und dort „Nummer teilen“ tippen — schick ihr dazu diesen Link:"
+ },
+ "UI-TG-CODE-KOMMT": {
+  "s": "ENTWURF",
+  "t": "Der Code kommt per Telegram. Beim ersten Mal: Bot öffnen, „Starten“ und dann „Nummer teilen“ tippen — dann kommt der Code sofort."
+ },
+ "UI-TG-GETRENNT": {
+  "s": "ENTWURF",
+  "t": "Getrennt. Hier kommt nichts mehr an, bis du wieder „Nummer teilen“ tippst."
+ },
+ "UI-TG-HILFE": {
+  "s": "ENTWURF",
+  "t": "Tippe auf „Nummer teilen“, um deine Nummer zu verbinden. Mit /stop trennst du alles wieder."
+ },
+ "UI-TG-KONTO-GETRENNT": {
+  "s": "ENTWURF",
+  "t": "Benachrichtigungen kommen hier nicht mehr an."
+ },
+ "UI-TG-KONTO-VERBUNDEN": {
+  "s": "ENTWURF",
+  "t": "Verbunden. Deine Benachrichtigungen kommen ab jetzt auch hier an. Ausschalten kannst du das in der App unter Einstellungen."
+ },
+ "UI-TG-LINK-ABGELAUFEN": {
+  "s": "ENTWURF",
+  "t": "Dieser Link ist abgelaufen. Öffne ihn bitte noch einmal aus der App."
+ },
+ "UI-TG-LINK-KOPIEREN": {
+  "s": "ENTWURF",
+  "t": "Link kopieren"
+ },
+ "UI-TG-NICHT-EINGERICHTET": {
+  "s": "ENTWURF",
+  "t": "Telegram ist gerade nicht verfügbar."
+ },
+ "UI-TG-NUMMER-TEILEN": {
+  "s": "ENTWURF",
+  "t": "📱 Nummer teilen"
+ },
+ "UI-TG-NUMMER-UNGUELTIG": {
+  "s": "ENTWURF",
+  "t": "Diese Nummer können wir nicht verwenden."
+ },
+ "UI-TG-NUR-EIGENE": {
+  "s": "ENTWURF",
+  "t": "Bitte teile deine eigene Nummer über den Knopf unten — nicht den Kontakt einer anderen Person."
+ },
+ "UI-TG-OEFFNEN": {
+  "s": "ENTWURF",
+  "t": "Telegram öffnen"
+ },
+ "UI-TG-VERBUNDEN": {
+  "s": "ENTWURF",
+  "t": "Verbunden. Codes für deine Nummer kommen ab jetzt hier an. Mit /stop trennst du die Verbindung."
+ },
+ "UI-TG-WILLKOMMEN": {
+  "s": "ENTWURF",
+  "t": "Hallo! Hier bekommst du Bestätigungscodes und — wenn du es einschaltest — Benachrichtigungen. Tippe unten auf „Nummer teilen“, damit Codes an deine Nummer hier ankommen."
  },
  "UI-TRAVEL-ABO": {
   "s": "ENTWURF",

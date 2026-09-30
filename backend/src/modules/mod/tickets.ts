@@ -8,6 +8,9 @@
  *  * Vorlagen sind immer bearbeitbar und werden nie automatisch versandt (M85.06).
  *  * Kategorie ändern: Frist neu, alte Frist bleibt sichtbar (M85.09).
  *  * Keine Volltextsuche, keine Zufriedenheitsbewertung, kein Löschen (Abschnitt 13).
+ *  * Issue #37: Antworten stehen bei Personen mit Konto immer in der App (auf Wunsch Hinweis per E-Mail ohne
+ *    Inhalt). Das Team kann um Einsicht in Konto-, Profil- und Diagnosedaten bitten — sichtbar erst nach
+ *    Freigabe durch die Person, jede Einsicht im Zugriffsprotokoll.
  */
 import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
@@ -23,6 +26,8 @@ import { CATEGORY_POT, deadlineSeconds } from '../help.js';
 import { REASONS, createReport } from '../reports.js';
 import { ampel, logged, requireStaff, type StaffCtx } from './core.js';
 import { modImgUrl } from './index.js';
+import { env } from '../../config/env.js';
+import { SCOPES, endRequestsOf, releasedData, requestsFor } from '../../services/support.js';
 
 const POTS = ['missbrauch', 'hilfe', 'datenschutz', 'behoerden'] as const;
 const RESTRICTED = new Set(['datenschutz', 'behoerden']);
@@ -32,9 +37,37 @@ function mayOpen(s: StaffCtx, pot: string) {
   return !RESTRICTED.has(pot) || s.role === 'BETRIEB';
 }
 
+/** Aufbewahrung nach Abschluss (P-TICKET-AUFBEWAHRUNG): Missbrauch, Datenschutz, Behörden länger. */
+function retentionSeconds(pot: string): number {
+  const r = p('P-TICKET-AUFBEWAHRUNG');
+  return pot === 'hilfe' ? r.hilfe : r.missbrauch;
+}
+
 function ticketAmpel(r: { created_at: Date; deadline_at: Date; category: number }) {
   if (r.category === 1) return 'rot';
   return ampel(new Date(r.created_at), new Date(r.deadline_at));
+}
+
+/**
+ * Issue #37: Hinweis per E-Mail, dass es im Vorgang etwas Neues gibt — ohne Inhalt, Betreff nur die
+ * Fallnummer (FV-92). Gelesen und geantwortet wird in der App. Hat die Person Mitteilungen ohnehin per
+ * E-Mail eingeschaltet (Issue #35), kommt dieser Hinweis schon über die Mitteilung.
+ */
+async function hintMail(accountId: string, number: string) {
+  const a = await one(
+    `SELECT a.email_enc, a.email_verified_at, pr.notify_email FROM accounts a LEFT JOIN profiles pr ON pr.account_id = a.id WHERE a.id = $1`,
+    [accountId],
+  );
+  if (!a?.email_verified_at || a.notify_email) return;
+  const email = decStr('pii', a.email_enc, 'email');
+  if (!email) return;
+  const link = `${env().APP_URL}/ich/hilfe?vorgang=${encodeURIComponent(number)}`;
+  await sendMail({
+    to: email,
+    subject: t('ST-HLF-24', { fallnummer: number }),
+    text: `${t('UI-SUP-MAIL-HINWEIS', { fallnummer: number })}\n\n${link}`,
+    design: { heading: t('UI-MAIL-KOPF-ANTWORT'), action: { label: t('UI-NF-IN-DER-APP'), url: link } },
+  }).catch(() => {});
 }
 
 export default async function ticketModRoutes(app: FastifyInstance) {
@@ -119,8 +152,57 @@ export default async function ticketModRoutes(app: FastifyInstance) {
         // M85.10: ohne Konto — keine Kontoansicht, kein Verlauf
         withoutAccount: !tk.had_account,
         messages: msgs.map((m) => ({ fromTeam: m.author === 'team', text: decStr('tickets', m.body_enc, 'ticket'), at: m.created_at })),
+        // Issue #37
+        notifyEmail: tk.notify_email,
+        dataRequests: tk.account_id ? await requestsFor(tk.id) : [],
+        mayRequestData: !!tk.account_id && tk.status !== 'abgeschlossen',
       };
     });
+  });
+
+  // ───────────── Issue #37: Datenfreigabe ─────────────
+
+  /** Um Einsicht bitten — die Person entscheidet in der App. Höchstens eine offene Anfrage je Vorgang. */
+  app.post('/mod-api/tickets/:id/data-request', async (req) => {
+    const s = await requireStaff(req);
+    const { id } = params(req, idParam);
+    const b = body(req, z.object({ scope: z.array(z.enum(SCOPES)).min(1).max(3), reason: z.string().trim().min(10).max(500) }));
+    const tk = await one(`SELECT * FROM tickets WHERE id = $1 AND status <> 'abgeschlossen'`, [id]);
+    if (!tk || !tk.account_id) throw notFound();
+    if (!mayOpen(s, tk.pot)) throw new AppError(403, 'UI-MOD-RECHT', {}, 'recht');
+    const open = await one(`SELECT 1 FROM support_data_requests WHERE ticket_id = $1 AND status = 'offen'`, [id]);
+    if (open) throw new AppError(409, 'UI-SUP-ANFRAGE-OFFEN', {}, 'anfrage_offen');
+    const scope = [...new Set(b.scope)];
+    const r = await logged(s, tk.number, 'datenfreigabe_angefragt', `${scope.join(', ')}: ${b.reason}`, async (c) =>
+      (
+        await c.query(`INSERT INTO support_data_requests (ticket_id, account_id, requested_by, scope, reason) VALUES ($1, $2, $3, $4, $5) RETURNING id`, [
+          id,
+          tk.account_id,
+          s.id,
+          scope,
+          b.reason,
+        ])
+      ).rows[0],
+    );
+    await createNotice(tk.account_id, 'hilfe_freigabe', t('UI-SUP-N-FREIGABE-TITEL', { fallnummer: tk.number }), t('UI-SUP-N-FREIGABE'), tk.number);
+    if (tk.notify_email) await hintMail(tk.account_id, tk.number);
+    return { ok: true, id: r.id };
+  });
+
+  /** Freigegebene Daten ansehen — nur solange die Freigabe gilt, jede Einsicht im Zugriffsprotokoll. */
+  app.post('/mod-api/tickets/:id/data', async (req) => {
+    const s = await requireStaff(req);
+    const { id } = params(req, idParam);
+    const b = body(req, z.object({ requestId: z.string().uuid(), reason: z.string().trim().min(3).max(500).default('Bearbeitung Vorgang') }));
+    const tk = await one(`SELECT number, pot FROM tickets WHERE id = $1`, [id]);
+    if (!tk) throw notFound();
+    if (!mayOpen(s, tk.pot)) throw new AppError(403, 'UI-MOD-RECHT', {}, 'recht');
+    const r = await one(
+      `SELECT * FROM support_data_requests WHERE id = $1 AND ticket_id = $2 AND status = 'freigegeben' AND expires_at > now()`,
+      [b.requestId, id],
+    );
+    if (!r) throw new AppError(403, 'UI-SUP-KEINE-FREIGABE', {}, 'keine_freigabe');
+    return logged(s, tk.number, 'freigegebene_daten_eingesehen', b.reason, async () => ({ expiresAt: r.expires_at, scope: r.scope, data: await releasedData(r as never) }));
   });
 
   /** M85.06: Antwort — Text von einem Menschen. */
@@ -135,8 +217,10 @@ export default async function ticketModRoutes(app: FastifyInstance) {
       await c.query(`INSERT INTO ticket_messages (ticket_id, author, staff_id, body_enc) VALUES ($1, 'team', $2, $3)`, [id, s.id, encStr('tickets', b.text, 'ticket')]);
       await c.query(`UPDATE tickets SET status = 'beantwortet', assigned_to = COALESCE(assigned_to, $2) WHERE id = $1`, [id, s.id]);
     });
-    if (tk.reply_way === 'app' && tk.account_id) {
+    if (tk.account_id) {
+      // Issue #37: mit Konto steht die Antwort immer in der App — auf Wunsch ein Hinweis per E-Mail, ohne Inhalt
       await createNotice(tk.account_id, 'hilfe_antwort', t('ST-HLF-24', { fallnummer: tk.number }), t('ST-HLF-25'), tk.number);
+      if (tk.notify_email || tk.reply_way === 'email') await hintMail(tk.account_id, tk.number);
     } else {
       const email = decStr('tickets', tk.email_enc, 'ticket');
       // FV-92: im Betreff nur die Fallnummer
@@ -184,10 +268,11 @@ export default async function ticketModRoutes(app: FastifyInstance) {
     const tk = await one(`SELECT * FROM tickets WHERE id = $1 AND status <> 'abgeschlossen'`, [id]);
     if (!tk) throw notFound();
     if (!mayOpen(s, tk.pot)) throw new AppError(403, 'UI-MOD-RECHT', {}, 'recht');
+    await endRequestsOf(id);
     await logged(s, tk.number, 'vorgang_geschlossen', b.reason ? `${b.closeReason}: ${b.reason}` : b.closeReason, async (c) => {
       await c.query(
         `UPDATE tickets SET status = 'abgeschlossen', closed_reason = $2, closed_at = now(), delete_after = now() + make_interval(secs => $3) WHERE id = $1`,
-        [id, b.closeReason, p('P-TICKET-AUFBEWAHRUNG')],
+        [id, b.closeReason, retentionSeconds(tk.pot)],
       );
     });
     return { ok: true };
@@ -218,10 +303,11 @@ export default async function ticketModRoutes(app: FastifyInstance) {
       items: [],
       fromWeb: !tk.account_id,
     });
+    await endRequestsOf(id);
     await logged(s, tk.number, 'als_fall_geoeffnet', `${b.reason} → ${r.number}`, async (c) => {
       await c.query(
         `UPDATE tickets SET status = 'abgeschlossen', closed_reason = $2, closed_at = now(), delete_after = now() + make_interval(secs => $3) WHERE id = $1`,
-        [id, `als Moderationsfall weitergeführt: ${r.number}`, p('P-TICKET-AUFBEWAHRUNG')],
+        [id, `als Moderationsfall weitergeführt: ${r.number}`, retentionSeconds(tk.pot)],
       );
     }, true);
     return { ok: true, report: r.number, reportId: r.id };

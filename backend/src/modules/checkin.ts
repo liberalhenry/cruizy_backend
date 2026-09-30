@@ -22,11 +22,12 @@ import { body, idParam, params } from '../lib/http.js';
 import { countryOf } from '../lib/geo.js';
 import { t } from '../lib/texts.js';
 import { sendMail } from '../providers/mail.js';
-import { sendSms } from '../providers/sms.js';
+import { sendToPhone } from '../services/telegram.js';
 import { createNotice } from '../services/notify.js';
 import { sendPush } from '../services/push.js';
 
-const recipientSchema = z.object({ kind: z.enum(['sms', 'email']), to: z.string().min(3).max(254) });
+// Issue #32: „sms“ bleibt als Kennung für Mobilnummern (ältere Geräte); zugestellt wird über den Telegram-Bot
+const recipientSchema = z.object({ kind: z.enum(['sms', 'telegram', 'email']), to: z.string().min(3).max(254) });
 const relaySchema = z.object({ recipients: z.array(recipientSchema).min(1).max(10), text: z.string().min(1).max(600) });
 
 /** AK-F55-15: weder Absender noch Text nennen Produktnamen oder Anlass. */
@@ -37,9 +38,9 @@ function neutral(text: string) {
 export async function deliverRelay(msg: z.infer<typeof relaySchema>) {
   const text = neutral(msg.text);
   for (const r of msg.recipients) {
-    if (r.kind === 'sms') {
+    if (r.kind === 'sms' || r.kind === 'telegram') {
       const phone = normalizePhone(r.to);
-      if (phone) await sendSms({ to: phone, text, reason: 'checkin' });
+      if (phone) await sendToPhone(phone, text, 'checkin');
     } else if (/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(r.to)) {
       // an Dritte: immer die neutrale Fassung — kein Logo, kein Name (AK-F55-15)
       await sendMail({ to: r.to, subject: t('UI-CHECKIN-MAIL-BETREFF'), text, design: { variant: 'neutral' } });

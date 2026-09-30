@@ -1,6 +1,7 @@
 /**
  * Profil (5.0, F13–F21) und Einstellungen (S63).
  */
+import { accountChat } from '../services/telegram.js';
 import type { FastifyInstance } from 'fastify';
 import { canSeeDateProfile, isActiveMember } from '../services/date.js';
 import { markDateBadges } from './discovery.js';
@@ -145,6 +146,10 @@ export async function ownProfile(accountId: string) {
       startersEnabled: r.starters_enabled,
       onceHintSeen: r.once_hint_seen,
       invisibleBrowsing: r.invisible_browsing,
+      // Issue #35
+      notifyEmail: r.notify_email,
+      notifyTelegram: r.notify_telegram,
+      notifyContent: r.notify_content,
     },
     location: {
       level: r.level ?? 'grob',
@@ -246,6 +251,9 @@ export default async function profileRoutes(app: FastifyInstance) {
             voiceReceive: z.boolean().optional(),
             startersEnabled: z.boolean().optional(),
             onceHintSeen: z.boolean().optional(),
+            notifyEmail: z.boolean().optional(),
+            notifyTelegram: z.boolean().optional(),
+            notifyContent: z.boolean().optional(),
           })
           .optional(),
       }),
@@ -342,6 +350,19 @@ export default async function profileRoutes(app: FastifyInstance) {
       if (s.voiceReceive !== undefined) set('voice_receive', s.voiceReceive);
       if (s.startersEnabled !== undefined) set('starters_enabled', s.startersEnabled);
       if (s.onceHintSeen !== undefined) set('once_hint_seen', s.onceHintSeen);
+      // Issue #35: E-Mail nur mit bestätigter Adresse, Telegram nur mit verbundenem Chat
+      if (s.notifyEmail !== undefined) {
+        if (s.notifyEmail) {
+          const acc = await one(`SELECT email_verified_at FROM accounts WHERE id = $1`, [a.id]);
+          if (!acc?.email_verified_at) throw bad('UI-NF-EMAIL-FEHLT', {}, 'email_fehlt');
+        }
+        set('notify_email', s.notifyEmail);
+      }
+      if (s.notifyTelegram !== undefined) {
+        if (s.notifyTelegram && !(await accountChat(a.id))) throw bad('UI-NF-TELEGRAM-FEHLT', {}, 'telegram_fehlt');
+        set('notify_telegram', s.notifyTelegram);
+      }
+      if (s.notifyContent !== undefined) set('notify_content', s.notifyContent);
     }
     if (sets.length) await q(`UPDATE profiles SET ${sets.join(', ')}, updated_at = now() WHERE account_id = $1`, vals);
     if (s?.mediaReceive === 'immer') {

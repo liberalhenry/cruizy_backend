@@ -94,6 +94,7 @@ function Mitglieder({ onChange }: { onChange: () => void }) {
               Status <b>{open.status}</b> · Verifizierung: {open.verification.at ? `${fmtDate(open.verification.at, true)} (${open.verification.provider}, ${open.verification.result})` : open.verification.result ?? 'noch nicht'}
             </p>
             <p className="muted">Konto-ID: {open.id}</p>
+            <MemberPhotos id={open.id} />
             <Reason value={reason} onChange={setReason} min={5} />
             {open.status === 'gesperrt' ? (
               <button className="btn-primary" disabled={reason.trim().length < 5} onClick={() => act('unsuspend')}>
@@ -108,6 +109,23 @@ function Mitglieder({ onChange }: { onChange: () => void }) {
         )}
       </Sheet>
     </>
+  );
+}
+
+/** Issue #33: alle Date-Fotos eines Mitglieds mit Prüfstatus. */
+function MemberPhotos({ id }: { id: string }) {
+  const { data } = useAsync(() => api.get(`/mod-api/date/members/${id}/photos`), [id]);
+  if (!data) return null;
+  if (!data.items.length) return <p className="muted text-xs">Keine Date-Fotos.</p>;
+  return (
+    <div className="grid grid-cols-3 gap-2">
+      {data.items.map((ph: any) => (
+        <figure key={ph.id} className="flex flex-col gap-1">
+          <img src={ph.image} alt="" className="w-full aspect-[4/5] object-cover rounded" />
+          <figcaption className="text-xs muted">{ph.status === 'approved' ? 'freigegeben' : 'in Prüfung'}</figcaption>
+        </figure>
+      ))}
+    </div>
   );
 }
 
@@ -132,7 +150,10 @@ function Fotos({ onChange }: { onChange: () => void }) {
         {data?.items.map((ph: any) => (
           <div key={ph.id} className="card p-2 flex flex-col gap-2">
             <img src={ph.image} alt="" className="w-full aspect-[4/5] object-cover rounded" />
-            <p className="text-xs muted">{fmtDate(ph.at, true)}</p>
+            <p className="text-xs muted">
+              {ph.name ?? '—'}
+              {ph.position === 0 ? ' · erstes Foto (Gesicht)' : ''} · {fmtDate(ph.at, true)}
+            </p>
             <div className="flex gap-1">
               <button className="btn-primary flex-1 text-xs" disabled={reason.trim().length < 3} onClick={() => decide(ph.id, 'freigeben')}>
                 Frei
