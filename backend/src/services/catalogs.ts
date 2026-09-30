@@ -81,6 +81,102 @@ export function traitName(id: number): string | null {
 }
 
 /**
+ * Position (Issue #13) — freiwillig, eine Angabe.
+ */
+export const POSITIONS = [
+  { key: 'top', label: 'Top' },
+  { key: 'vers_top', label: 'Vers Top' },
+  { key: 'vers', label: 'Vers' },
+  { key: 'vers_bottom', label: 'Vers Bottom' },
+  { key: 'bottom', label: 'Bottom' },
+  { key: 'keine_penetration', label: 'Keine Penetration' },
+] as const;
+export const POSITION_KEYS = new Set<string>(POSITIONS.map((x) => x.key));
+
+/**
+ * Körpertypen aus der Szene (Issue #13) — ENTWURF, zum Gegenlesen mit der Community.
+ * Mehrfachauswahl bis P-KOERPERTYP-MAX. Dieselben Schlüssel gelten für die Filter (Issue #20).
+ */
+export const BODY_TYPES = [
+  { key: 'twink', label: 'Twink', hint: 'jung, schlank, eher unbehaart' },
+  { key: 'twunk', label: 'Twunk', hint: 'zwischen Twink und Hunk, jung und trainiert' },
+  { key: 'jock', label: 'Jock', hint: 'sportlich' },
+  { key: 'otter', label: 'Otter', hint: 'schlank, behaart' },
+  { key: 'bear', label: 'Bear', hint: 'kräftig, behaart' },
+  { key: 'cub', label: 'Cub', hint: 'jüngerer Bär' },
+  { key: 'wolf', label: 'Wolf', hint: 'schlank bis sportlich, behaart' },
+  { key: 'muscle', label: 'Muscle', hint: 'muskulös' },
+  { key: 'daddy', label: 'Daddy', hint: 'reifer' },
+  { key: 'chub', label: 'Chub', hint: 'mollig' },
+  { key: 'geek', label: 'Geek', hint: '' },
+  { key: 'schlank', label: 'Schlank', hint: '' },
+  { key: 'durchschnitt', label: 'Durchschnittlich', hint: '' },
+  { key: 'kraeftig', label: 'Kräftig', hint: '' },
+] as const;
+export const BODY_TYPE_KEYS = new Set<string>(BODY_TYPES.map((x) => x.key));
+
+/**
+ * Kinks und Fetische (Issue #13) — immer freiwillig, nie Pflicht, zählen nie zur
+ * Profil-Vollständigkeit (Issue #29) und fließen nie in Gesprächsstarter (Issue #30).
+ * Sichtbar nur, wenn die Person sie selbst einträgt. ENTWURF zum Gegenlesen.
+ */
+export const KINK_GROUPS = [
+  {
+    group: 'Kleidung und Material',
+    items: [
+      ['leder', 'Leder'],
+      ['rubber', 'Rubber / Gummi'],
+      ['sportswear', 'Sportswear'],
+      ['sneaker', 'Sneaker und Socken'],
+      ['uniform', 'Uniform'],
+      ['underwear', 'Unterwäsche'],
+      ['harness', 'Harness'],
+    ],
+  },
+  {
+    group: 'Rollen und Spiel',
+    items: [
+      ['dom', 'Dom'],
+      ['sub', 'Sub'],
+      ['switch', 'Switch'],
+      ['bdsm', 'BDSM'],
+      ['bondage', 'Bondage'],
+      ['puppy', 'Puppy Play'],
+      ['rollenspiel', 'Rollenspiel'],
+      ['daddy_boy', 'Daddy / Boy'],
+    ],
+  },
+  {
+    group: 'Vorlieben',
+    items: [
+      ['fuesse', 'Füße'],
+      ['toys', 'Toys'],
+      ['fisting', 'Fisting'],
+      ['ws', 'Natursekt'],
+      ['edging', 'Edging'],
+      ['gruppe', 'Gruppe'],
+      ['voyeur', 'Voyeur'],
+      ['exhibition', 'Exhibition'],
+      ['cruising', 'Cruising'],
+      ['massage', 'Massage'],
+      ['kuscheln', 'Kuscheln'],
+      ['vanilla', 'Vanilla'],
+    ],
+  },
+] as const;
+export const KINK_KEYS = new Set<string>(KINK_GROUPS.flatMap((g) => g.items.map((i) => i[0] as string)));
+export function kinkName(key: string): string | null {
+  for (const g of KINK_GROUPS) for (const [k, n] of g.items) if (k === key) return n;
+  return null;
+}
+export function bodyTypeName(key: string): string | null {
+  return BODY_TYPES.find((b) => b.key === key)?.label ?? null;
+}
+export function positionName(key: string | null): string | null {
+  return POSITIONS.find((b) => b.key === key)?.label ?? null;
+}
+
+/**
  * Geschlechtsidentität (F16) und „Wen ich sehen möchte“ (F17) — PLATZHALTER bis
  * zum Gegenlesen (Nr. 13). Eine nicht sichtbare Angabe wirkt nirgends (FV-32).
  */

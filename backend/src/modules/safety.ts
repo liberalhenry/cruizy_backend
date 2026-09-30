@@ -15,7 +15,7 @@ import { one, q, tx, type Queryable, db } from '../db/pool.js';
 import { requireMember } from '../lib/context.js';
 import { AppError, notFound } from '../lib/errors.js';
 import { body, idParam, params, uuid } from '../lib/http.js';
-import { band, distanceKm, midpoint, type LatLng } from '../lib/geo.js';
+import { displayKm, distanceKm, midpoint, type LatLng } from '../lib/geo.js';
 import { localParts } from '../lib/time.js';
 import { emit } from '../services/hub.js';
 import { initialOf } from '../services/profiles.js';
@@ -188,11 +188,11 @@ export default async function safetyRoutes(app: FastifyInstance) {
         kind: x.pl.kind,
         district: x.pl.district,
         confirmed: !!x.pl.claimed_at,
-        // nur das Band zur eigenen Position — nie eine Entfernung zur Gegenseite oder zur Mitte (FV-66)
-        band: own ? band(distanceKm(own, { lat: x.pl.lat, lng: x.pl.lng })) : null,
+        // nur die gerundete Entfernung zur eigenen Position — nie zur Gegenseite oder zur Mitte (FV-66)
+        km: own ? displayKm(distanceKm(own, { lat: x.pl.lat, lng: x.pl.lng })) : null,
         openToday: x.open,
       }))
-      .sort((x, y) => (x.band ?? 9) - (y.band ?? 9) || x.name.localeCompare(y.name, 'de'))
+      .sort((x, y) => (x.km ?? 9999) - (y.km ?? 9999) || x.name.localeCompare(y.name, 'de'))
       .slice(0, 20);
     return { places: out };
   });

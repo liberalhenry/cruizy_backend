@@ -6,7 +6,7 @@
 import type { FastifyInstance } from 'fastify';
 import { env } from '../config/env.js';
 import { p } from '../config/params.js';
-import { GENDER_CATEGORIES, INTENTIONS, TRAIT_GROUPS } from '../services/catalogs.js';
+import { BODY_TYPES, GENDER_CATEGORIES, INTENTIONS, KINK_GROUPS, POSITIONS, TRAIT_GROUPS } from '../services/catalogs.js';
 import { allowedDurations } from '../services/intentions.js';
 import { vapidPublicKey } from '../services/push.js';
 import { CONSENT_VERSION } from './auth.js';
@@ -37,6 +37,14 @@ export default async function publicRoutes(app: FastifyInstance) {
         imageMaxMb: p('P-BILD-MAX-MB'),
         albumMax: p('P-ALBUM-MAX'),
         traitsMax: p('P-MERKMALE-MAX'),
+        photosMax: p('P-FOTOS-MAX'),
+        gridMin: p('P-RASTER-MIN'),
+        gridStages: p('P-RASTER-STUFEN'),
+        searchMaxKm: p('P-SUCHE-MAX-KM'),
+        searchMinChars: p('P-SUCHE-MIN-ZEICHEN'),
+        freeTextMax: p('P-FREITEXT-MAX'),
+        bodyTypesMax: p('P-KOERPERTYP-MAX'),
+        kinksMax: p('P-KINKS-MAX'),
         blockBarS: p('P-BLOCK-LEISTE'),
         blockHours: hours(p('P-BLOCK-RUECKNAHME')),
         pinLength: p('P-PIN-LAENGE'),
@@ -72,6 +80,9 @@ export default async function publicRoutes(app: FastifyInstance) {
       intentions: INTENTIONS.map((i) => ({ key: i.key, textId: i.textId, default: i.default, durations: allowedDurations(i.key) })),
       traits: TRAIT_GROUPS.map((g) => ({ group: g.group, items: g.items.map(([id, name]) => ({ id, name })) })),
       genders: GENDER_CATEGORIES,
+      positions: POSITIONS,
+      bodyTypes: BODY_TYPES,
+      kinks: KINK_GROUPS.map((g) => ({ group: g.group, items: g.items.map(([key, name]) => ({ key, name })) })),
     };
   });
 

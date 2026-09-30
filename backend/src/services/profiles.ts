@@ -7,7 +7,7 @@
  */
 import { p } from '../config/params.js';
 import { q, one } from '../db/pool.js';
-import { band, distanceKm, type Band, type LatLng } from '../lib/geo.js';
+import { displayKm, distanceKm, type LatLng } from '../lib/geo.js';
 import { sameLocalDay } from '../lib/time.js';
 import { imgUrl } from './media-tokens.js';
 
@@ -32,7 +32,7 @@ export const VISIBLE_SQL = `
           AND ((b.blocker_id = $1 AND b.blocked_id = a.id) OR (b.blocker_id = a.id AND b.blocked_id = $1))))`;
 
 export const CARD_COLUMNS = `
-  a.id, a.last_active_at, a.first_visible_at, a.face_check_at, a.hash_restricted_at,
+  a.id, a.created_at AS account_created_at, a.last_active_at, a.first_visible_at, a.face_check_at, a.hash_restricted_at,
   pr.name, pr.age, pr.photo_mode, pr.initial_color, pr.intention, pr.intention_expires_at,
   pr.response_rate_enabled, pr.response_band, pr.gender_visible, pr.gender_category,
   l.display_lat, l.display_lng, l.approx, l.level,
@@ -73,8 +73,11 @@ export interface Tile {
   blurred: boolean;
   initial: string;
   color: string;
-  band: Band | null;
+  /** gerundete Entfernung (displayKm): 0 = unter 1 km, null = keine Angabe (Stadtwahl, Gast ohne Ort) */
+  km: number | null;
   approx: boolean;
+  /** Konto jünger als P-NEU-TAGE (Issue #22) */
+  isNew: boolean;
   intention: { key: string; hours: number } | null;
   response: 1 | 2 | 3 | null;
   verified: boolean;
@@ -90,8 +93,8 @@ export function toTile(row: any, viewer: Viewer, opts: { withActivity?: boolean 
   const photo = row.photo_mode === 'photo' ? parsePhoto(row.first_photo) : null;
   const guest = !viewer.id;
   const pos: LatLng | null = row.display_lat != null ? { lat: row.display_lat, lng: row.display_lng } : null;
-  let distBand: Band | null = null;
-  if (viewer.cell && pos) distBand = band(distanceKm(viewer.cell, pos));
+  let km: number | null = null;
+  if (viewer.cell && pos) km = displayKm(distanceKm(viewer.cell, pos));
   const response =
     !guest && viewer.responseEnabled && row.response_rate_enabled && row.response_band ? (row.response_band as 1 | 2 | 3) : null;
   const viewerKey = viewer.id ?? viewer.guestKey ?? 'gast';
@@ -103,8 +106,9 @@ export function toTile(row: any, viewer: Viewer, opts: { withActivity?: boolean 
     blurred: photo ? photo.blurred || guest : false,
     initial: guest ? '' : initialOf(row.name),
     color: row.initial_color,
-    band: distBand,
-    approx: !!row.approx && distBand !== null,
+    km,
+    approx: !!row.approx && km !== null,
+    isNew: !!row.account_created_at && Date.now() - new Date(row.account_created_at).getTime() < p('P-NEU-TAGE') * 86400_000,
     intention: currentIntention(row),
     response,
     verified: !guest && !!row.verified,
@@ -148,7 +152,8 @@ export async function isBlockedEitherWay(a: string, b: string): Promise<boolean>
 /** Vollständige Profilansicht (S20). */
 export async function profileView(viewer: Viewer, targetId: string) {
   const row = await one(
-    `SELECT ${CARD_COLUMNS}, pr.free_text, pr.traits, pr.gender_text, a.moderation_state
+    `SELECT ${CARD_COLUMNS}, pr.free_text, pr.traits, pr.gender_text, a.moderation_state,
+            pr.height_cm, pr.weight_kg, pr.position, pr.body_types, pr.kinks
        FROM accounts a JOIN profiles pr ON pr.account_id = a.id
        LEFT JOIN locations l ON l.account_id = a.id
       WHERE a.id = $2 AND ${VISIBLE_SQL}`,
@@ -182,5 +187,11 @@ export async function profileView(viewer: Viewer, targetId: string) {
     freeText: row.free_text || '',
     traits: row.traits ?? [],
     gender: row.gender_visible ? { category: row.gender_category, text: row.gender_text } : null,
+    // Issue #13 — alles freiwillig; leer heißt „keine Angabe“
+    heightCm: row.height_cm ?? null,
+    weightKg: row.weight_kg ?? null,
+    position: row.position ?? null,
+    bodyTypes: row.body_types ?? [],
+    kinks: row.kinks ?? [],
   };
 }

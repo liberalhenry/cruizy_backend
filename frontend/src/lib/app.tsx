@@ -22,6 +22,9 @@ export interface Config {
   intentions: { key: string; textId: string; default: string; durations: string[] }[];
   traits: { group: string; items: { id: number; name: string }[] }[];
   genders: { key: string; textId?: string; label?: string }[];
+  positions: { key: string; label: string }[];
+  bodyTypes: { key: string; label: string; hint: string }[];
+  kinks: { group: string; items: { key: string; name: string }[] }[];
 }
 
 interface Ctx {
@@ -32,6 +35,8 @@ interface Ctx {
   online: boolean;
   unread: number;
   convBadge: number;
+  /** roter Punkt ohne Zahl (z. B. ungelesene Anfragen, neue Profilbesucher) */
+  dot: { chats: boolean; ich: boolean };
   refreshCounts: () => void;
   toast: (text: string, action?: { label: string; run: () => void }, ms?: number) => void;
   logout: () => Promise<void>;
@@ -58,6 +63,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [online, setOnline] = useState(navigator.onLine);
   const [unread, setUnread] = useState(0);
   const [convBadge, setConvBadge] = useState(0);
+  const [dot, setDot] = useState<{ chats: boolean; ich: boolean }>({ chats: false, ich: false });
   const [toasts, setToasts] = useState<ToastState[]>([]);
 
   const toast = useCallback((text: string, action?: { label: string; run: () => void }, ms = 5000) => {
@@ -146,8 +152,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, [phase, refreshCounts, refreshMe]);
 
   const value = useMemo(
-    () => ({ config, phase, me, refreshMe, online, unread, convBadge, refreshCounts, toast, logout }),
-    [config, phase, me, refreshMe, online, unread, convBadge, refreshCounts, toast, logout],
+    () => ({ config, phase, me, refreshMe, online, unread, convBadge, dot, refreshCounts, toast, logout }),
+    [config, phase, me, refreshMe, online, unread, convBadge, dot, refreshCounts, toast, logout],
   );
 
   return (

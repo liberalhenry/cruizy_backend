@@ -196,6 +196,8 @@ async function housekeeping() {
   await q(`DELETE FROM place_claims WHERE (delete_after <= now()) OR (status = 'waiting_email' AND created_at < now() - interval '7 days')`);
   // Einzelereignisse der Kennzahlen: nach dem Monatsarchiv nicht länger als 13 Monate
   await q(`DELETE FROM metric_events WHERE at < now() - interval '400 days'`);
+  // Issue #22: Reihenfolgen der Rastersitzungen
+  await q(`DELETE FROM grid_snapshots WHERE created_at < now() - interval '6 hours'`);
 }
 
 /** Aufbewahrung von Vorgängen (P-TICKET-AUFBEWAHRUNG) und Meldefällen (P-FALL-AUFBEWAHRUNG, FV-78). */

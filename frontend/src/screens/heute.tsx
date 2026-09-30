@@ -9,7 +9,7 @@ import { api, ApiError, errText } from '../lib/api';
 import { useApp } from '../lib/app';
 import { idbGet, idbSet } from '../lib/idb';
 import { on } from '../lib/realtime';
-import { BAND_TEXT, fmtDate, fmtTime, t } from '../lib/texts';
+import { fmtDate, fmtKm, fmtTime, t } from '../lib/texts';
 import { LocationChip, LocationSheet } from './naehe';
 
 const DAYS = ['mo', 'di', 'mi', 'do', 'fr', 'sa', 'so'];
@@ -101,7 +101,7 @@ export function Heute() {
                           </span>
                           <span className="block text-sm muted">
                             {kindLabel(p.kind)} · {p.district}
-                            {p.band ? ` · ${t(BAND_TEXT[p.band])}` : ''}
+                            {p.km !== null && p.km !== undefined ? ` · ${fmtKm(p.km)}` : ''}
                             {p.hoursToday?.length ? ` · ${p.hoursToday.map((s: string[]) => s.join('–')).join(', ')}` : ''}
                           </span>
                           {p.paidTool && <span className="block text-xs muted">{t('UI-ORT-WERKZEUGKONTO')}</span>}
@@ -168,7 +168,7 @@ function EventList({ events, withDate }: { events: any[]; withDate?: boolean }) 
               <span className={`block ${e.cancelled ? 'line-through muted' : ''}`}>{e.title}</span>
               <span className="block text-sm muted">
                 {e.place?.name ?? ''}
-                {e.band ? ` · ${t(BAND_TEXT[e.band])}` : ''}
+                {e.km !== null && e.km !== undefined ? ` · ${fmtKm(e.km)}` : ''}
                 {e.count !== null && e.count !== undefined ? ` · ${t('UI-EREIGNIS-ZUSAGEN', { zahl: e.count })}` : ''}
                 {e.cancelled ? ` · ${t('UI-EREIGNIS-ABGESAGT')}` : ''}
               </span>
@@ -259,7 +259,7 @@ export function Ort() {
           <>
             <p className="muted">
               {kindLabel(p.kind)} · {p.district}
-              {p.band ? ` · ${t(BAND_TEXT[p.band])}` : ''}
+              {p.km !== null && p.km !== undefined ? ` · ${fmtKm(p.km)}` : ''}
             </p>
             {p.confirmed && <p className="text-sm text-gut mt-1">✓ {t('UI-ORT-BESTAETIGT')}</p>}
             {p.paidTool && <p className="text-xs muted mt-1">{t('UI-ORT-WERKZEUGKONTO')}</p>}

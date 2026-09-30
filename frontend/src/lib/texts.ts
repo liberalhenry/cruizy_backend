@@ -40,6 +40,12 @@ export function bracketed(id: string): string[] {
 }
 
 export const BAND_TEXT: Record<number, string> = { 1: 'ST-STO-10', 2: 'ST-STO-11', 3: 'ST-STO-12', 4: 'ST-STO-13' };
+
+/** Gerundete Entfernung vom Server (Issue #12): 0 = unter 1 km. */
+export function fmtKm(km: number | null | undefined): string {
+  if (km === null || km === undefined) return '';
+  return km < 1 ? t('UI-KM-UNTER-1') : t('UI-KM', { km });
+}
 export const ACTIVITY_TEXT: Record<number, string> = { 1: 'ST-STO-20', 2: 'ST-STO-21', 3: 'ST-STO-22', 4: 'ST-STO-23', 5: 'ST-STO-24' };
 export const RESPONSE_TEXT: Record<number, string> = { 1: 'ST-PRO-10', 2: 'ST-PRO-11', 3: 'ST-PRO-12' };
 export const INTENTION_TEXT: Record<string, string> = { abend: 'ST-PRO-02', schreiben: 'ST-PRO-03', absicht3: 'ST-PRO-04', absicht4: 'ST-PRO-05' };

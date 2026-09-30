@@ -50,14 +50,14 @@ export async function ownPhotos(accountId: string) {
 export default async function photoRoutes(app: FastifyInstance) {
   app.get('/api/photos', async (req) => {
     const a = await requireMember(req, { allowDeletionPending: true });
-    return { photos: await ownPhotos(a.id), max: 8, hours: Math.round(p('P-FRIST-GRAU') / 3600) };
+    return { photos: await ownPhotos(a.id), max: p('P-FOTOS-MAX'), hours: Math.round(p('P-FRIST-GRAU') / 3600) };
   });
 
   app.post('/api/photos', async (req) => {
     const a = await requireMember(req, { write: false });
     if (!hit('upload', a.id, 30, 3600_000)) throw tooMany();
     const count = await one(`SELECT count(*)::int AS n FROM photos WHERE account_id = $1 AND status NOT IN ('rejected','blocked')`, [a.id]);
-    if (count!.n >= 8) throw bad('UI-FOTOS-MAX', {}, 'fotos_max'); // AK-F10-01
+    if (count!.n >= p('P-FOTOS-MAX')) throw bad('UI-FOTOS-MAX', { max: p('P-FOTOS-MAX') }, 'fotos_max'); // Issue #13: bis zu 20
     const { buffer, fields } = await readUpload(req);
     // Stufe 0: Format, Größe, Metadaten — vor jedem anderen Schritt (AK-F72-02)
     const prepared = await prepare(buffer);
@@ -95,7 +95,7 @@ export default async function photoRoutes(app: FastifyInstance) {
   // Reihenfolge ohne Ziehen (AK-F10-07): vollständige Liste der Kennungen
   app.put('/api/photos/order', async (req) => {
     const a = await requireMember(req);
-    const b = body(req, z.object({ ids: z.array(z.string().uuid()).max(8) }));
+    const b = body(req, z.object({ ids: z.array(z.string().uuid()).max(p('P-FOTOS-MAX')) }));
     await tx(async (c) => {
       for (let i = 0; i < b.ids.length; i++) {
         await c.query(`UPDATE photos SET position = $3 WHERE id = $1 AND account_id = $2`, [b.ids[i], a.id, i]);

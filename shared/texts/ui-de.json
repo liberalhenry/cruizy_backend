@@ -151,6 +151,10 @@
   "s": "ENTWURF",
   "t": "{zahl} neu"
  },
+ "UI-APP-NEUES": {
+  "s": "ENTWURF",
+  "t": "Neues"
+ },
  "UI-APP-NICHT-JETZT": {
   "s": "ENTWURF",
   "t": "Nicht jetzt"
@@ -523,6 +527,14 @@
   "s": "ENTWURF",
   "t": "Bitte prüf deine Eingabe."
  },
+ "UI-EINST-AUFFINDBAR": {
+  "s": "ENTWURF",
+  "t": "Über die Namenssuche auffindbar"
+ },
+ "UI-EINST-AUFFINDBAR-ERKL": {
+  "s": "ENTWURF",
+  "t": "Aus: Andere finden dich nicht über deinen Namen. Im Raster bleibst du sichtbar."
+ },
  "UI-EINST-KONTO": {
   "s": "ENTWURF",
   "t": "Konto"
@@ -803,6 +815,10 @@
   "s": "ENTWURF",
   "t": "Absicht"
  },
+ "UI-FILTER-AKTIV": {
+  "s": "ENTWURF",
+  "t": "{zahl} aktiv"
+ },
  "UI-FILTER-ALLE-ENTFERNEN": {
   "s": "ENTWURF",
   "t": "Alle Filter entfernen"
@@ -815,9 +831,17 @@
   "s": "ENTWURF",
   "t": "Nach Alter filtern"
  },
+ "UI-FILTER-ANTWORTET": {
+  "s": "ENTWURF",
+  "t": "Antwortet meistens oder besser"
+ },
  "UI-FILTER-ANZEIGEN": {
   "s": "ENTWURF",
   "t": "Anzeigen"
+ },
+ "UI-FILTER-BEREICH-AN": {
+  "s": "ENTWURF",
+  "t": "Bereich festlegen"
  },
  "UI-FILTER-BIS": {
   "s": "ENTWURF",
@@ -831,9 +855,37 @@
   "s": "ENTWURF",
   "t": "Entfernung"
  },
+ "UI-FILTER-GEWICHT": {
+  "s": "ENTWURF",
+  "t": "Gewicht (kg)"
+ },
+ "UI-FILTER-GROESSE": {
+  "s": "ENTWURF",
+  "t": "Größe (cm)"
+ },
  "UI-FILTER-HOECHSTENS-ZWEI": {
   "s": "ENTWURF",
   "t": "Höchstens zwei gleichzeitig."
+ },
+ "UI-FILTER-KINKS": {
+  "s": "ENTWURF",
+  "t": "Kinks und Fetische"
+ },
+ "UI-FILTER-KOERPERTYP": {
+  "s": "ENTWURF",
+  "t": "Körpertyp"
+ },
+ "UI-FILTER-MIT-FOTO": {
+  "s": "ENTWURF",
+  "t": "Nur mit Foto"
+ },
+ "UI-FILTER-ODER": {
+  "s": "ENTWURF",
+  "t": "Mindestens eins davon"
+ },
+ "UI-FILTER-POSITION": {
+  "s": "ENTWURF",
+  "t": "Position"
  },
  "UI-FILTER-TREFFER": {
   "s": "ENTWURF",
@@ -846,6 +898,10 @@
  "UI-FOTO-ABGELEHNT-TITEL": {
   "s": "ENTWURF",
   "t": "Dein Foto wurde nicht freigegeben"
+ },
+ "UI-FOTO-ALS-ERSTES": {
+  "s": "ENTWURF",
+  "t": "Als erstes Foto zeigen"
  },
  "UI-FOTO-ANDERES": {
   "s": "ENTWURF",
@@ -870,6 +926,10 @@
  "UI-FOTO-HOCHLADEN": {
   "s": "ENTWURF",
   "t": "Hochladen"
+ },
+ "UI-FOTO-IN-PRUEFUNG": {
+  "s": "ENTWURF",
+  "t": "in Prüfung"
  },
  "UI-FOTO-LINKS": {
   "s": "ENTWURF",
@@ -919,9 +979,13 @@
   "s": "ENTWURF",
   "t": "Du hast die Fotoprüfung heute schon oft versucht. Morgen geht es wieder."
  },
+ "UI-FOTOS-ANZAHL": {
+  "s": "ENTWURF",
+  "t": "{zahl} von {max} Fotos"
+ },
  "UI-FOTOS-MAX": {
   "s": "ENTWURF",
-  "t": "Mehr als acht Fotos gehen nicht."
+  "t": "Mehr als {max} Fotos gehen nicht."
  },
  "UI-GAST-NETZ": {
   "s": "ENTWURF",
@@ -1086,6 +1150,22 @@
  "UI-KEIN-UNKENNTLICHES-FOTO": {
   "s": "ENTWURF",
   "t": "Du hast kein unkenntlich gemachtes Foto, das sich freischalten ließe."
+ },
+ "UI-KINKS-MAX": {
+  "s": "ENTWURF",
+  "t": "Höchstens {max} Angaben."
+ },
+ "UI-KM": {
+  "s": "ENTWURF",
+  "t": "{km} km"
+ },
+ "UI-KM-UNTER-1": {
+  "s": "ENTWURF",
+  "t": "< 1 km"
+ },
+ "UI-KOERPERTYP-MAX": {
+  "s": "ENTWURF",
+  "t": "Höchstens {max} Körpertypen."
  },
  "UI-KONTO-ANMELDEN": {
   "s": "ENTWURF",
@@ -1723,9 +1803,37 @@
   "s": "ENTWURF",
   "t": "Über mich"
  },
+ "UI-PROFIL-FREITEXT-ZAEHLER": {
+  "s": "ENTWURF",
+  "t": "{zahl}/{max}"
+ },
+ "UI-PROFIL-GEWICHT": {
+  "s": "ENTWURF",
+  "t": "Gewicht (kg)"
+ },
+ "UI-PROFIL-GROESSE": {
+  "s": "ENTWURF",
+  "t": "Größe (cm)"
+ },
  "UI-PROFIL-INTERESSEN": {
   "s": "ENTWURF",
   "t": "Interessen"
+ },
+ "UI-PROFIL-KEINE-ANGABE": {
+  "s": "ENTWURF",
+  "t": "Keine Angabe"
+ },
+ "UI-PROFIL-KINKS": {
+  "s": "ENTWURF",
+  "t": "Kinks und Fetische"
+ },
+ "UI-PROFIL-KINKS-ERKL": {
+  "s": "ENTWURF",
+  "t": "Ganz freiwillig. Was du auswählst, steht sichtbar in deinem Profil. Du kannst es jederzeit wieder entfernen."
+ },
+ "UI-PROFIL-KOERPERTYP": {
+  "s": "ENTWURF",
+  "t": "Körpertyp"
  },
  "UI-PROFIL-NAME": {
   "s": "ENTWURF",
@@ -1735,11 +1843,27 @@
   "s": "ENTWURF",
   "t": "Nicht mehr merken"
  },
+ "UI-PROFIL-POSITION": {
+  "s": "ENTWURF",
+  "t": "Position"
+ },
  "UI-PROFIL-SCHREIBEN": {
   "s": "ENTWURF",
   "t": "Schreiben"
  },
  "UI-PROFIL-SO-SEHEN-DICH": {
+  "s": "ENTWURF",
+  "t": "So sehen dich andere"
+ },
+ "UI-PROFIL-TIPPEN-BEARBEITEN": {
+  "s": "ENTWURF",
+  "t": "Tippen zum Bearbeiten"
+ },
+ "UI-PROFIL-UEBER-MICH": {
+  "s": "ENTWURF",
+  "t": "Über mich"
+ },
+ "UI-PROFIL-VORSCHAU": {
   "s": "ENTWURF",
   "t": "So sehen dich andere"
  },
@@ -1766,6 +1890,66 @@
  "UI-PRUEFUNG-WARUM": {
   "s": "ENTWURF",
   "t": "Warum?"
+ },
+ "UI-RASTER-ANWENDEN": {
+  "s": "ENTWURF",
+  "t": "Übernehmen"
+ },
+ "UI-RASTER-ENDE": {
+  "s": "ENTWURF",
+  "t": "Das sind alle."
+ },
+ "UI-RASTER-ERWEITERN": {
+  "s": "ENTWURF",
+  "t": "Auch Profile außerhalb meines Radius anzeigen"
+ },
+ "UI-RASTER-ERWEITERN-ERKL": {
+  "s": "ENTWURF",
+  "t": "Sind es weniger als {zahl}, zeigen wir darunter Profile weiter weg — getrennt, bis höchstens {km} km."
+ },
+ "UI-RASTER-LAEDT": {
+  "s": "ENTWURF",
+  "t": "Lädt weitere Profile …"
+ },
+ "UI-RASTER-LEER": {
+  "s": "ENTWURF",
+  "t": "Im Umkreis von {km} km ist gerade niemand zu sehen."
+ },
+ "UI-RASTER-LEER-ERWEITERN": {
+  "s": "ENTWURF",
+  "t": "Umkreis vergrößern"
+ },
+ "UI-RASTER-NEU": {
+  "s": "ENTWURF",
+  "t": "Neu"
+ },
+ "UI-RASTER-NEU-REIHE": {
+  "s": "ENTWURF",
+  "t": "Neu in deiner Nähe"
+ },
+ "UI-RASTER-RADIUS": {
+  "s": "ENTWURF",
+  "t": "Umkreis"
+ },
+ "UI-RASTER-RADIUS-ERKL": {
+  "s": "ENTWURF",
+  "t": "Alle, die in diesem Umkreis sichtbar sind, siehst du immer — nur die Reihenfolge wird gemischt."
+ },
+ "UI-RASTER-RADIUS-WERT": {
+  "s": "ENTWURF",
+  "t": "{km} km"
+ },
+ "UI-RASTER-TRAVEL": {
+  "s": "ENTWURF",
+  "t": "Du stöberst in {ort}."
+ },
+ "UI-RASTER-TRENNER": {
+  "s": "ENTWURF",
+  "t": "Das war’s in {x} km. Etwas weiter weg (bis {y} km):"
+ },
+ "UI-RASTER-UMKREIS-TITEL": {
+  "s": "ENTWURF",
+  "t": "Umkreis"
  },
  "UI-RECHT-BEDINGUNGEN": {
   "s": "ENTWURF",
@@ -1959,6 +2143,34 @@
   "s": "ENTWURF",
   "t": "Diese Prüfung hast du schon bestanden."
  },
+ "UI-SUCHE": {
+  "s": "ENTWURF",
+  "t": "Suchen"
+ },
+ "UI-SUCHE-ERKL": {
+  "s": "ENTWURF",
+  "t": "Gesucht wird im Umkreis von {km} km — nur Profile, die gefunden werden möchten. Die Filter gelten auch hier."
+ },
+ "UI-SUCHE-KEINE": {
+  "s": "ENTWURF",
+  "t": "Niemand mit diesem Namen im Umkreis von {km} km."
+ },
+ "UI-SUCHE-PLATZHALTER": {
+  "s": "ENTWURF",
+  "t": "Name"
+ },
+ "UI-SUCHE-TITEL": {
+  "s": "ENTWURF",
+  "t": "Namen suchen"
+ },
+ "UI-SUCHE-TREFFER": {
+  "s": "ENTWURF",
+  "t": "{zahl} Treffer"
+ },
+ "UI-SUCHE-ZU-KURZ": {
+  "s": "ENTWURF",
+  "t": "Mindestens {zahl} Zeichen."
+ },
  "UI-SYS-": {
   "s": "ENTWURF",
   "t": ""
@@ -1988,6 +2200,10 @@
   "t": "Chats"
  },
  "UI-TAB-ICH": {
+  "s": "ENTWURF",
+  "t": "Ich"
+ },
+ "UI-TAB-ICH-PROFIL": {
   "s": "ENTWURF",
   "t": "Ich"
  },
@@ -2046,6 +2262,18 @@
  "UI-TESTBETRIEB-HINWEIS": {
   "s": "ENTWURF",
   "t": "Testbetrieb — bitte nur erfundene Angaben und keine echten Fotos von dir."
+ },
+ "UI-TRAVEL-BALD-KURZ": {
+  "s": "ENTWURF",
+  "t": "Bald in {ort}"
+ },
+ "UI-TRAVEL-BALD-REIHE": {
+  "s": "ENTWURF",
+  "t": "Bald in der Gegend"
+ },
+ "UI-TRAVEL-BEENDEN": {
+  "s": "ENTWURF",
+  "t": "Zurück zu meinem Ort"
  },
  "UI-TREFFPUNKT-SPAETER": {
   "s": "ENTWURF",

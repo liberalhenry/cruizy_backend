@@ -355,6 +355,20 @@ APP = {
 }
 T.update(APP)
 
+# Funktionen aus den Issues #11–#30 stehen in einer eigenen Datei
+import sys
+sys.dont_write_bytecode = True
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from ui_funktionen import ERSETZT, NEU  # noqa: E402
+for _k in NEU:
+    if _k in T:
+        raise SystemExit(f'Text {_k} doppelt')
+for _k in ERSETZT:
+    if _k not in T:
+        raise SystemExit(f'Text {_k} gibt es nicht — in NEU eintragen')
+T.update(NEU)
+T.update(ERSETZT)
+
 FAQ = [
   ('Ich komme nicht mehr in mein Konto — was kann ich tun?', 'Auf der Anmeldeseite unter „Passwort vergessen“ schicken wir dir einen Code an deine bestätigte Adresse oder Nummer. Hast du beides nicht mehr, hilft dein Wiederherstellungscode oder der Weg über eine Vertrauensperson.'),
   ('Ich habe meinen Wiederherstellungscode verloren.', 'Solange du angemeldet bist, kannst du unter „Ich“ → „Konto“ einen neuen Code erzeugen. Der alte gilt dann nicht mehr.'),

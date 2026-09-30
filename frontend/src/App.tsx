@@ -7,7 +7,7 @@ import { hasPin, installHideTriggers, isHidden, onHideChange, unlock } from './l
 import { t } from './lib/texts';
 import { api } from './lib/api';
 import { Einwilligung, Gast, HomeBildschirm, Konto, PasswortNeu, ProfilAnlegen, Willkommen, Wiederherstellung, WiederherstellungAbbrechen } from './screens/einstieg';
-import { Naehe } from './screens/naehe';
+import { Naehe, Suche } from './screens/naehe';
 import { FotoHinzufuegen, ProfilEditor, ProfilEigen, ProfilFremd } from './screens/profil';
 import { AlbumAnsicht, Chat, Chats, EigenesAlbum } from './screens/chats';
 import { Pruefung, PruefungAusweis, PruefungFertig } from './screens/pruefung';
@@ -15,13 +15,30 @@ import { Ereignis, Heute, Ort } from './screens/heute';
 import { Abo, Blockiert, CheckIn, Daten, Einstellungen, Hilfe, Ich, KontoSichern, Meldungen, Merkliste, Mitteilungen, Sicherheit, Treffpunkt, Verstecken } from './screens/ich';
 import { MeldenOhneKonto, Moderationszeiten, OrtBeanspruchen, OrtBestaetigen, Rechtliches } from './screens/oeffentlich';
 
+/** Kleines eigenes Profilbild im Reiter „Ich“ (Issue #13). Ohne Foto die Initiale. */
+function MeIcon({ active }: { active: boolean }) {
+  const { me } = useApp();
+  const [broken, setBroken] = useState(false);
+  const pr = me?.profile;
+  const url = pr?.photoMode === 'photo' ? me?.photos?.find((x: any) => x.status === 'approved')?.url : null;
+  useEffect(() => setBroken(false), [url]);
+  const ring = active ? 'ring-2 ring-akzent' : 'ring-1 ring-linie';
+  if (url && !broken) return <img src={url} alt="" onError={() => setBroken(true)} className={`w-6 h-6 rounded-full object-cover ${ring}`} />;
+  if (!pr) return <Icon name="me" className="w-6 h-6" />;
+  return (
+    <span className={`w-6 h-6 rounded-full grid place-items-center text-[11px] font-semibold text-white ${ring}`} style={{ background: pr.color }} aria-hidden="true">
+      {[...(pr.name ?? '?')][0]?.toUpperCase()}
+    </span>
+  );
+}
+
 function TabBar() {
-  const { convBadge, unread } = useApp();
+  const { convBadge, unread, dot } = useApp();
   const tabs = [
     { to: '/naehe', label: t('UI-TAB-NAEHE'), icon: 'grid' },
     { to: '/heute', label: t('ST-HEU-01'), icon: 'today' },
-    { to: '/chats', label: t('UI-TAB-CHATS'), icon: 'chat', badge: convBadge },
-    { to: '/ich', label: t('UI-TAB-ICH'), icon: 'me', badge: unread },
+    { to: '/chats', label: t('UI-TAB-CHATS'), icon: 'chat', badge: convBadge, dot: dot.chats },
+    { to: '/ich', label: t('UI-TAB-ICH'), icon: 'me', badge: unread, dot: dot.ich },
   ];
   return (
     <nav className="fixed bottom-0 inset-x-0 z-30 bg-flaeche/95 backdrop-blur border-t border-linie safe-bottom" aria-label={t('UI-APP-HAUPTNAVIGATION')}>
@@ -32,12 +49,17 @@ function TabBar() {
             to={x.to}
             className={({ isActive }) => `relative flex flex-col items-center justify-center gap-0.5 min-h-[56px] text-xs ${isActive ? 'text-akzent' : 'text-leise'}`}
           >
-            <Icon name={x.icon} className="w-6 h-6" />
-            <span>{x.label}</span>
-            {!!x.badge && (
-              <span className="absolute top-1.5 left-1/2 ml-2 min-w-[18px] h-[18px] px-1 rounded-full bg-akzent text-grund text-[11px] font-semibold grid place-items-center" aria-label={t('UI-APP-NEU', { zahl: x.badge })}>
-                {x.badge}
-              </span>
+            {({ isActive }) => (
+              <>
+                {x.to === '/ich' ? <MeIcon active={isActive} /> : <Icon name={x.icon} className="w-6 h-6" />}
+                <span>{x.label}</span>
+                {!!x.badge && (
+                  <span className="absolute top-1 left-1/2 ml-2 min-w-[18px] h-[18px] px-1 rounded-full bg-gefahr text-white text-[11px] font-semibold grid place-items-center" aria-label={t('UI-APP-NEU', { zahl: x.badge })}>
+                    {x.badge > 99 ? '99+' : x.badge}
+                  </span>
+                )}
+                {!x.badge && x.dot && <span className="absolute top-1.5 left-1/2 ml-3 w-2.5 h-2.5 rounded-full bg-gefahr" aria-label={t('UI-APP-NEUES')} />}
+              </>
             )}
           </NavLink>
         ))}
@@ -232,6 +254,7 @@ export default function App() {
       <Route path="/heute" element={<Shell><Heute /></Shell>} />
       <Route path="/chats" element={<Shell><Chats /></Shell>} />
       <Route path="/ich" element={<Shell><Ich /></Shell>} />
+      <Route path="/suche" element={<Suche />} />
       <Route path="/profil/:id" element={<ProfilFremd />} />
       <Route path="/chats/:id" element={<Chat />} />
       <Route path="/album" element={<EigenesAlbum />} />

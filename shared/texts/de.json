@@ -613,7 +613,7 @@
  },
  "ST-FEH-64": {
   "s": "ENTWURF",
-  "t": "Höchstens 400 Zeichen. Du bist bei {zahl}."
+  "t": "Höchstens {max} Zeichen. Du bist bei {zahl}."
  },
  "ST-FEST-01": {
   "s": "FEST",
@@ -1205,7 +1205,7 @@
  },
  "ST-PRO-60": {
   "s": "ENTWURF",
-  "t": "Bis zu 8 Fotos. Jedes wird geprüft, bevor andere es sehen."
+  "t": "Bis zu 20 Fotos, keine Videos. Jedes wird geprüft, bevor andere es sehen."
  },
  "ST-PRO-61": {
   "s": "ENTWURF",

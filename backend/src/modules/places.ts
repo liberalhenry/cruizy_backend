@@ -19,7 +19,7 @@ import { requireMember } from '../lib/context.js';
 import { decStr, encStr, randomToken, tokenHash } from '../lib/crypto.js';
 import { bad, notFound, tooMany } from '../lib/errors.js';
 import { body, idParam, ipKey, params } from '../lib/http.js';
-import { band, boundingBox, distanceKm, roundToCell, type LatLng } from '../lib/geo.js';
+import { boundingBox, displayKm, distanceKm, roundToCell, type LatLng } from '../lib/geo.js';
 import { nextNumber } from '../lib/numbers.js';
 import { hit } from '../lib/rate.js';
 import { t } from '../lib/texts.js';
@@ -114,7 +114,7 @@ async function upcomingEvents(placeIds: string[] | null, ref: LatLng | null, acc
       endsAt: e.ends_at,
       cancelled: e.status === 'cancelled',
       place: e.place_id ? { id: e.place_id, name: e.place_name } : null,
-      band: ref && e.lat != null ? band(distanceKm(ref, { lat: e.lat, lng: e.lng })) : null,
+      km: ref && e.lat != null ? displayKm(distanceKm(ref, { lat: e.lat, lng: e.lng })) : null,
       rsvp: e.mine,
       count,
     });
@@ -160,7 +160,7 @@ export default async function placeRoutes(app: FastifyInstance) {
           paidTool: pl.tool_account, // Kennzeichnung nach AK-F31-08, ohne Einfluss auf die Reihenfolge
           openToday: oh.open,
           hoursToday: oh.slots,
-          band: own ? band(distanceKm(own, { lat: pl.lat, lng: pl.lng })) : null,
+          km: own ? displayKm(distanceKm(own, { lat: pl.lat, lng: pl.lng })) : null,
         };
       }),
       // AK-F30-01/03: nur Gruppen am Zellmittelpunkt, Größe als Stufe
@@ -194,7 +194,7 @@ export default async function placeRoutes(app: FastifyInstance) {
         hoursToday: oh.slots,
         source: pl.source,
         sourceDate: pl.source_fetched_at,
-        band: own ? band(distanceKm(own, { lat: pl.lat, lng: pl.lng })) : null,
+        km: own ? displayKm(distanceKm(own, { lat: pl.lat, lng: pl.lng })) : null,
       },
       events: await upcomingEvents([pl.id], null, a.id),
     };

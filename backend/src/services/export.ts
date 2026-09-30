@@ -69,6 +69,7 @@ export const EXPORT_SECTIONS: Record<string, string> = {
   entitlements: 'berechtigungen',
   metric_events: 'kennzahlen_ereignisse',
   deletion_vault: 'nicht exportiert: gesperrte Ablage, für niemanden zugänglich (FV-97)',
+  grid_snapshots: 'nicht exportiert: Reihenfolge einer Rastersitzung (nur Kennungen, höchstens 6 Stunden)',
 };
 
 export async function collectExport(accountId: string) {
@@ -164,6 +165,12 @@ export async function collectExport(accountId: string) {
           geschlechtsidentitaet: { kategorie: prof.gender_category, beschreibung: prof.gender_text, sichtbar: prof.gender_visible },
           wen_ich_sehen_moechte: prof.see_groups,
           freitext: prof.free_text,
+          groesse_cm: prof.height_cm,
+          gewicht_kg: prof.weight_kg,
+          position: prof.position,
+          koerpertypen: prof.body_types,
+          kinks: prof.kinks,
+          in_namenssuche_auffindbar: prof.name_searchable,
           antwortquote: { eingeschaltet: prof.response_rate_enabled, band: prof.response_band },
           einstellungen: {
             sortierung: prof.sort_mode,
@@ -174,6 +181,8 @@ export async function collectExport(accountId: string) {
             ruhezeit: `${prof.quiet_from}–${prof.quiet_to} Uhr`,
             check_in_wirkung: prof.checkin_effect,
             filter: prof.filters,
+            raster_radius_km: prof.grid_radius_km,
+            raster_erweitern: prof.grid_expand,
           },
         }
       : null,

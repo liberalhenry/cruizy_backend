@@ -10,8 +10,11 @@ import { requireMember, requireSession } from '../lib/context.js';
 import { AppError, bad, notFound } from '../lib/errors.js';
 import { body, idParam, params } from '../lib/http.js';
 import {
+  BODY_TYPE_KEYS,
   GENDER_KEYS,
   INTENTIONS,
+  KINK_KEYS,
+  POSITION_KEYS,
   TRAIT_IDS,
   hasExclusionaryPhrase,
   validName,
@@ -90,6 +93,11 @@ export async function ownProfile(accountId: string) {
     seeGroups: r.see_groups,
     freeText: r.free_text,
     freeTextFlagged: r.free_text_flagged,
+    heightCm: r.height_cm,
+    weightKg: r.weight_kg,
+    position: r.position,
+    bodyTypes: r.body_types,
+    kinks: r.kinks,
     responseRate: { enabled: r.response_rate_enabled, band: r.response_rate_enabled ? r.response_band : null },
     verified: { age: !!r.age1_at, stage2: !!r.age2_at, photos: !!r.face_check_at, contract: !!r.contract_version },
     settings: {
@@ -102,6 +110,9 @@ export async function ownProfile(accountId: string) {
       quietTo: r.quiet_to,
       checkinEffect: r.checkin_effect,
       filters: r.filters,
+      nameSearchable: r.name_searchable,
+      gridRadiusKm: r.grid_radius_km,
+      gridExpand: r.grid_expand,
     },
     location: {
       level: r.level ?? 'grob',
@@ -180,6 +191,11 @@ export default async function profileRoutes(app: FastifyInstance) {
           .optional(),
         seeGroups: z.array(z.string()).optional(),
         freeText: z.string().optional(),
+        heightCm: z.number().int().min(120).max(230).nullable().optional(),
+        weightKg: z.number().int().min(35).max(250).nullable().optional(),
+        position: z.string().nullable().optional(),
+        bodyTypes: z.array(z.string()).optional(),
+        kinks: z.array(z.string()).optional(),
         responseRate: z.boolean().optional(),
         settings: z
           .object({
@@ -191,6 +207,8 @@ export default async function profileRoutes(app: FastifyInstance) {
             quietFrom: z.number().int().min(0).max(23).optional(),
             quietTo: z.number().int().min(0).max(23).optional(),
             checkinEffect: z.enum(['nichts', 'benachrichtigen']).optional(),
+            nameSearchable: z.boolean().optional(),
+            gridExpand: z.boolean().optional(),
           })
           .optional(),
       }),
@@ -235,8 +253,27 @@ export default async function profileRoutes(app: FastifyInstance) {
       if (b.seeGroups.some((g) => !GENDER_KEYS.has(g))) throw bad('UI-EINGABE-PRUEFEN');
       set('see_groups', [...new Set(b.seeGroups)]);
     }
+    if (b.heightCm !== undefined) set('height_cm', b.heightCm);
+    if (b.weightKg !== undefined) set('weight_kg', b.weightKg);
+    if (b.position !== undefined) {
+      if (b.position !== null && !POSITION_KEYS.has(b.position)) throw bad('UI-EINGABE-PRUEFEN', {}, 'position');
+      set('position', b.position);
+    }
+    if (b.bodyTypes !== undefined) {
+      const uniq = [...new Set(b.bodyTypes)];
+      if (uniq.some((x) => !BODY_TYPE_KEYS.has(x))) throw bad('UI-EINGABE-PRUEFEN', {}, 'koerpertyp');
+      if (uniq.length > p('P-KOERPERTYP-MAX')) throw bad('UI-KOERPERTYP-MAX', { max: p('P-KOERPERTYP-MAX') }, 'koerpertyp_max');
+      set('body_types', uniq);
+    }
+    if (b.kinks !== undefined) {
+      const uniq = [...new Set(b.kinks)];
+      if (uniq.some((x) => !KINK_KEYS.has(x))) throw bad('UI-EINGABE-PRUEFEN', {}, 'kink');
+      if (uniq.length > p('P-KINKS-MAX')) throw bad('UI-KINKS-MAX', { max: p('P-KINKS-MAX') }, 'kinks_max');
+      set('kinks', uniq);
+    }
     if (b.freeText !== undefined) {
-      if ([...b.freeText].length > 400) throw bad('ST-FEH-64', { zahl: [...b.freeText].length }, 'freitext_lang');
+      const max = p('P-FREITEXT-MAX');
+      if ([...b.freeText].length > max) throw bad('ST-FEH-64', { zahl: [...b.freeText].length, max }, 'freitext_lang');
       // FV-33: Hinweis, keine Sperre — gespeichert wird in jedem Fall
       const flagged = hasExclusionaryPhrase(b.freeText);
       set('free_text', b.freeText);
@@ -263,6 +300,8 @@ export default async function profileRoutes(app: FastifyInstance) {
       if (s.quietFrom !== undefined) set('quiet_from', s.quietFrom);
       if (s.quietTo !== undefined) set('quiet_to', s.quietTo);
       if (s.checkinEffect) set('checkin_effect', s.checkinEffect);
+      if (s.nameSearchable !== undefined) set('name_searchable', s.nameSearchable);
+      if (s.gridExpand !== undefined) set('grid_expand', s.gridExpand);
     }
     if (sets.length) await q(`UPDATE profiles SET ${sets.join(', ')}, updated_at = now() WHERE account_id = $1`, vals);
     if (s?.mediaReceive === 'immer') {

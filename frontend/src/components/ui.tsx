@@ -29,6 +29,19 @@ export function Icon({ name, className = 'w-5 h-5' }: { name: string; className?
     star: 'M12 4l2.5 5 5.5.8-4 3.9.9 5.5L12 16.6 7.1 19.2l.9-5.5-4-3.9 5.5-.8z',
     eye: 'M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12zM12 15a3 3 0 100-6 3 3 0 000 6z',
     clock: 'M12 21a9 9 0 100-18 9 9 0 000 18zM12 7v5l3 2',
+    search: 'M11 18a7 7 0 100-14 7 7 0 000 14zM20 20l-4-4',
+    mic: 'M12 3a3 3 0 00-3 3v6a3 3 0 006 0V6a3 3 0 00-3-3zM5 11a7 7 0 0014 0M12 18v3',
+    smile: 'M12 21a9 9 0 100-18 9 9 0 000 18zM8.5 14.5s1.3 1.5 3.5 1.5 3.5-1.5 3.5-1.5M9 9.5h.01M15 9.5h.01',
+    album: 'M4 7h16v12H4zM7 4h10M9 12l2 2 4-4',
+    flame: 'M12 3s5 4.5 5 9a5 5 0 01-10 0c0-2 1-3.5 1-3.5S9 11 10.5 11C10.5 7.5 12 3 12 3z',
+    heart: 'M12 20s-7-4.4-7-10a4 4 0 017-2.6A4 4 0 0119 10c0 5.6-7 10-7 10z',
+    play: 'M8 5v14l11-7z',
+    pause: 'M7 5h4v14H7zM13 5h4v14h-4z',
+    edit: 'M4 20h4L19 9l-4-4L4 16zM13.5 6.5l4 4',
+    calendar: 'M4 6h16v14H4zM4 10h16M8 3v4M16 3v4',
+    info: 'M12 21a9 9 0 100-18 9 9 0 000 18zM12 11v5M12 8h.01',
+    users: 'M9 11a3 3 0 100-6 3 3 0 000 6zM3 20c.8-3.3 3.3-5 6-5s5.2 1.7 6 5M16 11a3 3 0 100-6M18 15c1.5.7 2.6 2.4 3 5',
+    plane: 'M2 13l8-2 5-7 2 1-3 7 5 2 1-1 2 1-2 3-3-1-7 3-2-1 3-4z',
   };
   return (
     <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">

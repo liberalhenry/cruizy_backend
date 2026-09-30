@@ -11,7 +11,7 @@ import { useApp } from '../lib/app';
 import { idbGet, idbSet } from '../lib/idb';
 import { hasPin, hideNow, removePin, setPin } from '../lib/hide';
 import { disablePush, enablePush, isIosSafariNotInstalled, pushSupported } from '../lib/push';
-import { BAND_TEXT, fmtDate, parts, plain, t } from '../lib/texts';
+import { fmtDate, fmtKm, parts, plain, t } from '../lib/texts';
 import { LocationSheet } from './naehe';
 import { SymbolPicker } from './einstieg';
 
@@ -31,7 +31,7 @@ export function Ich() {
     <>
       <Header title={t('UI-TAB-ICH')} />
       <Page>
-        <button className="card p-4 w-full flex items-center gap-4 text-left mb-4" onClick={() => nav('/ich/profil')}>
+        <button className="card p-4 w-full flex items-center gap-4 text-left mb-4" onClick={() => nav('/ich/profil/bearbeiten')} aria-label={t('UI-PROFIL-BEARBEITEN')}>
           <Avatar name={p.name} color={p.color} photo={photo} size={56} />
           <span className="flex-1">
             <span className="block text-lg font-semibold">{p.name}</span>
@@ -103,7 +103,7 @@ export function Ich() {
 
         <ListCard>
           <RowLink to="/ich/mitteilungen" label={t('ST-SIC-50')} badge={unread ? <span className="rounded-full bg-akzent text-grund px-2 text-xs">{unread}</span> : undefined} />
-          <RowLink to="/ich/profil" label={t('UI-ICH-PROFIL')} />
+          <RowLink to="/ich/profil/bearbeiten" label={t('UI-ICH-PROFIL')} hint={t('UI-PROFIL-BEARBEITEN')} />
           <RowLink to="/ich/merkliste" label={t('UI-ICH-MERKLISTE')} />
           <RowLink to="/album" label={t('UI-ALBUM-MEINS')} />
           <RowLink to="/ich/sicherheit" label={t('ST-SIC-01')} hint={t('ST-SIC-02')} />
@@ -439,7 +439,7 @@ export function Treffpunkt() {
                   </span>
                   <span className="block text-sm muted">
                     {p.district}
-                    {p.band ? ` · ${t(BAND_TEXT[p.band])}` : ''}
+                    {p.km !== null && p.km !== undefined ? ` · ${fmtKm(p.km)}` : ''}
                     {p.openToday ? ` · ${t('UI-ORT-HEUTE-OFFEN-KURZ')}` : ''}
                   </span>
                 </button>
@@ -1067,6 +1067,17 @@ export function Einstellungen() {
               }}
               label={t('UI-PROFIL-ANTWORTQUOTE')}
               hint={t('ST-PRO-13')}
+            />
+          </div>
+        </Section>
+        <Section title={t('UI-TAB-NAEHE')}>
+          <div className="card p-4">
+            <Toggle checked={s.nameSearchable} onChange={(v) => patch({ nameSearchable: v })} label={t('UI-EINST-AUFFINDBAR')} hint={t('UI-EINST-AUFFINDBAR-ERKL')} />
+            <Toggle
+              checked={s.gridExpand}
+              onChange={(v) => patch({ gridExpand: v })}
+              label={t('UI-RASTER-ERWEITERN')}
+              hint={t('UI-RASTER-ERWEITERN-ERKL', { zahl: config?.params.gridMin ?? 50, km: (s.gridRadiusKm ?? 10) >= 150 ? s.gridRadiusKm : (s.gridRadiusKm ?? 10) >= 100 ? 150 : 100 })}
             />
           </div>
         </Section>
