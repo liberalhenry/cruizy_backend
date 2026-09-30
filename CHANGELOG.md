@@ -11,6 +11,33 @@ Werkzeug → „Aktualisierung“ (Owner) oder `bash deploy/update.sh`.
 
 ## [Unveröffentlicht]
 
+## [0.5.0] – 2026-09-30
+
+### Neu
+- **Postfach im Werkzeug** (neue Startseite): alle Meldungen, Widersprüche/Einsprüche, Rückmeldungen mit
+  Antwortwunsch und Anfragen an den Support untereinander — sortiert nach Vorrang und Restfrist, Filter nach
+  Team und „Team ist dran / Person ist dran / erledigt“, Suche nach H- oder M-Nummer, dazu „Weitere Aufgaben“
+  (Warteschlange, Freigaben, Termine …). Jede Meldung, jeder Widerspruch und jede Rückmeldung mit
+  Antwortwunsch bekommt ein Ticket.
+- **Ticket-Ansicht:** links ein Chat mit der Person (wie ein Messenger; interne Notizen nur fürs Team,
+  Vorlagen, Enter sendet), rechts die Aktionen: Frist, Übernehmen, an ein Team weitergeben (mit Notiz),
+  Kategorie, Abschließen, Meldung ansehen und entscheiden, Widerspruch entscheiden, Zugriff auf Daten
+  anfragen, Person sperren oder einschränken (auch mit Bezug auf das Ticket selbst).
+- **Teams:** Allgemeiner Support, Moderation & Sicherheit, Technik, Datenschutz & Recht, Abo & Zahlung.
+  Anfragen ohne Anlass landen im allgemeinen Support und werden von dort weitergegeben; mit Anlass direkt
+  im zuständigen Team. Owner ordnen Personen unter „Team“ ihren Teams zu („Meine Teams“ im Postfach).
+- **Antwortfrist:** erste Antwort binnen 24 Std., danach 24 Std. ab der letzten Nachricht der Person;
+  solange die Person dran ist, läuft keine Frist (`P-TICKET-FRIST`).
+
+### Geändert
+- **Owner handeln überall allein und ohne Begründung.** Fehlt die Begründung, steht „Ohne Begründung
+  (Owner)“ im Zugriffsprotokoll; Betroffene lesen stattdessen einen neutralen Satz. Neu dabei: eine
+  Meldung mit „eingeschränkt/gesperrt“ wirkt bei Owner sofort (bisher wartete sie auf eine zweite Person),
+  Owner verwerfen eigene Sperranträge und entscheiden Widersprüche auch gegen eigene Entscheidungen
+  (Protokoll: „ohne zweite Person“). Für alle anderen bleiben Begründung und zweite Person Pflicht.
+- Hilfe in der App: der Anlass ist freiwillig („Allgemeine Frage“); Meldungen und Widersprüche erscheinen
+  mit Betreff im Postfach der Person. „Kontaktservice“ im Werkzeug ist im Postfach aufgegangen.
+
 ### Behoben
 - `deploy/update.sh` von Hand brach mit „not a git repository“ ab: das Skript lief als Kopie in `/tmp`
   und suchte das Repository dort. Der Knopf im Werkzeug war nicht betroffen.

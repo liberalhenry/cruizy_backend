@@ -187,7 +187,8 @@ export function ticketSubject(tk: { kind: string; category: number; related_ref?
   if (tk.kind === 'meldung') return `${t('UI-PF-MELDUNG')} ${tk.related_ref ?? ''}${extra.reportReason ? ` · ${t(REASON_TEXT[extra.reportReason] ?? 'ST-MEL-10')}` : ''}`.trim();
   if (tk.kind === 'widerspruch') return `${t('UI-PF-WIDERSPRUCH')} ${tk.related_ref ?? ''}`.trim();
   if (tk.kind === 'rueckmeldung') return t('UI-PF-RUECKMELDUNG');
-  return t(`UI-HLF-KAT-${tk.category}`);
+  // ohne Anlass (Kategorie 10) — die allgemeine Frage im Support
+  return tk.category === 10 ? t('UI-HLF-KAT-ALLGEMEIN') : t(`UI-HLF-KAT-${tk.category}`);
 }
 
 /**

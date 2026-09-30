@@ -63,8 +63,9 @@ löschen. Jede Änderung braucht eine Begründung und steht im Zugriffsprotokoll
 mindestens ein aktiver Owner. Unter **„Mein Zugang“** ändert jede Person ihr eigenes Passwort.
 
 **Vier-Augen-Prinzip:** Für MOD- und BETRIEB-Zugänge ohne Owner-Kennzeichen brauchen Sperren,
-Kontext ausklappen, Dateiansicht und Art.-18-Meldungen eine zweite Person. **Owner** handeln dabei
-ohne zweite Person; jede solche Handlung steht als „ohne zweite Person“ im Zugriffsprotokoll. Die
+Kontext ausklappen, Dateiansicht und Art.-18-Meldungen eine zweite Person. **Owner** handeln bei allem
+allein und ohne Begründung; jede solche Handlung steht als „ohne zweite Person“ bzw. „Ohne Begründung
+(Owner)“ im Zugriffsprotokoll. Die
 Regel steht zusätzlich in der Datenbank (Trigger `enforce_second_person`). Es gibt keinen Notfallzugang.
 
 ### Testbetrieb und Echtbetrieb
@@ -122,14 +123,24 @@ eigene Nummer ist; erst dann kommen Codes an. Wartende Codes gehen sofort nach d
 Unter **Einstellungen → Auch außerhalb der App** lassen sich zusätzlich alle Mitteilungen per Telegram
 oder E-Mail bekommen (Voreinstellung aus, ohne Inhalt; Sicherheitsmitteilungen nie mit Inhalt).
 
-### Support und Datenfreigabe
+### Postfach, Teams und Datenfreigabe
 
-Nachrichten an das Support-Team landen im Werkzeug unter **„Vorgänge“**. Antworten stehen bei Personen
-mit Konto immer in der App (auf Wunsch mit Hinweis per E-Mail ohne Inhalt); geantwortet wird nur in der
-App. Im geöffneten Vorgang kann das Team um **Datenfreigabe** bitten — Konto-, Profil- oder
-Diagnosedaten, mit Begründung. Sichtbar wird davon erst etwas, wenn die Person in der App zustimmt;
-die Freigabe gilt `P-SUPPORT-FREIGABE` (7 Tage), ist jederzeit widerrufbar und endet mit dem Abschluss.
-Jede Einsicht steht im Zugriffsprotokoll. Nachrichten, Fotos, Standort und Ausweisbilder gehören nie dazu.
+Startseite des Werkzeugs ist das **Postfach**: alle Meldungen, Widersprüche/Einsprüche, Rückmeldungen mit
+Antwortwunsch und Anfragen an den Support als Tickets untereinander, sortiert nach Vorrang und Restfrist.
+Ein Ticket öffnet sich als **Chat** mit der Person (links; interne Notizen nur fürs Team) und den
+**Aktionen** (rechts): übernehmen, an ein Team weitergeben, Meldung oder Widerspruch entscheiden, Zugriff
+auf Daten anfragen, Person sperren, abschließen.
+
+- **Teams:** Allgemeiner Support, Moderation & Sicherheit, Technik, Datenschutz & Recht, Abo & Zahlung.
+  Anfragen ohne Anlass landen im allgemeinen Support; mit Anlass direkt im Team. Wer in welchem Team ist,
+  legen Owner unter **„Team“** fest.
+- **Frist:** erste Antwort binnen 24 Std., danach 24 Std. ab der letzten Nachricht der Person (`P-TICKET-FRIST`).
+- **Antworten** stehen bei Personen mit Konto in der App (auf Wunsch mit Hinweis per E-Mail ohne Inhalt);
+  ohne Konto per E-Mail. Die Person antwortet nur in der App.
+- **Datenfreigabe:** Konto-, Profil- oder Diagnosedaten erst nach Zustimmung der Person, befristet
+  (`P-SUPPORT-FREIGABE`, 7 Tage), widerrufbar, endet mit dem Abschluss; jede Einsicht im Zugriffsprotokoll.
+- **Owner** handeln überall allein und ohne Begründung (im Protokoll: „Ohne Begründung (Owner)“). Für alle
+  anderen gelten Begründung und zweite Person weiter — auch als Datenbankregel.
 
 ### Discord
 

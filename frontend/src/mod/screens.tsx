@@ -5,13 +5,14 @@ import { api, errText } from '../lib/api';
 import { fmtDate, t } from '../lib/texts';
 import { EventDetail, Veranstalter, VeranstaltungenPruefen } from './veranstaltungen';
 import { DateAdmin } from './date';
+import { Postfach } from './postfach';
 import { Card, Logo, Reason, isOwnerMode, useAction, tooShort } from './common';
 import { MeinZugang, Team } from './team';
 import { Ausweise } from './ausweis';
 import { Aktualisierung } from './updates';
 
 export interface Staff {
-  staff: { id: string; name: string; role: 'MOD' | 'BETRIEB'; founder: boolean };
+  staff: { id: string; name: string; role: 'MOD' | 'BETRIEB'; founder: boolean; teams?: string[] };
   others: { id: string; name: string; role: string }[];
   hashToday: number;
   hashLimit: number;
@@ -20,9 +21,10 @@ export interface Staff {
   version?: string;
 }
 
-type Screen = 'uebersicht' | 'warteschlange' | 'meldungen' | 'hash' | 'freigaben' | 'sperren' | 'widerspruch' | 'protokoll' | 'orte' | 'einreichungen' | 'veranstalter' | 'veranstaltungen' | 'date' | 'art18' | 'vorgaenge' | 'verwaltung' | 'team' | 'zugang' | 'ausweis' | 'updates';
+type Screen = 'postfach' | 'uebersicht' | 'warteschlange' | 'meldungen' | 'hash' | 'freigaben' | 'sperren' | 'widerspruch' | 'protokoll' | 'orte' | 'einreichungen' | 'veranstalter' | 'veranstaltungen' | 'date' | 'art18' | 'verwaltung' | 'team' | 'zugang' | 'ausweis' | 'updates';
 
 const NAV: { key: Screen; label: string; betrieb?: boolean; owner?: boolean }[] = [
+  { key: 'postfach', label: 'Postfach' },
   { key: 'uebersicht', label: 'Tagesübersicht' },
   { key: 'warteschlange', label: 'Warteschlange Zone 1' },
   { key: 'meldungen', label: 'Meldungen' },
@@ -31,7 +33,6 @@ const NAV: { key: Screen; label: string; betrieb?: boolean; owner?: boolean }[] 
   { key: 'freigaben', label: 'Zweite Person' },
   { key: 'sperren', label: 'Sperren' },
   { key: 'widerspruch', label: 'Einspruch/Widerspruch' },
-  { key: 'vorgaenge', label: 'Kontaktservice' },
   { key: 'orte', label: 'Orte' },
   { key: 'einreichungen', label: 'Freigabe Termine' },
   { key: 'veranstaltungen', label: 'Veranstaltungen prüfen' },
@@ -57,7 +58,7 @@ const EMERGENCY = (
 );
 
 export function Screens({ me, onLogout, reloadMe }: { me: Staff; onLogout: () => void; reloadMe: () => void }) {
-  const [screen, setScreen] = useState<Screen>('uebersicht');
+  const [screen, setScreen] = useState<Screen>('postfach');
   const isBetrieb = me.staff.role === 'BETRIEB';
   return (
     <div className="min-h-screen md:flex">
@@ -83,7 +84,8 @@ export function Screens({ me, onLogout, reloadMe }: { me: Staff; onLogout: () =>
           </button>
         </nav>
       </aside>
-      <main className="flex-1 p-4 max-w-5xl">
+      <main className={`flex-1 p-4 ${screen === 'postfach' ? 'max-w-7xl' : 'max-w-5xl'}`}>
+        {screen === 'postfach' && <Postfach myTeams={me.staff.teams ?? []} goTo={(k) => setScreen(k as Screen)} />}
         {screen === 'uebersicht' && <Uebersicht me={me} go={setScreen} />}
         {screen === 'warteschlange' && <Warteschlange />}
         {screen === 'meldungen' && <Meldungen owner={me.staff.founder} />}
@@ -98,7 +100,6 @@ export function Screens({ me, onLogout, reloadMe }: { me: Staff; onLogout: () =>
         {screen === 'veranstalter' && <Veranstalter />}
         {screen === 'date' && <DateAdmin />}
         {screen === 'art18' && <Art18 isBetrieb={isBetrieb} owner={me.staff.founder} />}
-        {screen === 'vorgaenge' && <Vorgaenge />}
         {screen === 'verwaltung' && isBetrieb && <Verwaltung />}
         {screen === 'team' && me.staff.founder && <Team meId={me.staff.id} />}
         {screen === 'zugang' && <MeinZugang />}
@@ -217,7 +218,7 @@ function Uebersicht({ me, go }: { me: Staff; go: (s: Screen) => void }) {
               </li>
             ))}
           </ul>
-          <button className="btn-ghost px-0" onClick={() => go('vorgaenge')}>
+          <button className="btn-ghost px-0" onClick={() => go('postfach')}>
             Zu den Vorgängen
           </button>
         </Card>
@@ -804,7 +805,7 @@ function Widerspruch() {
   return (
     <>
       <h1 className="text-xl font-semibold mb-1">Einspruch und Widerspruch</h1>
-      <p className="text-sm muted mb-4">Über die eigene Entscheidung entscheidet eine andere Person — technisch erzwungen.</p>
+      <p className="text-sm muted mb-4">Über die eigene Entscheidung entscheidet eine andere Person — technisch erzwungen. Ausnahme: Owner.</p>
       {box}
       <table className="w-full text-sm">
         <tbody>
@@ -817,7 +818,7 @@ function Widerspruch() {
               <td>{a.kind === 'bild' ? 'Bild (48 h)' : 'Entscheidung (72 h)'}</td>
               <td>{fmtDate(a.deadlineAt, true)}</td>
               <td>
-                {a.ownCase ? (
+                {a.ownCase && !isOwnerMode() ? (
                   <span className="muted">eigener Fall — wartet auf die andere Person</span>
                 ) : (
                   <button className="btn-ghost" onClick={async () => setOpen(await run(() => api.post(`/mod-api/appeals/${a.id}/open`)))}>
@@ -1346,232 +1347,7 @@ function Art18({ isBetrieb, owner }: { isBetrieb: boolean; owner: boolean }) {
   );
 }
 
-// ─────────────────────────── M85 · Vorgänge ───────────────────────────
 
-const RELEASE_SCOPES: [string, string][] = [
-  ['konto', 'Kontodaten'],
-  ['profil', 'Profildaten'],
-  ['diagnose', 'Diagnosedaten des Geräts'],
-];
-
-/** Issue #37: um Einsicht in Daten bitten — sichtbar erst nach Freigabe durch die Person. */
-function DataRelease({ ticket, onChange }: { ticket: any; onChange: () => void }) {
-  const [scope, setScope] = useState<string[]>(['konto', 'diagnose']);
-  const [why, setWhy] = useState('');
-  const [shown, setShown] = useState<Record<string, any>>({});
-  const { run, box } = useAction();
-  const hasOpen = ticket.dataRequests.some((r: any) => r.status === 'offen');
-  return (
-    <div className="card p-3 flex flex-col gap-2">
-      {box}
-      <p className="font-semibold">Datenfreigabe</p>
-      <p className="text-xs muted">Die Person entscheidet in der App. Freigaben sind befristet, jederzeit widerrufbar und enden mit dem Abschluss. Jede Einsicht steht im Zugriffsprotokoll.</p>
-      {ticket.dataRequests.map((r: any) => (
-        <div key={r.id} className="border-t border-linie pt-2">
-          <p>
-            {r.scope.join(', ')} · <b>{r.status}</b>
-            {r.expiresAt && r.status === 'freigegeben' ? ` bis ${fmtDate(r.expiresAt, true)}` : ''}
-          </p>
-          <p className="text-xs muted">
-            {fmtDate(r.createdAt, true)} · {r.reason}
-          </p>
-          {r.status === 'freigegeben' && (
-            <button
-              className="btn-secondary mt-1"
-              onClick={async () => {
-                const d: any = await run(() => api.post(`/mod-api/tickets/${ticket.id}/data`, { requestId: r.id, reason: 'Bearbeitung Vorgang' }));
-                if (d) setShown({ ...shown, [r.id]: d.data });
-              }}
-            >
-              Freigegebene Daten ansehen
-            </button>
-          )}
-          {shown[r.id] && <pre className="mt-2 text-xs bg-flaeche2 rounded p-2 overflow-auto max-h-80 whitespace-pre-wrap">{JSON.stringify(shown[r.id], null, 2)}</pre>}
-        </div>
-      ))}
-      {ticket.mayRequestData && !hasOpen && (
-        <div className="border-t border-linie pt-2 flex flex-col gap-2">
-          <div className="flex gap-3 flex-wrap">
-            {RELEASE_SCOPES.map(([k, label]) => (
-              <label key={k} className="flex items-center gap-1">
-                <input type="checkbox" checked={scope.includes(k)} onChange={(e) => setScope(e.target.checked ? [...scope, k] : scope.filter((x) => x !== k))} />
-                {label}
-              </label>
-            ))}
-          </div>
-          <TextArea label="Begründung (sieht die Person)" value={why} onChange={(e) => setWhy(e.target.value)} />
-          <button
-            className="btn-secondary self-start"
-            disabled={!scope.length || tooShort(why, 10)}
-            onClick={() => run(() => api.post(`/mod-api/tickets/${ticket.id}/data-request`, { scope, reason: why }), 'Anfrage gesendet.').then((r) => r && (setWhy(''), onChange()))}
-          >
-            Um Freigabe bitten
-          </button>
-        </div>
-      )}
-    </div>
-  );
-}
-
-function Vorgaenge() {
-  const { data, reload } = useAsync(() => api.get('/mod-api/tickets'), []);
-  const templates = useAsync(() => api.get('/mod-api/tickets/templates'), []);
-  const [open, setOpen] = useState<any | null>(null);
-  const [answer, setAnswer] = useState('');
-  const [cat, setCat] = useState<number>(10);
-  const [reason, setReason] = useState('');
-  const [closeReason, setCloseReason] = useState('beantwortet');
-  const [reportReason, setReportReason] = useState('belaestigung');
-  const [search, setSearch] = useState('');
-  const { run, box } = useAction();
-  const openTicket = async (id: string) => {
-    const r: any = await run(() => api.post(`/mod-api/tickets/${id}/open`, { reason: 'Bearbeitung Vorgang' }));
-    if (r) {
-      setOpen(r);
-      setCat(r.category);
-      setAnswer('');
-    }
-  };
-  return (
-    <>
-      <h1 className="text-xl font-semibold mb-1">Vorgänge des Kontaktservice</h1>
-      <p className="text-sm muted mb-4">Sortiert nach Restfrist — nicht umstellbar. Rot lässt sich nicht wegklicken. Suche nur nach Fallnummer.</p>
-      {box}
-      {data?.danger?.length > 0 && (
-        <div className="mb-3">
-          <Banner kind="error">
-            Jemand ist in Gefahr:{' '}
-            {data.danger.map((d: any) => (
-              <button key={d.id} className="underline mr-2" onClick={() => openTicket(d.id)}>
-                {d.number}
-              </button>
-            ))}
-          </Banner>
-        </div>
-      )}
-      <div className="grid sm:grid-cols-4 gap-2 mb-3">
-        {data?.pots.map((p: any) => (
-          <div key={p.pot} className="card p-3 text-sm">
-            <p className="font-semibold">{p.pot}</p>
-            <p>
-              {p.open} offen · rot {p.red}
-            </p>
-            {!p.mayOpen && <p className="text-xs muted">Inhalt nur für BETRIEB</p>}
-          </div>
-        ))}
-      </div>
-      <input className="input mb-3" placeholder="Fallnummer H-JJJJ-NNNNNN" value={search} onChange={(e) => setSearch(e.target.value.trim())} />
-      <table className="w-full text-sm">
-        <tbody>
-          {data?.items
-            .filter((i: any) => !search || i.number === search)
-            .map((i: any) => (
-              <tr key={i.id} className="border-t border-linie">
-                <td className="py-2">
-                  <Ampel v={i.ampel} />
-                </td>
-                <td>{i.number}</td>
-                <td>
-                  Kat. {i.category} · {i.pot}
-                </td>
-                <td>{i.category === 1 ? 'unverzüglich' : `${Math.floor(i.remainingMinutes / 60)} Std. ${Math.abs(i.remainingMinutes % 60)} Min.`}</td>
-                <td>{i.withoutAccount ? 'ohne Konto' : ''}</td>
-                <td>{i.assigned ?? ''}</td>
-                <td>
-                  {i.mayOpen ? (
-                    <button className="btn-ghost" onClick={() => openTicket(i.id)}>
-                      Öffnen
-                    </button>
-                  ) : (
-                    <span className="muted">—</span>
-                  )}
-                </td>
-              </tr>
-            ))}
-        </tbody>
-      </table>
-      <Sheet open={!!open} onClose={() => (setOpen(null), reload())} title={open?.number}>
-        {open && (
-          <div className="flex flex-col gap-2 text-sm">
-            <p className="muted">
-              Kat. {open.category} · {open.pot} · Frist {fmtDate(open.deadlineAt, true)} · Antwortweg {open.replyWay}
-              {open.relatedRef ? ` · Bezug ${open.relatedRef}` : ''}
-              {open.withoutAccount ? ' · ohne Konto' : ''}
-            </p>
-            {open.previousDeadlines?.length > 0 && <p className="muted">Frühere Fristen: {open.previousDeadlines.map((d: any) => fmtDate(d.deadlineAt, true)).join(', ')}</p>}
-            <p className="card p-2 whitespace-pre-wrap">{open.text}</p>
-            {open.attachment && <img src={open.attachment} alt="" className="max-h-60 object-contain" />}
-            {open.messages.map((m: any, i: number) => (
-              <p key={i} className={`whitespace-pre-wrap ${m.fromTeam ? 'border-l-2 border-akzent pl-2' : ''}`}>
-                <span className="block text-xs muted">
-                  {m.fromTeam ? 'Team' : 'Person'} · {fmtDate(m.at, true)}
-                </span>
-                {m.text}
-              </p>
-            ))}
-            {!open.withoutAccount && (
-              <p className="text-xs muted">
-                Antwort erscheint in der App der Person{open.notifyEmail ? ' — dazu ein Hinweis per E-Mail ohne Inhalt' : ''}. Die Person antwortet nur in der App.
-              </p>
-            )}
-            {!open.withoutAccount && <DataRelease ticket={open} onChange={() => openTicket(open.id)} />}
-            <select className="input" onChange={(e) => e.target.value && setAnswer(e.target.value)} defaultValue="">
-              <option value="">Vorlage einsetzen (bearbeitbar, nie automatisch)</option>
-              {templates.data?.templates.map((tp: any) => (
-                <option key={tp.question} value={tp.answer}>
-                  {tp.question}
-                </option>
-              ))}
-            </select>
-            <TextArea label="Antwort" value={answer} onChange={(e) => setAnswer(e.target.value)} />
-            <button className="btn-primary" disabled={answer.trim().length < 10} onClick={() => run(() => api.post(`/mod-api/tickets/${open.id}/reply`, { text: answer }), 'Gesendet.').then(() => openTicket(open.id))}>
-              Antworten
-            </button>
-            <Reason value={reason} onChange={setReason} min={3} />
-            <div className="flex gap-2 flex-wrap items-center">
-              <select className="input w-auto" value={cat} onChange={(e) => setCat(Number(e.target.value))}>
-                {Array.from({ length: 10 }, (_, i) => i + 1)
-                  .filter((n) => n !== 7)
-                  .map((n) => (
-                    <option key={n} value={n}>
-                      {n} · {t(`UI-HLF-KAT-${n}`)}
-                    </option>
-                  ))}
-              </select>
-              <button className="btn-secondary" disabled={tooShort(reason, 3) || cat === open.category} onClick={() => run(() => api.post(`/mod-api/tickets/${open.id}/category`, { category: cat, reason }), 'Kategorie geändert — neue Frist.').then(() => openTicket(open.id))}>
-                Kategorie ändern
-              </button>
-            </div>
-            <div className="flex gap-2 flex-wrap items-center">
-              <select className="input w-auto" value={closeReason} onChange={(e) => setCloseReason(e.target.value)}>
-                {data?.closeReasons.map((r: string) => (
-                  <option key={r} value={r}>
-                    {r}
-                  </option>
-                ))}
-              </select>
-              <button className="btn-secondary" onClick={() => run(() => api.post(`/mod-api/tickets/${open.id}/close`, { closeReason, reason: reason || undefined }), 'Geschlossen.').then(() => (setOpen(null), reload()))}>
-                Schließen
-              </button>
-            </div>
-            <div className="flex gap-2 flex-wrap items-center">
-              <select className="input w-auto" value={reportReason} onChange={(e) => setReportReason(e.target.value)}>
-                {['belaestigung', 'nacktbilder', 'intim_ohne_einwilligung', 'fake', 'minderjaehrig', 'hass', 'sexgeld', 'gefahr', 'anderes'].map((r) => (
-                  <option key={r} value={r}>
-                    {r}
-                  </option>
-                ))}
-              </select>
-              <button className="btn-secondary" disabled={tooShort(reason, 5)} onClick={() => run(() => api.post(`/mod-api/tickets/${open.id}/to-case`, { reportReason, reason }), 'Als Moderationsfall angelegt.').then(() => (setOpen(null), reload()))}>
-                Als Moderationsfall öffnen
-              </button>
-            </div>
-          </div>
-        )}
-      </Sheet>
-    </>
-  );
-}
 
 // ─────────────────────────── Verwaltung (BETRIEB) ───────────────────────────
 
