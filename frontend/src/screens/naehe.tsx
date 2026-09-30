@@ -255,11 +255,6 @@ export function Naehe() {
         }
       />
       <Page className="max-w-4xl">
-        {config?.mode === 'test' && (
-          <div className="mb-3">
-            <Banner kind="warn">{t('UI-TESTBETRIEB-HINWEIS')}</Banner>
-          </div>
-        )}
         {me?.profile?.location?.travel && (
           <div className="mb-3">
             <Banner kind="warn" action={<button className="btn-secondary" onClick={() => nav('/ich/reisen')}>{t('UI-TRAVEL-BEENDEN')}</button>}>

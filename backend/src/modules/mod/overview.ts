@@ -8,7 +8,6 @@
  */
 import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
-import { env } from '../../config/env.js';
 import { PARAMETER, allParams, p, setParam, type ParamKey } from '../../config/params.js';
 import { one, q } from '../../db/pool.js';
 import { decStr } from '../../lib/crypto.js';
@@ -47,7 +46,8 @@ async function missedInMonth(offset: number): Promise<number> {
 
 async function quarterReview(s: StaffCtx) {
   const start = quarterStart(new Date());
-  const visibleStaff = s.role === 'BETRIEB' ? 'TRUE' : s.founder ? '(st.founder OR st.id = $2)' : 'st.id = $2';
+  // $2 muss in jeder Fassung vorkommen, sonst lehnt Postgres die Abfrage ab (BETRIEB sieht alle)
+  const visibleStaff = s.role === 'BETRIEB' ? '$2::uuid IS NOT NULL' : s.founder ? '(st.founder OR st.id = $2)' : 'st.id = $2';
   const perPerson = await q(
     `SELECT st.name, count(DISTINCT l.case_ref)::int AS cases, count(*) FILTER (WHERE l.special)::int AS special,
             count(DISTINCT l.case_ref) FILTER (WHERE l.action = 'hash_fall_geoeffnet')::int AS hash_cases
@@ -136,7 +136,6 @@ export default async function overviewRoutes(app: FastifyInstance) {
       weeklySummary: weekly ? { at: weekly.at, text: weekly.ref } : null,
       contactPerson: contact,
       emergency: [t('UI-MOD-NOTFALL-1'), t('UI-MOD-NOTFALL-2')],
-      mode: env().OPERATION_MODE,
     };
   });
 

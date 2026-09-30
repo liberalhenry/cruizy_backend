@@ -11,6 +11,42 @@ Werkzeug → „Aktualisierung“ (Owner) oder `bash deploy/update.sh`.
 
 ## [Unveröffentlicht]
 
+## [0.7.0] – 2026-09-30
+
+### Neu
+- **„Bestätigen“ im Werkzeug:** Fehlt ein Prüf- oder Versandweg in der `.env`, läuft die App trotzdem —
+  ein Mensch aus dem Team bestätigt von Hand:
+  - E-Mail-Adressen (kein SMTP) und Mobilnummern bzw. neue Geräte (kein Telegram-Bot). Die App wartet und
+    geht nach der Bestätigung von selbst weiter. Passwort-Zurücksetzen geht ohne Versand nie über das Team,
+    sondern über den Support.
+  - Stufe 2 (Ausweis und Selfie mit Geste) und die Fotoprüfung (Selfie mit Geste gegen die Profilfotos) ohne
+    Prüfpartner; Cruizy Date ohne Anbieter (Selfie gegen das erste Date-Foto).
+  - Profilbilder ohne Hash-Abgleich gehen immer an einen Menschen, bevor sie sichtbar werden.
+  Die Ausweisprüfung (bisher „Altersprüfung“) ist Teil davon. Bilder liegen verschlüsselt nur bis zur
+  Entscheidung; Öffnen und Entscheiden stehen im Zugriffsprotokoll.
+- **„Einrichtung“ im Werkzeug** (Owner, BETRIEB): welche Wege angebunden sind, was das Team übernimmt, welche
+  Variablen fehlen — und „Beispieldaten löschen“ für die erfundenen Konten, Orte und Termine aus dem Testbetrieb.
+
+### Geändert
+- **Kein Testbetrieb mehr:** `OPERATION_MODE` und `TEST_INVITE_CODE` entfallen, ebenso Einladungscode,
+  Hinweis „nur erfundene Angaben“, Kopfzeile `x-betrieb`, „PLUS 7 Tage ausprobieren“ und alle Attrappen
+  (Prüfpartner, Gesichtsverifizierung `stub`, Klassifikator `mock-allow`, Hash `mock`). Alte Werte in der `.env`
+  verhindern den Start nicht, sie werden ignoriert bzw. durch den sicheren Wert ersetzt. Die Beispieldaten
+  (`seed:test`) gibt es nur noch in der Entwicklung (`NODE_ENV=development`).
+- **Werkzeug übersichtlicher:** Seitenleiste in Gruppen (Prüfen, Entscheiden, Inhalte, Recht und Protokoll,
+  Verwaltung) mit Zählern, was wartet; auf dem Handy ein Menü statt einer langen Leiste. Neue Startseite
+  „Überblick“ mit Kacheln je Bereich (rot zuerst) und einem klaren Hinweis bei überschrittenen Fristen.
+  Verständlichere Namen („Bilder“ statt „Warteschlange Zone 1“, „Vier-Augen-Freigaben“, „Termine per E-Mail“,
+  „Parameter und Kennzahlen“). Der zuletzt geöffnete Bereich bleibt beim Neuladen offen.
+
+### Behoben
+- Werkzeug → Überblick lud für BETRIEB-Zugänge nicht, sobald die Quartalsdurchsicht fällig war.
+
+### Beim Einspielen beachten
+- Migration `015_bestaetigen` ist additiv (Rückweg: `015_bestaetigen.down.sql`).
+- `OPERATION_MODE` und `TEST_INVITE_CODE` können aus der `.env` entfernt werden.
+- Die erfundenen Testkonten löscht ein Owner unter Werkzeug → Einrichtung → „Beispieldaten löschen“.
+
 ## [0.6.0] – 2026-09-30
 
 ### Geändert

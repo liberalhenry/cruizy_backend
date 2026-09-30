@@ -1,9 +1,10 @@
 /** Gastmodus, Altersprüfung über die Attrappe, Hilfe und Kontakt, Check-in, Meldung ohne Konto. */
-import { describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { one, q } from '../src/db/pool.js';
 import { resetRateLimits } from '../src/lib/rate.js';
 import { JOBS } from '../src/jobs/index.js';
 import { sentMails } from '../src/providers/mail.js';
+import { setVerificationProvider, signWebhook, type VerificationProvider } from '../src/providers/verification.js';
 import { Client, member, staff, testApp } from './helpers.js';
 
 describe('Gastmodus (F01)', () => {
@@ -35,20 +36,28 @@ describe('Gastmodus (F01)', () => {
   });
 });
 
-describe('Altersprüfung über die Attrappe (F04)', () => {
+/** Ein Prüfpartner, wie er später angebunden wird: eigene Seite, Ergebnis signiert an den Webhook. */
+const partner: VerificationProvider = {
+  name: 'partner',
+  methods: (kind) => (kind === 'face' ? ['selfie'] : ['selfie', 'eid']),
+  start: async (sessionId) => ({ url: `https://partner.example.invalid/${sessionId}` }),
+};
+async function partnerResult(m: Awaited<ReturnType<typeof member>>, session: string, result: string) {
+  const raw = JSON.stringify({ session, result, ref: 'partner-1', ts: Date.now() });
+  return m.c.app.inject({ method: 'POST', url: '/api/verify/webhook', headers: { 'content-type': 'application/json', 'x-signature': signWebhook(raw) }, payload: raw });
+}
+
+describe('Altersprüfung über einen Prüfpartner (F04)', () => {
+  beforeAll(() => setVerificationProvider(partner));
+  afterAll(() => setVerificationProvider(null));
+
   it('gibt das Schreiben erst nach Prüfung und Vertrag frei; gespeichert wird nur Ergebnis, Weg und Zeitpunkt', async () => {
     const m = await member({ age1: false });
     const st = await m.c.post('/api/verify/start', { kind: 'age1', method: 'selfie' });
     expect(st.status).toBe(200);
-    expect(st.body.url).toContain('/api/pruefpartner-attrappe/');
-    // Die Attrappe signiert das Ergebnis und schickt es an den Webhook
-    const done = await m.c.app.inject({
-      method: 'POST',
-      url: st.body.url,
-      headers: { 'content-type': 'application/x-www-form-urlencoded' },
-      payload: 'result=passed',
-    });
-    expect(done.statusCode).toBe(302);
+    // Der Partner signiert das Ergebnis und schickt es an den Webhook
+    const done = await partnerResult(m, st.body.sessionId, 'passed');
+    expect(done.statusCode).toBe(200);
     const acc = await one(`SELECT age1_at, age1_method FROM accounts WHERE id = $1`, [m.id]);
     expect(acc!.age1_at).not.toBeNull();
     expect(acc!.age1_method).toBe('selfie');
@@ -75,7 +84,7 @@ describe('Altersprüfung über die Attrappe (F04)', () => {
   it('„nicht volljährig“ sperrt sofort (FV-17)', async () => {
     const m = await member({ age1: false });
     const st = await m.c.post('/api/verify/start', { kind: 'age1', method: 'eid' });
-    await m.c.app.inject({ method: 'POST', url: st.body.url, headers: { 'content-type': 'application/x-www-form-urlencoded' }, payload: 'result=minor' });
+    await partnerResult(m, st.body.sessionId, 'minor');
     const acc = await one(`SELECT minor_locked_at, minor_delete_at FROM accounts WHERE id = $1`, [m.id]);
     expect(acc!.minor_locked_at).not.toBeNull();
     expect(acc!.minor_delete_at).not.toBeNull();

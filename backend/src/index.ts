@@ -8,7 +8,7 @@ import { migrate } from './db/migrate.js';
 import { buildApp } from './app.js';
 import { startJobs, stopJobs } from './jobs/index.js';
 import { initPush } from './services/push.js';
-import { startupProblems, testModeProblems } from './startup.js';
+import { startupNotes } from './startup.js';
 import { discord } from './services/discord.js';
 import { appVersion } from './lib/version.js';
 import { startTelegram, stopTelegram } from './services/telegram.js';
@@ -18,15 +18,9 @@ async function main() {
   await migrate();
   setOverrides(await q(`SELECT key, value FROM parameters`));
 
-  const problems = startupProblems();
-  if (e.OPERATION_MODE === 'live' && problems.length) {
-    console.error('Echtbetrieb nicht möglich — offen ist:\n  · ' + problems.join('\n  · '));
-    process.exit(1);
-  }
-  if (e.OPERATION_MODE === 'test') {
-    const notes = [...testModeProblems(), ...problems];
-    console.log('TESTBETRIEB — nur erfundene Daten zulässig.' + (notes.length ? '\n  · ' + notes.join('\n  · ') : ''));
-  }
+  // Fehlende Prüf- und Versandwege übernimmt das Team (Werkzeug → Bestätigen); hier nur der Überblick
+  const notes = startupNotes();
+  if (notes.length) console.log('Einrichtung — übernimmt das Team oder ist offen:\n  · ' + notes.join('\n  · '));
 
   if (e.AGE_PROVIDER === 'ausweis') {
     const { ocrAvailable } = await import('./services/id-check.js');
@@ -43,8 +37,7 @@ async function main() {
     level: 'ok',
     fields: [
       { name: 'Version', value: appVersion() },
-      { name: 'Betrieb', value: e.OPERATION_MODE },
-      ...(problems.length ? [{ name: 'Offen für den Echtbetrieb', value: String(problems.length), inline: true }] : []),
+      ...(notes.length ? [{ name: 'Übernimmt das Team / offen', value: String(notes.length), inline: true }] : []),
     ],
   });
 

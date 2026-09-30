@@ -7,7 +7,7 @@ import { destination } from '../src/lib/geo.js';
 import { sendHealthReminders } from '../src/modules/health.js';
 import { completeness } from '../src/services/completeness.js';
 import { sentPushes } from '../src/services/push.js';
-import { member } from './helpers.js';
+import { member, endPlus, grantPlus } from './helpers.js';
 
 const C = { lat: 52.52, lng: 13.405 };
 
@@ -92,7 +92,7 @@ describe('Profilbesucher (#27)', () => {
     const json = JSON.stringify(free.body);
     expect(json).not.toContain(v1.id);
     expect(json).not.toMatch(/"name"|"id"/);
-    expect((await t.c.post('/api/premium/test')).status).toBe(200);
+    await grantPlus(t.id);
     const paid = await t.c.get('/api/visitors');
     expect(paid.body.premium).toBe(true);
     expect(paid.body.visitors.map((x: { id: string }) => x.id)).toEqual([v1.id]);
@@ -103,13 +103,12 @@ describe('Profilbesucher (#27)', () => {
     const t = await member({ pos: C });
     const v = await member({ pos: C });
     expect((await v.c.put('/api/visitors/invisible', { on: true })).status).toBe(403);
-    await v.c.post('/api/premium/test');
+    await grantPlus(v.id);
     expect((await v.c.put('/api/visitors/invisible', { on: true })).status).toBe(200);
     await v.c.get(`/api/profiles/${t.id}`);
     expect(await one(`SELECT 1 FROM profile_visits WHERE visitor_id = $1`, [v.id])).toBeNull();
-    await v.c.del('/api/premium/test');
-    const pr = await one(`SELECT invisible_browsing FROM profiles WHERE account_id = $1`, [v.id]);
-    expect(pr!.invisible_browsing).toBe(false);
+    // endet das Abo, zählen Besuche wieder (der Schalter selbst geht beim nächsten Auftrag aus)
+    await endPlus(v.id);
     await v.c.get(`/api/profiles/${t.id}`);
     expect(await one(`SELECT 1 FROM profile_visits WHERE visitor_id = $1`, [v.id])).not.toBeNull();
   });

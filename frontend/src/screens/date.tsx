@@ -790,6 +790,8 @@ export function Verification({ me, onDone }: { me: DateMe; onDone?: () => void }
   const [err, setErr] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState<boolean>(!!me.verified);
+  // ohne Anbieter: Selfie liegt beim Team
+  const [review, setReview] = useState<{ hours: number } | null>(me.verificationReview ? { hours: 24 } : null);
   const [live, setLive] = useState(false);
   const video = useRef<HTMLVideoElement>(null);
   const stream = useRef<MediaStream | null>(null);
@@ -834,6 +836,9 @@ export function Verification({ me, onDone }: { me: DateMe; onDone?: () => void }
       stop();
       if (r.ok) {
         setDone(true);
+      } else if (r.review) {
+        setReview({ hours: r.hours ?? 24 });
+        setChallenge(null);
       } else {
         setErr(t(r.reason === 'pose' ? 'UI-DATE-VERIFIZIERUNG-POSE' : 'UI-DATE-VERIFIZIERUNG-KEIN-ABGLEICH'));
         setChallenge(null);
@@ -871,6 +876,14 @@ export function Verification({ me, onDone }: { me: DateMe; onDone?: () => void }
             </button>
           </BottomBar>
         )}
+      </div>
+    );
+
+  if (review)
+    return (
+      <div className="flex flex-col gap-4">
+        <h2 className="text-xl font-semibold">{t('UI-DATE-VERIFIZIERUNG-TITEL')}</h2>
+        <Banner kind="info">{t('UI-DATE-TEAM-PRUEFT', { stunden: review.hours })}</Banner>
       </div>
     );
 

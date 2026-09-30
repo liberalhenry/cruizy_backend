@@ -146,7 +146,7 @@ async function purgeProvisional() {
   for (const r of rows) await deleteAccountNow(r.id, { vault: false });
 }
 
-/** Issue #7: unentschiedene Ausweisprüfungen — spätestens nach P-AUSWEIS-AUFBEWAHRUNG sind die Bilder weg. */
+/** Unentschiedene Prüfungen durch das Team (Ausweis, Stufe 2, Fotoprüfung, Date) — spätestens nach P-AUSWEIS-AUFBEWAHRUNG sind die Bilder weg. */
 async function expireIdReviews() {
   const rows = await q(`SELECT id FROM id_reviews WHERE decided_at IS NULL AND created_at < now() - make_interval(secs => $1) LIMIT 100`, [p('P-AUSWEIS-AUFBEWAHRUNG')]);
   for (const r of rows) await closeReview(r.id, 'abgelaufen', null);

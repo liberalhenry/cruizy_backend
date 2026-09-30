@@ -253,7 +253,7 @@ export function VeranstaltungenPruefen() {
   const [open, setOpen] = useState<string | null>(null);
   return (
     <>
-      <h1 className="text-xl font-semibold mb-1">Veranstaltungen gegenprüfen</h1>
+      <h1 className="text-xl font-semibold mb-1">Veranstaltungen</h1>
       <p className="text-sm muted mb-4">Veranstaltungen verifizierter Veranstalter sind sofort sichtbar — hier prüft das Team nach. Nach jeder Änderung oder neuem Bild erscheinen sie wieder als ungeprüft.</p>
       <div className="flex gap-2 mb-3 flex-wrap">
         {(['ungeprueft', 'kommend', 'empfohlen', 'abgesagt'] as const).map((f) => (

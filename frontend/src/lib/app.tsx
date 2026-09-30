@@ -8,8 +8,6 @@ import { t } from './texts';
 export type Phase = 'laden' | 'gast' | 'einwilligung' | 'profil' | 'mitglied' | 'gesperrt_minderjaehrig' | 'alterspruefung' | 'pruefung_vor_eintritt';
 
 export interface Config {
-  mode: 'test' | 'live';
-  inviteRequired: boolean;
   apple: boolean;
   /** Issue #32: Link zum Telegram-Bot (Codes an Telefonnummern) — null, solange keiner eingerichtet ist */
   telegramBot?: string | null;

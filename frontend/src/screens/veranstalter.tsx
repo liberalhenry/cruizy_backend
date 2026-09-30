@@ -553,7 +553,6 @@ export function VeranstaltungVerwalten() {
               <div className="h-full bg-akzent" style={{ width: `${Math.min(100, (c.belegt / e.capacity) * 100)}%` }} />
             </div>
           )}
-          {c.testGaeste > 0 && <p className="text-xs muted mt-2">{t('UI-VA-TESTGAESTE', { zahl: c.testGaeste })}</p>}
           <div className="flex flex-wrap gap-2 mt-4">
             <button className="btn-secondary flex-1" onClick={() => nav(`/ereignisse/${id}`)}>
               <Icon name="eye" /> {t('UI-VA-ANSEHEN')}

@@ -21,6 +21,7 @@ import { prepareAudio } from '../lib/audio.js';
 import { hit } from '../lib/rate.js';
 import { classify, runHashCheck } from '../providers/checks.js';
 import { faceProvider } from '../providers/face.js';
+import { openManualReview } from '../services/manual-review.js';
 import {
   DATE_DEALBREAKER_FIELDS,
   DATE_INTENTION_KEYS,
@@ -66,7 +67,7 @@ async function ownAccess(accountId: string) {
   return acc;
 }
 
-async function setStep(accountId: string, step: (typeof STEPS)[number]) {
+export async function setStep(accountId: string, step: (typeof STEPS)[number]) {
   // nur vorwärts — der Zwischenstand bleibt beim Zurückblättern erhalten
   const acc = await dateAccess(accountId);
   if (!acc || acc.status !== 'onboarding') return;
@@ -125,6 +126,9 @@ export default async function dateRoutes(app: FastifyInstance) {
       step: acc.step,
       intention: acc.intention,
       verified: !!acc.verified_at,
+      // ohne Anbieter: Selfie liegt beim Team
+      verificationReview: acc.verification_result === 'team_prueft',
+      verificationResult: acc.verification_result ?? null,
       biometricConsent: !!acc.biometric_consent_at,
       codeAccepted: !!acc.code_accepted_at,
       minimum: await minimumState(a.id),
@@ -243,7 +247,10 @@ export default async function dateRoutes(app: FastifyInstance) {
     const a = await requireMember(req);
     const acc = await ownAccess(a.id);
     if (!acc.biometric_consent_at) throw new AppError(409, 'UI-DATE-EINWILLIGUNG-NOETIG', {}, 'einwilligung_noetig');
-    if (!faceProvider().available()) throw new AppError(503, 'UI-DATE-VERIFIZIERUNG-NICHT-VERFUEGBAR', {}, 'anbieter_fehlt');
+    // ohne Anbieter prüft das Team — auch dann mit zufälliger Geste
+    if (await one(`SELECT 1 FROM id_reviews WHERE account_id = $1 AND kind = 'date_face' AND decided_at IS NULL`, [a.id])) {
+      throw new AppError(409, 'UI-TEAMPRUEFUNG-LAEUFT', {}, 'pruefung_laeuft');
+    }
     const pose = DATE_POSES[Math.floor(Math.random() * DATE_POSES.length)];
     const nonce = randomToken(12);
     challenges.set(a.id, { pose: pose.key, nonce, until: Date.now() + p('P-DATE-POSE-GUELTIG') * 1000 });
@@ -263,7 +270,19 @@ export default async function dateRoutes(app: FastifyInstance) {
     const ref = await one(`SELECT file FROM date_photos WHERE account_id = $1 AND status <> 'rejected' ORDER BY position, created_at LIMIT 1`, [a.id]);
     if (!ref) throw bad('UI-DATE-ERST-FOTOS', {}, 'fotos_fehlen');
     const provider = faceProvider();
-    if (!provider.available()) throw new AppError(503, 'UI-DATE-VERIFIZIERUNG-NICHT-VERFUEGBAR', {}, 'anbieter_fehlt');
+    if (!provider.available()) {
+      // Kein Anbieter: Das Team vergleicht Selfie und erstes Foto (Werkzeug → Bestätigen)
+      const number = await openManualReview({
+        kind: 'date_face',
+        sessionId: null,
+        accountId: a.id,
+        images: [(await prepare(buffer)).data],
+        pose: ch.pose,
+        note: 'Selfie: passt es zum ersten Date-Foto, und ist die Geste zu sehen?',
+      });
+      await q(`UPDATE date_access SET verification_provider = 'team', verification_result = 'team_prueft' WHERE account_id = $1`, [a.id]);
+      return { ok: false, review: true, number, hours: Math.round(p('P-AUSWEIS-FRIST') / 3600) };
+    }
     let selfie: Buffer | null = (await prepare(buffer)).data;
     let reference: Buffer | null = await getFile('zone1-public', ref.file);
     let result;

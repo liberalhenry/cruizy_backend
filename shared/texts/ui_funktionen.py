@@ -202,9 +202,6 @@ NEU = {
   'UI-BESUCHER-UNSICHTBAR': 'Unsichtbar stöbern',
   'UI-BESUCHER-UNSICHTBAR-ERKL': 'Deine Besuche werden nicht gespeichert. Andere sehen nicht, dass du ihr Profil angesehen hast.',
   'UI-BESUCHER-UNSICHTBAR-PLUS': 'Nur mit PLUS.',
-  'UI-ABO-TEST': 'PLUS im Testbetrieb 7 Tage ausprobieren',
-  'UI-ABO-TEST-AKTIV': 'PLUS ist aktiv bis {datum}.',
-  'UI-ABO-TEST-BEENDEN': 'PLUS beenden',
 
   # ───── #25 Gesundheit und Tests ─────
   'UI-TEST-BEREICH': 'Gesundheit & Tests',
@@ -465,7 +462,6 @@ NEU = {
   'UI-VA-GESPEICHERT-PRUEFUNG': 'Eingereicht — das Team prüft sie jetzt.',
   'UI-VA-VON-PLAETZEN': 'von {zahl} Plätzen',
   'UI-VA-ABGESAGT-N': 'Abgesagt',
-  'UI-VA-TESTGAESTE': 'Davon {zahl} erfundene Testgäste (Testbetrieb).',
   'UI-VA-ANSEHEN': 'Ansehen',
   'UI-VA-GAESTE-LEER': 'Hier ist noch niemand.',
   'UI-VA-ABGELEHNT-KURZ': 'nicht angenommen',

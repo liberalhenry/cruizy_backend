@@ -81,11 +81,6 @@ export function Gast() {
         )}
       </div>
       <Page className="flex-1">
-        {config?.mode === 'test' && (
-          <div className="mb-3">
-            <Banner kind="warn">{t('UI-TESTBETRIEB-HINWEIS')}</Banner>
-          </div>
-        )}
         {err && <Banner kind="error">{err}</Banner>}
         {over ? (
           <Banner>{t('ST-KON-03')}</Banner>
@@ -202,7 +197,6 @@ export function Konto() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPw, setShowPw] = useState(false);
-  const [invite, setInvite] = useState(params.get('einladung') ?? '');
   const [step, setStep] = useState<'form' | 'code' | 'geraet' | 'gesendet'>('form');
   const [token, setToken] = useState('');
   const [code, setCode] = useState('');
@@ -212,6 +206,8 @@ export function Konto() {
   const [sentAt, setSentAt] = useState(0);
   // Issue #32: Code an eine Telefonnummer → per Telegram
   const [telegram, setTelegram] = useState<string | null | undefined>(undefined);
+  // Kein Versand eingerichtet: das Team bestätigt, die Seite fragt von selbst nach
+  const [manual, setManual] = useState(false);
   const [now, setNow] = useState(Date.now());
   const pwMin = config?.params.pwMin ?? 12;
   const resendS = config?.params.codeResendS ?? 60;
@@ -236,8 +232,9 @@ export function Konto() {
   const submit = () =>
     run(async () => {
       if (mode === 'registrieren') {
-        const r = await api.post('/api/auth/register', { method: 'email', email, password, invite: invite || undefined });
+        const r = await api.post('/api/auth/register', { method: 'email', email, password });
         setToken(r.token);
+        setManual(!!r.ohneVersand);
         setStep('code');
         setSentAt(Date.now());
       } else if (mode === 'anmelden') {
@@ -245,12 +242,14 @@ export function Konto() {
         if (r.next === 'code' || r.next === 'geraet') {
           setToken(r.token);
           setTelegram('telegram' in r ? r.telegram : undefined);
+          setManual(!!r.ohneVersand);
           setStep(r.next === 'code' ? 'code' : 'geraet');
           setSentAt(Date.now());
         } else await refreshMe();
       } else {
         const r = await api.post('/api/auth/reset/request', { identifier: email });
-        setTelegram(r.weg === 'telegram' ? r.telegram : undefined);
+        setTelegram(r.weg === 'telegram' && !r.ohneVersand ? r.telegram : undefined);
+        setManual(!!r.ohneVersand);
         setStep('gesendet');
       }
     });
@@ -260,6 +259,25 @@ export function Konto() {
       await api.post(step === 'geraet' ? '/api/auth/device-code' : '/api/auth/verify', { token, code });
       await refreshMe();
     });
+
+  // Ohne Versand: alle paar Sekunden nachfragen, ob das Team bestätigt hat (leerer Code)
+  useEffect(() => {
+    if (!manual || (step !== 'code' && step !== 'geraet')) return;
+    let alive = true;
+    const ask = async () => {
+      try {
+        await api.post(step === 'geraet' ? '/api/auth/device-code' : '/api/auth/verify', { token, code: '' });
+        if (alive) await refreshMe();
+      } catch (e) {
+        if (alive && !(e instanceof ApiError && e.code === 'wartet')) setErr(errText(e));
+      }
+    };
+    const i = setInterval(ask, 8000);
+    return () => {
+      alive = false;
+      clearInterval(i);
+    };
+  }, [manual, step, token, refreshMe]);
 
   const resend = () =>
     run(async () => {
@@ -281,9 +299,6 @@ export function Konto() {
         {step === 'form' && (
           <>
             {mode === 'registrieren' && <p className="mb-4 muted">{t('ST-KON-21')}</p>}
-            {mode === 'registrieren' && config?.inviteRequired && (
-              <Field label={t('UI-KONTO-EINLADUNG')} hint={t('UI-TESTBETRIEB-EINLADUNG')} value={invite} onChange={(e) => setInvite(e.target.value)} autoComplete="off" />
-            )}
             <Field
               label={mode === 'registrieren' ? t('UI-KONTO-EMAIL') : t('UI-KONTO-EMAIL-ODER-NUMMER')}
               type={mode === 'registrieren' ? 'email' : 'text'}
@@ -336,17 +351,38 @@ export function Konto() {
         )}
         {(step === 'code' || step === 'geraet') && (
           <div className="flex flex-col gap-3">
-            <p>{step === 'geraet' ? t('UI-KONTO-GERAETECODE') : t('UI-KONTO-CODE-GESENDET')}</p>
-            {telegram !== undefined && <TelegramHint url={telegram} />}
-            <CodeInput value={code} onChange={setCode} />
-            <button className="btn-ghost self-start px-0" disabled={now - sentAt < resendS * 1000 || busy} onClick={resend}>
-              {now - sentAt < resendS * 1000 ? t('UI-KONTO-NEU-SENDEN-IN', { s: Math.ceil((resendS * 1000 - (now - sentAt)) / 1000) }) : t('UI-KONTO-NEU-SENDEN')}
-            </button>
+            {manual ? (
+              <>
+                <Banner kind="info">{step === 'geraet' ? t('UI-GERAET-OHNE-VERSAND') : t('UI-CODE-OHNE-VERSAND')}</Banner>
+                <p className="flex items-center gap-2 text-sm muted">
+                  <span className="w-4 h-4 rounded-full border-2 border-akzent border-t-transparent animate-spin" aria-hidden="true" />
+                  {t('UI-TEAM-WARTET-KURZ')}
+                </p>
+              </>
+            ) : (
+              <>
+                <p>{step === 'geraet' ? t('UI-KONTO-GERAETECODE') : t('UI-KONTO-CODE-GESENDET')}</p>
+                {telegram !== undefined && <TelegramHint url={telegram} />}
+                <CodeInput value={code} onChange={setCode} />
+                <button className="btn-ghost self-start px-0" disabled={now - sentAt < resendS * 1000 || busy} onClick={resend}>
+                  {now - sentAt < resendS * 1000 ? t('UI-KONTO-NEU-SENDEN-IN', { s: Math.ceil((resendS * 1000 - (now - sentAt)) / 1000) }) : t('UI-KONTO-NEU-SENDEN')}
+                </button>
+              </>
+            )}
           </div>
         )}
         {step === 'gesendet' && (
           <div className="flex flex-col gap-3">
-            <Banner kind="ok">{t('UI-KONTO-VERGESSEN-GESENDET')}</Banner>
+            {manual ? (
+              <>
+                <Banner kind="info">{t('UI-RESET-OHNE-VERSAND')}</Banner>
+                <Link className="btn-primary" to="/hilfe">
+                  {t('ST-HLF-01')}
+                </Link>
+              </>
+            ) : (
+              <Banner kind="ok">{t('UI-KONTO-VERGESSEN-GESENDET')}</Banner>
+            )}
             {telegram !== undefined && (
               <>
                 <TelegramHint url={telegram} />
@@ -366,7 +402,7 @@ export function Konto() {
             </button>
             {config?.apple && mode !== 'vergessen' && (
               <>
-                <a className="btn bg-white text-black" href={`/api/auth/apple/start${invite ? `?invite=${encodeURIComponent(invite)}` : ''}`}>
+                <a className="btn bg-white text-black" href="/api/auth/apple/start">
                    {t('ST-KON-23')}
                 </a>
                 <p className="text-xs muted">{t('ST-KON-24')}</p>
@@ -377,7 +413,7 @@ export function Konto() {
             </button>
           </>
         )}
-        {(step === 'code' || step === 'geraet') && (
+        {(step === 'code' || step === 'geraet') && !manual && (
           <button className="btn-primary" disabled={busy || code.length !== 6} onClick={verify}>
             {t('ST-KON-12')}
           </button>

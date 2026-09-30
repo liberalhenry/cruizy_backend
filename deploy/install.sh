@@ -71,7 +71,6 @@ if [[ ! -f .env ]]; then
   [[ -n "$ACME" ]] && set_var ACME_EMAIL "$ACME"
   set_var POSTGRES_PASSWORD "$(openssl rand -hex 24)"
   set_var MASTER_KEY "$(openssl rand -base64 32)"
-  set_var TEST_INVITE_CODE "$(openssl rand -hex 6)"
   set_var AGE_WEBHOOK_SECRET "$(openssl rand -hex 32)"
   set_var INBOUND_MAIL_SECRET "$(openssl rand -hex 32)"
   set_var BACKUP_PASSPHRASE "$(openssl rand -base64 24)"
@@ -93,7 +92,7 @@ Fertig. Nächste Schritte:
   1. DNS: $APP_DOMAIN und $MOD_DOMAIN müssen auf diesen Server zeigen (Caddy holt dann die Zertifikate).
   2. Erste Zugänge für das Moderationswerkzeug (zwei Personen, zweiter Faktor per Authenticator-App):
        docker compose exec api node dist/src/cli/staff-create.js --name "Vorname" --login vorname --role BETRIEB --founder
-  3. Testbetrieb: Einladungscode steht in .env (TEST_INVITE_CODE). Erfundene Testdaten:
-       docker compose exec api node dist/src/seed/testdaten.js
+  3. Werkzeug → „Einrichtung“ zeigt, welche Prüf- und Versandwege (SMTP, Telegram, Prüfpartner, Hash-Abgleich)
+     angebunden sind. Was fehlt, bestätigt das Team unter „Bestätigen“.
   4. Werkzeug: https://$MOD_DOMAIN  ·  App: https://$APP_DOMAIN
 INFO

@@ -11,7 +11,6 @@
  */
 import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
-import { env } from '../config/env.js';
 import { p } from '../config/params.js';
 import { one, q } from '../db/pool.js';
 import { requireMember } from '../lib/context.js';
@@ -115,25 +114,10 @@ export default async function visitorRoutes(app: FastifyInstance) {
     return { ok: true };
   });
 
-  /** Abo-Stand für die Oberfläche; im Testbetrieb lässt sich PLUS für 7 Tage ausprobieren. */
+  /** Abo-Stand für die Oberfläche. */
   app.get('/api/premium', async (req) => {
     const a = await requireMember(req);
     const e = await one(`SELECT tier, valid_until, source FROM entitlements WHERE account_id = $1 AND valid_until > now() ORDER BY valid_until DESC LIMIT 1`, [a.id]);
-    return { plus: await isPremium(a.id), pro: await hasTier(a.id, 'pro'), until: e?.valid_until ?? null, test: env().OPERATION_MODE === 'test', source: e?.source ?? null };
-  });
-
-  app.post('/api/premium/test', async (req) => {
-    const a = await requireMember(req);
-    if (env().OPERATION_MODE !== 'test') throw new AppError(403, 'UI-NICHT-VERFUEGBAR', {}, 'nur_testbetrieb');
-    await q(`INSERT INTO entitlements (account_id, tier, source, valid_until) VALUES ($1, 'plus', 'testbetrieb', now() + interval '7 days')`, [a.id]);
-    return { ok: true };
-  });
-
-  app.delete('/api/premium/test', async (req) => {
-    const a = await requireMember(req);
-    await q(`DELETE FROM entitlements WHERE account_id = $1 AND source = 'testbetrieb'`, [a.id]);
-    // endet das Abo, endet auch „Unsichtbar stöbern“
-    if (!(await isPremium(a.id))) await q(`UPDATE profiles SET invisible_browsing = false WHERE account_id = $1`, [a.id]);
-    return { ok: true };
+    return { plus: await isPremium(a.id), pro: await hasTier(a.id, 'pro'), until: e?.valid_until ?? null, source: e?.source ?? null };
   });
 }

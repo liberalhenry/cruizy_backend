@@ -54,14 +54,13 @@ function Dot({ v }: { v: string | null }) {
 
 // ─────────────────────────── Postfach (Liste) ───────────────────────────
 
-export function Postfach({ myTeams, goTo }: { myTeams: string[]; goTo: (screen: string) => void }) {
+export function Postfach({ myTeams }: { myTeams: string[] }) {
   const [team, setTeam] = useState<string>(myTeams.length ? 'meine' : 'alle');
   const [view, setView] = useState<View>('offen');
   const [search, setSearch] = useState('');
   const [openId, setOpenId] = useState<string | null>(null);
   const qs = new URLSearchParams({ team, view, ...(search.trim() ? { suche: search.trim() } : {}) });
   const { data, reload } = useAsync(() => api.get(`/mod-api/postfach?${qs}`), [team, view, search]);
-  const ov = useAsync(() => api.get('/mod-api/overview'), []);
 
   useEffect(() => {
     const i = setInterval(reload, 60_000);
@@ -69,19 +68,6 @@ export function Postfach({ myTeams, goTo }: { myTeams: string[]; goTo: (screen: 
   }, [team, view, search]);
 
   if (openId) return <TicketView id={openId} onBack={() => (setOpenId(null), reload())} />;
-
-  const o = ov.data;
-  const tasks: [string, string, number][] = o
-    ? [
-        ['warteschlange', 'Warteschlange Zone 1', o.queue.open],
-        ['sperren', 'Sperren zur Freigabe', o.suspensionsToApprove],
-        ['freigaben', 'Zweite Person', o.approvalsToGive],
-        ['hash', 'Hash-Treffer', o.hashCases.open],
-        ['einreichungen', 'Termine', o.submissions],
-        ['veranstaltungen', 'Veranstaltungen', o.eventsUnchecked],
-        ['veranstalter', 'Veranstalter', o.organizerApplications],
-      ]
-    : [];
 
   return (
     <>
@@ -155,20 +141,6 @@ export function Postfach({ myTeams, goTo }: { myTeams: string[]; goTo: (screen: 
         </ul>
       )}
 
-      {tasks.some(([, , n]) => n > 0) && (
-        <section className="mt-6">
-          <h2 className="text-sm uppercase tracking-wide muted mb-2">Weitere Aufgaben</h2>
-          <div className="flex flex-wrap gap-2">
-            {tasks
-              .filter(([, , n]) => n > 0)
-              .map(([key, label, n]) => (
-                <button key={key} className="chip min-h-tap" onClick={() => goTo(key)}>
-                  {label} <span className="rounded-full bg-akzent text-grund px-1.5 text-xs">{n}</span>
-                </button>
-              ))}
-          </div>
-        </section>
-      )}
     </>
   );
 }

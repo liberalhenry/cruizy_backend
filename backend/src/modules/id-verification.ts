@@ -22,6 +22,7 @@ import { nextNumber } from '../lib/numbers.js';
 import { hit } from '../lib/rate.js';
 import { discord } from '../services/discord.js';
 import { checkIdImages } from '../services/id-check.js';
+import { openManualReview, poseLabel } from '../services/manual-review.js';
 import { applyResult } from './verification.js';
 
 const MAX_FILES = 2;
@@ -84,6 +85,46 @@ export default async function idVerificationRoutes(app: FastifyInstance) {
       fields: [{ name: 'Grund', value: result.note }],
     });
     return { state: 'review', hours: Math.round(p('P-AUSWEIS-FRIST') / 3600) };
+  });
+
+  // ───── Ohne Prüfpartner: Stufe 2 und Fotoprüfung prüft das Team ─────
+  app.get('/api/verify/team/:id', async (req) => {
+    const a = await requireSession(req);
+    const { id } = params(req, z.object({ id: uuid }));
+    const s = await one(`SELECT kind, state, pose FROM verification_sessions WHERE id = $1 AND account_id = $2 AND method = 'team'`, [id, a.id]);
+    if (!s) throw notFound();
+    return { kind: s.kind, state: s.state, pose: s.pose ? { key: s.pose, label: poseLabel(s.pose) } : null, hours: Math.round(p('P-AUSWEIS-FRIST') / 3600) };
+  });
+
+  /** Stufe 2: Felder „ausweis“ und „selfie“; Fotoprüfung: nur „selfie“. */
+  app.post('/api/verify/team/:id', async (req) => {
+    const a = await requireSession(req);
+    if (a.status !== 'active' || !a.consented) throw new AppError(403, 'UI-EINWILLIGUNG-FEHLT', {}, 'einwilligung_fehlt');
+    const { id } = params(req, z.object({ id: uuid }));
+    if (!hit('teampruefung', a.id, 10, 3600_000)) throw tooMany();
+    const s = await one(`SELECT id, kind, state, pose FROM verification_sessions WHERE id = $1 AND account_id = $2 AND method = 'team'`, [id, a.id]);
+    if (!s) throw notFound();
+    if (s.state !== 'pending') throw new AppError(409, 'UI-TEAMPRUEFUNG-LAEUFT', {}, 'nicht_offen');
+    const parts: Record<string, Buffer> = {};
+    const maxBytes = p('P-BILD-MAX-MB') * 1024 * 1024;
+    for await (const part of req.files({ limits: { files: 2, fileSize: maxBytes + 1 } })) {
+      const buf = await part.toBuffer();
+      if (part.file.truncated) throw bad('ST-FEH-10', { mb: p('P-BILD-MAX-MB') }, 'bild_zu_gross');
+      if (part.fieldname === 'ausweis' || part.fieldname === 'selfie') parts[part.fieldname] = buf;
+    }
+    const need = s.kind === 'age2' ? ['ausweis', 'selfie'] : ['selfie'];
+    if (need.some((k) => !parts[k])) throw bad('UI-EINGABE-PRUEFEN', {}, 'datei_fehlt');
+    // Stufe 0: Format prüfen, Metadaten verwerfen, neu kodieren
+    const images = await Promise.all(need.map(async (k) => (await prepare(parts[k])).data));
+    const number = await openManualReview({
+      kind: s.kind,
+      sessionId: s.id,
+      accountId: a.id,
+      images,
+      pose: s.pose,
+      note: s.kind === 'age2' ? 'Ausweis und Selfie: volljährig und dieselbe Person?' : 'Selfie: passt es zu den Profilfotos?',
+    });
+    return { state: 'review', number, hours: Math.round(p('P-AUSWEIS-FRIST') / 3600) };
   });
 
   /** Offene Prüfung durch das Team — nur Zustand, keine Einzelheiten. */

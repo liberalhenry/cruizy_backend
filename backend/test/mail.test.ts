@@ -21,7 +21,7 @@ describe('HTML-Mails (Issue #9)', () => {
   it('Code-Mail der Registrierung: HTML mit Logo, Code hervorgehoben, Text bleibt', async () => {
     const c = new Client(await testApp());
     const email = `mail-${Date.now()}@example.invalid`;
-    const r = await c.post('/api/auth/register', { method: 'email', email, password: 'ein-langes-testpasswort', invite: 'einladung' });
+    const r = await c.post('/api/auth/register', { method: 'email', email, password: 'ein-langes-testpasswort' });
     expect(r.status).toBe(200);
     const m = [...sentMails].reverse().find((x) => x.to === email)!;
     expect(m.variant).toBe('marke');

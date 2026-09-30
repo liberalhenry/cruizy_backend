@@ -10,6 +10,18 @@ const bool = z
   .optional()
   .transform((v) => v === '1' || v === 'true' || v === 'ja');
 
+/**
+ * Auswahlwert mit Übersetzung alter Werte: Die Attrappen aus dem früheren Testbetrieb gibt es nicht mehr.
+ * Steht noch ein alter Wert in der .env, startet der Server trotzdem — mit dem sicheren Ersatz.
+ */
+function legacy<T extends string>(values: readonly [T, ...T[]], old: Record<string, T>, fallback: T) {
+  return z
+    .string()
+    .optional()
+    .transform((v) => (v && v in old ? old[v] : v || fallback))
+    .pipe(z.enum(values));
+}
+
 const schema = z.object({
   NODE_ENV: z.string().default('production'),
   PORT: z.coerce.number().default(3000),
@@ -26,14 +38,6 @@ const schema = z.object({
   /** 32 Byte, Base64. Aus ihm werden alle Teilschlüssel abgeleitet (HKDF). */
   MASTER_KEY: z.string().min(40, 'MASTER_KEY fehlt oder ist zu kurz (32 Byte Base64)'),
 
-  /**
-   * test = nur erfundene Testdaten, Registrierung nur mit Einladungscode.
-   * live = Betrieb mit echten Menschen. Nur zulässig, wenn der Hash-Abgleich
-   * angebunden ist (P-HASH-AKTIV) — AK-M02-11, Nr. 98 Weg (b).
-   */
-  OPERATION_MODE: z.enum(['test', 'live']).default('test'),
-  TEST_INVITE_CODE: z.string().default(''),
-
   /** Wie die App hinter dem Proxy die Netzadresse erfährt */
   TRUST_PROXY: bool,
   COOKIE_SECURE: z
@@ -41,7 +45,7 @@ const schema = z.object({
     .optional()
     .transform((v) => v !== '0' && v !== 'false'),
 
-  /* E-Mail über SMTP (EU-Dienst, z. B. Sweego). Leer = Ausgabe ins Protokoll (nur Testbetrieb). */
+  /* E-Mail über SMTP (EU-Dienst, z. B. Sweego). Leer = kein Versand; Adressen bestätigt dann das Team im Werkzeug. */
   SMTP_URL: z.string().default(''),
   MAIL_FROM: z.string().default('Benachrichtigung <no-reply@example.invalid>'),
   /**
@@ -52,7 +56,7 @@ const schema = z.object({
 
   /*
    * Issue #32: Telegram-Bot statt SMS — Codes an Mobilnummern und (auf Wunsch) Mitteilungen.
-   *   log     = nur Protokoll (nur Testbetrieb)
+   *   log     = kein Bot eingerichtet; Nummern bestätigt dann das Team im Werkzeug
    *   polling = der Server fragt Telegram selbst nach neuen Nachrichten an den Bot (Voreinstellung im Betrieb)
    *   webhook = Telegram liefert an {APP_URL}/api/telegram/webhook; TELEGRAM_WEBHOOK_SECRET ist dann Pflicht
    * TELEGRAM_BOT_NAME ist der Benutzername des Bots ohne @ (für die Links t.me/<name>).
@@ -79,25 +83,28 @@ const schema = z.object({
   /* Prüfpartner Altersprüfung (F04, Z-03) und Fotoprüfung (F06) */
   /**
    * ausweis = Ausweisbild, Auswertung des Geburtsdatums auf dem eigenen Server, unsicher → Team (Issue #7).
-   * mock    = Attrappe eines Prüfpartners, nur im Testbetrieb.
+   *           Stufe 2 und Fotoprüfung prüft ohne Prüfpartner das Team im Werkzeug („Bestätigen“).
+   * Frühere Werte (mock) gelten als ausweis.
    */
-  AGE_PROVIDER: z.enum(['ausweis', 'mock']).default('ausweis'),
+  AGE_PROVIDER: legacy(['ausweis'], { mock: 'ausweis' }, 'ausweis'),
   AGE_WEBHOOK_SECRET: z.string().default(''),
 
   /*
    * Issue #19: Gesichtsverifizierung für Cruizy Date über einen externen Anbieter (FaceVerificationProvider).
-   * stub = Attrappe (nur Testbetrieb, gibt „passt“ zurück; im Echtbetrieb gesperrt)
    * http = Anbieter über HTTP: POST multipart {selfie, reference, pose} → {match, livenessOk?, confidence?}
-   * none = keine Verifizierung möglich → Date lässt sich nicht freischalten
+   * none = kein Anbieter → das Team vergleicht Selfie und erstes Foto im Werkzeug („Bestätigen“)
+   * Frühere Werte (stub) gelten als none.
    */
-  DATE_FACE_PROVIDER: z.enum(['none', 'stub', 'http']).default('stub'),
+  DATE_FACE_PROVIDER: legacy(['none', 'http'], { stub: 'none' }, 'none'),
   DATE_FACE_URL: z.string().default(''),
   DATE_FACE_HEADERS: z.string().default('{}'),
 
   /* Prüfkette (M-02) */
-  CLASSIFIER: z.enum(['queue', 'http', 'mock-allow']).default('queue'),
+  // queue = jedes Bild prüft ein Mensch; http = selbst gehosteter Klassifikator (früher mock-allow → queue)
+  CLASSIFIER: legacy(['queue', 'http'], { 'mock-allow': 'queue' }, 'queue'),
   CLASSIFIER_URL: z.string().default(''),
-  HASH_PROVIDER: z.enum(['none', 'mock', 'http']).default('none'),
+  // none = kein Abgleich → jedes Bild prüft ein Mensch; http = angebundener Abgleichdienst (früher mock → none)
+  HASH_PROVIDER: legacy(['none', 'http'], { mock: 'none' }, 'none'),
   // Anbindung eines Abgleichdienstes: POST {hash, media?} → {hit, list}
   HASH_URL: z.string().default(''),
   HASH_HEADERS: z.string().default('{}'),
@@ -165,4 +172,3 @@ export function resetEnvCache() {
   cached = null;
 }
 
-export const isTestMode = () => env().OPERATION_MODE === 'test';

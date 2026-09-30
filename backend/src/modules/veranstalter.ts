@@ -417,7 +417,7 @@ export default async function veranstalterRoutes(app: FastifyInstance) {
     const taken = await acceptedCount(id);
     return {
       event: { id: e.id, title: e.title, capacity: e.capacity, approvalRequired: e.approval_required, startsAt: e.starts_at, status: e.status },
-      counts: { ...(await guestCounts(id)), belegt: taken, testGaeste: e.test_guests },
+      counts: { ...(await guestCounts(id)), belegt: taken },
       guests: rows.map((r) => ({
         id: r.account_id,
         name: r.name,

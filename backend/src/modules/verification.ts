@@ -27,7 +27,8 @@ import { loadAccount, requireSession, type AccountCtx } from '../lib/context.js'
 import { randomToken } from '../lib/crypto.js';
 import { AppError, bad, notFound, tooMany } from '../lib/errors.js';
 import { body, params, uuid } from '../lib/http.js';
-import { assertMockAllowed, provider, signWebhook, verifyWebhookSignature, type VerificationKind } from '../providers/verification.js';
+import { provider, verifyWebhookSignature, type VerificationKind } from '../providers/verification.js';
+import { DATE_POSES } from '../services/catalogs.js';
 import { stage2Required, stage2State } from '../services/stage2.js';
 import { emit } from '../services/hub.js';
 import { releaseHeldForStage2 } from './chat.js';
@@ -129,6 +130,9 @@ export default async function verificationRoutes(app: FastifyInstance) {
       provider: prov.name,
       // Issue #7: ein Ausweis liegt beim Team
       review: !!(await one(`SELECT 1 FROM verification_sessions WHERE account_id = $1 AND kind = 'age1' AND state = 'review'`, [a.id])),
+      // Stufe 2 / Fotoprüfung liegt beim Team
+      reviewAge2: !!(await one(`SELECT 1 FROM verification_sessions WHERE account_id = $1 AND kind = 'age2' AND state = 'review'`, [a.id])),
+      reviewFace: !!(await one(`SELECT 1 FROM verification_sessions WHERE account_id = $1 AND kind = 'face' AND state = 'review'`, [a.id])),
     };
   });
 
@@ -165,9 +169,16 @@ export default async function verificationRoutes(app: FastifyInstance) {
       if (tries!.n >= p('P-FOTOPRUEF-VERSUCHE')) throw tooMany('UI-FOTOPRUEFUNG-VERSUCHE');
     }
     if (a.minorLocked && b.kind !== 'age1') throw new AppError(403, 'ST-VER-13');
+    if (b.method === 'team') {
+      // Prüfung durch das Team: nur ein offener Vorgang je Art
+      const open = await one(`SELECT 1 FROM verification_sessions WHERE account_id = $1 AND kind = $2 AND state = 'review'`, [a.id, b.kind]);
+      if (open) throw new AppError(409, 'UI-TEAMPRUEFUNG-LAEUFT', {}, 'pruefung_laeuft');
+    }
+    // Selfie mit zufälliger Geste: ein altes Foto reicht nicht (Team-Prüfung)
+    const pose = b.method === 'team' ? DATE_POSES[Math.floor(Math.random() * DATE_POSES.length)].key : null;
     const s = await one(
-      `INSERT INTO verification_sessions (account_id, kind, method) VALUES ($1, $2, $3) RETURNING id`,
-      [a.id, b.kind, b.method],
+      `INSERT INTO verification_sessions (account_id, kind, method, pose) VALUES ($1, $2, $3, $4) RETURNING id`,
+      [a.id, b.kind, b.method, pose],
     );
     let start;
     try {
@@ -227,53 +238,6 @@ export default async function verificationRoutes(app: FastifyInstance) {
       const changed = await applyResult(msg.session, msg.result, msg.ref ?? null);
       if (changed) await afterVerification(msg.session);
       return { ok: true, changed };
-    });
-  });
-
-  // ───── Attrappe des Prüfpartners (nur Testbetrieb) ─────
-  app.get('/api/pruefpartner-attrappe/:id', async (req, reply) => {
-    assertMockAllowed(); // wirft im Echtbetrieb
-    const { id } = params(req, z.object({ id: uuid }));
-    const s = await one(`SELECT kind, method, state FROM verification_sessions WHERE id = $1`, [id]);
-    if (!s) return reply.status(404).send('Nicht gefunden');
-    const choices =
-      s.kind === 'face'
-        ? [['passed', 'Fotos passen zur Person'], ['failed', 'Fotos passen nicht'], ['cancelled', 'Abbrechen']]
-        : [
-            ['passed', 'Volljährig'],
-            ...(s.method === 'selfie' ? [['unclear', 'Schätzung nicht eindeutig']] : [['minor', 'Nicht volljährig']]),
-            ['failed', 'Prüfung klappt nicht'],
-            ['cancelled', 'Abbrechen'],
-          ];
-    reply.header('content-type', 'text/html; charset=utf-8');
-    reply.header('cache-control', 'no-store');
-    return `<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Prüfpartner (Attrappe)</title><style>body{font-family:system-ui,sans-serif;background:#12151b;color:#e8ecf2;max-width:32rem;margin:2rem auto;padding:1rem}
-button{display:block;width:100%;min-height:48px;margin:.5rem 0;border-radius:12px;border:1px solid #3a4150;background:#1c212b;color:#e8ecf2;font-size:1rem}
-.note{background:#2a2410;border:1px solid #6b5a1b;padding:.75rem;border-radius:12px}</style></head><body>
-<p class="note">Testbetrieb: Diese Seite stellt einen Prüfpartner nach. Es wird nichts geprüft und nichts gespeichert außer dem gewählten Ergebnis.</p>
-<h1>${s.kind === 'face' ? 'Fotoprüfung' : s.kind === 'age2' ? 'Stufe 2' : 'Altersprüfung'} · ${s.method === 'eid' ? 'Online-Ausweis' : 'Selfie'}</h1>
-<form method="post">${choices.map(([v, l]) => `<button name="result" value="${v}">${l}</button>`).join('')}</form></body></html>`;
-  });
-
-  await app.register(async (scope) => {
-    scope.addContentTypeParser('application/x-www-form-urlencoded', { parseAs: 'string' }, (_req, raw, done) =>
-      done(null, Object.fromEntries(new URLSearchParams(String(raw)))),
-    );
-    scope.post('/api/pruefpartner-attrappe/:id', async (req, reply) => {
-      assertMockAllowed();
-      const { id } = params(req, z.object({ id: uuid }));
-      const result = String((req.body as Record<string, string>)?.result ?? 'cancelled');
-      // Wie ein echter Anbieter: Ergebnis signiert an den Webhook
-      const raw = JSON.stringify({ session: id, result, ref: `attrappe-${randomToken(6)}`, ts: Date.now() });
-      const res = await app.inject({
-        method: 'POST',
-        url: '/api/verify/webhook',
-        headers: { 'content-type': 'application/json', 'x-signature': signWebhook(raw) },
-        payload: raw,
-      });
-      if (res.statusCode !== 200) return reply.status(500).send('Fehler');
-      return reply.redirect(`${env().APP_URL}/pruefung/fertig?s=${id}`);
     });
   });
 

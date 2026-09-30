@@ -1,6 +1,7 @@
 /**
- * Erfundene Testdaten für den Testbetrieb (AK-M02-11: nur erfundene Daten).
- * Läuft ausschließlich bei OPERATION_MODE=test. Alle Zeilen tragen is_test_data.
+ * Erfundene Beispieldaten für die Entwicklung auf dem eigenen Rechner.
+ * Läuft nur mit NODE_ENV=development — nie auf dem Server. Alle Zeilen tragen is_test_data
+ * und lassen sich im Werkzeug unter „Einrichtung“ (Owner) wieder löschen.
  *
  *   npm run seed:test            legt 40 Testkonten rund um Köln an, dazu Orte und Termine
  *                                und die empfohlene „Cruizy Test-Party“ in Hamburg (Issue #16).
@@ -28,8 +29,8 @@ import { approvePhoto } from '../services/photo-chain.js';
 import { acceptPosition } from '../modules/location.js';
 import { CONSENT_PURPOSE, CONSENT_VERSION } from '../modules/auth.js';
 import { CONTRACT_VARIANT, CONTRACT_VERSION } from '../modules/verification.js';
-import { deleteAccountNow } from '../services/deletion.js';
-import { clearTestEvents, seedTestEvents } from './veranstaltungen.js';
+import { clearTestData } from '../services/testdata.js';
+import { seedTestEvents } from './veranstaltungen.js';
 import { seedDateLikes, seedDateMember } from './date.js';
 
 const NAMES = ['Alex', 'Ben', 'Can', 'Dario', 'Eli', 'Finn', 'Gabriel', 'Hakan', 'Ilias', 'Jonas', 'Kai', 'Luca', 'Mika', 'Noah', 'Oskar', 'Paul', 'Quentin', 'Rafael', 'Sami', 'Tom', 'Umut', 'Vince', 'Wim', 'Xaver', 'Yusuf', 'Zeno', 'Arne', 'Bastian', 'Cem', 'David', 'Emil', 'Felix', 'Gino', 'Henrik', 'Ivo', 'Jan', 'Kilian', 'Levin', 'Malte', 'Nico'];
@@ -74,7 +75,7 @@ async function testImage(seed: number): Promise<Buffer> {
 }
 
 /**
- * Issue #34: Profil vollständig — nur Leeres wird ergänzt, eigene Änderungen im Testbetrieb bleiben.
+ * Issue #34: Profil vollständig — nur Leeres wird ergänzt, eigene Änderungen in der Entwicklung bleiben.
  * Fotos bis PHOTOS_PER_PROFILE, Fotoprüfung als erledigt (testdaten), Maße, Körpertyp, Position,
  * Interessen, Absicht, Text; Kinks bei jedem zweiten Konto (freiwillig, zählt nie zur Vollständigkeit).
  */
@@ -131,11 +132,8 @@ async function fillProfile(id: string, i: number) {
 }
 
 async function clear() {
-  const rows = await q(`SELECT id FROM accounts WHERE is_test_data`);
-  for (const r of rows) await deleteAccountNow(r.id, { vault: false });
-  await clearTestEvents();
-  await q(`DELETE FROM places WHERE is_test_data`);
-  console.log(`Testdaten entfernt (${rows.length} Konten).`);
+  const n = await clearTestData();
+  console.log(`Testdaten entfernt (${n.konten} Konten).`);
 }
 
 async function seed() {
@@ -231,7 +229,7 @@ async function seed() {
     for (const [name, kind, district, lat, lng, hours] of places) {
       const r = await one(
         `INSERT INTO places (city_id, name, kind, district, lat, lng, opening_hours, description, source, source_fetched_at, is_test_data)
-         VALUES ('koeln', $1, $2, $3, $4, $5, $6, 'Erfundener Ort für den Testbetrieb.', 'Testdaten', now()::date, true) RETURNING id`,
+         VALUES ('koeln', $1, $2, $3, $4, $5, $6, 'Erfundener Ort für die Entwicklung.', 'Testdaten', now()::date, true) RETURNING id`,
         [name, kind, district, lat, lng, JSON.stringify(hours)],
       );
       ids.push(r!.id);
@@ -251,7 +249,7 @@ async function seed() {
 }
 
 async function main() {
-  if (env().OPERATION_MODE !== 'test') throw new Error('Testdaten nur im Testbetrieb (OPERATION_MODE=test).');
+  if (env().NODE_ENV !== 'development') throw new Error('Beispieldaten nur in der Entwicklung (NODE_ENV=development).');
   await migrate(() => {});
   setOverrides(await q(`SELECT key, value FROM parameters`));
   if (process.argv.includes('--clear')) await clear();

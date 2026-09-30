@@ -309,14 +309,15 @@ describe('Warteschlange Zone 1', () => {
       expect(ph!.status).toBe('approved');
       expect(ph!.classifier_score).toBeNull(); // AK-M02-08
     } finally {
-      process.env.CLASSIFIER = 'mock-allow';
+      delete process.env.CLASSIFIER;
       resetEnvCache();
     }
   });
 
   it('Hash-Treffer beim Hochladen: Bild gesperrt, Fall versiegelt, Anzeige „in Prüfung“', async () => {
     setParam('P-HASH-AKTIV', true);
-    const { mockHashList, perceptualHash } = await import('../src/providers/checks.js');
+    const { perceptualHash } = await import('../src/providers/checks.js');
+    const { testHashList: mockHashList } = await import('./pruefkette.js');
     const { prepare } = await import('../src/lib/images.js');
     const img = await jpeg({ color: '#123456' });
     mockHashList.add(await perceptualHash((await prepare(img)).data));

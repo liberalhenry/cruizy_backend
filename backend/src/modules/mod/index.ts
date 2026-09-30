@@ -30,6 +30,7 @@ import idcheckRoutes from './idcheck.js';
 import dateModRoutes from './date.js';
 import updateRoutes from './updates.js';
 import postfachRoutes from './postfach.js';
+import bestaetigenRoutes from './bestaetigen.js';
 
 export function modImgUrl(store: Store, file: string, staffId: string, mime?: 'audio/mp4') {
   return `/mod-api/img/${sealToken({ k: 'mod', s: store, f: file, st: staffId, e: Date.now() + 5 * 60_000, ...(mime ? { m: mime } : {}) })}`;
@@ -102,7 +103,6 @@ export default async function modRoutes(app: FastifyInstance) {
         hashToday: await hashCasesToday(s.id),
         hashLimit: HASH_CASES_PER_DAY,
         hashLocked: afterHashLock(),
-        mode: env().OPERATION_MODE,
         version: appVersion(),
       };
     });
@@ -136,6 +136,7 @@ export default async function modRoutes(app: FastifyInstance) {
     await mod.register(art18Routes);
     await mod.register(ticketRoutes);
     await mod.register(postfachRoutes);
+    await mod.register(bestaetigenRoutes);
     await mod.register(overviewRoutes);
     await mod.register(teamRoutes);
     await mod.register(idcheckRoutes);

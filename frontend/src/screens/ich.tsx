@@ -3,7 +3,7 @@
  * Merkliste · Hilfe und Kontakt · Konto sichern. */
 import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { Avatar, Banner, BottomBar, Choice, Empty, Field, Header, Icon, ListCard, Page, RowLink, Section, Sheet, Skeleton, TextArea, Toggle, useAsync } from '../components/ui';
+import { Avatar, Banner, BottomBar, Choice, Empty, Field, Header, Icon, ListCard, Page, RowLink, Section, Sheet, Skeleton, TeamWait, TextArea, Toggle, useAsync } from '../components/ui';
 import { Tile, intentionLabel, type TileData } from '../components/tile';
 import { ReportSheet, useBlock } from '../components/report';
 import { api, ApiError, errText } from '../lib/api';
@@ -14,7 +14,7 @@ import { disablePush, enablePush, isIosSafariNotInstalled, pushSupported } from 
 import { fmtDate, fmtKm, parts, plain, t } from '../lib/texts';
 import { LocationSheet } from './naehe';
 import { SymbolPicker } from './einstieg';
-import { CompletenessCard, PremiumTest } from './extras';
+import { CompletenessCard } from './extras';
 import { TelegramHint } from '../components/telegram';
 import { collectDiagnostics } from '../lib/diagnostics';
 
@@ -1065,7 +1065,6 @@ export function Abo() {
             ))}
           </ul>
         </Section>
-        <PremiumTest />
         <p className="text-sm muted mt-4">{t('ST-ABO-19')}</p>
       </Page>
     </div>
@@ -1273,6 +1272,8 @@ export function KontoSichern() {
   const [addValue, setAddValue] = useState('');
   const [addCode, setAddCode] = useState('');
   const [addSent, setAddSent] = useState(false);
+  // Kein Versand eingerichtet: das Team bestätigt, die Seite fragt von selbst nach
+  const [addManual, setAddManual] = useState(false);
   const [addTelegram, setAddTelegram] = useState<string | null | undefined>(undefined);
   const [oldPw, setOldPw] = useState('');
   const [newPw, setNewPw] = useState('');
@@ -1326,7 +1327,8 @@ export function KontoSichern() {
                   onClick={() =>
                     run(async () => {
                       const r = await api.post(`/api/auth/add/${add}`, add === 'email' ? { email: addValue } : { phone: addValue });
-                      setAddTelegram(add === 'phone' ? (r.telegram ?? null) : undefined);
+                      setAddTelegram(add === 'phone' && !r.ohneVersand ? (r.telegram ?? null) : undefined);
+                      setAddManual(!!r.ohneVersand);
                       setAddSent(true);
                     })
                   }
@@ -1334,6 +1336,18 @@ export function KontoSichern() {
                   {t('UI-KONTO-CODE-SENDEN')}
                 </button>
               </>
+            ) : addManual ? (
+              <TeamWait
+                text={t('UI-ZWEITER-WEG-OHNE-VERSAND')}
+                ask={() => api.post('/api/auth/add/confirm', { kind: add, code: '' })}
+                onDone={() => {
+                  setAdd(null);
+                  setAddSent(false);
+                  setAddManual(false);
+                  setAddValue('');
+                  refreshMe();
+                }}
+              />
             ) : (
               <>
                 {addTelegram !== undefined && <TelegramHint url={addTelegram} />}

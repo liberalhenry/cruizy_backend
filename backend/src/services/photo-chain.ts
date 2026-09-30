@@ -37,6 +37,11 @@ export async function runPhotoChain(photoId: string): Promise<ChainOutcome> {
     return 'blocked';
   }
   await q(`UPDATE photos SET hash_state = $2 WHERE id = $1`, [photoId, hash.state]);
+  // Ohne Abgleich (nicht angebunden, ausgeschaltet oder nicht erreichbar) ersetzt der Blick des Teams ihn
+  if (hash.state === 'pending') {
+    await q(`UPDATE photos SET status = 'queued', queued_at = now(), classifier_score = NULL WHERE id = $1`, [photoId]);
+    return 'queued';
+  }
 
   // Stufe 2
   const score = await classify(original);

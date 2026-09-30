@@ -3,16 +3,17 @@
  *
  * PRÜFUNG ERFORDERLICH.
  *
- * „ausweis“ (Issue #7, Voreinstellung): Stufe 1 über ein Ausweisbild, das unser Server
+ * „ausweis“ (Voreinstellung, Issue #7): Stufe 1 über ein Ausweisbild, das unser Server
  * auswertet — nur das Geburtsdatum zählt (services/id-check.ts); ist die Auswertung
- * unsicher, prüft ein Mensch aus dem Team. Stufe 2 und Fotoprüfung gibt es auf diesem
- * Weg nicht (im Testbetrieb weiter über die Attrappe).
+ * unsicher, prüft ein Mensch aus dem Team.
  *
- * Ein echter Prüfpartner (EU-Sitz, vertraglich zugesicherte Sofortlöschung —
- * AK-F04-09) wird als weitere Umsetzung dieser Schnittstelle angebunden. Bis
- * dahin gibt es die Attrappe „mock“: eine Seite auf unserem Server, die den
- * Prüfpartner nachstellt und das Ergebnis — wie ein echter Anbieter — signiert
- * an den Webhook meldet. Die Attrappe ist im Echtbetrieb gesperrt.
+ * Ohne Prüfpartner prüft das Team auch Stufe 2 und die Fotoprüfung von Hand („team“):
+ * Die Person lädt Ausweis und Selfie bzw. ein Selfie mit vorgegebener Geste hoch, das Team
+ * entscheidet im Werkzeug unter „Bestätigen“, die Bilder werden mit der Entscheidung gelöscht.
+ *
+ * Ein echter Prüfpartner (EU-Sitz, vertraglich zugesicherte Sofortlöschung — AK-F04-09)
+ * wird als weitere Umsetzung dieser Schnittstelle angebunden und meldet sein Ergebnis
+ * signiert an den Webhook.
  */
 import { createHmac } from 'node:crypto';
 import { env } from '../config/env.js';
@@ -22,7 +23,7 @@ export type VerificationKind = 'age1' | 'age2' | 'face';
 export type VerificationResult = 'passed' | 'failed' | 'unclear' | 'minor' | 'cancelled';
 
 export interface ProviderStart {
-  /** Adresse der eingebetteten Prüfung beim Anbieter */
+  /** Adresse der Prüfung — beim Anbieter oder in der App */
   url: string;
 }
 
@@ -32,40 +33,25 @@ export interface VerificationProvider {
   start(sessionId: string, kind: VerificationKind, method: string): Promise<ProviderStart>;
 }
 
-/** Wege nach FV-15: mindestens zwei, einer ohne Biometrie. Die Brieftasche folgt, sobald angebunden. */
-const mock: VerificationProvider = {
-  name: 'mock',
-  methods(kind) {
-    if (kind === 'face') return ['selfie'];
-    return ['selfie', 'eid'];
-  },
-  async start(sessionId) {
-    return { url: `/api/pruefpartner-attrappe/${sessionId}` };
-  },
-};
-
-/** Die Attrappe ist im Echtbetrieb gesperrt. */
-export function assertMockAllowed() {
-  if (env().OPERATION_MODE === 'live') throw new Error('Die Attrappe des Prüfpartners ist im Echtbetrieb gesperrt');
-}
-
 const ausweis: VerificationProvider = {
   name: 'ausweis',
   methods(kind) {
-    if (kind === 'age1') return ['ausweis'];
-    return env().OPERATION_MODE === 'test' ? mock.methods(kind) : [];
+    return kind === 'age1' ? ['ausweis'] : ['team'];
   },
   async start(sessionId, kind, method) {
     if (kind === 'age1' && method === 'ausweis') return { url: `/pruefung/ausweis?s=${sessionId}` };
-    assertMockAllowed();
-    return mock.start(sessionId, kind, method);
+    return { url: `/pruefung/team?s=${sessionId}` };
   },
 };
 
+let override: VerificationProvider | null = null;
+/** Für Tests: einen eigenen Anbieter einsetzen. */
+export function setVerificationProvider(p: VerificationProvider | null) {
+  override = p;
+}
+
 export function provider(): VerificationProvider {
-  if (env().AGE_PROVIDER === 'ausweis') return ausweis;
-  assertMockAllowed();
-  return mock;
+  return override ?? ausweis;
 }
 
 function secret() {
