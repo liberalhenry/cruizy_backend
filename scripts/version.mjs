@@ -8,6 +8,9 @@
  *   node scripts/version.mjs major        → 1.2.3 → 2.0.0   (inkompatible Änderungen)
  *   node scripts/version.mjs 1.4.0-rc.1   → genau diese Version
  *   node scripts/version.mjs --check      → VERSION, package.json und CHANGELOG.md stimmen überein
+ *   node scripts/version.mjs patch --note "Titel (#41)"
+ *                                         → wie patch; ist der neue Abschnitt leer, steht dort diese Zeile
+ *                                           (für automatische Releases nach jedem Merge, siehe ci.yml)
  *
  * Schreibt VERSION, backend/package.json, frontend/package.json und legt in CHANGELOG.md
  * einen Abschnitt an (aus „Unveröffentlicht“). Das Release entsteht beim Merge auf main
@@ -22,6 +25,8 @@ const SEMVER = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-([0-9A-Za-z.-]+))?$
 const read = (f) => readFileSync(resolve(root, f), 'utf8');
 const current = read('VERSION').trim();
 const arg = process.argv[2];
+const noteAt = process.argv.indexOf('--note');
+const note = noteAt > 2 ? (process.argv[noteAt + 1] ?? '').trim() : '';
 
 function packages(version) {
   for (const dir of ['backend', 'frontend']) {
@@ -64,7 +69,13 @@ if (!arg) {
   const log = read('CHANGELOG.md');
   const today = new Date().toISOString().slice(0, 10);
   if (!log.includes(`## [${next}]`)) {
-    writeFileSync(resolve(root, 'CHANGELOG.md'), log.replace('## [Unveröffentlicht]', `## [Unveröffentlicht]\n\n## [${next}] – ${today}`));
+    let out = log.replace('## [Unveröffentlicht]', `## [Unveröffentlicht]\n\n## [${next}] – ${today}`);
+    // leerer Abschnitt (nichts unter „Unveröffentlicht“ eingetragen) → die Zeile aus --note
+    const head = `## [${next}] – ${today}`;
+    const rest = out.slice(out.indexOf(head) + head.length);
+    const body = rest.slice(0, rest.search(/\n## \[/) === -1 ? undefined : rest.search(/\n## \[/));
+    if (note && !body.trim()) out = out.replace(head, `${head}\n\n### Geändert\n- ${note.replace(/\s+/g, ' ')}`);
+    writeFileSync(resolve(root, 'CHANGELOG.md'), out);
   }
   console.log(`${current} → ${next}. Jetzt CHANGELOG.md prüfen, committen, auf main mergen — das Release entsteht dann automatisch.`);
 }

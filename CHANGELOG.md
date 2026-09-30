@@ -4,8 +4,9 @@ Alle nennenswerten Änderungen stehen hier. Format nach [Keep a Changelog](https
 Versionsnummern nach [Semantic Versioning](https://semver.org/lang/de/):
 **MAJOR** bei inkompatiblen Änderungen, **MINOR** bei neuen Funktionen, **PATCH** bei Fehlerbehebungen.
 
-Neue Version: `node scripts/version.mjs minor` (bzw. `patch`/`major`), Einträge unter der neuen Überschrift
-ergänzen, auf `main` mergen — der Workflow `CI` legt Tag und GitHub-Release an. Einspielen auf dem Server:
+Jeder auf `main` gemergte Pull Request wird zum Release. Einträge unter „Unveröffentlicht“ sammeln; die Stufe
+steuert ein Label am Pull Request (`major`, `minor`, `patch` — ohne Label `patch`, `kein-release` lässt ihn aus).
+Wer die Version selbst setzen will: `node scripts/version.mjs minor` (bzw. `patch`/`major`) im Pull Request. Einspielen auf dem Server:
 Werkzeug → „Aktualisierung“ (Owner) oder `bash deploy/update.sh`.
 
 ## [Unveröffentlicht]
@@ -39,6 +40,10 @@ Werkzeug → „Aktualisierung“ (Owner) oder `bash deploy/update.sh`.
 - **Heute** (#39): Aufbau wie „Nähe“ und „Chats“ — Liste/Karte, Standort und Eintragen als Symbole in der
   Kopfzeile, eine Chip-Reihe (Umkreis, Filter mit Zähler, Sortierung, aktive Filter zum Entfernen),
   Zeitraum und Kategorien im Filterblatt; nur noch der kühle Akzent statt Gold.
+- **Release nach jedem Merge:** Jeder auf `main` gemergte Pull Request erzeugt ein Release. Hat er die
+  Version nicht selbst erhöht, erhöht der Workflow sie (Label `major`/`minor`/`patch`, ohne Label `patch`;
+  `kein-release` lässt ihn aus), legt den Versionscommit auf `main` ab und nimmt den Titel ins Changelog,
+  wenn unter „Unveröffentlicht“ nichts steht.
 - Hilfe: mit Konto steht die Antwort des Teams immer in der App; „per E-Mail“ heißt nur noch „Hinweis
   per E-Mail“. Ohne Konto bleibt die Antwort per E-Mail.
 

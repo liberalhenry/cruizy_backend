@@ -148,9 +148,13 @@ bash deploy/restore.sh backups/db-….dump.enc backups/media-….tar.gz.enc
 ### Versionen und Aktualisierung
 
 Versionen folgen **Semantic Versioning** (`VERSION`, `CHANGELOG.md`): MAJOR bei inkompatiblen
-Änderungen, MINOR bei neuen Funktionen, PATCH bei Fehlerbehebungen. Neue Version:
-`node scripts/version.mjs minor` (bzw. `patch`/`major`), Changelog ergänzen, auf `main` mergen — der
-Workflow `CI` testet und legt Tag `vX.Y.Z` und das GitHub-Release an.
+Änderungen, MINOR bei neuen Funktionen, PATCH bei Fehlerbehebungen. **Jeder auf `main` gemergte Pull
+Request wird zum Release:** Der Workflow `CI` testet, erhöht die Version (Label am Pull Request `major`,
+`minor` oder `patch`; ohne Label `patch`; `kein-release` lässt ihn aus), legt den Versionscommit auf `main`
+ab und erzeugt Tag `vX.Y.Z` samt GitHub-Release mit dem Abschnitt aus `CHANGELOG.md` — stand nichts unter
+„Unveröffentlicht“, steht dort der Titel des Pull Requests. Hat der Pull Request die Version schon selbst
+erhöht (`node scripts/version.mjs minor`), gilt diese. Ist `main` durch eine Schutzregel gesperrt, braucht
+der Workflow dort Schreibrecht, sonst bricht er mit einer Meldung ab.
 
 **Einspielen per Knopf:** Werkzeug → **„Aktualisierung“** (nur Owner). Der Dienst `updater` — der einzige
 mit Zugriff auf Docker, ohne offenen Port — holt den Auftrag ab und führt `deploy/update-run.sh` aus:
