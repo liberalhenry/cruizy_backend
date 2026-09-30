@@ -10,6 +10,7 @@
  *    bleibt die Zeile (das Protokoll verweist unveränderlich auf sie) — gesperrt, ohne
  *    Anmeldedaten, die Kennung wird frei.
  */
+import { TEAMS, TEAM_KEYS } from '../../services/postfach.js';
 import type { FastifyInstance } from 'fastify';
 import { randomUUID } from 'node:crypto';
 import * as OTPAuth from 'otpauth';
@@ -62,7 +63,7 @@ export default async function teamRoutes(app: FastifyInstance) {
   app.get('/mod-api/team', async (req) => {
     await requireOwner(req);
     const rows = await q(
-      `SELECT st.id, st.name, st.login, st.role, st.founder, st.created_at, st.disabled_at, st.password_changed_at,
+      `SELECT st.id, st.name, st.login, st.role, st.founder, st.teams, st.created_at, st.disabled_at, st.password_changed_at,
               (SELECT max(last_seen_at) FROM staff_sessions ss WHERE ss.staff_id = st.id) AS last_seen_at,
               (SELECT max(at) FROM access_log l WHERE l.staff_id = st.id) AS last_action_at
          FROM staff st WHERE st.deleted_at IS NULL
@@ -75,6 +76,7 @@ export default async function teamRoutes(app: FastifyInstance) {
         login: r.login,
         role: r.role,
         founder: r.founder,
+        teams: r.teams,
         createdAt: r.created_at,
         disabledAt: r.disabled_at,
         lastSeenAt: r.last_seen_at,
@@ -82,6 +84,8 @@ export default async function teamRoutes(app: FastifyInstance) {
         passwordChangedAt: r.password_changed_at,
       })),
       passwordMin: STAFF_PW_MIN,
+      // Postfach: Teams, denen Personen angehören
+      teams: TEAMS,
     };
   });
 
@@ -110,19 +114,27 @@ export default async function teamRoutes(app: FastifyInstance) {
     const { id } = params(req, idParam);
     const b = body(
       req,
-      z.object({ name: z.string().trim().min(2).max(80).optional(), role: z.enum(ROLES).optional(), founder: z.boolean().optional(), reason }),
+      z.object({
+        name: z.string().trim().min(2).max(80).optional(),
+        role: z.enum(ROLES).optional(),
+        founder: z.boolean().optional(),
+        teams: z.array(z.enum(TEAM_KEYS)).max(TEAM_KEYS.length).optional(),
+        reason,
+      }),
     );
     const st = await target(id);
     const changes: string[] = [];
     if (b.name !== undefined && b.name !== st.name) changes.push(`Name „${st.name}“ → „${b.name}“`);
     if (b.role !== undefined && b.role !== st.role) changes.push(`Rolle ${st.role} → ${b.role}`);
     if (b.founder !== undefined && b.founder !== st.founder) changes.push(b.founder ? 'wird Owner' : 'ist nicht mehr Owner');
+    const teams = b.teams ? [...new Set(b.teams)].sort() : undefined;
+    if (teams && teams.join(',') !== [...(st.teams ?? [])].sort().join(',')) changes.push(`Teams: ${teams.join(', ') || 'keine'}`);
     if (!changes.length) return { ok: true, changed: false };
     await logged(s, `team:${st.login}`, 'team_geaendert', `${b.reason} · ${changes.join(', ')}`, async (c) => {
       if (b.founder === false && st.founder) await assertOtherOwner(c, id);
       await c.query(
-        `UPDATE staff SET name = COALESCE($2, name), role = COALESCE($3, role), founder = COALESCE($4, founder) WHERE id = $1`,
-        [id, b.name ?? null, b.role ?? null, b.founder ?? null],
+        `UPDATE staff SET name = COALESCE($2, name), role = COALESCE($3, role), founder = COALESCE($4, founder), teams = COALESCE($5, teams) WHERE id = $1`,
+        [id, b.name ?? null, b.role ?? null, b.founder ?? null, teams ?? null],
       );
       // neue Rechte gelten ab der nächsten Anmeldung
       if (b.role !== undefined || b.founder !== undefined) await c.query(`DELETE FROM staff_sessions WHERE staff_id = $1`, [id]);

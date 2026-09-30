@@ -3,6 +3,7 @@
  */
 import type { FastifyInstance, FastifyRequest } from 'fastify';
 import { z } from 'zod';
+import { ensureAppealTicket } from '../services/postfach.js';
 import { p } from '../config/params.js';
 import { one, q, tx } from '../db/pool.js';
 import { requireMember } from '../lib/context.js';
@@ -136,9 +137,9 @@ export default async function photoRoutes(app: FastifyInstance) {
     const exists = await one(`SELECT number FROM appeals WHERE photo_id = $1 AND decided_at IS NULL`, [id]);
     if (exists) return { number: exists.number, hours: 48 };
     const number = await nextNumber('E');
-    await q(
+    const created = await one(
       `INSERT INTO appeals (number, account_id, kind, photo_id, text_enc, original_decider, original_auto, deadline_at)
-       VALUES ($1, $2, 'bild', $3, $4, $5, $6, now() + make_interval(secs => $7))`,
+       VALUES ($1, $2, 'bild', $3, $4, $5, $6, now() + make_interval(secs => $7)) RETURNING id`,
       [
         number,
         a.id,
@@ -149,6 +150,8 @@ export default async function photoRoutes(app: FastifyInstance) {
         p('P-FRIST-EINSPRUCH-BILD'),
       ],
     );
+    // Postfach: jeder Einspruch bekommt ein Ticket
+    await ensureAppealTicket(created!.id);
     discord('meldungen', { title: `Neuer Einspruch ${number}`, level: 'info', fields: [{ name: 'Art', value: 'abgelehntes Profilfoto' }] });
     return { number, hours: Math.round(p('P-FRIST-EINSPRUCH-BILD') / 3600) };
   });

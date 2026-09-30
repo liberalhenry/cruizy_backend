@@ -26,6 +26,7 @@ import { runHashCheck } from '../providers/checks.js';
 import { readUpload } from './photos.js';
 import { appVersion } from '../lib/version.js';
 import { requestsFor, sealDiagnostics } from '../services/support.js';
+import { answerSeconds, potForTeam, teamForCategory, ticketSubject } from '../services/postfach.js';
 
 /** Kategorie → Eingang (kontaktservice-und-tickets.md, 2.3) */
 export const CATEGORY_POT: Record<number, 'missbrauch' | 'hilfe' | 'datenschutz' | 'behoerden' | null> = {
@@ -41,10 +42,9 @@ export const CATEGORY_POT: Record<number, 'missbrauch' | 'hilfe' | 'datenschutz'
   10: 'hilfe',
 };
 
-export function deadlineSeconds(pot: string, category: number): number {
-  if (category === 1) return 0; // unverzüglich
-  if (pot === 'datenschutz' || pot === 'behoerden') return p('P-TICKET-FRIST-DATENSCHUTZ');
-  return p('P-TICKET-FRIST');
+/** Postfach: Antwort binnen P-TICKET-FRIST (24 h) — Kategorie 1 unverzüglich. */
+export function deadlineSeconds(_pot: string, category: number): number {
+  return answerSeconds(category);
 }
 
 export default async function helpRoutes(app: FastifyInstance) {
@@ -53,7 +53,8 @@ export default async function helpRoutes(app: FastifyInstance) {
     const b = body(
       req,
       z.object({
-        category: z.number().int().min(1).max(10),
+        // ohne Anlass: allgemeiner Support (Kategorie 10), von dort wird weitergegeben
+        category: z.number().int().min(1).max(10).default(10),
         text: z.string().min(1).max(p('P-TICKET-MAX')),
         replyWay: z.enum(['app', 'email']).default('app'),
         // Issue #37: Hinweis per E-Mail, wenn das Team antwortet — der Inhalt steht nur in der App
@@ -63,9 +64,11 @@ export default async function helpRoutes(app: FastifyInstance) {
       }),
     );
     if (!hit('ticket', acc?.id ?? ipKey(req), 10, 3600_000)) throw tooMany();
-    const pot = CATEGORY_POT[b.category];
     // AK-F75-07: Kategorie 7 legt keinen Vorgang an, sondern führt zum Widerspruch
-    if (!pot) return { redirect: 'widerspruch', textId: 'ST-HLF-23' };
+    if (!CATEGORY_POT[b.category]) return { redirect: 'widerspruch', textId: 'ST-HLF-23' };
+    // Postfach: mit Anlass direkt ins zuständige Team, sonst allgemeiner Support
+    const team = teamForCategory(b.category);
+    const pot = potForTeam(team, b.category);
     const loggedIn = !!acc && acc.consented;
     // Issue #37: mit Konto steht die Antwort immer in der App; „per E-Mail“ heißt nur noch „Hinweis per E-Mail“
     const replyWay = loggedIn ? 'app' : 'email';
@@ -79,8 +82,8 @@ export default async function helpRoutes(app: FastifyInstance) {
     const number = await nextNumber('H');
     const secs = deadlineSeconds(pot, b.category);
     const row = await one(
-      `INSERT INTO tickets (number, category, pot, account_id, had_account, text_enc, reply_way, email_enc, related_ref, priority, deadline_at, notify_email, last_person_at)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, now() + make_interval(secs => $11), $12, now()) RETURNING id`,
+      `INSERT INTO tickets (number, category, pot, account_id, had_account, text_enc, reply_way, email_enc, related_ref, priority, deadline_at, notify_email, last_person_at, team, kind)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, now() + make_interval(secs => $11), $12, now(), $13, 'anfrage') RETURNING id`,
       [
         number,
         b.category,
@@ -94,6 +97,7 @@ export default async function helpRoutes(app: FastifyInstance) {
         b.category === 1,
         secs,
         notifyEmail,
+        team,
       ],
     );
     if (!loggedIn && email) {
@@ -137,7 +141,12 @@ export default async function helpRoutes(app: FastifyInstance) {
     const rows = await q(`SELECT * FROM tickets WHERE account_id = $1 ORDER BY created_at DESC`, [a.id]);
     const out = [];
     for (const r of rows) {
-      const msgs = await q(`SELECT author, body_enc, created_at, read_by_person_at FROM ticket_messages WHERE ticket_id = $1 ORDER BY created_at`, [r.id]);
+      // interne Notizen und Systemeinträge des Teams sieht die Person nie
+      const msgs = await q(
+        `SELECT author, body_enc, created_at, read_by_person_at FROM ticket_messages WHERE ticket_id = $1 AND author <> 'system' AND NOT internal ORDER BY created_at`,
+        [r.id],
+      );
+      const rep = r.report_id ? await one(`SELECT reason FROM reports WHERE id = $1`, [r.report_id]) : null;
       out.push({
         id: r.id,
         number: r.number,
@@ -146,6 +155,9 @@ export default async function helpRoutes(app: FastifyInstance) {
         createdAt: r.created_at,
         text: decStr('tickets', r.text_enc, 'ticket'),
         messages: msgs.map((m) => ({ fromTeam: m.author === 'team', text: decStr('tickets', m.body_enc, 'ticket'), at: m.created_at })),
+        // Postfach: Art und Betreff (Meldung, Widerspruch, Rückmeldung, Anfrage)
+        kind: r.kind,
+        subject: ticketSubject(r, { reportReason: rep?.reason }),
         // Issue #37
         unread: msgs.filter((m) => m.author === 'team' && !m.read_by_person_at).length,
         notifyEmail: r.notify_email,
@@ -160,10 +172,16 @@ export default async function helpRoutes(app: FastifyInstance) {
     const a = await requireMember(req, { allowDeletionPending: true, allowSuspended: true });
     const { id } = params(req, idParam);
     const b = body(req, z.object({ text: z.string().min(1).max(p('P-TICKET-MAX')) }));
-    const tk = await one(`SELECT id, status FROM tickets WHERE id = $1 AND account_id = $2`, [id, a.id]);
+    const tk = await one(`SELECT id, status, category FROM tickets WHERE id = $1 AND account_id = $2`, [id, a.id]);
     if (!tk || tk.status === 'abgeschlossen') throw notFound();
     await q(`INSERT INTO ticket_messages (ticket_id, author, body_enc) VALUES ($1, 'person', $2)`, [id, encStr('tickets', b.text, 'ticket')]);
-    await q(`UPDATE tickets SET status = CASE WHEN status = 'beantwortet' THEN 'in_bearbeitung' ELSE status END, last_person_at = now() WHERE id = $1`, [id]);
+    // Postfach: ab der letzten Nachricht der Person wieder 24 h bis zur Antwort
+    await q(
+      `UPDATE tickets SET status = CASE WHEN status = 'beantwortet' THEN 'in_bearbeitung' ELSE status END, last_person_at = now(),
+              deadline_at = now() + make_interval(secs => $2)
+        WHERE id = $1`,
+      [id, answerSeconds(tk.category)],
+    );
     return { ok: true };
   });
 

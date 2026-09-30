@@ -29,6 +29,7 @@ import teamRoutes from './team.js';
 import idcheckRoutes from './idcheck.js';
 import dateModRoutes from './date.js';
 import updateRoutes from './updates.js';
+import postfachRoutes from './postfach.js';
 
 export function modImgUrl(store: Store, file: string, staffId: string, mime?: 'audio/mp4') {
   return `/mod-api/img/${sealToken({ k: 'mod', s: store, f: file, st: staffId, e: Date.now() + 5 * 60_000, ...(mime ? { m: mime } : {}) })}`;
@@ -96,7 +97,7 @@ export default async function modRoutes(app: FastifyInstance) {
       const s = await requireStaff(req);
       const others = await q(`SELECT id, name, role FROM staff WHERE disabled_at IS NULL AND id <> $1 ORDER BY name`, [s.id]);
       return {
-        staff: { id: s.id, name: s.name, role: s.role, founder: s.founder },
+        staff: { id: s.id, name: s.name, role: s.role, founder: s.founder, teams: (await one(`SELECT teams FROM staff WHERE id = $1`, [s.id]))?.teams ?? [] },
         others,
         hashToday: await hashCasesToday(s.id),
         hashLimit: HASH_CASES_PER_DAY,
@@ -134,6 +135,7 @@ export default async function modRoutes(app: FastifyInstance) {
     await mod.register(dateModRoutes);
     await mod.register(art18Routes);
     await mod.register(ticketRoutes);
+    await mod.register(postfachRoutes);
     await mod.register(overviewRoutes);
     await mod.register(teamRoutes);
     await mod.register(idcheckRoutes);

@@ -28,6 +28,8 @@ import { ampel, logged, requireStaff, type StaffCtx } from './core.js';
 import { modImgUrl } from './index.js';
 import { env } from '../../config/env.js';
 import { SCOPES, endRequestsOf, releasedData, requestsFor } from '../../services/support.js';
+import { TEAMS, openingText, teamLabel, ticketSubject } from '../../services/postfach.js';
+import { waitingOn } from './postfach.js';
 
 const POTS = ['missbrauch', 'hilfe', 'datenschutz', 'behoerden'] as const;
 const RESTRICTED = new Set(['datenschutz', 'behoerden']);
@@ -134,28 +136,81 @@ export default async function ticketModRoutes(app: FastifyInstance) {
     const b = body(req, z.object({ reason: z.string().trim().min(1).max(500).default('Bearbeitung Vorgang') }));
     return logged(s, tk.number, 'vorgang_geoeffnet', b.reason, async (c) => {
       if (tk.status === 'eingegangen') await c.query(`UPDATE tickets SET status = 'in_bearbeitung', assigned_to = COALESCE(assigned_to, $2) WHERE id = $1`, [id, s.id]);
-      const msgs = (await c.query(`SELECT author, staff_id, body_enc, created_at FROM ticket_messages WHERE ticket_id = $1 ORDER BY created_at`, [id])).rows;
+      const msgs = (
+        await c.query(
+          `SELECT m.author, m.staff_id, m.body_enc, m.created_at, m.internal, st.name AS staff_name
+             FROM ticket_messages m LEFT JOIN staff st ON st.id = m.staff_id WHERE m.ticket_id = $1 ORDER BY m.created_at`,
+          [id],
+        )
+      ).rows;
+      // Bezug: Meldung (gemeldete Person), Widerspruch, Gegenüber im Ticket
+      const rep = tk.report_id
+        ? await one(
+            `SELECT r.id, r.number, r.reason, r.status, r.decision, r.context, r.target_id, r.from_web, pr.name AS target_name, a.moderation_state AS target_state
+               FROM reports r LEFT JOIN profiles pr ON pr.account_id = r.target_id LEFT JOIN accounts a ON a.id = r.target_id WHERE r.id = $1`,
+            [tk.report_id],
+          )
+        : null;
+      const ap = tk.appeal_id ? await one(`SELECT id, number, kind, decided_at, outcome, deadline_at FROM appeals WHERE id = $1`, [tk.appeal_id]) : null;
+      const person = tk.account_id
+        ? await one(`SELECT a.id, a.moderation_state, pr.name FROM accounts a LEFT JOIN profiles pr ON pr.account_id = a.id WHERE a.id = $1`, [tk.account_id])
+        : null;
+      const assigned = tk.assigned_to ? await one(`SELECT id, name FROM staff WHERE id = $1`, [tk.assigned_to]) : null;
+      const status = tk.status === 'eingegangen' ? 'in_bearbeitung' : tk.status;
       return {
         id: tk.id,
         number: tk.number,
+        kind: tk.kind,
+        team: tk.team,
+        teamLabel: teamLabel(tk.team),
+        teams: TEAMS,
+        subject: ticketSubject(tk, { reportReason: rep?.reason }),
         category: tk.category,
         pot: tk.pot,
-        status: tk.status === 'eingegangen' ? 'in_bearbeitung' : tk.status,
+        status,
+        waitingOn: waitingOn(status),
         createdAt: tk.created_at,
         deadlineAt: tk.deadline_at,
+        lastPersonAt: tk.last_person_at,
+        firstResponseAt: tk.first_response_at,
         previousDeadlines: tk.deadline_history,
-        text: decStr('tickets', tk.text_enc, 'ticket'),
+        // erste Nachricht im Chat: womit der Vorgang begann
+        text: await openingText(tk),
         attachment: tk.attachment_file ? modImgUrl('tickets', tk.attachment_file, s.id) : null,
         replyWay: tk.reply_way,
         // M85.05: nur die Kennung, nie der Inhalt
         relatedRef: tk.related_ref,
         // M85.10: ohne Konto — keine Kontoansicht, kein Verlauf
         withoutAccount: !tk.had_account,
-        messages: msgs.map((m) => ({ fromTeam: m.author === 'team', text: decStr('tickets', m.body_enc, 'ticket'), at: m.created_at })),
+        canWrite: !!tk.account_id || !!tk.email_enc,
+        assigned: assigned ? { id: assigned.id, name: assigned.name, me: assigned.id === s.id } : null,
+        person: person ? { id: person.id, name: person.name, moderationState: person.moderation_state } : null,
+        report: rep
+          ? {
+              id: rep.id,
+              number: rep.number,
+              reason: rep.reason,
+              status: rep.status,
+              decision: rep.decision,
+              context: rep.context,
+              fromWeb: rep.from_web,
+              target: rep.target_id ? { id: rep.target_id, name: rep.target_name, moderationState: rep.target_state } : null,
+            }
+          : null,
+        appeal: ap ? { id: ap.id, number: ap.number, kind: ap.kind, decidedAt: ap.decided_at, outcome: ap.outcome, deadlineAt: ap.deadline_at } : null,
+        messages: msgs.map((m) => ({
+          author: m.author,
+          fromTeam: m.author === 'team',
+          internal: m.internal,
+          staffName: m.staff_name,
+          text: decStr('tickets', m.body_enc, 'ticket'),
+          at: m.created_at,
+        })),
         // Issue #37
         notifyEmail: tk.notify_email,
         dataRequests: tk.account_id ? await requestsFor(tk.id) : [],
         mayRequestData: !!tk.account_id && tk.status !== 'abgeschlossen',
+        closeReasons: CLOSE_REASONS,
       };
     });
   });
@@ -209,13 +264,25 @@ export default async function ticketModRoutes(app: FastifyInstance) {
   app.post('/mod-api/tickets/:id/reply', async (req) => {
     const s = await requireStaff(req);
     const { id } = params(req, idParam);
-    const b = body(req, z.object({ text: z.string().trim().min(10).max(p('P-TICKET-MAX')) }));
+    // Postfach: Chat — kurze Antworten sind erlaubt; „intern“ = Notiz nur für das Team
+    const b = body(req, z.object({ text: z.string().trim().min(1).max(p('P-TICKET-MAX')), internal: z.boolean().default(false) }));
     const tk = await one(`SELECT * FROM tickets WHERE id = $1 AND status <> 'abgeschlossen'`, [id]);
     if (!tk) throw notFound();
     if (!mayOpen(s, tk.pot)) throw new AppError(403, 'UI-MOD-RECHT', {}, 'recht');
+    if (b.internal) {
+      await logged(s, tk.number, 'ticket_notiz', 'Interne Notiz', async (c) => {
+        await c.query(`INSERT INTO ticket_messages (ticket_id, author, staff_id, body_enc, internal) VALUES ($1, 'team', $2, $3, true)`, [id, s.id, encStr('tickets', b.text, 'ticket')]);
+      });
+      return { ok: true, internal: true };
+    }
+    // ohne Konto und ohne Kontaktangabe (z. B. hochgestufte Meldung) gibt es niemanden, dem wir schreiben könnten
+    if (!tk.account_id && !tk.email_enc) throw bad('UI-PF-KEIN-GEGENUEBER', {}, 'kein_gegenueber');
     await logged(s, tk.number, 'vorgang_beantwortet', 'Antwort an die Person', async (c) => {
       await c.query(`INSERT INTO ticket_messages (ticket_id, author, staff_id, body_enc) VALUES ($1, 'team', $2, $3)`, [id, s.id, encStr('tickets', b.text, 'ticket')]);
-      await c.query(`UPDATE tickets SET status = 'beantwortet', assigned_to = COALESCE(assigned_to, $2) WHERE id = $1`, [id, s.id]);
+      await c.query(
+        `UPDATE tickets SET status = 'beantwortet', assigned_to = COALESCE(assigned_to, $2), first_response_at = COALESCE(first_response_at, now()) WHERE id = $1`,
+        [id, s.id],
+      );
     });
     if (tk.account_id) {
       // Issue #37: mit Konto steht die Antwort immer in der App — auf Wunsch ein Hinweis per E-Mail, ohne Inhalt
@@ -253,7 +320,7 @@ export default async function ticketModRoutes(app: FastifyInstance) {
     await logged(s, tk.number, 'kategorie_geaendert', `${tk.category} → ${b.category}: ${b.reason}`, async (c) => {
       const history = [...(tk.deadline_history ?? []), { category: tk.category, deadlineAt: tk.deadline_at, changedAt: new Date().toISOString() }];
       await c.query(
-        `UPDATE tickets SET category = $2, pot = $3, priority = $4, deadline_at = created_at + make_interval(secs => $5), deadline_history = $6 WHERE id = $1`,
+        `UPDATE tickets SET category = $2, pot = $3, priority = $4, deadline_at = COALESCE(last_person_at, created_at) + make_interval(secs => $5), deadline_history = $6 WHERE id = $1`,
         [id, b.category, pot, b.category === 1, deadlineSeconds(pot, b.category), JSON.stringify(history)],
       );
     });

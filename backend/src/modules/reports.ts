@@ -23,6 +23,7 @@ import { t } from '../lib/texts.js';
 import { sendMail } from '../providers/mail.js';
 import { discord } from '../services/discord.js';
 import { blockUser } from './safety.js';
+import { ensureAppealTicket, ensureReportTicket } from '../services/postfach.js';
 
 export const REASONS = {
   belaestigung: 'ST-MEL-03',
@@ -184,6 +185,8 @@ export async function createReport(opts: {
       ]);
     }
     await c.query(`INSERT INTO report_events (report_id, status) VALUES ($1, 'received')`, [r!.id]);
+    // Postfach: jede Meldung bekommt ein Ticket — darüber schreibt das Team bei Bedarf mit der meldenden Person
+    await ensureReportTicket(r!.id, c);
     return { id: r!.id as string, number };
   }).then((res) => {
     // Issue #6: nur Nummer, Grundkategorie und Herkunft — kein Inhalt, keine Beteiligten
@@ -355,11 +358,12 @@ export default async function reportRoutes(app: FastifyInstance) {
     );
     if (open) throw new AppError(409, 'UI-WIDERSPRUCH-LAEUFT', {}, 'laeuft');
     const number = await nextNumber('E');
-    await q(
+    const created = await one(
       `INSERT INTO appeals (number, account_id, kind, report_id, suspension_id, text_enc, original_decider, deadline_at)
-       VALUES ($1, $2, 'entscheidung', $3, $4, $5, $6, now() + make_interval(secs => $7))`,
+       VALUES ($1, $2, 'entscheidung', $3, $4, $5, $6, now() + make_interval(secs => $7)) RETURNING id`,
       [number, a.id, b.reportId ?? null, b.suspensionId ?? null, encStr('tickets', b.text, 'appeal'), decider, p('P-FRIST-WIDERSPRUCH')],
     );
+    await ensureAppealTicket(created!.id);
     discord('meldungen', { title: `Neuer Widerspruch ${number}`, level: 'warn', fields: [{ name: 'Art', value: b.reportId ? 'gegen Entscheidung zu Meldung' : 'gegen Sperre' }] });
     // AK-M07-03: die Bestätigung nennt die geltende Frist
     return { number, hours: Math.round(p('P-FRIST-WIDERSPRUCH') / 3600) };
