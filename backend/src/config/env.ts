@@ -51,16 +51,21 @@ const schema = z.object({
   MAIL_BRANDING: z.enum(['voll', 'dezent']).default('voll'),
 
   /*
-   * SMS: 'log' (nur Testbetrieb) oder 'http' — ein beliebiger EU-Versanddienst per
-   * JSON-POST. Vorlage für Sweego (api.sweego.io/send) steht in .env.example;
-   * {to}, {text} und {sender} werden ersetzt. So lässt sich der Dienst ohne
-   * Codeänderung wechseln.
+   * Issue #32: Telegram-Bot statt SMS — Codes an Mobilnummern und (auf Wunsch) Mitteilungen.
+   *   log     = nur Protokoll (nur Testbetrieb)
+   *   polling = der Server fragt Telegram selbst nach neuen Nachrichten an den Bot (Voreinstellung im Betrieb)
+   *   webhook = Telegram liefert an {APP_URL}/api/telegram/webhook; TELEGRAM_WEBHOOK_SECRET ist dann Pflicht
+   * TELEGRAM_BOT_NAME ist der Benutzername des Bots ohne @ (für die Links t.me/<name>).
    */
-  SMS_PROVIDER: z.enum(['log', 'http']).default('log'),
-  SMS_HTTP_URL: z.string().default(''),
-  SMS_HTTP_HEADERS: z.string().default('{}'),
-  SMS_HTTP_BODY: z.string().default(''),
-  SMS_SENDER: z.string().default('Info'),
+  TELEGRAM_MODE: z.enum(['log', 'polling', 'webhook']).default('log'),
+  TELEGRAM_BOT_TOKEN: z.string().default(''),
+  TELEGRAM_BOT_NAME: z
+    .string()
+    .default('')
+    .transform((v) => v.trim().replace(/^@/, ''))
+    .pipe(z.string().regex(/^(|[A-Za-z0-9_]{5,32})$/, 'TELEGRAM_BOT_NAME: Benutzername des Bots ohne @')),
+  TELEGRAM_WEBHOOK_SECRET: z.string().default(''),
+  TELEGRAM_API_URL: z.string().url().default('https://api.telegram.org'),
 
   /* Anmelden mit Apple (F03). Leer = Weg ausgeblendet. */
   APPLE_CLIENT_ID: z.string().default(''),

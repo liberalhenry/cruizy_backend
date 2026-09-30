@@ -6,7 +6,8 @@ import { z } from 'zod';
 import { one, q } from '../db/pool.js';
 import { requireMember } from '../lib/context.js';
 import { encStr } from '../lib/crypto.js';
-import { notFound, tooMany } from '../lib/errors.js';
+import { tooMany } from '../lib/errors.js';
+import { noticeTarget } from '../services/notify.js';
 import { body, idParam, params } from '../lib/http.js';
 import { hit } from '../lib/rate.js';
 
@@ -14,7 +15,7 @@ export default async function noticeRoutes(app: FastifyInstance) {
   app.get('/api/notices', async (req) => {
     const a = await requireMember(req, { allowDeletionPending: true, allowSuspended: true });
     const rows = await q(
-      `SELECT id, kind, title, body, ref, created_at, first_shown_at, read_at FROM notices WHERE account_id = $1 ORDER BY created_at DESC LIMIT 200`,
+      `SELECT id, kind, title, body, ref, url, created_at, first_shown_at, read_at FROM notices WHERE account_id = $1 ORDER BY created_at DESC LIMIT 200`,
       [a.id],
     );
     // AK-Z01-03: Zeitpunkt der ersten Anzeige als Zustellnachweis
@@ -27,6 +28,8 @@ export default async function noticeRoutes(app: FastifyInstance) {
         title: r.title,
         body: r.body,
         ref: r.ref,
+        // Issue #36: Knopf „Dorthin“ statt Download
+        target: noticeTarget(r.kind, r.ref, r.url),
         createdAt: r.created_at,
         read: !!r.read_at,
       })),
@@ -46,18 +49,8 @@ export default async function noticeRoutes(app: FastifyInstance) {
     return { ok: true };
   });
 
-  /** AK-Z01-04: Datei mit Text, Datum und Uhrzeit. */
-  app.get('/api/notices/:id/file', async (req, reply) => {
-    const a = await requireMember(req, { allowDeletionPending: true, allowSuspended: true });
-    const { id } = params(req, idParam);
-    const n = await one(`SELECT title, body, ref, created_at FROM notices WHERE id = $1 AND account_id = $2`, [id, a.id]);
-    if (!n) throw notFound();
-    const when = new Date(n.created_at).toLocaleString('de-DE', { timeZone: 'Europe/Berlin' });
-    const text = `${n.title}\n${when}${n.ref ? `\nNummer: ${n.ref}` : ''}\n\n${n.body}\n`;
-    reply.header('content-type', 'text/plain; charset=utf-8');
-    reply.header('content-disposition', `attachment; filename="mitteilung-${new Date(n.created_at).toISOString().slice(0, 10)}.txt"`);
-    return text;
-  });
+  // Issue #36: der Download als Textdatei (AK-Z01-04) ist entfallen — Mitteilungen stehen weiter in
+  // der Datenkopie (Art. 15/20); in der App führt stattdessen ein Knopf dorthin, wo es weitergeht.
 
   /** Rückmeldefeld (Z-07, FV-89): ohne Konto-Kennung, außer eine Antwort ist erwünscht. */
   app.post('/api/feedback', async (req) => {

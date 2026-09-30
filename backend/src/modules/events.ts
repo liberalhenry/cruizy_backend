@@ -63,7 +63,7 @@ export async function remindEvents() {
   );
   for (const e of rows) {
     const rs = await q(`SELECT account_id FROM event_rsvps WHERE event_id = $1 AND status = 'angenommen'`, [e.id]);
-    for (const r of rs) await sendPush(r.account_id, 'event', { title: t('ST-PUSH-11'), url: `/heute/ereignis/${e.id}` });
+    for (const r of rs) await sendPush(r.account_id, 'event', { title: t('ST-PUSH-11'), url: `/ereignisse/${e.id}` });
   }
 }
 

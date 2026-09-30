@@ -103,7 +103,8 @@ export default async function modRoutes(app: FastifyInstance) {
       if (!tok || tok.k !== 'mod' || tok.st !== s.id || tok.e < Date.now()) return reply.status(404).send();
       // Zone 2 ist für das Werkzeug nicht lesbar — nur Kopien im Fall („sealed“) und Zone 1 (AK-M01-04/05)
       // „idcheck“: Ausweisbilder einer offenen Altersprüfung (Issue #7)
-      if (!['sealed', 'zone1-original', 'tickets', 'idcheck'].includes(tok.s)) return reply.status(404).send();
+      // „zone1-public“: freigegebene oder zu prüfende Cruizy-Date-Fotos (Issue #33) — ohnehin öffentlich
+      if (!['sealed', 'zone1-original', 'zone1-public', 'tickets', 'idcheck'].includes(tok.s)) return reply.status(404).send();
       // gelöscht (z. B. Ausweisbild nach der Entscheidung) → nicht mehr vorhanden
       const data = await getFile(tok.s, tok.f).catch(() => null);
       if (!data) return reply.status(404).send();

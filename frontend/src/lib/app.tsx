@@ -11,6 +11,8 @@ export interface Config {
   mode: 'test' | 'live';
   inviteRequired: boolean;
   apple: boolean;
+  /** Issue #32: Link zum Telegram-Bot (Codes an Telefonnummern) — null, solange keiner eingerichtet ist */
+  telegramBot?: string | null;
   vapidKey: string;
   consentVersion: string;
   contract: { version: string; lines: string[] };

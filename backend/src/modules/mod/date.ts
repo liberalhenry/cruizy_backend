@@ -53,6 +53,17 @@ export default async function dateModRoutes(app: FastifyInstance) {
     };
   });
 
+  /** Issue #33: alle Date-Fotos eines Mitglieds mit Status — für die Prüfung im Werkzeug. */
+  app.get('/mod-api/date/members/:id/photos', async (req) => {
+    const s = await requireStaff(req);
+    const { id } = params(req, idParam);
+    const rows = await q(
+      `SELECT id, file, status, position, created_at FROM date_photos WHERE account_id = $1 AND status <> 'rejected' ORDER BY position, created_at`,
+      [id],
+    );
+    return { items: rows.map((r) => ({ id: r.id, status: r.status, at: r.created_at, image: modImgUrl('zone1-public', r.file, s.id) })) };
+  });
+
   app.post('/mod-api/date/members/:id/suspend', async (req) => {
     const s = await requireStaff(req);
     const { id } = params(req, idParam);
@@ -84,8 +95,14 @@ export default async function dateModRoutes(app: FastifyInstance) {
   // ───── Date-Fotos (Grauzone des Klassifikators, ohne Dienst: alle) ─────
   app.get('/mod-api/date/photos', async (req) => {
     const s = await requireStaff(req);
-    const rows = await q(`SELECT id, account_id, file, created_at FROM date_photos WHERE status = 'queued' ORDER BY created_at LIMIT 100`);
-    return { items: rows.map((r) => ({ id: r.id, account: r.account_id, at: r.created_at, image: modImgUrl('zone1-public', r.file, s.id) })) };
+    const rows = await q(
+      `SELECT ph.id, ph.account_id, ph.file, ph.created_at, ph.position, pr.name
+         FROM date_photos ph LEFT JOIN profiles pr ON pr.account_id = ph.account_id
+        WHERE ph.status = 'queued' ORDER BY ph.created_at LIMIT 100`,
+    );
+    return {
+      items: rows.map((r) => ({ id: r.id, account: r.account_id, name: r.name, position: r.position, at: r.created_at, image: modImgUrl('zone1-public', r.file, s.id) })),
+    };
   });
 
   app.post('/mod-api/date/photos/:id/decide', async (req) => {

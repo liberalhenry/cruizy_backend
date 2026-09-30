@@ -360,14 +360,16 @@ import sys
 sys.dont_write_bytecode = True
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from ui_funktionen import ERSETZT, NEU  # noqa: E402
-for _k in NEU:
-    if _k in T:
-        raise SystemExit(f'Text {_k} doppelt')
-for _k in ERSETZT:
-    if _k not in T:
-        raise SystemExit(f'Text {_k} gibt es nicht — in NEU eintragen')
-T.update(NEU)
-T.update(ERSETZT)
+from ui_v040 import ERSETZT as ERSETZT_040, NEU as NEU_040  # noqa: E402  (Issues #32–#39)
+for _neu, _ersetzt in ((NEU, ERSETZT), (NEU_040, ERSETZT_040)):
+    for _k in _neu:
+        if _k in T:
+            raise SystemExit(f'Text {_k} doppelt')
+    T.update(_neu)
+    for _k in _ersetzt:
+        if _k not in T:
+            raise SystemExit(f'Text {_k} gibt es nicht — in NEU eintragen')
+    T.update(_ersetzt)
 
 FAQ = [
   ('Ich komme nicht mehr in mein Konto — was kann ich tun?', 'Auf der Anmeldeseite unter „Passwort vergessen“ schicken wir dir einen Code an deine bestätigte Adresse oder Nummer. Hast du beides nicht mehr, hilft dein Wiederherstellungscode oder der Weg über eine Vertrauensperson.'),
@@ -377,7 +379,7 @@ FAQ = [
   ('Warum sehe ich manche Profile nicht?', 'Wer dich blockiert hat oder wen du blockiert hast, erscheint nicht. Manche Personen sind nur für bestimmte Gruppen sichtbar oder gerade unsichtbar.'),
   ('Wie genau wird mein Standort angezeigt?', 'Nie genau. Wir runden auf ein Raster (ungefähr 2 km oder 500 m, je nach Einstellung) und zeigen anderen nur eine Entfernungsstufe, keine Meter.'),
   ('Was ist eine Zone, und wie viele sind kostenlos?', 'Eine Zone ist ein Bereich, etwa um deine Wohnung. Darin zeigen wir statt deines Ortes einen Ersatzpunkt. Die Zahl der Zonen steht in den Einstellungen.'),
-  ('Wie verstecke ich die App auf meinem Gerät?', 'Mit dem schnellen Ausblenden: dreimal schnell auf den Titel oben tippen oder zweimal Escape drücken. Die App wechselt sofort auf eine neutrale Seite.'),
+  ('Wie verstecke ich die App auf meinem Gerät?', 'Mit dem schnellen Ausblenden: dreimal schnell auf den Titel oben tippen oder zweimal Escape drücken. Die App wechselt sofort auf eine neutrale Seite. Zurück geht es genauso: dreimal schnell oben auf den Bildschirm tippen (oder zweimal Escape) und die PIN eingeben.'),
   ('Wie blockiere ich jemanden, und was sieht die Person davon?', 'Im Profil oder Gespräch unter „Blockieren“. Die Person erhält keine Nachricht — sie sieht dich nur nicht mehr. Eine Weile lang kannst du es zurücknehmen.'),
   ('Ich habe jemanden gemeldet — wie geht es weiter?', 'Ein Mensch prüft die Meldung, in der Regel innerhalb von 24 Stunden. Das Ergebnis steht in deinen Mitteilungen. Wer gemeldet hat, sagen wir niemandem.'),
   ('Wie lange bleiben meine Nachrichten gespeichert?', 'Solange das Gespräch besteht. Beendete Gespräche liegen 24 Stunden im Archiv und sind danach bei beiden gelöscht. Verschwindende Nachrichten gehen schon früher.'),

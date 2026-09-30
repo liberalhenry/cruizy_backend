@@ -3,6 +3,7 @@
  * Oberfläche braucht, Kataloge und die veröffentlichten Moderationszeiten
  * (AK-M05-03: dieselben Werte wie in der Konfiguration).
  */
+import { botLink } from '../services/telegram.js';
 import type { FastifyInstance } from 'fastify';
 import { env } from '../config/env.js';
 import { p } from '../config/params.js';
@@ -22,6 +23,7 @@ export default async function publicRoutes(app: FastifyInstance) {
       mode: e.OPERATION_MODE,
       inviteRequired: e.OPERATION_MODE === 'test' && !!e.TEST_INVITE_CODE,
       apple: !!(e.APPLE_CLIENT_ID && e.APPLE_REDIRECT_URI),
+      telegramBot: botLink(),
       vapidKey: vapidPublicKey(),
       consentVersion: CONSENT_VERSION,
       contract: { version: CONTRACT_VERSION, lines: CONTRACT_LINES[CONTRACT_VARIANT] },

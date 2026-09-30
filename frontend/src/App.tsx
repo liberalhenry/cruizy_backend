@@ -104,6 +104,7 @@ function Versteckt() {
       pinLength={config?.params.pinLength ?? 4}
       pinTries={config?.params.pinTries ?? 5}
       message={t('UI-PIN-FALSCH')}
+      windowMs={config?.params.hideMs ?? 1000}
       onLocked={async () => {
         await logout();
         localStorage.clear();

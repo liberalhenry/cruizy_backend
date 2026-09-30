@@ -2,8 +2,11 @@
  * Tarnansichten nach dem Schnell-Verstecken und bei der App-Sperre (F58, Issue #11).
  *
  * Jede Ansicht ist eine funktionierende, unauffällige kleine App — passend zum gewählten
- * Symbol auf dem Home-Bildschirm: Notizen, Rechner, Wetter, Kalender. Zurück geht es nur
- * mit der PIN, über eine versteckte Geste:
+ * Symbol auf dem Home-Bildschirm: Notizen, Rechner, Wetter, Kalender.
+ *
+ * Zurück in die App (Issue #38) — in jeder Tarnung gleich, genau wie beim Verstecken:
+ * dreimal schnell oben auf den Bildschirm tippen (oder zweimal Escape), dann die PIN.
+ * Ohne PIN geht es sofort zurück. Zusätzlich gelten die Gesten der einzelnen Ansichten:
  *   Notizen   — Überschrift „Notizen“ lange drücken, dann PIN
  *   Rechner   — PIN eintippen und „=“ drücken
  *   Wetter    — Temperatur lange drücken, dann PIN
@@ -336,10 +339,56 @@ function Kalender({ onUnlock, len }: { onUnlock: Unlock; len: number }) {
   );
 }
 
+/** Höhe des oberen Bereichs, in dem dreimaliges Tippen zurück in die App führt (Issue #38). */
+const TOP_ZONE_PX = 96;
+
+/**
+ * Einheitlicher Rückweg (Issue #38): dreimal schnell oben tippen oder zweimal Escape —
+ * dieselbe Geste wie beim Verstecken. Nichts wird abgefangen; die Tarn-App bleibt voll bedienbar.
+ */
+function useWayBack(windowMs: number, open: () => void) {
+  const taps = useRef<number[]>([]);
+  const esc = useRef(0);
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape') return;
+      const now = Date.now();
+      if (now - esc.current < windowMs) {
+        esc.current = 0;
+        open();
+      } else esc.current = now;
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [windowMs, open]);
+  return (e: { clientY: number }) => {
+    if (e.clientY > TOP_ZONE_PX) return;
+    const now = Date.now();
+    taps.current = taps.current.filter((x) => now - x < windowMs).concat(now);
+    if (taps.current.length >= 3) {
+      taps.current = [];
+      open();
+    }
+  };
+}
+
 /** Die Tarnansicht passend zum gewählten Symbol. */
-export function Disguise({ pinLength, pinTries, onLocked, message }: { pinLength: number; pinTries: number; onLocked: () => void; message?: ReactNode }) {
+export function Disguise({
+  pinLength,
+  pinTries,
+  onLocked,
+  message,
+  windowMs = 1000,
+}: {
+  pinLength: number;
+  pinTries: number;
+  onLocked: () => void;
+  message?: ReactNode;
+  windowMs?: number;
+}) {
   const [kind] = useState(currentDisguise());
   const [err, setErr] = useState(false);
+  const [asking, setAsking] = useState(false);
   useEffect(() => {
     const id = setTimeout(() => setErr(false), 2500);
     return () => clearTimeout(id);
@@ -349,11 +398,27 @@ export function Disguise({ pinLength, pinTries, onLocked, message }: { pinLength
     if (r === 'gesperrt') onLocked();
     else if (!r) setErr(true);
   };
+  const openWayBack = useRef(() => {
+    if (!hasPin()) void unlock('', pinTries);
+    else setAsking(true);
+  }).current;
+  const onTap = useWayBack(windowMs, openWayBack);
   const View = { a: Notizen, b: Rechner, c: Wetter, d: Kalender }[kind];
+  const light = kind === 'a' || kind === 'd';
   return (
-    <>
+    <div onPointerDownCapture={onTap}>
       <View onUnlock={tryUnlock} len={pinLength} />
-      {err && <div className="fixed top-3 inset-x-0 text-center text-sm text-[#a33]">{message ?? '—'}</div>}
-    </>
+      {asking && (
+        <div className="fixed inset-x-0 top-0 z-50 flex justify-center p-3" role="dialog" aria-label="Code">
+          <div className={`rounded-xl shadow-lg px-3 pb-3 pt-1 flex items-start gap-2 ${light ? 'bg-white border border-[#ddd]' : 'bg-[#1c1c1e]'}`}>
+            <PinPrompt light={light} len={pinLength} onSubmit={tryUnlock} />
+            <button className={`mt-3 px-2 py-2 ${light ? 'text-[#888]' : 'text-[#aaa]'}`} onClick={() => setAsking(false)} aria-label="Schließen">
+              ✕
+            </button>
+          </div>
+        </div>
+      )}
+      {err && <div className="fixed top-3 inset-x-0 text-center text-sm text-[#a33] z-50">{message ?? '—'}</div>}
+    </div>
   );
 }

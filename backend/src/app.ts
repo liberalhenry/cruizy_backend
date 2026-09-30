@@ -35,6 +35,7 @@ import karteRoutes from './modules/karte.js';
 import dateRoutes from './modules/date.js';
 import dataRoutes from './modules/data-account.js';
 import helpRoutes from './modules/help.js';
+import telegramRoutes from './modules/telegram.js';
 import pushRoutes from './modules/push.js';
 import realtimeRoutes from './modules/realtime.js';
 import modRoutes from './modules/mod/index.js';
@@ -81,6 +82,8 @@ export async function buildApp(): Promise<FastifyInstance> {
     const url = req.url;
     if (url.startsWith('/api/pruefpartner-') || url.startsWith('/api/eingang/') || url.startsWith('/api/verify/webhook')) return;
     if (url.startsWith('/api/auth/apple/callback')) return;
+    // Issue #32: Telegram liefert ohne unseren Kopf — gesichert über das Webhook-Geheimnis
+    if (url.startsWith('/api/telegram/webhook')) return;
     if (req.headers['x-cruizy'] !== '1') throw new AppError(403, 'ST-FEH-02', {}, 'fehlender_kopf');
   });
 
@@ -135,6 +138,7 @@ export async function buildApp(): Promise<FastifyInstance> {
   await app.register(dateRoutes);
   await app.register(dataRoutes);
   await app.register(helpRoutes);
+  await app.register(telegramRoutes);
   await app.register(pushRoutes);
   await app.register(realtimeRoutes);
   await app.register(modRoutes);
