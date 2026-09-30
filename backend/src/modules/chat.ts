@@ -25,7 +25,7 @@ import { prepare } from '../lib/images.js';
 import { prepareAudio } from '../lib/audio.js';
 import { isoWeek } from '../lib/time.js';
 import { t } from '../lib/texts.js';
-import { runHashCheck } from '../providers/checks.js';
+import { classify, runHashCheck } from '../providers/checks.js';
 import { STARTERS, traitName } from '../services/catalogs.js';
 import { emit } from '../services/hub.js';
 import { audioUrl, imgUrl } from '../services/media-tokens.js';
@@ -34,6 +34,7 @@ import { openHashCase } from '../services/photo-chain.js';
 import { activityBand, currentIntention, initialOf, isBlockedEitherWay, canSee } from '../services/profiles.js';
 import { sendPush } from '../services/push.js';
 import { eventChatUnread } from './veranstalter.js';
+import { dateChatHeader } from '../services/date.js';
 import { recomputeResponseRates } from '../services/response-rate.js';
 import { stage2Required, stage2Satisfied } from '../services/stage2.js';
 import { dropImageCache } from './media.js';
@@ -199,6 +200,13 @@ async function messageView(m: any, me: string, conv: ConvRow) {
   if (m.kind === 'image') {
     // Absender: immer „gesendet“ (AK-F43-12). Empfänger mit Stufe-2-Pflicht: geschlossene Kachel (FV-86).
     const closed = !mine && m.delivery === 'held_stage2';
+    // Issue #19: NSFW in Date-Chats — ohne Freigabe nur eine serverseitig unscharfe Vorschau
+    if (m.nsfw && !mine && !closed) {
+      const consent = await one(`SELECT state FROM nsfw_consent WHERE conversation_id = $1 AND recipient_id = $2`, [conv.id, me]);
+      if (m.nsfw_decision === 'abgelehnt' || consent?.state === 'abgelehnt') return { ...base, image: null, nsfw: { state: 'abgelehnt' }, closed };
+      if (m.nsfw_decision === 'angesehen' || consent?.state === 'erlaubt') return { ...base, image: imgUrl('chat', m.id, me, 'clear'), nsfw: { state: 'frei' }, closed };
+      return { ...base, image: imgUrl('chat', m.id, me), nsfw: { state: 'verdeckt' }, closed };
+    }
     return { ...base, image: closed ? null : imgUrl('chat', m.id, me), closed };
   }
   if (m.kind === 'audio') {
@@ -237,8 +245,10 @@ export async function conversationSummary(c: ConvRow, me: string) {
     `SELECT count(*)::int AS n FROM messages m WHERE m.conversation_id = $1 AND ${UNREAD_SQL} AND ($3::timestamptz IS NULL OR m.created_at > $3)`,
     [c.id, me, myReadAt(c, me)],
   );
+  // Issue #19: Date-Match — erscheint im Reiter „Date“ und nie als Anfrage
+  const dateMatch = await one(`SELECT id FROM date_matches WHERE conversation_id = $1 AND ended_at IS NULL`, [c.id]);
   const box =
-    c.state === 'ended' ? 'archiv' : c.initiator_id === me || myTextAt(c, me) ? 'gespraeche' : 'anfragen';
+    c.state === 'ended' ? 'archiv' : dateMatch || c.initiator_id === me || myTextAt(c, me) ? 'gespraeche' : 'anfragen';
   const pendingRequest =
     box !== 'archiv'
       ? !!(await one(`SELECT 1 FROM media_grants WHERE conversation_id = $1 AND recipient_id = $2 AND state = 'pending'`, [c.id, me]))
@@ -270,7 +280,30 @@ export async function conversationSummary(c: ConvRow, me: string) {
     pendingExit: c.pending_exit_by === me ? c.pending_exit_at : null,
     mediaRequest: pendingRequest,
     reachable: available,
+    date: dateMatch ? { matchId: dateMatch.id } : null,
   };
+}
+
+// ───────────── NSFW in Date-Chats (Issue #19) ─────────────
+
+/**
+ * Nur in Gesprächen mit aktivem Date-Match. Erkennung über den bestehenden Klassifikator; ohne
+ * Klassifikatorwert (kein Dienst angebunden) gilt ein Bild vorsichtshalber als „könnte intim sein“.
+ * Gibt zurück, ob das Bild als NSFW markiert wird — oder wirft, wenn die Gegenseite es nicht empfängt.
+ */
+export async function dateNsfwGate(convId: string, recipient: string, img: Buffer, once: boolean): Promise<boolean> {
+  const match = await one(`SELECT 1 FROM date_matches WHERE conversation_id = $1 AND ended_at IS NULL`, [convId]);
+  if (!match) return false;
+  const score = await classify(img);
+  const nsfw = score === null || score >= p('P-KLASS-UNTEN');
+  if (!nsfw) return false;
+  const acc = await one(`SELECT nsfw_receive FROM date_access WHERE account_id = $1`, [recipient]);
+  const consent = await one(`SELECT state FROM nsfw_consent WHERE conversation_id = $1 AND recipient_id = $2`, [convId, recipient]);
+  const setting = acc?.nsfw_receive ?? 'freigabe';
+  if (setting === 'nein' || consent?.state === 'abgelehnt') throw new AppError(403, 'UI-DATE-NSFW-NEIN', {}, 'nsfw_nein');
+  // Einmal-Bilder lassen sich nicht unscharf vorab zeigen — nur, wenn die Gegenseite es erlaubt hat
+  if (once && setting !== 'ja' && consent?.state !== 'erlaubt') throw new AppError(403, 'UI-DATE-NSFW-EINMAL', {}, 'nsfw_freigabe_noetig');
+  return setting !== 'ja';
 }
 
 // ───────────── Medien-Schranke (F43, FV-57, FV-96) ─────────────
@@ -550,6 +583,8 @@ export default async function chatRoutes(app: FastifyInstance) {
       faceUnlock: { possible: !!hasBlurred, active: !!unlocked && !unlocked.revoked_at },
       icebreakerAvailable: !(await one(`SELECT 1 FROM messages WHERE conversation_id = $1 AND kind IN ('text','image','exit') LIMIT 1`, [c.id])),
       fromOutside: !!from?.from_outside,
+      // Issue #19: angepinntes geliktes Element und Kommentar im Date-Chat
+      date: await dateChatHeader(c.id, a.id),
     };
   });
 
@@ -629,6 +664,8 @@ export default async function chatRoutes(app: FastifyInstance) {
     }
     const { buffer, fields } = await readUpload(req);
     const prepared = await prepare(buffer); // Stufe 0
+    // Issue #19: NSFW in Date-Chats nach der Einstellung der empfangenden Person
+    const nsfw = await dateNsfwGate(c.id, to, prepared.data, fields.once === 'true');
     // Stufe 1 in Zone 2 nur bei eingeschaltetem Schalter (M-09)
     let hashState: 'checked' | 'pending' | 'skipped' = 'skipped';
     if (p('P-ZONE2-ABGLEICH')) {
@@ -660,9 +697,9 @@ export default async function chatRoutes(app: FastifyInstance) {
         cl,
       );
       const m = await one(
-        `INSERT INTO messages (conversation_id, sender_id, kind, media_id, delivery, expires_at, client_ref, once)
-         VALUES ($1, $2, 'image', $3, $4, $5, $6, $7) RETURNING id`,
-        [c.id, a.id, media!.id, delivery, disappearingExpiry(c), clientRef, once],
+        `INSERT INTO messages (conversation_id, sender_id, kind, media_id, delivery, expires_at, client_ref, once, nsfw)
+         VALUES ($1, $2, 'image', $3, $4, $5, $6, $7, $8) RETURNING id`,
+        [c.id, a.id, media!.id, delivery, disappearingExpiry(c), clientRef, once, nsfw],
         cl,
       );
       if (once) await cl.query(`UPDATE profiles SET once_hint_seen = true WHERE account_id = $1`, [a.id]);
@@ -738,6 +775,26 @@ export default async function chatRoutes(app: FastifyInstance) {
     if (!m) throw new AppError(410, 'UI-EINMAL-WEG', {}, 'einmal_weg');
     emit(m.sender_id, 'nachricht', { conversationId: id });
     return { url: imgUrl('once', mid, a.id, undefined, 60), seconds: p('P-EINMAL-ANZEIGE') };
+  });
+
+  /** Issue #19: „Ansehen“ · „Ansehen und künftig erlauben“ · „Ablehnen“ für ein unscharfes Bild im Date-Chat. */
+  app.post('/api/conversations/:id/messages/:mid/nsfw', async (req) => {
+    const a = await requireMember(req);
+    const { id, mid } = params(req, z.object({ id: uuid, mid: uuid }));
+    const b = body(req, z.object({ decision: z.enum(['ansehen', 'erlauben', 'ablehnen']) }));
+    await convFor(id, a.id);
+    const m = await one(`SELECT id FROM messages WHERE id = $1 AND conversation_id = $2 AND nsfw AND sender_id <> $3`, [mid, id, a.id]);
+    if (!m) throw notFound();
+    await q(`UPDATE messages SET nsfw_decision = $2 WHERE id = $1`, [mid, b.decision === 'ablehnen' ? 'abgelehnt' : 'angesehen']);
+    if (b.decision !== 'ansehen') {
+      // Entscheidung je Chat speichern
+      await q(
+        `INSERT INTO nsfw_consent (conversation_id, recipient_id, state) VALUES ($1, $2, $3)
+         ON CONFLICT (conversation_id, recipient_id) DO UPDATE SET state = EXCLUDED.state, decided_at = now()`,
+        [id, a.id, b.decision === 'erlauben' ? 'erlaubt' : 'abgelehnt'],
+      );
+    }
+    return { ok: true, url: b.decision === 'ablehnen' ? null : imgUrl('chat', mid, a.id, 'clear') };
   });
 
   app.post('/api/conversations/:id/media-request', async (req) => {

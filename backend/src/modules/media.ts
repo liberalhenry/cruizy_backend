@@ -15,10 +15,11 @@ import { one } from '../db/pool.js';
 import { loadAccount } from '../lib/context.js';
 import { getFile } from '../lib/files.js';
 import { params } from '../lib/http.js';
-import { applyWatermark, clearVersion, guestVersion, privateVersion } from '../lib/images.js';
+import { applyWatermark, blurredVersion, clearVersion, guestVersion, privateVersion } from '../lib/images.js';
 import { readImgToken } from '../services/media-tokens.js';
 import { canSee, isBlockedEitherWay } from '../services/profiles.js';
 import { stage2Satisfied } from '../services/stage2.js';
+import { canSeeDateProfile, isActiveMember } from '../services/date.js';
 
 const cache = new Map<string, Buffer>();
 let cacheBytes = 0;
@@ -130,6 +131,25 @@ export default async function mediaRoutes(app: FastifyInstance) {
       return send(reply, data, tok.e);
     }
 
+    // Issue #19: Fotos der Date-Galerie — nur für aktive Date-Mitglieder; unscharfe Vorschau (Likes ohne Premium)
+    if (tok.k === 'date') {
+      const ph = await one(`SELECT account_id, file, status FROM date_photos WHERE id = $1`, [tok.id]);
+      if (!ph) return deny(reply);
+      if (ph.account_id !== acc.id) {
+        if (ph.status !== 'approved') return deny(reply);
+        const liker = tok.v === 'guest' && (await one(`SELECT 1 FROM date_likes WHERE from_id = $1 AND to_id = $2`, [ph.account_id, acc.id]));
+        if (!liker && !(await canSeeDateProfile(acc.id, ph.account_id))) return deny(reply);
+        if (liker && !(await isActiveMember(acc.id))) return deny(reply);
+      }
+      const k = `${tok.v === 'guest' ? 'dg' : 'd'}:${ph.file}`;
+      let data = cacheGet(k);
+      if (!data) {
+        const orig = await getFile('zone1-public', ph.file);
+        cachePut(k, (data = tok.v === 'guest' ? await guestVersion(await blurredVersion(orig)) : orig));
+      }
+      return send(reply, data, tok.e);
+    }
+
     if (tok.k === 'own') {
       const ph = await one(`SELECT original_file FROM photos WHERE id = $1 AND account_id = $2 AND status <> 'blocked'`, [tok.id, acc.id]);
       if (!ph) return deny(reply);
@@ -177,7 +197,7 @@ export default async function mediaRoutes(app: FastifyInstance) {
 
     if (tok.k === 'chat') {
       const msg = await one(
-        `SELECT m.id, m.sender_id, m.delivery, m.expires_at, pm.file, c.user_low, c.user_high
+        `SELECT m.id, m.sender_id, m.delivery, m.expires_at, m.nsfw, m.nsfw_decision, m.conversation_id, pm.file, c.user_low, c.user_high
            FROM messages m JOIN private_media pm ON pm.id = m.media_id
            JOIN conversations c ON c.id = m.conversation_id
           WHERE m.id = $1 AND m.kind = 'image' AND NOT m.once`,
@@ -190,6 +210,16 @@ export default async function mediaRoutes(app: FastifyInstance) {
       if (msg.sender_id === acc.id) return send(reply, await privateVersion(await getFile('zone2', msg.file)), tok.e);
       // Empfänger: nur zugestellte Bilder, nur mit Stufe 2, wenn der Schalter sie verlangt (FV-85, AK-F43-07)
       if (msg.delivery !== 'sent' || !(await stage2Satisfied(acc))) return deny(reply);
+      // Issue #19: NSFW in Date-Chats — ohne Freigabe nur die serverseitig unscharfe Fassung, nie das Original
+      if (msg.nsfw) {
+        const consent = await one(`SELECT state FROM nsfw_consent WHERE conversation_id = $1 AND recipient_id = $2`, [msg.conversation_id, acc.id]);
+        const released = consent?.state === 'erlaubt' || msg.nsfw_decision === 'angesehen';
+        if (msg.nsfw_decision === 'abgelehnt' || consent?.state === 'abgelehnt') return deny(reply);
+        if (!released || tok.v !== 'clear') {
+          if (tok.v === 'clear') return deny(reply);
+          return send(reply, await blurredVersion(await getFile('zone2', msg.file)), tok.e);
+        }
+      }
       return send(reply, await applyWatermark(await privateVersion(await getFile('zone2', msg.file)), acc.id), tok.e);
     }
 
@@ -218,6 +248,12 @@ export default async function mediaRoutes(app: FastifyInstance) {
       const other = msg.user_low === acc.id ? msg.user_high : msg.user_low;
       if (await isBlockedEitherWay(acc.id, other)) return deny(reply);
       file = msg.file;
+    }
+    // Issue #19: Voice-Intro und Audio-Prompt im Date-Profil — nur für aktive Date-Mitglieder (Gegenseitigkeit)
+    if (tok.k === 'date') {
+      const au = await one(`SELECT account_id, file FROM date_audio WHERE id = $1`, [tok.id]);
+      if (!au || !(await canSeeDateProfile(acc.id, au.account_id))) return deny(reply);
+      file = au.file;
     }
     if (!file) return deny(reply);
     const data = await getFile('zone2', file);

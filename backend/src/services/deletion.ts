@@ -85,6 +85,9 @@ export async function deleteAccountNow(accountId: string, opts: { vault?: boolea
     exports: await q(`SELECT file FROM exports WHERE account_id = $1`, [accountId]),
     idcheck: await q(`SELECT unnest(files) AS file FROM id_reviews WHERE account_id = $1`, [accountId]),
     events: await q(`SELECT ei.file FROM event_images ei JOIN events e ON e.id = ei.event_id WHERE e.host_id = $1`, [accountId]),
+    // Issue #19
+    datePhotos: await q(`SELECT file FROM date_photos WHERE account_id = $1 AND status <> 'rejected'`, [accountId]),
+    dateAudio: await q(`SELECT file FROM date_audio WHERE account_id = $1`, [accountId]),
   };
   // Issue #16: eigene Veranstaltungen verschwinden mit dem Konto — Gäste kommender erfahren die Absage
   const upcoming = await q(
@@ -108,6 +111,8 @@ export async function deleteAccountNow(accountId: string, opts: { vault?: boolea
   for (const e of files.exports) await deleteFile('exports', e.file);
   for (const f of files.idcheck) await deleteFile('idcheck', f.file);
   for (const f of files.events) await deleteFile('zone1-public', f.file);
+  for (const f of files.datePhotos) await deleteFile('zone1-public', f.file);
+  for (const f of files.dateAudio) await deleteFile('zone2', f.file);
 }
 
 export async function startDeletion(accountId: string) {

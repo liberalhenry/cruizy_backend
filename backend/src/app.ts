@@ -32,6 +32,7 @@ import placeRoutes from './modules/places.js';
 import eventRoutes from './modules/events.js';
 import veranstalterRoutes from './modules/veranstalter.js';
 import karteRoutes from './modules/karte.js';
+import dateRoutes from './modules/date.js';
 import dataRoutes from './modules/data-account.js';
 import helpRoutes from './modules/help.js';
 import pushRoutes from './modules/push.js';
@@ -131,6 +132,7 @@ export async function buildApp(): Promise<FastifyInstance> {
   await app.register(eventRoutes);
   await app.register(veranstalterRoutes);
   await app.register(karteRoutes);
+  await app.register(dateRoutes);
   await app.register(dataRoutes);
   await app.register(helpRoutes);
   await app.register(pushRoutes);

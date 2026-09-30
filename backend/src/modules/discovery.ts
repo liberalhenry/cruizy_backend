@@ -1,4 +1,5 @@
 import type { FastifyInstance } from 'fastify';
+import { dateBadgeIds } from '../services/date.js';
 import { z } from 'zod';
 import { p } from '../config/params.js';
 import { one, q } from '../db/pool.js';
@@ -57,6 +58,18 @@ const gridSchema = z.object({
   expand: z.boolean().optional(),
 });
 
+/**
+ * Issue #19: Date-Zeichen auf der Kachel — nur für andere aktive Date-Mitglieder (serverseitig),
+ * nur wenn die Person es zeigen möchte.
+ */
+export async function markDateBadges<T extends object>(viewerId: string, res: T): Promise<T> {
+  const arrays = ['tiles', 'newNearby', 'soonNearby', 'results'].map((k) => (res as Record<string, unknown>)[k]).filter(Array.isArray) as { id: string; date?: boolean }[][];
+  const ids = arrays.flat().map((x) => x.id);
+  const set = await dateBadgeIds(viewerId, ids);
+  if (set.size) for (const arr of arrays) for (const t of arr) if (set.has(t.id)) t.date = true;
+  return res;
+}
+
 export default async function discoveryRoutes(app: FastifyInstance) {
   app.post('/api/discovery', async (req) => {
     const a = await requireMember(req);
@@ -80,7 +93,7 @@ export default async function discoveryRoutes(app: FastifyInstance) {
     if (b.cursor) {
       const page = await discoverMore(viewer, b.cursor);
       if (!page) return { expired: true, tiles: [], sections: [], hasMore: false, cursor: null };
-      return { ...page, cityMode };
+      return markDateBadges(a.id, { ...page, cityMode });
     }
 
     const prof = await one(`SELECT sort_mode, response_rate_enabled, grid_radius_km, grid_expand FROM profiles WHERE account_id = $1`, [a.id]);
@@ -98,7 +111,7 @@ export default async function discoveryRoutes(app: FastifyInstance) {
     );
     if (!ref) return { needsLocation: true, tiles: [], sections: [], newNearby: [], sort, grid };
     const seed = `${a.id}:${b.seed ?? new Date().toISOString().slice(0, 13)}`;
-    const res = await discover({ viewer, ref, cityMode, sort, filters: b.filters, grid, seed });
+    const res = await markDateBadges(a.id, await discover({ viewer, ref, cityMode, sort, filters: b.filters, grid, seed }));
     return {
       ...res,
       cityMode,
@@ -130,7 +143,7 @@ export default async function discoveryRoutes(app: FastifyInstance) {
     if (!hit('search', a.id, 60, 60_000)) throw tooMany();
     const { viewer, ref, cityMode } = await resolveRef(a.id);
     if (!ref) return { needsLocation: true, results: [] };
-    return { results: await searchByName({ viewer, ref, cityMode, query: b.q, filters: b.filters, limit: 60 }), maxKm: p('P-SUCHE-MAX-KM') };
+    return markDateBadges(a.id, { results: await searchByName({ viewer, ref, cityMode, query: b.q, filters: b.filters, limit: 60 }), maxKm: p('P-SUCHE-MAX-KM') });
   });
 
   app.get('/api/search/me', async (req) => {

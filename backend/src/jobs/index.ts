@@ -23,6 +23,7 @@ import { runCheckins } from '../modules/checkin.js';
 import { purgeEventGroups, remindEvents } from '../modules/events.js';
 import { purgeEventChats } from '../modules/veranstalter.js';
 import { pruneTiles } from '../modules/karte.js';
+import { autoPauseDate, precomputeSuggestions } from '../services/date.js';
 import { computeClusters } from '../modules/places.js';
 import { finalizeBlock } from '../modules/safety.js';
 import { weeklySummary } from '../modules/mod/log.js';
@@ -298,6 +299,9 @@ const JOBS: Job[] = [
   { name: 'event_groups', everyS: () => HOUR, run: purgeEventGroups },
   { name: 'event_chats', everyS: () => 6 * HOUR, run: purgeEventChats },
   { name: 'map_tiles', everyS: () => 24 * HOUR, run: pruneTiles },
+  // Issue #19: Tagesvorschläge nach Mitternacht vorberechnen, Auto-Pause nach Inaktivität
+  { name: 'date_suggestions', everyS: () => HOUR, run: precomputeSuggestions },
+  { name: 'date_autopause', everyS: () => 6 * HOUR, run: autoPauseDate },
   { name: 'housekeeping', everyS: () => HOUR, run: housekeeping },
   { name: 'retention', everyS: () => 6 * HOUR, run: retention },
   { name: 'id_reviews', everyS: () => HOUR, run: expireIdReviews },

@@ -33,6 +33,7 @@ export const REASONS = {
   sexgeld: 'ST-MEL-08',
   gefahr: 'ST-MEL-09',
   intim_ohne_einwilligung: 'UI-MEL-INTIM', // FV-73
+  passt_nicht_zu_date: 'UI-MEL-DATE', // Issue #19: sucht nur Hookups / passt nicht zu Date
   anderes: 'ST-MEL-10',
 } as const;
 type Reason = keyof typeof REASONS;
@@ -201,7 +202,7 @@ export default async function reportRoutes(app: FastifyInstance) {
         reason: reasonSchema,
         description: z.string().max(3000).optional(),
         targetId: uuid.optional(),
-        context: z.enum(['profil', 'gespraech', 'album', 'gruppe', 'ort', 'ereignis', 'geloeschtes_gespraech', 'veranstaltung_chat']),
+        context: z.enum(['profil', 'gespraech', 'album', 'gruppe', 'ort', 'ereignis', 'geloeschtes_gespraech', 'veranstaltung_chat', 'date']),
         contextId: uuid.optional(),
         items: z.array(itemSchema).max(50).default([]),
         alsoBlock: z.boolean().optional(),
@@ -217,7 +218,7 @@ export default async function reportRoutes(app: FastifyInstance) {
         const c = await one(`SELECT user_low, user_high FROM conversations WHERE id = $1 AND (user_low = $2 OR user_high = $2)`, [b.contextId, a.id]);
         if (c) target = c.user_low === a.id ? c.user_high : c.user_low;
       }
-    } else if (b.context === 'profil' && target) {
+    } else if ((b.context === 'profil' || b.context === 'date') && target) {
       const exists = await one(`SELECT 1 FROM profiles WHERE account_id = $1`, [target]);
       if (!exists) throw notFound();
       items = (await snapshotProfile(target)) as typeof items;

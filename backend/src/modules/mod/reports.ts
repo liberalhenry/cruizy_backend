@@ -8,6 +8,7 @@
  *    zu einer Sperre aufaddiert.
  */
 import type { FastifyInstance } from 'fastify';
+import { checkDateStrikes } from '../../services/date.js';
 import { z } from 'zod';
 import { p } from '../../config/params.js';
 import { one, q } from '../../db/pool.js';
@@ -24,7 +25,8 @@ import { sendMail } from '../../providers/mail.js';
 import { ampel, logged, needsSecondPerson, requireStaff } from './core.js';
 import { modImgUrl } from './index.js';
 
-export const DECISIONS = ['bleibt', 'inhalt_entfernt', 'eingeschraenkt', 'gesperrt', 'an_behoerde'] as const;
+// date_verstoss (Issue #19): berechtigte Date-Meldung — ab P-DATE-MELDUNGEN-SPERRE nur Date gesperrt
+export const DECISIONS = ['bleibt', 'inhalt_entfernt', 'eingeschraenkt', 'gesperrt', 'an_behoerde', 'date_verstoss'] as const;
 
 export default async function reportRoutes(app: FastifyInstance) {
   app.get('/mod-api/reports', async (req) => {
@@ -214,7 +216,8 @@ export default async function reportRoutes(app: FastifyInstance) {
       await c.query(`INSERT INTO report_events (report_id, status, note) VALUES ($1, $2, $3)`, [id, final ? 'decided' : 'sperre_beantragt', b.decision]);
     });
     if (final) await informParties(id);
-    return { ok: true, pendingSecondPerson: !final };
+    const dateSuspended = b.decision === 'date_verstoss' && r.target_id ? await checkDateStrikes(r.target_id, s.id) : false;
+    return { ok: true, pendingSecondPerson: !final, dateSuspended };
   });
 
   app.post('/mod-api/reports/:id/close', async (req) => {

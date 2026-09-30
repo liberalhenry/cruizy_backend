@@ -296,3 +296,100 @@ export const ORGANIZER_KINDS = [
   { key: 'privat', label: 'Privatperson' },
 ] as const;
 export const ORGANIZER_KIND_KEYS = new Set<string>(ORGANIZER_KINDS.map((x) => x.key));
+
+// ───────────────────────── Cruizy Date (Issue #19) ─────────────────────────
+// Texte stehen hier auf Deutsch; die Oberfläche nimmt sie über die Schlüssel (Englisch vorbereitet in ui-en).
+
+/** Intention — bewusst ohne „Casual“. */
+export const DATE_INTENTIONS = [
+  { key: 'beziehung', label: 'Feste Beziehung' },
+  { key: 'kennenlernen', label: 'Kennenlernen und schauen, was draus wird' },
+  { key: 'offen', label: 'Offen für eine Beziehung' },
+] as const;
+export const DATE_INTENTION_KEYS = new Set<string>(DATE_INTENTIONS.map((x) => x.key));
+
+/** Prompts (konfigurierbare Liste). */
+export const DATE_PROMPTS = [
+  { key: 'sonntag', label: 'Mein perfekter Sonntag …' },
+  { key: 'schwach', label: 'Ich bin schwach bei …' },
+  { key: 'redflag', label: 'Eine Red Flag für mich ist …' },
+  { key: 'duhastmich', label: 'Du hast mich, wenn …' },
+  { key: 'zusammen', label: 'Zusammen würde ich gern …' },
+  { key: 'gluecklich', label: 'Glücklich macht mich …' },
+  { key: 'freunde', label: 'Meine Freunde würden sagen, ich bin …' },
+  { key: 'nichtverhandelbar', label: 'Nicht verhandelbar ist für mich …' },
+  { key: 'erstesdate', label: 'Mein ideales erstes Date …' },
+  { key: 'zuletztgelernt', label: 'Zuletzt habe ich gelernt …' },
+] as const;
+export const DATE_PROMPT_KEYS = new Set<string>(DATE_PROMPTS.map((x) => x.key));
+
+/** Vordefinierte Interessen — eigene Tags sind zusätzlich erlaubt. */
+export const DATE_INTERESTS = [
+  'Kochen', 'Wandern', 'Reisen', 'Kino', 'Serien', 'Lesen', 'Konzerte', 'Festivals', 'Theater', 'Museen', 'Fotografie',
+  'Laufen', 'Fitness', 'Yoga', 'Radfahren', 'Schwimmen', 'Klettern', 'Tanzen', 'Gaming', 'Brettspiele', 'Musik machen',
+  'Kunst', 'Design', 'Mode', 'Natur', 'Hunde', 'Katzen', 'Gärtnern', 'Kaffee', 'Wein', 'Brunch', 'Podcasts',
+  'Politik', 'Ehrenamt', 'Sprachen', 'Technik', 'Wissenschaft', 'Meditation', 'Camping', 'Skifahren', 'Segeln',
+] as const;
+
+/** Werte und Lebensstil. Religion und Politik: optional, (noch) nicht im Matching. */
+export const DATE_VALUES = {
+  relationship_model: [
+    { key: 'monogam', label: 'Monogam' },
+    { key: 'offen', label: 'Offene Beziehung' },
+    { key: 'poly', label: 'Polyamor' },
+    { key: 'unsicher', label: 'Weiß ich noch nicht' },
+  ],
+  kids: [
+    { key: 'will', label: 'Möchte Kinder' },
+    { key: 'will_nicht', label: 'Möchte keine Kinder' },
+    { key: 'hat', label: 'Habe Kinder' },
+    { key: 'offen', label: 'Offen' },
+  ],
+  smoking: [
+    { key: 'nie', label: 'Nichtraucher' },
+    { key: 'gelegentlich', label: 'Gelegentlich' },
+    { key: 'regelmaessig', label: 'Raucher' },
+  ],
+  alcohol: [
+    { key: 'nie', label: 'Kein Alkohol' },
+    { key: 'gelegentlich', label: 'Gelegentlich' },
+    { key: 'gern', label: 'Gern' },
+  ],
+  sport: [
+    { key: 'selten', label: 'Selten' },
+    { key: 'manchmal', label: 'Manchmal' },
+    { key: 'regelmaessig', label: 'Regelmäßig' },
+    { key: 'taeglich', label: 'Täglich' },
+  ],
+  religion: [
+    { key: 'keine', label: 'Keine' },
+    { key: 'christlich', label: 'Christlich' },
+    { key: 'muslimisch', label: 'Muslimisch' },
+    { key: 'juedisch', label: 'Jüdisch' },
+    { key: 'spirituell', label: 'Spirituell' },
+    { key: 'andere', label: 'Andere' },
+  ],
+  politics: [
+    { key: 'links', label: 'Links' },
+    { key: 'mitte', label: 'Mitte' },
+    { key: 'liberal', label: 'Liberal' },
+    { key: 'konservativ', label: 'Konservativ' },
+    { key: 'unpolitisch', label: 'Unpolitisch' },
+  ],
+} as const;
+export type DateValueField = keyof typeof DATE_VALUES;
+export const DATE_VALUE_KEYS: Record<string, Set<string>> = Object.fromEntries(
+  Object.entries(DATE_VALUES).map(([k, v]) => [k, new Set<string>(v.map((x) => x.key))]),
+);
+/** Deal-Breaker sind nur für diese Felder möglich. */
+export const DATE_DEALBREAKER_FIELDS = ['smoking', 'kids', 'relationship_model'] as const;
+
+/** Posen für das Selfie (zufällig, gegen Fotos vom Bildschirm). */
+export const DATE_POSES = [
+  { key: 'daumen', label: 'Daumen hoch neben dem Gesicht' },
+  { key: 'links', label: 'Kopf leicht nach links drehen' },
+  { key: 'rechts', label: 'Kopf leicht nach rechts drehen' },
+  { key: 'hand_kinn', label: 'Hand ans Kinn legen' },
+  { key: 'peace', label: 'Peace-Zeichen zeigen' },
+  { key: 'augenbrauen', label: 'Augenbrauen hochziehen' },
+] as const;

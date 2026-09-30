@@ -603,6 +603,110 @@
   "s": "ENTWURF",
   "t": "Bitte warte kurz, bevor du einen neuen Code anforderst."
  },
+ "UI-DATE-EINWILLIGUNG-NOETIG": {
+  "s": "ENTWURF",
+  "t": "Bitte stimm der Verarbeitung für die Gesichtsverifizierung zu."
+ },
+ "UI-DATE-ELEMENT-FEHLT": {
+  "s": "ENTWURF",
+  "t": "Das gibt es im Profil nicht mehr."
+ },
+ "UI-DATE-ERST-FOTOS": {
+  "s": "ENTWURF",
+  "t": "Lade zuerst deine Date-Fotos hoch — das erste wird mit dem Selfie abgeglichen."
+ },
+ "UI-DATE-FOTOS-MAX": {
+  "s": "ENTWURF",
+  "t": "Höchstens {max} Fotos."
+ },
+ "UI-DATE-GESPERRT": {
+  "s": "ENTWURF",
+  "t": "Dein Zugang zu Cruizy Date ist gesperrt. Die Cruizy-Hauptseite kannst du weiterhin nutzen."
+ },
+ "UI-DATE-INTERESSEN-ANZAHL": {
+  "s": "ENTWURF",
+  "t": "Wähl {min} bis {max} Interessen."
+ },
+ "UI-DATE-KOMMENTAR-LANG": {
+  "s": "ENTWURF",
+  "t": "Ein Kommentar darf höchstens {zeichen} Zeichen haben."
+ },
+ "UI-DATE-N-ENTSPERRT": {
+  "s": "ENTWURF",
+  "t": "Dein Zugang zu Cruizy Date ist wieder freigeschaltet."
+ },
+ "UI-DATE-N-ENTSPERRT-TITEL": {
+  "s": "ENTWURF",
+  "t": "Cruizy Date wieder offen"
+ },
+ "UI-DATE-N-FOTO-ABGELEHNT": {
+  "s": "ENTWURF",
+  "t": "Ein Foto aus deinem Date-Profil passt nicht zu Date (Profile bleiben jugendfrei). Lade bitte ein anderes hoch."
+ },
+ "UI-DATE-N-FOTO-ABGELEHNT-TITEL": {
+  "s": "ENTWURF",
+  "t": "Date-Foto nicht freigegeben"
+ },
+ "UI-DATE-N-GESPERRT": {
+  "s": "ENTWURF",
+  "t": "Dein Zugang zu Cruizy Date wurde gesperrt, weil dein Verhalten nicht zu ernsthaftem Dating gepasst hat. Die Cruizy-Hauptseite kannst du weiterhin nutzen."
+ },
+ "UI-DATE-N-GESPERRT-TITEL": {
+  "s": "ENTWURF",
+  "t": "Cruizy Date gesperrt"
+ },
+ "UI-DATE-N-MATCH": {
+  "s": "ENTWURF",
+  "t": "Ihr habt euch gegenseitig gelikt. Euer Chat liegt unter „Chats“ im Reiter „Date“."
+ },
+ "UI-DATE-N-MATCH-PUSH": {
+  "s": "ENTWURF",
+  "t": "Du hast ein neues Match."
+ },
+ "UI-DATE-N-MATCH-TITEL": {
+  "s": "ENTWURF",
+  "t": "Neues Match in Cruizy Date"
+ },
+ "UI-DATE-NSFW-EINMAL": {
+  "s": "ENTWURF",
+  "t": "Einmal-Bilder, die intime Inhalte zeigen könnten, gehen in Date-Chats erst, wenn die andere Person sie erlaubt hat."
+ },
+ "UI-DATE-NSFW-NEIN": {
+  "s": "ENTWURF",
+  "t": "Die andere Person empfängt in Date-Chats keine Bilder, die intime Inhalte zeigen könnten."
+ },
+ "UI-DATE-NUR-MITGLIEDER": {
+  "s": "ENTWURF",
+  "t": "Das siehst du nur mit freigeschaltetem Cruizy Date."
+ },
+ "UI-DATE-POSE-ABGELAUFEN": {
+  "s": "ENTWURF",
+  "t": "Die Aufgabe ist abgelaufen. Hol dir eine neue Pose."
+ },
+ "UI-DATE-PREMIUM": {
+  "s": "ENTWURF",
+  "t": "Das gehört zu Premium."
+ },
+ "UI-DATE-PROMPTS-ANZAHL": {
+  "s": "ENTWURF",
+  "t": "Beantworte {min} bis {max} Fragen."
+ },
+ "UI-DATE-SCHON-GELIKT": {
+  "s": "ENTWURF",
+  "t": "Du hast diese Person schon gelikt."
+ },
+ "UI-DATE-SUCHE-LANG": {
+  "s": "ENTWURF",
+  "t": "„Was ich suche“ darf höchstens {zeichen} Zeichen haben."
+ },
+ "UI-DATE-VERIFIZIERUNG-NICHT-VERFUEGBAR": {
+  "s": "ENTWURF",
+  "t": "Die Gesichtsverifizierung ist gerade nicht verfügbar. Bitte versuch es später noch einmal."
+ },
+ "UI-DATE-WARTELISTE": {
+  "s": "ENTWURF",
+  "t": "Wir starten Cruizy Date Stadt für Stadt. Du bist dabei, sobald es bei dir losgeht."
+ },
  "UI-DATEN-ALBUM": {
   "s": "ENTWURF",
   "t": "Privates Album"
@@ -882,6 +986,10 @@
  "UI-ENTSCHEIDUNG-BLEIBT": {
   "s": "ENTWURF",
   "t": "kein Verstoß"
+ },
+ "UI-ENTSCHEIDUNG-DATE-VERSTOSS": {
+  "s": "ENTWURF",
+  "t": "Verstoß gegen den Date-Kodex"
  },
  "UI-ENTSCHEIDUNG-EINGESCHRAENKT": {
   "s": "ENTWURF",
@@ -1754,6 +1862,10 @@
  "UI-MEL-CSAM": {
   "s": "ENTWURF",
   "t": "Darstellung von sexuellem Kindesmissbrauch"
+ },
+ "UI-MEL-DATE": {
+  "s": "ENTWURF",
+  "t": "Sucht nur Hookups / passt nicht zu Date"
  },
  "UI-MEL-INTIM": {
   "s": "ENTWURF",
@@ -2758,6 +2870,18 @@
  "UI-SYS-": {
   "s": "ENTWURF",
   "t": ""
+ },
+ "UI-SYS-DATE-MATCH": {
+  "s": "ENTWURF",
+  "t": "Ihr habt euch in Cruizy Date gematcht."
+ },
+ "UI-SYS-DATE-MATCH-BESTEHEND": {
+  "s": "ENTWURF",
+  "t": "Ihr habt euch auch in Cruizy Date gematcht."
+ },
+ "UI-SYS-DATE-UNMATCH": {
+  "s": "ENTWURF",
+  "t": "Das Date-Match wurde aufgelöst."
  },
  "UI-SYS-GESICHT-AN": {
   "s": "ENTWURF",

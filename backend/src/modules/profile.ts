@@ -2,6 +2,8 @@
  * Profil (5.0, F13–F21) und Einstellungen (S63).
  */
 import type { FastifyInstance } from 'fastify';
+import { canSeeDateProfile, isActiveMember } from '../services/date.js';
+import { markDateBadges } from './discovery.js';
 import { randomInt } from 'node:crypto';
 import { z } from 'zod';
 import { p } from '../config/params.js';
@@ -402,7 +404,10 @@ export default async function profileRoutes(app: FastifyInstance) {
     const bookmarked = !!(await one(`SELECT 1 FROM bookmarks WHERE owner_id = $1 AND target_id = $2`, [a.id, id]));
     // Issue #27: nur das Öffnen eines Profils zählt als Besuch
     await recordVisit(a.id, id);
-    return { profile: { ...view, bookmarked } };
+    // Issue #19: „Date-Profil ansehen“ nur, wenn beide aktive Date-Mitglieder sind
+    const dateProfile = (await canSeeDateProfile(a.id, id)) && (await isActiveMember(id)) && (await isActiveMember(a.id));
+    const dateBadge = dateProfile && !!(await one(`SELECT 1 FROM date_access WHERE account_id = $1 AND badge_in_grid`, [id]));
+    return { profile: { ...view, bookmarked, dateProfile, date: dateBadge } };
   });
 
   // Merkliste (F21) — privat, ohne Benachrichtigung
@@ -419,7 +424,7 @@ export default async function profileRoutes(app: FastifyInstance) {
       [a.id],
     );
     // AK-F21-03: dieselben Regeln wie im Raster — Bänder statt genauer Werte
-    return { tiles: rows.map((r) => toTile(r, viewer)) };
+    return markDateBadges(a.id, { tiles: rows.map((r) => toTile(r, viewer)) });
   });
 
   app.post('/api/bookmarks/:id', async (req) => {

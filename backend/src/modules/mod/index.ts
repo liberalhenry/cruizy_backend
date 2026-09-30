@@ -27,6 +27,7 @@ import ticketRoutes from './tickets.js';
 import overviewRoutes from './overview.js';
 import teamRoutes from './team.js';
 import idcheckRoutes from './idcheck.js';
+import dateModRoutes from './date.js';
 import updateRoutes from './updates.js';
 
 export function modImgUrl(store: Store, file: string, staffId: string, mime?: 'audio/mp4') {
@@ -119,6 +120,7 @@ export default async function modRoutes(app: FastifyInstance) {
     await mod.register(appealRoutes);
     await mod.register(logRoutes);
     await mod.register(placeRoutes);
+    await mod.register(dateModRoutes);
     await mod.register(art18Routes);
     await mod.register(ticketRoutes);
     await mod.register(overviewRoutes);

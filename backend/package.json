@@ -12,6 +12,7 @@
     "build": "tsc -p tsconfig.json",
     "start": "node dist/src/index.js",
     "migrate": "tsx src/db/migrate-cli.ts",
+    "migrate:down": "tsx src/db/migrate-cli.ts down",
     "seed:test": "tsx src/seed/testdaten.ts",
     "staff:create": "tsx src/cli/staff-create.ts",
     "typecheck": "tsc -p tsconfig.test.json",

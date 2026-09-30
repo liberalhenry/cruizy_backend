@@ -79,6 +79,16 @@ const schema = z.object({
   AGE_PROVIDER: z.enum(['ausweis', 'mock']).default('ausweis'),
   AGE_WEBHOOK_SECRET: z.string().default(''),
 
+  /*
+   * Issue #19: Gesichtsverifizierung für Cruizy Date über einen externen Anbieter (FaceVerificationProvider).
+   * stub = Attrappe (nur Testbetrieb, gibt „passt“ zurück; im Echtbetrieb gesperrt)
+   * http = Anbieter über HTTP: POST multipart {selfie, reference, pose} → {match, livenessOk?, confidence?}
+   * none = keine Verifizierung möglich → Date lässt sich nicht freischalten
+   */
+  DATE_FACE_PROVIDER: z.enum(['none', 'stub', 'http']).default('stub'),
+  DATE_FACE_URL: z.string().default(''),
+  DATE_FACE_HEADERS: z.string().default('{}'),
+
   /* Prüfkette (M-02) */
   CLASSIFIER: z.enum(['queue', 'http', 'mock-allow']).default('queue'),
   CLASSIFIER_URL: z.string().default(''),
