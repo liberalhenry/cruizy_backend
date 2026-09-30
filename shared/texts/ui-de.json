@@ -259,6 +259,30 @@
   "s": "ENTWURF",
   "t": "Anmelden mit Apple ist gerade nicht verfügbar."
  },
+ "UI-APPSPERRE": {
+  "s": "ENTWURF",
+  "t": "App mit PIN sperren"
+ },
+ "UI-APPSPERRE-ERKL": {
+  "s": "ENTWURF",
+  "t": "Beim Öffnen erscheint zuerst die Tarnung. Erst mit der PIN geht es weiter."
+ },
+ "UI-APPSPERRE-MIN": {
+  "s": "ENTWURF",
+  "t": "nach {min} Min."
+ },
+ "UI-APPSPERRE-NACH": {
+  "s": "ENTWURF",
+  "t": "Wieder sperren, wenn die App so lange im Hintergrund war:"
+ },
+ "UI-APPSPERRE-PIN-ZUERST": {
+  "s": "ENTWURF",
+  "t": "Leg zuerst eine PIN fest."
+ },
+ "UI-APPSPERRE-SOFORT": {
+  "s": "ENTWURF",
+  "t": "sofort"
+ },
  "UI-AQ-EIGEN": {
   "s": "ENTWURF",
   "t": "Deine Antwortquote: {prozent} % · {stufe}"
@@ -2590,6 +2614,34 @@
  "UI-TAG-SO": {
   "s": "ENTWURF",
   "t": "So"
+ },
+ "UI-TARN-ERKL": {
+  "s": "ENTWURF",
+  "t": "Symbol und Name auf dem Home-Bildschirm — und die App, die nach dem Verstecken erscheint. Beides passt zusammen, damit nichts auffällt."
+ },
+ "UI-TARN-GESTE-A": {
+  "s": "ENTWURF",
+  "t": "Überschrift „Notizen“ lange drücken und die PIN eingeben."
+ },
+ "UI-TARN-GESTE-B": {
+  "s": "ENTWURF",
+  "t": "Die PIN in den Rechner tippen und „=“ drücken."
+ },
+ "UI-TARN-GESTE-C": {
+  "s": "ENTWURF",
+  "t": "Die große Temperatur lange drücken und die PIN eingeben."
+ },
+ "UI-TARN-GESTE-D": {
+  "s": "ENTWURF",
+  "t": "Den Monatsnamen lange drücken und die PIN eingeben."
+ },
+ "UI-TARN-TITEL": {
+  "s": "ENTWURF",
+  "t": "Tarnung"
+ },
+ "UI-TARN-ZURUECK": {
+  "s": "ENTWURF",
+  "t": "Zurück in die App:"
  },
  "UI-TEAM-KENNUNG-VERGEBEN": {
   "s": "ENTWURF",

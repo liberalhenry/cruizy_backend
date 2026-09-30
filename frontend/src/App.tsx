@@ -3,7 +3,8 @@ import { useEffect, useState, type ReactNode } from 'react';
 import { Navigate, NavLink, Route, Routes, useLocation } from 'react-router-dom';
 import { Icon } from './components/ui';
 import { useApp } from './lib/app';
-import { hasPin, installHideTriggers, isHidden, onHideChange, unlock } from './lib/hide';
+import { installAppLock, installHideTriggers, isHidden, onHideChange } from './lib/hide';
+import { Disguise } from './components/disguise';
 import { t } from './lib/texts';
 import { api } from './lib/api';
 import { Einwilligung, Gast, HomeBildschirm, Konto, PasswortNeu, ProfilAnlegen, Willkommen, Wiederherstellung, WiederherstellungAbbrechen } from './screens/einstieg';
@@ -90,61 +91,20 @@ function Shell({ children }: { children: ReactNode }) {
   );
 }
 
-/** Harmlose Ansicht nach dem Schnell-Verstecken (S54.03). Zurück nur mit PIN. */
+/** Harmlose Ansicht nach dem Schnell-Verstecken (S54.03) — passend zum gewählten Symbol (Issue #11). */
 function Versteckt() {
   const { config, logout } = useApp();
-  const [pin, setPin] = useState('');
-  const [msg, setMsg] = useState<string | null>(null);
-  const [show, setShow] = useState(false);
-  const len = config?.params.pinLength ?? 4;
-  const tries = config?.params.pinTries ?? 5;
-  const submit = async () => {
-    const r = await unlock(pin, tries);
-    setPin('');
-    if (r === 'gesperrt') {
-      await logout();
-      localStorage.clear();
-      location.reload();
-    } else if (!r) setMsg(t('UI-PIN-FALSCH'));
-  };
   return (
-    <div className="min-h-screen bg-[#f6f5f1] text-[#222] p-6 font-serif">
-      <h1 className="text-2xl mb-4">{t('UI-VERSTECKT-TITEL')}</h1>
-      <ul className="space-y-2 text-lg">
-        <li>☐ {t('UI-VERSTECKT-1')}</li>
-        <li>☐ {t('UI-VERSTECKT-2')}</li>
-        <li>☑ {t('UI-VERSTECKT-3')}</li>
-      </ul>
-      <button className="mt-10 text-sm text-[#999]" onClick={() => setShow(true)} aria-label={t('UI-VERSTECKT-ENTSPERREN')}>
-        …
-      </button>
-      {show && (
-        <div className="mt-4 max-w-xs">
-          {hasPin() ? (
-            <>
-              <input
-                inputMode="numeric"
-                autoFocus
-                maxLength={len}
-                value={pin}
-                onChange={(e) => setPin(e.target.value.replace(/\D/g, ''))}
-                onKeyDown={(e) => e.key === 'Enter' && submit()}
-                className="w-full border border-[#ccc] rounded px-3 py-2 bg-white text-[#222]"
-                aria-label="PIN"
-              />
-              <button className="mt-2 px-4 py-2 rounded bg-[#222] text-white" onClick={submit}>
-                OK
-              </button>
-            </>
-          ) : (
-            <button className="px-4 py-2 rounded bg-[#222] text-white" onClick={() => unlock('', tries)}>
-              OK
-            </button>
-          )}
-          {msg && <p className="text-sm mt-2 text-[#a33]">{msg}</p>}
-        </div>
-      )}
-    </div>
+    <Disguise
+      pinLength={config?.params.pinLength ?? 4}
+      pinTries={config?.params.pinTries ?? 5}
+      message={t('UI-PIN-FALSCH')}
+      onLocked={async () => {
+        await logout();
+        localStorage.clear();
+        location.reload();
+      }}
+    />
   );
 }
 
@@ -174,6 +134,8 @@ export default function App() {
   const loc = useLocation();
 
   useEffect(() => onHideChange(setHidden), []);
+  // Issue #11: App-Sperre — beim Start und nach der Zeit im Hintergrund verdeckt
+  useEffect(() => installAppLock(), []);
   useEffect(() => installHideTriggers(config?.params.hideMs ?? 1000), [config]);
   useEffect(() => {
     // Der Titel verrät nichts (Tarnung, F59)

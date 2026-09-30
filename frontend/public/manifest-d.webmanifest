@@ -1,6 +1,6 @@
 {
- "name": "Liste",
- "short_name": "Liste",
+ "name": "Kalender",
+ "short_name": "Kalender",
  "start_url": "/",
  "scope": "/",
  "display": "standalone",

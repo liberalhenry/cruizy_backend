@@ -2,6 +2,21 @@
 Wird von build-ui.py eingelesen — nicht allein aufrufen."""
 
 NEU = {
+  # ───── #11 Verstecken ─────
+  'UI-TARN-TITEL': 'Tarnung',
+  'UI-TARN-ERKL': 'Symbol und Name auf dem Home-Bildschirm — und die App, die nach dem Verstecken erscheint. Beides passt zusammen, damit nichts auffällt.',
+  'UI-TARN-ZURUECK': 'Zurück in die App:',
+  'UI-TARN-GESTE-A': 'Überschrift „Notizen“ lange drücken und die PIN eingeben.',
+  'UI-TARN-GESTE-B': 'Die PIN in den Rechner tippen und „=“ drücken.',
+  'UI-TARN-GESTE-C': 'Die große Temperatur lange drücken und die PIN eingeben.',
+  'UI-TARN-GESTE-D': 'Den Monatsnamen lange drücken und die PIN eingeben.',
+  'UI-APPSPERRE': 'App mit PIN sperren',
+  'UI-APPSPERRE-ERKL': 'Beim Öffnen erscheint zuerst die Tarnung. Erst mit der PIN geht es weiter.',
+  'UI-APPSPERRE-PIN-ZUERST': 'Leg zuerst eine PIN fest.',
+  'UI-APPSPERRE-NACH': 'Wieder sperren, wenn die App so lange im Hintergrund war:',
+  'UI-APPSPERRE-SOFORT': 'sofort',
+  'UI-APPSPERRE-MIN': 'nach {min} Min.',
+
   # ───── #12 Entfernungen ─────
   'UI-KM-UNTER-1': '< 1 km',
   'UI-KM': '{km} km',

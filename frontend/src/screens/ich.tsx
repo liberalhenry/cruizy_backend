@@ -9,7 +9,7 @@ import { ReportSheet, useBlock } from '../components/report';
 import { api, ApiError, errText } from '../lib/api';
 import { useApp } from '../lib/app';
 import { idbGet, idbSet } from '../lib/idb';
-import { hasPin, hideNow, removePin, setPin } from '../lib/hide';
+import { currentDisguise, hasPin, hideNow, lockSettings, removePin, setLock, setPin } from '../lib/hide';
 import { disablePush, enablePush, isIosSafariNotInstalled, pushSupported } from '../lib/push';
 import { fmtDate, fmtKm, parts, plain, t } from '../lib/texts';
 import { LocationSheet } from './naehe';
@@ -479,16 +479,29 @@ export function Verstecken() {
   const len = config?.params.pinLength ?? 4;
   const [pin, setPinValue] = useState('');
   const [has, setHas] = useState(hasPin());
+  const [lock, setLockState] = useState(lockSettings());
+  const [kind, setKind] = useState(currentDisguise());
   useEffect(() => {
     if (location.hash === '#symbol') document.getElementById('symbol')?.scrollIntoView();
   }, []);
+  const gesture: Record<string, string> = { a: 'UI-TARN-GESTE-A', b: 'UI-TARN-GESTE-B', c: 'UI-TARN-GESTE-C', d: 'UI-TARN-GESTE-D' };
   return (
     <div className="min-h-screen">
       <Header title={t('ST-SIC-30')} back />
       <Page>
         <p className="mb-3">{t('ST-SIC-31')}</p>
-        <Banner>{t('UI-VERSTECKEN-WEB-GRENZE')}</Banner>
-        <section className="card p-4 mt-4">
+
+        <section id="symbol" className="mb-6">
+          <h2 className="font-semibold mb-1">{t('UI-TARN-TITEL')}</h2>
+          <p className="text-sm muted mb-3">{t('UI-TARN-ERKL')}</p>
+          <SymbolPicker onChange={(k) => setKind(k as typeof kind)} />
+          <p className="text-sm mt-3">
+            <span className="muted">{t('UI-TARN-ZURUECK')}</span> {t(gesture[kind])}
+          </p>
+          <p className="text-xs muted mt-2">{t('UI-VERSTECKEN-WEB-GRENZE')}</p>
+        </section>
+
+        <section className="card p-4">
           <p className="mb-2">{t('ST-SIC-32', { n: len })}</p>
           {has ? (
             <div className="flex gap-2">
@@ -498,6 +511,7 @@ export function Verstecken() {
                 onClick={() => {
                   removePin();
                   setHas(false);
+                  setLockState({ on: false, minutes: lock.minutes });
                 }}
               >
                 {t('UI-APP-LOESCHEN')}
@@ -505,7 +519,7 @@ export function Verstecken() {
             </div>
           ) : (
             <div className="flex gap-2">
-              <input className="input" inputMode="numeric" maxLength={len} value={pin} onChange={(e) => setPinValue(e.target.value.replace(/\D/g, ''))} aria-label="PIN" />
+              <input className="input" type="password" inputMode="numeric" maxLength={len} value={pin} onChange={(e) => setPinValue(e.target.value.replace(/\D/g, ''))} aria-label="PIN" />
               <button
                 className="btn-primary"
                 disabled={pin.length !== len}
@@ -520,22 +534,42 @@ export function Verstecken() {
               </button>
             </div>
           )}
-        </section>
-        <section className="mt-4">
-          <p className="label">{t('UI-VERSTECKEN-VORSCHAU')}</p>
-          <div className="rounded-xl bg-[#f6f5f1] text-[#222] p-4 font-serif">
-            <p className="text-lg">{t('UI-VERSTECKT-TITEL')}</p>
-            <p>☐ {t('UI-VERSTECKT-1')}</p>
+          <div className="mt-3 border-t border-linie pt-3">
+            <Toggle
+              checked={lock.on}
+              disabled={!has}
+              onChange={(v) => {
+                setLock(v, lock.minutes);
+                setLockState(lockSettings());
+              }}
+              label={t('UI-APPSPERRE')}
+              hint={has ? t('UI-APPSPERRE-ERKL') : t('UI-APPSPERRE-PIN-ZUERST')}
+            />
+            {lock.on && (
+              <div className="flex flex-wrap gap-2 mt-1" role="radiogroup" aria-label={t('UI-APPSPERRE-NACH')}>
+                <span className="text-sm muted w-full">{t('UI-APPSPERRE-NACH')}</span>
+                {[0, 1, 5, 15].map((m) => (
+                  <button
+                    key={m}
+                    role="radio"
+                    aria-checked={lock.minutes === m}
+                    className={`chip min-h-tap ${lock.minutes === m ? 'border-akzent text-akzent' : ''}`}
+                    onClick={() => {
+                      setLock(true, m);
+                      setLockState(lockSettings());
+                    }}
+                  >
+                    {m === 0 ? t('UI-APPSPERRE-SOFORT') : t('UI-APPSPERRE-MIN', { min: m })}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
-          <button className="btn-secondary w-full mt-3" onClick={hideNow}>
-            {t('UI-VERSTECKEN-JETZT')}
-          </button>
         </section>
-        <section id="symbol" className="mt-8">
-          <h2 className="font-semibold mb-1">{t('ST-SIC-40')}</h2>
-          <p className="text-sm muted mb-3">{t('ST-SIC-41')}</p>
-          <SymbolPicker />
-        </section>
+
+        <button className="btn-secondary w-full mt-4" onClick={hideNow}>
+          {t('UI-VERSTECKEN-JETZT')}
+        </button>
       </Page>
     </div>
   );
