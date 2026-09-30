@@ -3,7 +3,11 @@
  * Läuft ausschließlich bei OPERATION_MODE=test. Alle Zeilen tragen is_test_data.
  *
  *   npm run seed:test            legt 40 Testkonten rund um Köln an, dazu Orte und Termine
- *                                und die empfohlene „Cruizy Test-Party“ in Hamburg (Issue #16)
+ *                                und die empfohlene „Cruizy Test-Party“ in Hamburg (Issue #16).
+ *                                Issue #34: alle Profile vollständig (4 Fotos, Text, Maße, Körpertyp,
+ *                                Position, Interessen, Absicht, Fotoprüfung) — auch bei schon
+ *                                vorhandenen Testkonten; test4 … test40 haben ein fertiges Cruizy-Date-
+ *                                Profil, test1 … test3 nicht (zum Ausprobieren des Onboardings).
  *   npm run seed:test -- --clear löscht alle Testdaten wieder
  *
  * Anmeldung: test1@example.invalid … test40@example.invalid, Passwort aus
@@ -26,17 +30,23 @@ import { CONSENT_PURPOSE, CONSENT_VERSION } from '../modules/auth.js';
 import { CONTRACT_VARIANT, CONTRACT_VERSION } from '../modules/verification.js';
 import { deleteAccountNow } from '../services/deletion.js';
 import { clearTestEvents, seedTestEvents } from './veranstaltungen.js';
+import { seedDateLikes, seedDateMember } from './date.js';
 
 const NAMES = ['Alex', 'Ben', 'Can', 'Dario', 'Eli', 'Finn', 'Gabriel', 'Hakan', 'Ilias', 'Jonas', 'Kai', 'Luca', 'Mika', 'Noah', 'Oskar', 'Paul', 'Quentin', 'Rafael', 'Sami', 'Tom', 'Umut', 'Vince', 'Wim', 'Xaver', 'Yusuf', 'Zeno', 'Arne', 'Bastian', 'Cem', 'David', 'Emil', 'Felix', 'Gino', 'Henrik', 'Ivo', 'Jan', 'Kilian', 'Levin', 'Malte', 'Nico'];
+// Issue #34: jeder Text hat mindestens 50 Zeichen (zählt so zur Profil-Vollständigkeit)
 const TEXTS = [
-  'Neu in der Stadt und offen für einen Kaffee.',
-  'Gern ein Bier am Abend, gern auch einfach schreiben.',
-  'Laufe viel am Rhein. Frag mich nach Podcasts.',
-  '',
-  'Koche gerne, suche Leute für Spieleabende.',
-  'Kurz hier, lange Gespräche mag ich trotzdem.',
+  'Neu in der Stadt und offen für einen Kaffee. Erzähl mir, wo es das beste Frühstück gibt.',
+  'Gern ein Bier am Abend, gern auch einfach schreiben. Ich antworte meistens schneller als gedacht.',
+  'Laufe viel am Rhein. Frag mich nach Podcasts — ich habe zu jedem Thema eine Empfehlung.',
+  'Tagsüber im Büro, abends lieber draußen. Suche Leute für Konzerte und spontane Ausflüge.',
+  'Koche gerne, suche Leute für Spieleabende. Verlieren kann ich übrigens nicht besonders gut.',
+  'Kurz hier, lange Gespräche mag ich trotzdem. Ehrlich, direkt und immer für einen Witz zu haben.',
 ];
-const INTENTIONS = ['abend', 'schreiben', 'absicht3', 'absicht4', null, null] as const;
+const POSITION_KEYS = ['top', 'vers_top', 'vers', 'vers_bottom', 'bottom', 'keine_penetration'];
+const BODY_KEYS = ['schlank', 'durchschnitt', 'jock', 'otter', 'bear', 'muscle', 'daddy', 'twunk', 'kraeftig', 'geek'];
+const KINK_KEYS = ['sportswear', 'leder', 'kuscheln', 'massage', 'vanilla', 'sneaker', 'switch', 'rollenspiel'];
+const PHOTOS_PER_PROFILE = 4;
+const INTENTIONS = ['abend', 'schreiben', 'absicht3', 'absicht4'] as const;
 
 const CENTER = { lat: 50.9375, lng: 6.9603 };
 
@@ -63,6 +73,63 @@ async function testImage(seed: number): Promise<Buffer> {
   return sharp(Buffer.from(svg)).jpeg({ quality: 85 }).toBuffer();
 }
 
+/**
+ * Issue #34: Profil vollständig — nur Leeres wird ergänzt, eigene Änderungen im Testbetrieb bleiben.
+ * Fotos bis PHOTOS_PER_PROFILE, Fotoprüfung als erledigt (testdaten), Maße, Körpertyp, Position,
+ * Interessen, Absicht, Text; Kinks bei jedem zweiten Konto (freiwillig, zählt nie zur Vollständigkeit).
+ */
+async function fillProfile(id: string, i: number) {
+  const traitIds = [...TRAIT_IDS];
+  const traits = [0, 5, 11, 17].map((o) => traitIds[(i * 7 + o) % traitIds.length]);
+  const intention = INTENTIONS[i % INTENTIONS.length];
+  const exp = computeExpiry(intention, undefined);
+  await q(
+    `UPDATE profiles SET
+       photo_mode = 'photo',
+       free_text = CASE WHEN char_length(coalesce(free_text, '')) < 50 THEN $2 ELSE free_text END,
+       traits = CASE WHEN cardinality(traits) < 3 THEN $3::int[] ELSE traits END,
+       gender_category = coalesce(gender_category, 'mann'),
+       gender_visible = true,
+       height_cm = coalesce(height_cm, $4),
+       weight_kg = coalesce(weight_kg, $5),
+       position = coalesce(position, $6),
+       body_types = CASE WHEN cardinality(body_types) = 0 THEN $7::text[] ELSE body_types END,
+       kinks = CASE WHEN cardinality(kinks) = 0 THEN $8::text[] ELSE kinks END,
+       intention = coalesce(intention, $9),
+       intention_started_at = CASE WHEN intention IS NULL THEN now() ELSE intention_started_at END,
+       intention_expires_at = CASE WHEN intention IS NULL THEN $10 ELSE intention_expires_at END,
+       last_intention = coalesce(last_intention, $9),
+       last_intention_duration = coalesce(last_intention_duration, $11),
+       response_rate_enabled = true,
+       updated_at = now()
+     WHERE account_id = $1`,
+    [
+      id,
+      TEXTS[i % TEXTS.length],
+      [...new Set(traits)],
+      165 + ((i * 7) % 30),
+      60 + ((i * 11) % 40),
+      POSITION_KEYS[i % POSITION_KEYS.length],
+      [BODY_KEYS[i % BODY_KEYS.length], ...(i % 3 === 0 ? [BODY_KEYS[(i + 4) % BODY_KEYS.length]] : [])],
+      i % 2 === 0 ? [KINK_KEYS[i % KINK_KEYS.length], KINK_KEYS[(i + 3) % KINK_KEYS.length]] : [],
+      intention,
+      exp?.end ?? null,
+      exp?.duration ?? null,
+    ],
+  );
+  await q(`UPDATE accounts SET face_check_at = coalesce(face_check_at, now()) WHERE id = $1`, [id]);
+  const have = await one(`SELECT count(*)::int AS n, coalesce(max(position), -1) AS pos FROM photos WHERE account_id = $1 AND status <> 'rejected'`, [id]);
+  for (let k = have!.n; k < PHOTOS_PER_PROFILE; k++) {
+    const img = await prepare(await testImage(i * 10 + k));
+    const file = await putFile('zone1-original', img.data);
+    const ph = await one(
+      `INSERT INTO photos (account_id, position, status, blurred, original_file, width, height, hash_state) VALUES ($1, $2, 'checking', false, $3, $4, $5, 'pending') RETURNING id`,
+      [id, have!.pos + 1 + (k - have!.n), file, img.width, img.height],
+    );
+    await approvePhoto(ph!.id, { by: 'testdaten', auto: true });
+  }
+}
+
 async function clear() {
   const rows = await q(`SELECT id FROM accounts WHERE is_test_data`);
   for (const r of rows) await deleteAccountNow(r.id, { vault: false });
@@ -77,10 +144,18 @@ async function seed() {
   const colors = p('P-INITIALE-FARBEN') as readonly string[];
   const traitIds = [...TRAIT_IDS];
   let created = 0;
+  const ids: string[] = [];
+  let filled = 0;
   for (let i = 1; i <= 40; i++) {
     const email = normalizeEmail(`test${i}@example.invalid`);
     const exists = await one(`SELECT id FROM accounts WHERE email_hash = $1`, [blindIndex('email', email)]);
-    if (exists) continue;
+    if (exists) {
+      // Issue #34: vorhandene Testkonten werden vervollständigt
+      await fillProfile(exists.id, i);
+      ids.push(exists.id);
+      filled++;
+      continue;
+    }
     const acc = await one(
       `INSERT INTO accounts (status, primary_method, email_hash, email_enc, email_verified_at, password_hash, consented_at,
                              age1_at, age1_method, age1_ref, contract_version, contract_variant, contract_at,
@@ -95,7 +170,7 @@ async function seed() {
     const intention = INTENTIONS[i % INTENTIONS.length];
     const exp = intention ? computeExpiry(intention, undefined) : null;
     const traits = [...new Set(Array.from({ length: randomInt(0, 6) }, () => traitIds[randomInt(0, traitIds.length)]))];
-    const withPhoto = i % 3 !== 0;
+    const withPhoto = true;
     await q(
       `INSERT INTO profiles (account_id, name, age, age_set_at, photo_mode, initial_color, intention, intention_started_at, intention_expires_at,
                              last_intention, last_intention_duration, traits, free_text, media_receive, response_band)
@@ -126,7 +201,22 @@ async function seed() {
       );
       await approvePhoto(ph!.id, { by: 'testdaten', auto: true });
     }
+    await fillProfile(id, i);
+    ids.push(id);
     created++;
+  }
+
+  // Issue #34: Cruizy-Date-Beispielnutzer (test4 … test40) und ein paar Likes
+  let dateCreated = 0;
+  for (let i = 4; i <= ids.length; i++) if (await seedDateMember(ids[i - 1], i, testImage)) dateCreated++;
+  if (ids.length >= 12) {
+    await seedDateLikes([
+      [ids[9], ids[3], 'Dein Sonntag klingt nach meinem.'],
+      [ids[10], ids[3], null],
+      [ids[11], ids[3], 'Welcher Podcast zuerst?'],
+      [ids[4], ids[5], 'Kaffee am Rhein?'],
+      [ids[6], ids[4], null],
+    ]);
   }
 
   const placeCount = await one(`SELECT count(*)::int AS n FROM places WHERE is_test_data`);
@@ -155,7 +245,9 @@ async function seed() {
     );
   }
   await seedTestEvents();
-  console.log(`Testdaten angelegt: ${created} neue Konten. Anmeldung: test1@example.invalid … test40@example.invalid / ${password}`);
+  console.log(
+    `Testdaten angelegt: ${created} neue Konten, ${filled} vorhandene vervollständigt, ${dateCreated} Date-Profile. Anmeldung: test1@example.invalid … test40@example.invalid / ${password}`,
+  );
 }
 
 async function main() {
