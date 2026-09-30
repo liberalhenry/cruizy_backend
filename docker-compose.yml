@@ -56,6 +56,9 @@ services:
       NODE_ENV: production
     volumes:
       - media-data:/data
+    # Sprachaufnahmen werden nur im Arbeitsspeicher umgewandelt (Issue #28)
+    tmpfs:
+      - /tmp:size=64m,mode=1777
     depends_on:
       db:
         condition: service_healthy
