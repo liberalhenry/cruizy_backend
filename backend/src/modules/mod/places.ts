@@ -6,6 +6,9 @@
  *  * Keine bezahlte Hervorhebung — dafür gibt es keine Schaltfläche (Nr. 65, Nr. 91).
  *  * Freigabe nur mit allen fünf Prüfpunkten (M75.02); Ampel vom Menschen bestätigt (M75.03).
  *  * Die Adresse einer privaten Veranstaltung sieht niemand — sie steht nicht in der Einreichung.
+ *  * Issue #16: Veranstalter verifizieren (Anträge), Einreichungen ohne Verifizierung im Einzelfall
+ *    freigeben, veröffentlichte Veranstaltungen verifizierter Veranstalter gegenprüfen, eigene
+ *    Veranstaltungen von Cruizy als „empfohlen“ kennzeichnen (keine bezahlte Hervorhebung).
  */
 import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
@@ -16,6 +19,9 @@ import { body, idParam, params, query, uuid } from '../../lib/http.js';
 import { t } from '../../lib/texts.js';
 import { sendMail } from '../../providers/mail.js';
 import { ampel, logged, requireStaff } from './core.js';
+import { modImgUrl } from './index.js';
+import { createNotice } from '../../services/notify.js';
+import { deleteFile } from '../../lib/files.js';
 
 const CHECKLIST = z.object({
   ampel: z.literal(true),
@@ -181,12 +187,12 @@ export default async function placeModRoutes(app: FastifyInstance) {
     await requireStaff(req);
     const mails = await q(`SELECT id, from_domain, received_at, parsed, place_hint FROM inbound_mails WHERE status = 'open' ORDER BY received_at ASC`);
     const events = await q(
-      `SELECT e.id, e.title, e.starts_at, e.created_at, e.source, pl.name AS place_name FROM events e LEFT JOIN places pl ON pl.id = e.place_id
+      `SELECT e.id, e.title, e.starts_at, e.created_at, e.source, e.area, e.categories, e.host_id, pl.name AS place_name FROM events e LEFT JOIN places pl ON pl.id = e.place_id
         WHERE e.status = 'pending' ORDER BY (e.starts_at < now() + interval '48 hours') DESC, e.created_at ASC`,
     );
     return {
       mails: mails.map((m) => ({ id: m.id, domain: m.from_domain, receivedAt: m.received_at, suggestion: m.parsed, placeHint: m.place_hint })),
-      events: events.map((e) => ({ id: e.id, title: e.title, startsAt: e.starts_at, createdAt: e.created_at, source: e.source, place: e.place_name, soon: new Date(e.starts_at).getTime() < Date.now() + 48 * 3600_000 })),
+      events: events.map((e) => ({ id: e.id, title: e.title, startsAt: e.starts_at, createdAt: e.created_at, source: e.source, place: e.place_name ?? e.area, categories: e.categories, fromMember: !!e.host_id, soon: new Date(e.starts_at).getTime() < Date.now() + 48 * 3600_000 })),
       returnReasons: RETURN_REASONS,
     };
   });
@@ -267,15 +273,30 @@ export default async function placeModRoutes(app: FastifyInstance) {
         reason: z.string().trim().min(3).max(2000),
         checklist: CHECKLIST.optional(),
         ampel: z.enum(['gruen', 'gelb', 'rot']).optional(),
+        message: z.string().trim().max(1000).optional(),
       }),
     );
     const e = await one(`SELECT id FROM events WHERE id = $1 AND status = 'pending'`, [id]);
     if (!e) throw notFound();
     if (b.decision === 'freigeben' && (!b.checklist || !b.ampel)) throw new AppError(400, 'UI-MOD-PRUEFLISTE', {}, 'pruefliste');
     await logged(s, `veranstaltung:${id}`, `veranstaltung_${b.decision}`, b.reason, async (c) => {
-      if (b.decision === 'freigeben') await c.query(`UPDATE events SET status = 'approved', ampel = $2, approved_by = $3, approved_at = now() WHERE id = $1`, [id, b.ampel, s.id]);
-      else await c.query(`UPDATE events SET status = 'rejected', cancel_note = $2 WHERE id = $1`, [id, b.reason]);
+      if (b.decision === 'freigeben') await c.query(`UPDATE events SET status = 'approved', ampel = $2, approved_by = $3, approved_at = now(), checked_at = now(), checked_by = $3 WHERE id = $1`, [id, b.ampel, s.id]);
+      else await c.query(`UPDATE events SET status = 'rejected', cancel_note = $2 WHERE id = $1`, [id, b.message ?? b.reason]);
     });
+    // Issue #16: wer eingereicht hat, erfährt die Entscheidung
+    const ev = await one(`SELECT host_id, title FROM events WHERE id = $1`, [id]);
+    if (ev?.host_id) {
+      const ok = b.decision === 'freigeben';
+      await createNotice(
+        ev.host_id,
+        'veranstaltung',
+        t(ok ? 'UI-VA-N-FREIGEGEBEN-TITEL' : 'UI-VA-N-NICHT-FREIGEGEBEN-TITEL'),
+        t(ok ? 'UI-VA-N-FREIGEGEBEN' : 'UI-VA-N-NICHT-FREIGEGEBEN', { titel: ev.title, grund: b.message ?? '' }),
+        `veranstaltung:${id}`,
+        undefined,
+        { url: '/veranstalter' },
+      );
+    }
     return { ok: true };
   });
 
@@ -307,6 +328,196 @@ export default async function placeModRoutes(app: FastifyInstance) {
       const r = await c.query(`UPDATE events SET status = 'cancelled', cancel_note = $2 WHERE id = $1 AND status = 'approved'`, [id, b.note ?? null]);
       if (!r.rowCount) throw notFound();
     });
+    const ev = await one(`SELECT title FROM events WHERE id = $1`, [id]);
+    const guests = await q(`SELECT account_id FROM event_rsvps WHERE event_id = $1 AND status IN ('angenommen','angefragt')`, [id]);
+    for (const g of guests) {
+      await createNotice(g.account_id, 'veranstaltung', t('UI-VA-N-ABGESAGT-TITEL'), t('UI-VA-N-ABGESAGT', { titel: ev!.title }), `veranstaltung:${id}`, undefined, { url: `/ereignisse/${id}` });
+    }
+    return { ok: true };
+  });
+
+  // ───────────── Issue #16: Veranstalter ─────────────
+  app.get('/mod-api/organizers', async (req) => {
+    await requireStaff(req);
+    const qs = query(req, z.object({ status: z.enum(['beantragt', 'verifiziert', 'abgelehnt', 'entzogen']).default('beantragt') }));
+    const rows = await q(
+      `SELECT o.id, o.name, o.kind, o.city, o.website, o.status, o.created_at, o.decided_at, o.account_id,
+              (SELECT count(*)::int FROM events e WHERE e.organizer_id = o.id) AS events
+         FROM organizers o WHERE o.status = $1 ORDER BY o.created_at ASC LIMIT 300`,
+      [qs.status],
+    );
+    return {
+      items: rows.map((o) => ({ id: o.id, name: o.name, kind: o.kind, city: o.city, website: o.website, status: o.status, createdAt: o.created_at, decidedAt: o.decided_at, team: !o.account_id, events: o.events })),
+    };
+  });
+
+  app.post('/mod-api/organizers/:id/open', async (req) => {
+    const s = await requireStaff(req);
+    const { id } = params(req, idParam);
+    const o = await one(`SELECT * FROM organizers WHERE id = $1`, [id]);
+    if (!o) throw notFound();
+    return logged(s, `veranstalter:${id}`, 'veranstalter_geoeffnet', 'Prüfung Veranstalter', async () => ({
+      id: o.id,
+      name: o.name,
+      kind: o.kind,
+      city: o.city,
+      website: o.website,
+      status: o.status,
+      email: decStr('pii', o.contact_email_enc, 'organizer'),
+      note: decStr('pii', o.note_enc, 'organizer'),
+      createdAt: o.created_at,
+      decisionNote: o.decision_note,
+    }));
+  });
+
+  app.post('/mod-api/organizers/:id/decide', async (req) => {
+    const s = await requireStaff(req);
+    const { id } = params(req, idParam);
+    const b = body(
+      req,
+      z.object({
+        decision: z.enum(['verifizieren', 'ablehnen', 'entziehen']),
+        reason: z.string().trim().min(3).max(2000),
+        message: z.string().trim().max(1000).optional(),
+      }),
+    );
+    const o = await one(`SELECT * FROM organizers WHERE id = $1`, [id]);
+    if (!o) throw notFound();
+    if (b.decision === 'entziehen' ? o.status !== 'verifiziert' : o.status !== 'beantragt') throw conflict('UI-MOD-SCHON-ENTSCHIEDEN');
+    const status = b.decision === 'verifizieren' ? 'verifiziert' : b.decision === 'ablehnen' ? 'abgelehnt' : 'entzogen';
+    await logged(s, `veranstalter:${id}`, `veranstalter_${b.decision}`, b.reason, async (c) => {
+      await c.query(`UPDATE organizers SET status = $2, decided_at = now(), decided_by = $3, decision_note = $4 WHERE id = $1`, [id, status, s.id, b.message ?? null]);
+      // bisherige Veranstaltungen des Kontos tragen ab jetzt den Veranstalter
+      if (status === 'verifiziert' && o.account_id) await c.query(`UPDATE events SET organizer_id = $1 WHERE host_id = $2 AND organizer_id IS NULL`, [id, o.account_id]);
+      if (status === 'entzogen') await c.query(`UPDATE events SET organizer_id = NULL WHERE organizer_id = $1`, [id]);
+    });
+    if (o.account_id) {
+      await createNotice(
+        o.account_id,
+        'veranstaltung',
+        t(status === 'verifiziert' ? 'UI-VA-N-VERIFIZIERT-TITEL' : 'UI-VA-N-NICHT-VERIFIZIERT-TITEL'),
+        t(status === 'verifiziert' ? 'UI-VA-N-VERIFIZIERT' : 'UI-VA-N-NICHT-VERIFIZIERT', { grund: b.message ?? '' }),
+        `veranstalter:${id}`,
+        undefined,
+        { url: '/veranstalter' },
+      );
+    }
+    return { ok: true };
+  });
+
+  // ───────────── Issue #16: alle Veranstaltungen gegenprüfen ─────────────
+  app.get('/mod-api/events', async (req) => {
+    await requireStaff(req);
+    const qs = query(req, z.object({ filter: z.enum(['ungeprueft', 'kommend', 'empfohlen', 'abgesagt']).default('ungeprueft') }));
+    const cond = {
+      ungeprueft: `e.status = 'approved' AND e.checked_at IS NULL AND e.ends_at > now()`,
+      kommend: `e.status = 'approved' AND e.ends_at > now()`,
+      empfohlen: `e.featured AND e.ends_at > now()`,
+      abgesagt: `e.status = 'cancelled' AND e.ends_at > now() - interval '30 days'`,
+    }[qs.filter];
+    const rows = await q(
+      `SELECT e.id, e.title, e.starts_at, e.status, e.area, e.categories, e.featured, e.checked_at, e.capacity, e.source, e.ampel, e.updated_at,
+              o.name AS organizer_name, pl.name AS place_name,
+              (SELECT count(*)::int FROM event_rsvps r WHERE r.event_id = e.id AND r.status = 'angenommen') AS accepted
+         FROM events e LEFT JOIN organizers o ON o.id = e.organizer_id LEFT JOIN places pl ON pl.id = e.place_id
+        WHERE ${cond} ORDER BY e.starts_at LIMIT 500`,
+    );
+    return {
+      items: rows.map((e) => ({
+        id: e.id,
+        title: e.title,
+        startsAt: e.starts_at,
+        status: e.status,
+        area: e.place_name ?? e.area,
+        categories: e.categories,
+        featured: e.featured,
+        checked: !!e.checked_at,
+        organizer: e.organizer_name,
+        source: e.source,
+        ampel: e.ampel,
+        capacity: e.capacity,
+        accepted: e.accepted,
+        changedAfterCheck: !!e.updated_at && !e.checked_at,
+      })),
+    };
+  });
+
+  app.get('/mod-api/events/:id', async (req) => {
+    const s = await requireStaff(req);
+    const { id } = params(req, idParam);
+    const e = await one(
+      `SELECT e.*, o.name AS organizer_name, o.status AS organizer_status, pl.name AS place_name,
+              (SELECT count(*)::int FROM event_rsvps r WHERE r.event_id = e.id AND r.status = 'angenommen') AS accepted,
+              (SELECT count(*)::int FROM event_rsvps r WHERE r.event_id = e.id AND r.status = 'angefragt') AS requested
+         FROM events e LEFT JOIN organizers o ON o.id = e.organizer_id LEFT JOIN places pl ON pl.id = e.place_id WHERE e.id = $1`,
+      [id],
+    );
+    if (!e) throw notFound();
+    const imgs = await q(`SELECT id, file FROM event_images WHERE event_id = $1 ORDER BY position, created_at`, [id]);
+    return {
+      id: e.id,
+      title: e.title,
+      description: e.description,
+      startsAt: e.starts_at,
+      endsAt: e.ends_at,
+      status: e.status,
+      source: e.source,
+      ampel: e.ampel,
+      categories: e.categories,
+      capacity: e.capacity,
+      approvalRequired: e.approval_required,
+      cancelUntilHours: e.cancel_until_hours,
+      area: e.place_name ?? e.area,
+      // Die Adresse steht hier, damit das Team „keine Privatadresse öffentlich“ prüfen kann (M75.02)
+      address: e.address,
+      locationPublic: e.location_public,
+      price: e.price,
+      dressCode: e.dress_code,
+      featured: e.featured,
+      checked: !!e.checked_at,
+      organizer: e.organizer_name ? { name: e.organizer_name, status: e.organizer_status } : null,
+      fromMember: !!e.host_id,
+      accepted: e.accepted + e.test_guests,
+      requested: e.requested,
+      images: imgs.map((i) => ({ id: i.id, url: modImgUrl('zone1-public', i.file, s.id) })),
+    };
+  });
+
+  app.post('/mod-api/events/:id/check', async (req) => {
+    const s = await requireStaff(req);
+    const { id } = params(req, idParam);
+    const b = body(req, z.object({ reason: z.string().trim().min(3).max(500), checklist: CHECKLIST, ampel: z.enum(['gruen', 'gelb', 'rot']) }));
+    await logged(s, `veranstaltung:${id}`, 'veranstaltung_geprueft', b.reason, async (c) => {
+      const r = await c.query(`UPDATE events SET checked_at = now(), checked_by = $2, ampel = $3 WHERE id = $1 AND status = 'approved'`, [id, s.id, b.ampel]);
+      if (!r.rowCount) throw notFound();
+    });
+    return { ok: true };
+  });
+
+  /** Empfohlen: nur Veranstaltungen von Cruizy selbst (Quelle „cruizy“) — keine bezahlte Hervorhebung. */
+  app.post('/mod-api/events/:id/feature', async (req) => {
+    const s = await requireStaff(req);
+    const { id } = params(req, idParam);
+    const b = body(req, z.object({ featured: z.boolean(), reason: z.string().trim().min(3).max(500) }));
+    const e = await one(`SELECT source FROM events WHERE id = $1`, [id]);
+    if (!e) throw notFound();
+    if (b.featured && e.source !== 'cruizy') throw conflict('UI-MOD-NUR-EIGENE');
+    await logged(s, `veranstaltung:${id}`, b.featured ? 'veranstaltung_empfohlen' : 'veranstaltung_nicht_empfohlen', b.reason, async (c) => {
+      await c.query(`UPDATE events SET featured = $2 WHERE id = $1`, [id, b.featured]);
+    });
+    return { ok: true };
+  });
+
+  app.delete('/mod-api/events/:id/images/:imageId', async (req) => {
+    const s = await requireStaff(req);
+    const { id, imageId } = params(req, z.object({ id: uuid, imageId: uuid }));
+    const b = query(req, z.object({ reason: z.string().trim().min(3).max(500) }));
+    const file = await logged(s, `veranstaltung:${id}`, 'veranstaltung_bild_entfernt', b.reason, async (c) => {
+      const r = await c.query(`DELETE FROM event_images WHERE id = $1 AND event_id = $2 RETURNING file`, [imageId, id]);
+      if (!r.rowCount) throw notFound();
+      return r.rows[0].file as string;
+    });
+    await deleteFile('zone1-public', file);
     return { ok: true };
   });
 

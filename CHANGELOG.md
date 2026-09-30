@@ -10,6 +10,42 @@ Werkzeug → „Aktualisierung“ (Owner) oder `bash deploy/update.sh`.
 
 ## [Unveröffentlicht]
 
+## [0.3.0] – 2026-09-30
+
+### Neu
+- **Cruizy Date** (#19): eigener Bereich für ernsthaftes Kennenlernen auf demselben Konto. Landing mit
+  Hinweis „nur echtes Dating“, Regionen mit Warteliste, Onboarding (Intention, 3–6 jugendfreie Fotos,
+  Gesichtsverifizierung per Selfie mit zufälliger Pose über `FaceVerificationProvider` – nur Ergebnis und
+  Zeitpunkt gespeichert, Art.-9-Einwilligung –, Beruf, Prompts, Voice-Intro, Interessen, Werte,
+  Präferenzen mit Deal-Breakern, Date-Kodex). Tagesvorschläge nach Kompatibilität, Likes nur auf ein
+  Element mit Kommentar, Match → Date-Chat im bestehenden Chat (bestehende Gespräche werden markiert),
+  NSFW in Date-Chats nur nach Freigabe mit serverseitiger Unschärfe, Date-Zeichen im Raster nur für
+  Date-Mitglieder, Date-Sperre nach berechtigten Meldungen (Hauptkonto bleibt), Auto-Pause, Pausieren,
+  Verlassen, Premium-Schalter, Feature-Schalter `P-DATE-AKTIV`, reversible Migration (`migrate:down`).
+- **Veranstalter und Veranstaltungen** (#16): Verifizierung als Veranstalter, Einreichung ohne
+  Verifizierung zur Prüfung, Kategorien, Plätze, Bilder, Absagefrist, Gäste-Annahme, Gästeliste, Chat
+  Veranstalter ↔ Gast als eigener Reiter, Mod-Panel für Anträge, Einreichungen und Gegenprüfung,
+  empfohlene Cruizy-Testparty in Hamburg (Testbetrieb).
+- **Heute neu** (#15): Umkreis, Kategorien, Zeitraum, „bald“ oder „nah“, empfohlene Veranstaltungen,
+  Datumsgruppen, geöffnete Orte als Karussell, Haftungshinweis.
+- **Karte ohne US-Dienste** (#17): eigener oder vermittelter EU-Kachelserver (`MAP_TILE_UPSTREAM`,
+  Zwischenspeicher), sonst Grundkarte aus Natural Earth und GeoNames; Punkte beim Herauszoomen gebündelt,
+  genaue Lage nur bei öffentlichen Orten.
+- **Travel und Reisen** (#18): Travel-Modus mit Ortsverzeichnis (DE/AT/CH), Punkt verschieben bis 20 km,
+  Reisen mit „Bald in der Gegend“.
+- **Verstecken** (#11): Tarn-Apps Notizen, Rechner, Wetter, Kalender mit passenden Symbolen, App-Sperre per PIN.
+- **Profil** (#13): Bearbeiten direkt aus dem Profil, Größe, Gewicht, Position, Körpertypen, Kinks
+  freiwillig, Freitext bis 2000 Zeichen, bis 20 Fotos; Mini-Profilbild im Reiter „Ich“.
+- **Raster und Suche** (#20, #22): Namenssuche, Filter, Radius, stabile Sortierung mit Nachladen.
+- **Chat** (#14, #21, #23, #26, #28, #30): ungelesen markiert, Vorlagen und Emojis, bis zu 10 private
+  Alben, Einmal-Bilder, Sprachnachrichten, Gesprächsstarter.
+- **Profilfunktionen** (#24, #25, #27, #29): Antwortquote, Test-Erinnerung, Profilbesucher (Premium),
+  Profil-Vollständigkeit.
+
+### Geändert
+- **Entfernungen** (#12): 1–10 km genau, ab 15 km in 5er-, ab 100 km in 10er-Schritten.
+- Sicherheitsrichtlinie: Mikrofon für die eigene Seite erlaubt (Sprachnachrichten, Voice-Intro).
+
 ## [0.2.0] – 2026-09-29
 
 ### Neu

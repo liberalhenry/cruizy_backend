@@ -77,14 +77,15 @@ export default async function guestRoutes(app: FastifyInstance) {
       cityMode: !cell,
       sort: 'naehe',
       filters: {},
-      page: 0,
+      grid: { radiusKm: p('P-RASTER-RADIUS'), expand: true },
+      seed: `gast:${tok.g}`,
     });
     return {
+      // Gäste sehen nur die erste Seite (AK-F01-01: Vorschau, kein Stöbern)
       tiles: res.tiles,
-      near: res.near,
+      sections: res.sections,
       radiusKm: res.radiusKm,
       fewNearby: res.fewNearby,
-      weekly: [],
       cityMode: !cell,
       expiresAt: new Date(tok.s + p('P-GAST-DAUER') * 1000).toISOString(),
     };

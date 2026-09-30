@@ -2,6 +2,8 @@
  * Profil (5.0, F13–F21) und Einstellungen (S63).
  */
 import type { FastifyInstance } from 'fastify';
+import { canSeeDateProfile, isActiveMember } from '../services/date.js';
+import { markDateBadges } from './discovery.js';
 import { randomInt } from 'node:crypto';
 import { z } from 'zod';
 import { p } from '../config/params.js';
@@ -10,8 +12,11 @@ import { requireMember, requireSession } from '../lib/context.js';
 import { AppError, bad, notFound } from '../lib/errors.js';
 import { body, idParam, params } from '../lib/http.js';
 import {
+  BODY_TYPE_KEYS,
   GENDER_KEYS,
   INTENTIONS,
+  KINK_KEYS,
+  POSITION_KEYS,
   TRAIT_IDS,
   hasExclusionaryPhrase,
   validName,
@@ -20,6 +25,8 @@ import {
 import { allowedDurations, computeExpiry, renewalQuiet, type Duration } from '../services/intentions.js';
 import { CARD_COLUMNS, VISIBLE_SQL, currentIntention, profileView, toTile, viewerFor } from '../services/profiles.js';
 import { ownPhotos } from './photos.js';
+import { completeness } from '../services/completeness.js';
+import { recordVisit } from './visitors.js';
 import { emit } from '../services/hub.js';
 
 const intentionKey = z.enum(['abend', 'schreiben', 'absicht3', 'absicht4']);
@@ -59,7 +66,8 @@ export async function ownProfile(accountId: string) {
             a.created_at AS account_created, a.recovery_prompted_at, a.recovery_code_created_at,
             a.email_verified_at IS NOT NULL AS has_email, a.phone_verified_at IS NOT NULL AS has_phone,
             a.primary_method, a.trusted_key_hash IS NOT NULL AS has_trusted, a.hash_restricted_at,
-            l.level, l.city_id, l.cell_lat IS NOT NULL AS has_location, l.approx, l.invisible, l.in_zone, l.country
+            l.level, l.city_id, l.cell_lat IS NOT NULL AS has_location, l.approx, l.invisible, l.in_zone, l.country,
+            l.travel_place, l.travel_since, l.shift_lat IS NOT NULL AS shifted
        FROM profiles pr JOIN accounts a ON a.id = pr.account_id
        LEFT JOIN locations l ON l.account_id = pr.account_id
       WHERE pr.account_id = $1`,
@@ -73,6 +81,19 @@ export async function ownProfile(accountId: string) {
     r.intention_expired_at &&
     r.last_intention &&
     (!r.renewal_dismissed_until || new Date(r.renewal_dismissed_until) < new Date(r.intention_expired_at));
+  const photoStats = await one(`SELECT count(*) FILTER (WHERE status = 'approved')::int AS n FROM photos WHERE account_id = $1`, [accountId]);
+  const complete = completeness({
+    approvedPhotos: photoStats?.n ?? 0,
+    photoMode: r.photo_mode,
+    bio: r.free_text ?? '',
+    age: r.age,
+    heightCm: r.height_cm,
+    weightKg: r.weight_kg,
+    bodyTypes: r.body_types ?? [],
+    faceChecked: !!r.face_check_at,
+    traits: r.traits ?? [],
+    intentionSet: !!intention,
+  });
   const ageDue =
     r.age != null && r.age_set_at && Date.now() - new Date(r.age_prompted_at ?? r.age_set_at).getTime() > p('P-ALTER-NACHFRAGE') * 1000;
   return {
@@ -90,8 +111,23 @@ export async function ownProfile(accountId: string) {
     seeGroups: r.see_groups,
     freeText: r.free_text,
     freeTextFlagged: r.free_text_flagged,
-    responseRate: { enabled: r.response_rate_enabled, band: r.response_rate_enabled ? r.response_band : null },
+    heightCm: r.height_cm,
+    weightKg: r.weight_kg,
+    position: r.position,
+    bodyTypes: r.body_types,
+    kinks: r.kinks,
+    // Issue #24: den Prozentwert sieht nur die Person selbst
+    responseRate: {
+      enabled: r.response_rate_enabled,
+      band: r.response_rate_enabled ? r.response_band : null,
+      pct: r.response_pct === null ? null : Math.round(r.response_pct * 100),
+      counted: r.response_counted ?? 0,
+      min: p('P-AQ-MIN'),
+      days: Math.round(p('P-AQ-ZEITRAUM') / 86400),
+    },
     verified: { age: !!r.age1_at, stage2: !!r.age2_at, photos: !!r.face_check_at, contract: !!r.contract_version },
+    // Issue #29: nur hier, im eigenen Profil — nie in einer Antwort über andere
+    completeness: { ...complete, hintShown: !!r.completeness_hint_at },
     settings: {
       sort: r.sort_mode,
       mediaReceive: r.media_receive,
@@ -102,6 +138,13 @@ export async function ownProfile(accountId: string) {
       quietTo: r.quiet_to,
       checkinEffect: r.checkin_effect,
       filters: r.filters,
+      nameSearchable: r.name_searchable,
+      gridRadiusKm: r.grid_radius_km,
+      gridExpand: r.grid_expand,
+      voiceReceive: r.voice_receive,
+      startersEnabled: r.starters_enabled,
+      onceHintSeen: r.once_hint_seen,
+      invisibleBrowsing: r.invisible_browsing,
     },
     location: {
       level: r.level ?? 'grob',
@@ -111,6 +154,8 @@ export async function ownProfile(accountId: string) {
       invisible: !!r.invisible,
       inZone: !!r.in_zone,
       country: r.country,
+      travel: r.travel_place ? { place: r.travel_place, since: r.travel_since } : null,
+      shifted: !!r.shifted,
     },
     account: {
       primaryMethod: r.primary_method,
@@ -180,6 +225,11 @@ export default async function profileRoutes(app: FastifyInstance) {
           .optional(),
         seeGroups: z.array(z.string()).optional(),
         freeText: z.string().optional(),
+        heightCm: z.number().int().min(120).max(230).nullable().optional(),
+        weightKg: z.number().int().min(35).max(250).nullable().optional(),
+        position: z.string().nullable().optional(),
+        bodyTypes: z.array(z.string()).optional(),
+        kinks: z.array(z.string()).optional(),
         responseRate: z.boolean().optional(),
         settings: z
           .object({
@@ -191,6 +241,11 @@ export default async function profileRoutes(app: FastifyInstance) {
             quietFrom: z.number().int().min(0).max(23).optional(),
             quietTo: z.number().int().min(0).max(23).optional(),
             checkinEffect: z.enum(['nichts', 'benachrichtigen']).optional(),
+            nameSearchable: z.boolean().optional(),
+            gridExpand: z.boolean().optional(),
+            voiceReceive: z.boolean().optional(),
+            startersEnabled: z.boolean().optional(),
+            onceHintSeen: z.boolean().optional(),
           })
           .optional(),
       }),
@@ -235,8 +290,27 @@ export default async function profileRoutes(app: FastifyInstance) {
       if (b.seeGroups.some((g) => !GENDER_KEYS.has(g))) throw bad('UI-EINGABE-PRUEFEN');
       set('see_groups', [...new Set(b.seeGroups)]);
     }
+    if (b.heightCm !== undefined) set('height_cm', b.heightCm);
+    if (b.weightKg !== undefined) set('weight_kg', b.weightKg);
+    if (b.position !== undefined) {
+      if (b.position !== null && !POSITION_KEYS.has(b.position)) throw bad('UI-EINGABE-PRUEFEN', {}, 'position');
+      set('position', b.position);
+    }
+    if (b.bodyTypes !== undefined) {
+      const uniq = [...new Set(b.bodyTypes)];
+      if (uniq.some((x) => !BODY_TYPE_KEYS.has(x))) throw bad('UI-EINGABE-PRUEFEN', {}, 'koerpertyp');
+      if (uniq.length > p('P-KOERPERTYP-MAX')) throw bad('UI-KOERPERTYP-MAX', { max: p('P-KOERPERTYP-MAX') }, 'koerpertyp_max');
+      set('body_types', uniq);
+    }
+    if (b.kinks !== undefined) {
+      const uniq = [...new Set(b.kinks)];
+      if (uniq.some((x) => !KINK_KEYS.has(x))) throw bad('UI-EINGABE-PRUEFEN', {}, 'kink');
+      if (uniq.length > p('P-KINKS-MAX')) throw bad('UI-KINKS-MAX', { max: p('P-KINKS-MAX') }, 'kinks_max');
+      set('kinks', uniq);
+    }
     if (b.freeText !== undefined) {
-      if ([...b.freeText].length > 400) throw bad('ST-FEH-64', { zahl: [...b.freeText].length }, 'freitext_lang');
+      const max = p('P-FREITEXT-MAX');
+      if ([...b.freeText].length > max) throw bad('ST-FEH-64', { zahl: [...b.freeText].length, max }, 'freitext_lang');
       // FV-33: Hinweis, keine Sperre — gespeichert wird in jedem Fall
       const flagged = hasExclusionaryPhrase(b.freeText);
       set('free_text', b.freeText);
@@ -263,6 +337,11 @@ export default async function profileRoutes(app: FastifyInstance) {
       if (s.quietFrom !== undefined) set('quiet_from', s.quietFrom);
       if (s.quietTo !== undefined) set('quiet_to', s.quietTo);
       if (s.checkinEffect) set('checkin_effect', s.checkinEffect);
+      if (s.nameSearchable !== undefined) set('name_searchable', s.nameSearchable);
+      if (s.gridExpand !== undefined) set('grid_expand', s.gridExpand);
+      if (s.voiceReceive !== undefined) set('voice_receive', s.voiceReceive);
+      if (s.startersEnabled !== undefined) set('starters_enabled', s.startersEnabled);
+      if (s.onceHintSeen !== undefined) set('once_hint_seen', s.onceHintSeen);
     }
     if (sets.length) await q(`UPDATE profiles SET ${sets.join(', ')}, updated_at = now() WHERE account_id = $1`, vals);
     if (s?.mediaReceive === 'immer') {
@@ -271,6 +350,12 @@ export default async function profileRoutes(app: FastifyInstance) {
       await releaseHeldImages(a.id);
     }
     return { ok: true, hint, profile: await ownProfile(a.id) };
+  });
+
+  app.post('/api/profile/completeness-hint', async (req) => {
+    const a = await requireMember(req);
+    await q(`UPDATE profiles SET completeness_hint_at = now() WHERE account_id = $1 AND completeness_hint_at IS NULL`, [a.id]);
+    return { ok: true };
   });
 
   app.post('/api/profile/age-confirm', async (req) => {
@@ -317,7 +402,12 @@ export default async function profileRoutes(app: FastifyInstance) {
     // „Dieses Profil gibt es nicht mehr.“ — Blockierung, Löschung, Sperre sehen gleich aus
     if (!view) throw notFound();
     const bookmarked = !!(await one(`SELECT 1 FROM bookmarks WHERE owner_id = $1 AND target_id = $2`, [a.id, id]));
-    return { profile: { ...view, bookmarked } };
+    // Issue #27: nur das Öffnen eines Profils zählt als Besuch
+    await recordVisit(a.id, id);
+    // Issue #19: „Date-Profil ansehen“ nur, wenn beide aktive Date-Mitglieder sind
+    const dateProfile = (await canSeeDateProfile(a.id, id)) && (await isActiveMember(id)) && (await isActiveMember(a.id));
+    const dateBadge = dateProfile && !!(await one(`SELECT 1 FROM date_access WHERE account_id = $1 AND badge_in_grid`, [id]));
+    return { profile: { ...view, bookmarked, dateProfile, date: dateBadge } };
   });
 
   // Merkliste (F21) — privat, ohne Benachrichtigung
@@ -334,7 +424,7 @@ export default async function profileRoutes(app: FastifyInstance) {
       [a.id],
     );
     // AK-F21-03: dieselben Regeln wie im Raster — Bänder statt genauer Werte
-    return { tiles: rows.map((r) => toTile(r, viewer)) };
+    return markDateBadges(a.id, { tiles: rows.map((r) => toTile(r, viewer)) });
   });
 
   app.post('/api/bookmarks/:id', async (req) => {

@@ -38,8 +38,8 @@ jobs:
           cache-dependency-path: |
             backend/package-lock.json
             frontend/package-lock.json
-      - name: Texterkennung für die Altersprüfung per Ausweis
-        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends tesseract-ocr tesseract-ocr-deu tesseract-ocr-eng fonts-dejavu-core
+      - name: Texterkennung (Ausweis) und ffmpeg (Sprachaufnahmen)
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends tesseract-ocr tesseract-ocr-deu tesseract-ocr-eng fonts-dejavu-core ffmpeg
       - name: Version einheitlich (SemVer)
         run: node scripts/version.mjs --check
       - name: Oberflächentexte aktuell

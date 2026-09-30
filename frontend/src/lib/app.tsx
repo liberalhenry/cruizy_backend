@@ -17,11 +17,25 @@ export interface Config {
   stage2: boolean;
   zone2Check: boolean;
   beforeEntry: boolean;
-  map: { tiles: string | null; attribution: string | null };
+  map: { mode: 'eigen' | 'vermittelt' | 'grundkarte'; tiles: string | null; attribution: string | null; maxZoom: number };
+  events?: {
+    categories: { key: string; label: string; icon: string }[];
+    categoryMax: number;
+    organizerKinds: { key: string; label: string }[];
+    monthsAhead: number;
+    images: number;
+    textMax: number;
+    radius: number;
+    radii: number[];
+    cancelMaxHours: number;
+  };
   params: Record<string, any>;
   intentions: { key: string; textId: string; default: string; durations: string[] }[];
   traits: { group: string; items: { id: number; name: string }[] }[];
   genders: { key: string; textId?: string; label?: string }[];
+  positions: { key: string; label: string }[];
+  bodyTypes: { key: string; label: string; hint: string }[];
+  kinks: { group: string; items: { key: string; name: string }[] }[];
 }
 
 interface Ctx {
@@ -32,6 +46,10 @@ interface Ctx {
   online: boolean;
   unread: number;
   convBadge: number;
+  /** roter Punkt ohne Zahl (z. B. ungelesene Anfragen, neue Profilbesucher) */
+  dot: { chats: boolean; ich: boolean };
+  /** Issue #19: Cruizy Date — Reiter sichtbar?, Status, Punkt bei neuen Likes/Matches */
+  date: { enabled: boolean; hidden: boolean; status: string | null; dot: boolean };
   refreshCounts: () => void;
   toast: (text: string, action?: { label: string; run: () => void }, ms?: number) => void;
   logout: () => Promise<void>;
@@ -58,6 +76,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [online, setOnline] = useState(navigator.onLine);
   const [unread, setUnread] = useState(0);
   const [convBadge, setConvBadge] = useState(0);
+  const [dot, setDot] = useState<{ chats: boolean; ich: boolean }>({ chats: false, ich: false });
+  const [date, setDate] = useState<{ enabled: boolean; hidden: boolean; status: string | null; dot: boolean }>({ enabled: false, hidden: false, status: null, dot: false });
   const [toasts, setToasts] = useState<ToastState[]>([]);
 
   const toast = useCallback((text: string, action?: { label: string; run: () => void }, ms = 5000) => {
@@ -68,16 +88,24 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const refreshCounts = useCallback(() => {
     api.get('/api/notices/unread').then((r) => setUnread(r.count)).catch(() => {});
-    // Zählmarke nur für „Gespräche“, nie für „Anfragen“ (F42): Gespräche mit neuer fremder Nachricht seit dem letzten Öffnen
+    // Issue #14: ungelesene Gespräche vom Server (nur der eigene Lesestand). Zahl für „Gespräche“,
+    // roter Punkt, wenn nur Anfragen ungelesen sind (F42: für Anfragen keine Mitteilung).
     api
-      .get('/api/conversations')
+      .get('/api/conversations/unread')
       .then((r) => {
-        const seen = JSON.parse(localStorage.getItem('gesehen') ?? '{}') as Record<string, string>;
-        const n = r.conversations.filter(
-          (c: any) => c.box === 'gespraeche' && c.last && !c.last.mine && (!seen[c.id] || new Date(c.lastAt) > new Date(seen[c.id])),
-        ).length;
-        setConvBadge(n);
+        setConvBadge(r.conversations);
+        // Issue #16: Chats mit Veranstaltern/Gästen ebenfalls als Punkt
+        setDot((d) => ({ ...d, chats: r.requests > 0 || (r.events ?? 0) > 0 }));
       })
+      .catch(() => {});
+    api
+      .get('/api/date/me')
+      .then((r) => setDate({ enabled: !!r.enabled, hidden: !!r.hidden, status: r.status ?? null, dot: !!r.badges && (r.badges.likes > 0 || r.badges.matches > 0) }))
+      .catch(() => {});
+    // Issue #27: neue Profilbesucher als Punkt am Reiter „Ich“ — gebündelt, keine Push je Besuch
+    api
+      .get('/api/visitors/new')
+      .then((r) => setDot((d) => ({ ...d, ich: r.count > 0 })))
       .catch(() => {});
   }, []);
 
@@ -139,6 +167,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
     const offs = [
       on('mitteilung', () => refreshCounts()),
       on('nachricht', () => refreshCounts()),
+      on('veranstaltung_chat', () => refreshCounts()),
+      on('date', () => refreshCounts()),
       on('konto', () => refreshMe()),
       on('foto', () => refreshMe()),
     ];
@@ -146,8 +176,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, [phase, refreshCounts, refreshMe]);
 
   const value = useMemo(
-    () => ({ config, phase, me, refreshMe, online, unread, convBadge, refreshCounts, toast, logout }),
-    [config, phase, me, refreshMe, online, unread, convBadge, refreshCounts, toast, logout],
+    () => ({ config, phase, me, refreshMe, online, unread, convBadge, dot, date, refreshCounts, toast, logout }),
+    [config, phase, me, refreshMe, online, unread, convBadge, dot, date, refreshCounts, toast, logout],
   );
 
   return (
@@ -180,13 +210,3 @@ export function AppProvider({ children }: { children: ReactNode }) {
   );
 }
 
-/** Merkt sich, wann ein Gespräch zuletzt geöffnet war — nur auf diesem Gerät, nie beim Server (keine Lesebestätigung). */
-export function markSeen(convId: string) {
-  try {
-    const seen = JSON.parse(localStorage.getItem('gesehen') ?? '{}');
-    seen[convId] = new Date().toISOString();
-    localStorage.setItem('gesehen', JSON.stringify(seen));
-  } catch {
-    /* ohne Speicher keine Zählmarke */
-  }
-}

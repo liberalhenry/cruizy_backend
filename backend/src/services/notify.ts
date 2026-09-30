@@ -21,7 +21,10 @@ export type NoticeKind =
   | 'rueckmeldung_antwort'
   | 'sicherheit'
   | 'ort'
-  | 'alterspruefung';
+  | 'alterspruefung'
+  | 'test_erinnerung'
+  | 'veranstaltung'
+  | 'date';
 
 export async function createNotice(
   accountId: string,
@@ -30,6 +33,7 @@ export async function createNotice(
   body: string,
   ref: string | null = null,
   client: Queryable = db(),
+  opts: { push?: boolean; pushTitle?: string; url?: string } = {},
 ) {
   const row = await one(
     `INSERT INTO notices (account_id, kind, title, body, ref) VALUES ($1, $2, $3, $4, $5) RETURNING id`,
@@ -38,6 +42,8 @@ export async function createNotice(
   );
   emit(accountId, 'mitteilung', { id: row!.id });
   // neutrale Mitteilung ohne Inhalt, unter Beachtung der Ruhezeit
-  sendPush(accountId, 'notice', { title: t('ST-PUSH-10'), url: '/ich/mitteilungen', tag: 'mitteilung' }).catch(() => {});
+  if (opts.push !== false) {
+    sendPush(accountId, 'notice', { title: opts.pushTitle ?? t('ST-PUSH-10'), url: opts.url ?? '/ich/mitteilungen', tag: 'mitteilung' }).catch(() => {});
+  }
   return row!.id as string;
 }

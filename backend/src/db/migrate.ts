@@ -17,7 +17,8 @@ export async function migrate(log = console.log) {
     );
     // Beim Bauen landen die SQL-Dateien neben dem übersetzten Code (siehe Dockerfile)
     const dir = join(here, 'migrations');
-    const files = readdirSync(dir).filter((f) => f.endsWith('.sql')).sort();
+    // *.down.sql sind Rückwege (migrateDown), keine Vorwärts-Migrationen
+    const files = readdirSync(dir).filter((f) => f.endsWith('.sql') && !f.endsWith('.down.sql')).sort();
     for (const f of files) {
       if (done.has(f)) continue;
       const sql = readFileSync(join(dir, f), 'utf8');
@@ -32,6 +33,31 @@ export async function migrate(log = console.log) {
         throw new Error(`Migration ${f} fehlgeschlagen: ${(e as Error).message}`);
       }
     }
+  } finally {
+    await client.query('SELECT pg_advisory_unlock(424242)').catch(() => {});
+    client.release();
+  }
+}
+
+/**
+ * Rückweg einer Migration mit eigener *.down.sql (Issue #19: „Migrationen reversibel“).
+ *   npm run migrate:down -- 012_date
+ */
+export async function migrateDown(name: string, log = console.log) {
+  const dir = join(here, 'migrations');
+  const base = name.replace(/\.sql$/, '');
+  const sql = readFileSync(join(dir, `${base}.down.sql`), 'utf8');
+  const client = await db().connect();
+  try {
+    await client.query('SELECT pg_advisory_lock(424242)');
+    await client.query('BEGIN');
+    await client.query(sql);
+    await client.query('DELETE FROM schema_migrations WHERE name = $1', [`${base}.sql`]);
+    await client.query('COMMIT');
+    log(`Migration zurückgenommen: ${base}.sql`);
+  } catch (e) {
+    await client.query('ROLLBACK');
+    throw e;
   } finally {
     await client.query('SELECT pg_advisory_unlock(424242)').catch(() => {});
     client.release();

@@ -6,7 +6,8 @@
 import type { FastifyInstance } from 'fastify';
 import { env } from '../config/env.js';
 import { p } from '../config/params.js';
-import { GENDER_CATEGORIES, INTENTIONS, TRAIT_GROUPS } from '../services/catalogs.js';
+import { mapConfig } from './karte.js';
+import { BODY_TYPES, EVENT_CATEGORIES, EVENT_CATEGORY_MAX, GENDER_CATEGORIES, INTENTIONS, KINK_GROUPS, ORGANIZER_KINDS, POSITIONS, TRAIT_GROUPS } from '../services/catalogs.js';
 import { allowedDurations } from '../services/intentions.js';
 import { vapidPublicKey } from '../services/push.js';
 import { CONSENT_VERSION } from './auth.js';
@@ -27,7 +28,7 @@ export default async function publicRoutes(app: FastifyInstance) {
       stage2: p('P-STUFE2-SCHALTER'),
       zone2Check: p('P-ZONE2-ABGLEICH'),
       beforeEntry: p('P-PRUEFUNG-VOR-EINTRITT'),
-      map: { tiles: e.MAP_TILE_URL || null, attribution: e.MAP_ATTRIBUTION || null },
+      map: mapConfig(),
       params: {
         guestMinutes: Math.round(p('P-GAST-DAUER') / 60),
         nameMax: p('P-NAME-MAX'),
@@ -36,7 +37,21 @@ export default async function publicRoutes(app: FastifyInstance) {
         messageMax: p('P-NACHRICHT-MAX'),
         imageMaxMb: p('P-BILD-MAX-MB'),
         albumMax: p('P-ALBUM-MAX'),
+        albumsMax: p('P-ALBEN-MAX'),
+        templatesMax: p('P-VORLAGEN-MAX'),
+        templateChars: p('P-VORLAGE-ZEICHEN'),
+        onceSeconds: p('P-EINMAL-ANZEIGE'),
+        onceDays: Math.round(p('P-EINMAL-VERFALL') / 86400),
+        voiceMaxS: p('P-SPRACHE-MAX'),
         traitsMax: p('P-MERKMALE-MAX'),
+        photosMax: p('P-FOTOS-MAX'),
+        gridMin: p('P-RASTER-MIN'),
+        gridStages: p('P-RASTER-STUFEN'),
+        searchMaxKm: p('P-SUCHE-MAX-KM'),
+        searchMinChars: p('P-SUCHE-MIN-ZEICHEN'),
+        freeTextMax: p('P-FREITEXT-MAX'),
+        bodyTypesMax: p('P-KOERPERTYP-MAX'),
+        kinksMax: p('P-KINKS-MAX'),
         blockBarS: p('P-BLOCK-LEISTE'),
         blockHours: hours(p('P-BLOCK-RUECKNAHME')),
         pinLength: p('P-PIN-LAENGE'),
@@ -61,7 +76,10 @@ export default async function publicRoutes(app: FastifyInstance) {
         filterLatencyMs: p('P-ZAEHLER-LATENZ'),
         weeklyKm: p('P-WOCHENAKTIV-KM'),
         responseMin: p('P-AQ-MIN'),
-        responsePerWeek: p('P-AQ-JE-WOCHE'),
+        healthFields: p('P-GESUNDHEITSFELDER'),
+        visitorsDays: p('P-BESUCHE-TAGE'),
+        responseDays: Math.round(p('P-AQ-ZEITRAUM') / 86400),
+        responseHours: Math.round(p('P-AQ-FRIST') / 3600),
         quiet: p('P-RUHEZEIT'),
         symbolsMin: p('P-SYMBOLE-MIN'),
         colors: p('P-INITIALE-FARBEN'),
@@ -72,6 +90,20 @@ export default async function publicRoutes(app: FastifyInstance) {
       intentions: INTENTIONS.map((i) => ({ key: i.key, textId: i.textId, default: i.default, durations: allowedDurations(i.key) })),
       traits: TRAIT_GROUPS.map((g) => ({ group: g.group, items: g.items.map(([id, name]) => ({ id, name })) })),
       genders: GENDER_CATEGORIES,
+      positions: POSITIONS,
+      bodyTypes: BODY_TYPES,
+      kinks: KINK_GROUPS.map((g) => ({ group: g.group, items: g.items.map(([key, name]) => ({ key, name })) })),
+      events: {
+        categories: EVENT_CATEGORIES,
+        categoryMax: EVENT_CATEGORY_MAX,
+        organizerKinds: ORGANIZER_KINDS,
+        monthsAhead: p('P-VERANSTALTUNG-MONATE'),
+        images: p('P-VERANSTALTUNG-BILDER'),
+        textMax: p('P-VERANSTALTUNG-TEXT'),
+        radius: p('P-VERANSTALTUNG-RADIUS'),
+        radii: p('P-VERANSTALTUNG-RADIEN'),
+        cancelMaxHours: p('P-ABSAGEFRIST-MAX'),
+      },
     };
   });
 

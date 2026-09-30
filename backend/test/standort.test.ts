@@ -4,9 +4,9 @@
  */
 import { describe, expect, it } from 'vitest';
 import { one } from '../src/db/pool.js';
-import { band, destination, distanceKm, roundToCell } from '../src/lib/geo.js';
+import { band, destination, displayKm, distanceKm, roundToCell } from '../src/lib/geo.js';
 import { acceptPosition } from '../src/modules/location.js';
-import { member } from './helpers.js';
+import { member, type Member } from './helpers.js';
 
 const KOELN = { lat: 50.9375, lng: 6.9603 };
 
@@ -46,33 +46,57 @@ describe('Raster und Stufen', () => {
   });
 });
 
+/** Sucht eine Kachel im Raster — über alle Seiten (die Testdatenbank ist voll). */
+export async function findTile(c: Member['c'], id: string, body: Record<string, unknown> = { filters: {} }) {
+  let r = await c.post('/api/discovery', body);
+  for (let i = 0; i < 60; i++) {
+    const tile = [...(r.body.tiles ?? []), ...(r.body.newNearby ?? [])].find((x: { id: string }) => x.id === id);
+    if (tile) return { tile, res: r };
+    if (!r.body.cursor) return { tile: null, res: r };
+    r = await c.post('/api/discovery', { ...body, cursor: r.body.cursor });
+  }
+  return { tile: null, res: r };
+}
+
 describe('Entdecken', () => {
-  it('liefert nur Stufen — keine Koordinaten, keine Meter, keine Kilometer', async () => {
-    const target = await member({ pos: destination(KOELN, 45, 2.2) });
+  it('liefert gerundete Kilometer — keine Koordinaten, keine Meter (Issue #12)', async () => {
+    const target = await member({ pos: destination(KOELN, 45, 6.3) });
     const viewer = await member({ pos: KOELN });
-    const r = await viewer.c.post('/api/discovery', { filters: {} });
-    expect(r.status).toBe(200);
-    const tile = [...r.body.tiles, ...(r.body.weekly ?? [])].find((x: { id: string }) => x.id === target.id);
+    const { tile, res } = await findTile(viewer.c, target.id);
+    expect(res.status).toBe(200);
     expect(tile).toBeTruthy();
-    expect([1, 2, 3, 4]).toContain(tile.band);
-    const json = JSON.stringify(r.body);
-    expect(json).not.toMatch(/"(lat|lng|latitude|longitude|meters|km|distance)"/i);
+    expect(Number.isInteger(tile.km)).toBe(true);
+    // Zellmittelpunkte (2 km) — die Zahl stimmt mit der Entfernung der Zellen überein
+    const a = roundToCell(KOELN, 2000);
+    const b = roundToCell(destination(KOELN, 45, 6.3), 2000);
+    expect(tile.km).toBe(displayKm(distanceKm(a, b)));
+    const json = JSON.stringify(res.body);
+    expect(json).not.toMatch(/"(lat|lng|latitude|longitude|meters|distance|dist)"/i);
+  });
+
+  it('rundet: < 1 km, ganze km bis 14, dann 5er-, ab 100 km 10er-Schritte', () => {
+    expect(displayKm(0.4)).toBe(0);
+    expect(displayKm(1.2)).toBe(1);
+    expect(displayKm(9.6)).toBe(10);
+    expect(displayKm(13.2)).toBe(13);
+    expect(displayKm(16)).toBe(15);
+    expect(displayKm(23)).toBe(25);
+    expect(displayKm(98)).toBe(100);
+    expect(displayKm(143)).toBe(140);
   });
 
   it('Dreiecksmessung aus vielen Blickpunkten ergibt nicht mehr als die Zelle', async () => {
     const secret = { lat: 50.9502, lng: 6.9377 };
     const target = await member({ pos: secret });
-    // Angreifer misst von 12 Punkten im Kreis — er bekommt nur Stufen
-    const bandsSeen = new Set<number>();
+    const targetCell = roundToCell(secret, 2000);
+    // Angreifer misst von 12 Punkten im Kreis — jede Zahl ist die Entfernung zum ZELLMITTELPUNKT
     for (let i = 0; i < 12; i++) {
-      const spy = await member({ pos: destination(secret, i * 30, 1.2) });
-      const r = await spy.c.post('/api/discovery', { filters: {} });
-      const tile = [...r.body.tiles, ...(r.body.weekly ?? [])].find((x: { id: string }) => x.id === target.id);
+      const spyPos = destination(secret, i * 30, 1.2);
+      const spy = await member({ pos: spyPos });
+      const { tile } = await findTile(spy.c, target.id);
       expect(tile).toBeTruthy();
-      bandsSeen.add(tile.band);
+      expect(tile.km).toBe(displayKm(distanceKm(roundToCell(spyPos, 2000), targetCell)));
     }
-    // alle Messpunkte liegen in 1–3 km → höchstens zwei verschiedene Stufen, keine feinere Information
-    expect([...bandsSeen].every((b) => b === 1 || b === 2)).toBe(true);
   });
 
   it('blockierte Personen verschwinden in beide Richtungen (AK-F61-06)', async () => {
@@ -80,19 +104,16 @@ describe('Entdecken', () => {
     const b = await member({ pos: destination(KOELN, 90, 0.5) });
     const blk = await a.c.post('/api/blocks', { targetId: b.id });
     expect(blk.status).toBe(200);
-    const ra = await a.c.post('/api/discovery', { filters: {} });
-    const rb = await b.c.post('/api/discovery', { filters: {} });
-    const has = (r: { body: { tiles: { id: string }[]; weekly?: { id: string }[] } }, id: string) =>
-      [...r.body.tiles, ...(r.body.weekly ?? [])].some((x) => x.id === id);
-    expect(has(ra, b.id)).toBe(false);
-    expect(has(rb, a.id)).toBe(false);
+    expect((await findTile(a.c, b.id)).tile).toBeNull();
+    expect((await findTile(b.c, a.id)).tile).toBeNull();
     expect((await a.c.get(`/api/profiles/${b.id}`)).status).toBe(404);
   });
 
-  it('höchstens zwei Filter gleichzeitig (AK-F26-01)', async () => {
+  it('beliebig viele Filter gleichzeitig; alte Entfernungsbänder werden ignoriert (Issue #20)', async () => {
     const a = await member({ pos: KOELN });
-    const r = await a.c.post('/api/discovery', { filters: { bands: [1], intentions: ['abend'], age: { min: 20, max: 30 } } });
-    expect(r.status).toBe(400);
-    expect(r.body.fehler).toBe('ST-FEH-61');
+    const r = await a.c.post('/api/discovery', { filters: { bands: [1], intentions: ['abend'], age: { min: 20, max: 30 }, weight: { min: 60, max: 90 }, bodyTypes: ['otter'] } });
+    expect(r.status).toBe(200);
+    const bad = await a.c.post('/api/discovery', { filters: { bodyTypes: ['gibtsnicht'] } });
+    expect(bad.status).toBe(400);
   });
 });

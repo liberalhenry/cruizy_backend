@@ -21,11 +21,16 @@ import { rerunPendingHashes, runPhotoChain } from '../services/photo-chain.js';
 import { deleteHeldImages, deleteMessages, finalizeExit, purgeConversation } from '../modules/chat.js';
 import { runCheckins } from '../modules/checkin.js';
 import { purgeEventGroups, remindEvents } from '../modules/events.js';
+import { purgeEventChats } from '../modules/veranstalter.js';
+import { pruneTiles } from '../modules/karte.js';
+import { autoPauseDate, precomputeSuggestions } from '../services/date.js';
 import { computeClusters } from '../modules/places.js';
 import { finalizeBlock } from '../modules/safety.js';
 import { weeklySummary } from '../modules/mod/log.js';
 import { closeReview } from '../modules/mod/idcheck.js';
 import { discord } from '../services/discord.js';
+import { sendHealthReminders } from '../modules/health.js';
+import { recomputeResponseRates } from '../services/response-rate.js';
 
 interface Job {
   name: string;
@@ -52,6 +57,30 @@ async function expireMessages() {
     await deleteMessages(rows.map((r) => r.id));
     if (rows.length < 500) return;
   }
+}
+
+/**
+ * Einmal-Bilder (Issue #26): nach dem Ansehen (plus kurzem Meldefenster) und nach
+ * P-EINMAL-VERFALL ungeöffnet wird die Datei endgültig gelöscht. Die Nachricht bleibt als
+ * Platzhalter („Angesehen“ / „Abgelaufen“) stehen. Gemeldete Bilder liegen als Kopie im Fall.
+ */
+export async function purgeOnceImages() {
+  await q(
+    `UPDATE messages SET once_expired_at = now()
+      WHERE once AND once_viewed_at IS NULL AND once_expired_at IS NULL AND created_at < now() - make_interval(secs => $1)`,
+    [p('P-EINMAL-VERFALL')],
+  );
+  const rows = await q(
+    `SELECT pm.id, pm.file FROM private_media pm JOIN messages m ON m.media_id = pm.id
+      WHERE m.once AND pm.file IS NOT NULL
+        AND ((m.once_purge_at IS NOT NULL AND m.once_purge_at <= now()) OR m.once_expired_at IS NOT NULL)
+      LIMIT 500`,
+  );
+  for (const r of rows) {
+    await q(`UPDATE private_media SET file = NULL WHERE id = $1`, [r.id]);
+    await deleteFile('zone2', r.file);
+  }
+  await q(`UPDATE messages SET once_purge_at = NULL WHERE once AND once_purge_at IS NOT NULL AND once_purge_at <= now()`);
 }
 
 /** Archiv (F46): beendete Gespräche nach P-ARCHIV bei beiden gelöscht. */
@@ -104,41 +133,11 @@ async function expireIntentions() {
   );
 }
 
-/** Antwortquote (F19, FV-34): Bänder aus gewerteten, abgelaufenen oder beantworteten Erstnachrichten. */
+/** Antwortquote (F19, Issue #24): täglich und stündlich für abgelaufene Fristen. */
 export async function computeResponseBands() {
-  await q(
-    `WITH w AS (
-       SELECT f.recipient_id,
-              count(*) AS counted,
-              count(*) FILTER (WHERE f.answered_at IS NOT NULL AND f.answered_at <= f.deadline_at) AS answered
-         FROM first_message_stats f
-         JOIN accounts s ON s.id = f.sender_id
-        WHERE f.counted
-          AND f.received_at > now() - make_interval(secs => $1)
-          -- Frist läuft noch und unbeantwortet → noch nicht gewertet
-          AND (f.answered_at IS NOT NULL OR f.deadline_at <= now())
-          -- Nachrichten von blockierten oder gesperrten Konten zählen nicht (AK-F19-06)
-          AND s.moderation_state <> 'suspended'
-          AND NOT EXISTS (SELECT 1 FROM blocks b WHERE b.blocker_id = f.recipient_id AND b.blocked_id = f.sender_id AND b.revoked_at IS NULL)
-        GROUP BY f.recipient_id
-     )
-     UPDATE profiles pr SET
-       response_band = CASE
-         WHEN w.counted IS NULL OR w.counted < $2 THEN NULL
-         WHEN w.answered::float / w.counted >= $3 THEN 1
-         WHEN w.answered::float / w.counted >= $4 THEN 2
-         ELSE 3 END,
-       response_band_at = now()
-     FROM profiles p0 LEFT JOIN w ON w.recipient_id = p0.account_id
-     WHERE pr.account_id = p0.account_id`,
-    [p('P-AQ-ZEITRAUM'), p('P-AQ-MIN'), p('P-AQ-GRENZE-1'), p('P-AQ-GRENZE-2')],
-  );
-  await q(`DELETE FROM first_message_stats WHERE received_at < now() - make_interval(secs => $1) - interval '14 days'`, [p('P-AQ-ZEITRAUM')]);
+  await recomputeResponseRates();
 }
 
-// ───────────── Konten ─────────────
-
-/** Vorläufige Konten (FV-13): nach P-KONTO-VORLAEUFIG ohne Spur gelöscht. */
 async function purgeProvisional() {
   const rows = await q(`SELECT id FROM accounts WHERE status = 'provisional' AND created_at < now() - make_interval(secs => $1) LIMIT 200`, [p('P-KONTO-VORLAEUFIG')]);
   for (const r of rows) await deleteAccountNow(r.id, { vault: false });
@@ -196,6 +195,14 @@ async function housekeeping() {
   await q(`DELETE FROM place_claims WHERE (delete_after <= now()) OR (status = 'waiting_email' AND created_at < now() - interval '7 days')`);
   // Einzelereignisse der Kennzahlen: nach dem Monatsarchiv nicht länger als 13 Monate
   await q(`DELETE FROM metric_events WHERE at < now() - interval '400 days'`);
+  // Issue #27: Profilbesuche nur P-BESUCHE-TAGE; ohne Premium kein „Unsichtbar stöbern“
+  await q(`DELETE FROM profile_visits WHERE visited_at < now() - make_interval(days => $1)`, [p('P-BESUCHE-TAGE')]);
+  await q(`UPDATE profiles pr SET invisible_browsing = false WHERE invisible_browsing AND NOT EXISTS (
+             SELECT 1 FROM entitlements e WHERE e.account_id = pr.account_id AND e.valid_until > now())`);
+  // Issue #18: vergangene Reisen
+  await q(`DELETE FROM trips WHERE to_date < current_date - 1`);
+  // Issue #22: Reihenfolgen der Rastersitzungen
+  await q(`DELETE FROM grid_snapshots WHERE created_at < now() - interval '6 hours'`);
 }
 
 /** Aufbewahrung von Vorgängen (P-TICKET-AUFBEWAHRUNG) und Meldefällen (P-FALL-AUFBEWAHRUNG, FV-78). */
@@ -274,12 +281,14 @@ const JOBS: Job[] = [
   { name: 'checkins', everyS: () => 30, run: runCheckins },
   { name: 'exits', everyS: () => MIN, run: sweepExits },
   { name: 'messages_expiry', everyS: () => MIN, run: expireMessages },
+  { name: 'once_images', everyS: () => MIN, run: purgeOnceImages },
+  { name: 'health_reminders', everyS: () => 15 * MIN, run: () => sendHealthReminders() },
   { name: 'archive', everyS: () => 5 * MIN, run: purgeArchive },
   { name: 'blocks', everyS: () => MIN, run: finalizeBlocks },
   { name: 'intentions', everyS: () => MIN, run: expireIntentions },
   { name: 'media_requests', everyS: () => 10 * MIN, run: expireMediaRequests },
   { name: 'held', everyS: () => 10 * MIN, run: purgeHeld },
-  { name: 'response_bands', everyS: () => DAY, run: computeResponseBands },
+  { name: 'response_bands', everyS: () => HOUR, run: computeResponseBands },
   { name: 'provisional', everyS: () => 10 * MIN, run: purgeProvisional },
   { name: 'deletions', everyS: () => 10 * MIN, run: runDeletions },
   { name: 'vault', everyS: () => HOUR, run: purgeVault },
@@ -288,6 +297,11 @@ const JOBS: Job[] = [
   { name: 'clusters', everyS: () => p('P-CLUSTER-TAKT'), run: computeClusters },
   { name: 'event_reminders', everyS: () => 5 * MIN, run: remindEvents },
   { name: 'event_groups', everyS: () => HOUR, run: purgeEventGroups },
+  { name: 'event_chats', everyS: () => 6 * HOUR, run: purgeEventChats },
+  { name: 'map_tiles', everyS: () => 24 * HOUR, run: pruneTiles },
+  // Issue #19: Tagesvorschläge nach Mitternacht vorberechnen, Auto-Pause nach Inaktivität
+  { name: 'date_suggestions', everyS: () => HOUR, run: precomputeSuggestions },
+  { name: 'date_autopause', everyS: () => 6 * HOUR, run: autoPauseDate },
   { name: 'housekeeping', everyS: () => HOUR, run: housekeeping },
   { name: 'retention', everyS: () => 6 * HOUR, run: retention },
   { name: 'id_reviews', everyS: () => HOUR, run: expireIdReviews },

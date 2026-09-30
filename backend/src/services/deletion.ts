@@ -17,6 +17,8 @@ import { decStr, decrypt, encrypt } from '../lib/crypto.js';
 import { copyFile, deleteFile } from '../lib/files.js';
 import { purgeConversation } from '../modules/chat.js';
 import { closeAllFor } from './hub.js';
+import { createNotice } from './notify.js';
+import { t } from '../lib/texts.js';
 
 interface VaultMessage {
   from: 'geloeschtes_konto' | 'gegenseite' | 'system';
@@ -38,7 +40,7 @@ export async function moveConversationsToVault(accountId: string) {
     const out: VaultMessage[] = [];
     for (const m of msgs) {
       let sealedFile: string | null = null;
-      if (m.kind === 'image' && m.file && (m.delivery === 'sent' || m.sender_id === counterpart)) {
+      if ((m.kind === 'image' || m.kind === 'audio') && m.file && (m.delivery === 'sent' || m.sender_id === counterpart)) {
         sealedFile = await copyFile('zone2', m.file, 'sealed');
       }
       out.push({
@@ -82,8 +84,22 @@ export async function deleteAccountNow(accountId: string, opts: { vault?: boolea
     media: await q(`SELECT file FROM private_media WHERE owner_id = $1`, [accountId]),
     exports: await q(`SELECT file FROM exports WHERE account_id = $1`, [accountId]),
     idcheck: await q(`SELECT unnest(files) AS file FROM id_reviews WHERE account_id = $1`, [accountId]),
+    events: await q(`SELECT ei.file FROM event_images ei JOIN events e ON e.id = ei.event_id WHERE e.host_id = $1`, [accountId]),
+    // Issue #19
+    datePhotos: await q(`SELECT file FROM date_photos WHERE account_id = $1 AND status <> 'rejected'`, [accountId]),
+    dateAudio: await q(`SELECT file FROM date_audio WHERE account_id = $1`, [accountId]),
   };
+  // Issue #16: eigene Veranstaltungen verschwinden mit dem Konto — Gäste kommender erfahren die Absage
+  const upcoming = await q(
+    `SELECT DISTINCT r.account_id, e.title, e.id FROM events e JOIN event_rsvps r ON r.event_id = e.id
+      WHERE e.host_id = $1 AND e.status = 'approved' AND e.ends_at > now() AND r.status IN ('angenommen','angefragt')`,
+    [accountId],
+  );
+  for (const g of upcoming) {
+    await createNotice(g.account_id, 'veranstaltung', t('UI-VA-N-ABGESAGT-TITEL'), t('UI-VA-N-ABGESAGT', { titel: g.title }), null, undefined, { push: false }).catch(() => {});
+  }
   await tx(async (c) => {
+    await c.query(`DELETE FROM events WHERE host_id = $1`, [accountId]);
     // Web-Abo endet mit der Löschung (AK-X10-01) — die Berechtigungen hängen am Konto
     await c.query(`DELETE FROM accounts WHERE id = $1`, [accountId]);
   });
@@ -94,6 +110,9 @@ export async function deleteAccountNow(accountId: string, opts: { vault?: boolea
   for (const m of files.media) await deleteFile('zone2', m.file);
   for (const e of files.exports) await deleteFile('exports', e.file);
   for (const f of files.idcheck) await deleteFile('idcheck', f.file);
+  for (const f of files.events) await deleteFile('zone1-public', f.file);
+  for (const f of files.datePhotos) await deleteFile('zone1-public', f.file);
+  for (const f of files.dateAudio) await deleteFile('zone2', f.file);
 }
 
 export async function startDeletion(accountId: string) {

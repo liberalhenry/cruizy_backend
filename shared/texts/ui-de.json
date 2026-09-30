@@ -27,9 +27,69 @@
   "s": "ENTWURF",
   "t": "Das Abo startet später. Bis dahin ist alles kostenlos."
  },
+ "UI-ABO-TEST": {
+  "s": "ENTWURF",
+  "t": "PLUS im Testbetrieb 7 Tage ausprobieren"
+ },
+ "UI-ABO-TEST-AKTIV": {
+  "s": "ENTWURF",
+  "t": "PLUS ist aktiv bis {datum}."
+ },
+ "UI-ABO-TEST-BEENDEN": {
+  "s": "ENTWURF",
+  "t": "PLUS beenden"
+ },
  "UI-ABSICHT-ERNEUERN": {
   "s": "ENTWURF",
   "t": "„{absicht}“ erneuern"
+ },
+ "UI-ALBEN": {
+  "s": "ENTWURF",
+  "t": "Private Alben"
+ },
+ "UI-ALBEN-BILDER": {
+  "s": "ENTWURF",
+  "t": "{zahl} Bilder"
+ },
+ "UI-ALBEN-ERKL": {
+  "s": "ENTWURF",
+  "t": "Bis zu {max} Alben mit je {bilder} Bildern. Du teilst sie im Chat mit einem Tipp — sehen kann sie nur, wem du sie zeigst."
+ },
+ "UI-ALBEN-GETEILT": {
+  "s": "ENTWURF",
+  "t": "Album geteilt."
+ },
+ "UI-ALBEN-LEER-TEILEN": {
+  "s": "ENTWURF",
+  "t": "Leg zuerst ein Album mit Bildern an."
+ },
+ "UI-ALBEN-LOESCHEN": {
+  "s": "ENTWURF",
+  "t": "Album löschen"
+ },
+ "UI-ALBEN-LOESCHEN-FRAGE": {
+  "s": "ENTWURF",
+  "t": "Album mit allen Bildern löschen? Wer es gerade sehen darf, sieht es danach nicht mehr."
+ },
+ "UI-ALBEN-MAX": {
+  "s": "ENTWURF",
+  "t": "Höchstens {max} Alben."
+ },
+ "UI-ALBEN-NAME": {
+  "s": "ENTWURF",
+  "t": "Name des Albums"
+ },
+ "UI-ALBEN-NEU": {
+  "s": "ENTWURF",
+  "t": "Neues Album"
+ },
+ "UI-ALBEN-UMBENENNEN": {
+  "s": "ENTWURF",
+  "t": "Umbenennen"
+ },
+ "UI-ALBEN-WAEHLEN": {
+  "s": "ENTWURF",
+  "t": "Welches Album teilen?"
  },
  "UI-ALBUM-ANGEBOTEN": {
   "s": "ENTWURF",
@@ -42,6 +102,10 @@
  "UI-ALBUM-FREIGABEN": {
   "s": "ENTWURF",
   "t": "Freigaben"
+ },
+ "UI-ALBUM-GETEILT-VON": {
+  "s": "ENTWURF",
+  "t": "{name} teilt ein Album mit dir: „{album}“"
  },
  "UI-ALBUM-HINZU": {
   "s": "ENTWURF",
@@ -57,7 +121,7 @@
  },
  "UI-ALBUM-MEINS": {
   "s": "ENTWURF",
-  "t": "Mein privates Album"
+  "t": "Private Alben"
  },
  "UI-ALBUM-NICHT-JETZT": {
   "s": "ENTWURF",
@@ -151,6 +215,10 @@
   "s": "ENTWURF",
   "t": "{zahl} neu"
  },
+ "UI-APP-NEUES": {
+  "s": "ENTWURF",
+  "t": "Neues"
+ },
  "UI-APP-NICHT-JETZT": {
   "s": "ENTWURF",
   "t": "Nicht jetzt"
@@ -190,6 +258,78 @@
  "UI-APPLE-AUS": {
   "s": "ENTWURF",
   "t": "Anmelden mit Apple ist gerade nicht verfügbar."
+ },
+ "UI-APPSPERRE": {
+  "s": "ENTWURF",
+  "t": "App mit PIN sperren"
+ },
+ "UI-APPSPERRE-ERKL": {
+  "s": "ENTWURF",
+  "t": "Beim Öffnen erscheint zuerst die Tarnung. Erst mit der PIN geht es weiter."
+ },
+ "UI-APPSPERRE-MIN": {
+  "s": "ENTWURF",
+  "t": "nach {min} Min."
+ },
+ "UI-APPSPERRE-NACH": {
+  "s": "ENTWURF",
+  "t": "Wieder sperren, wenn die App so lange im Hintergrund war:"
+ },
+ "UI-APPSPERRE-PIN-ZUERST": {
+  "s": "ENTWURF",
+  "t": "Leg zuerst eine PIN fest."
+ },
+ "UI-APPSPERRE-SOFORT": {
+  "s": "ENTWURF",
+  "t": "sofort"
+ },
+ "UI-AQ-EIGEN": {
+  "s": "ENTWURF",
+  "t": "Deine Antwortquote: {prozent} % · {stufe}"
+ },
+ "UI-AQ-EIGEN-ERKL": {
+  "s": "ENTWURF",
+  "t": "Die Quote zählt, wie oft du in den letzten {tage} Tagen innerhalb von 3 Tagen auf neue Nachrichten reagiert hast."
+ },
+ "UI-AQ-EIGEN-OHNE-STUFE": {
+  "s": "ENTWURF",
+  "t": "Deine Antwortquote: {prozent} %"
+ },
+ "UI-AQ-FORTSCHRITT": {
+  "s": "ENTWURF",
+  "t": "{zahl} von {min} Unterhaltungen gezählt"
+ },
+ "UI-AQ-INFO-1": {
+  "s": "ENTWURF",
+  "t": "Das zeigt, wie zuverlässig jemand auf erste Nachrichten reagiert."
+ },
+ "UI-AQ-INFO-2": {
+  "s": "ENTWURF",
+  "t": "Wir schauen auf die letzten {tage} Tage. Als Antwort zählt jede Reaktion innerhalb von 3 Tagen, auch eine freundliche Absage."
+ },
+ "UI-AQ-INFO-2-TITEL": {
+  "s": "ENTWURF",
+  "t": "So wird’s berechnet:"
+ },
+ "UI-AQ-INFO-3": {
+  "s": "ENTWURF",
+  "t": "Das heißt nicht, dass jemand nicht antwortet. Vielleicht ist er neu oder bekommt gerade wenige Nachrichten."
+ },
+ "UI-AQ-INFO-3-TITEL": {
+  "s": "ENTWURF",
+  "t": "Kein Abzeichen?"
+ },
+ "UI-AQ-INFO-TITEL": {
+  "s": "ENTWURF",
+  "t": "Was bedeutet das?"
+ },
+ "UI-AQ-NOCH-KEINE": {
+  "s": "ENTWURF",
+  "t": "Deine Antwortquote: Sobald du genug Nachrichten bekommen hast, siehst du hier deine Quote."
+ },
+ "UI-AQ-TIPP": {
+  "s": "ENTWURF",
+  "t": "Tipp: Kein Interesse? Mit „Absagen“ antwortest du mit einem Tipp freundlich, und das zählt als Antwort."
  },
  "UI-AUSWEIS-ERKL": {
   "s": "ENTWURF",
@@ -251,6 +391,58 @@
   "s": "ENTWURF",
   "t": "Mit einem Foto deines Ausweises"
  },
+ "UI-BESUCHER": {
+  "s": "ENTWURF",
+  "t": "Profilbesucher"
+ },
+ "UI-BESUCHER-ANZAHL": {
+  "s": "ENTWURF",
+  "t": "{zahl} Besucher in den letzten {tage} Tagen"
+ },
+ "UI-BESUCHER-FRUEHER": {
+  "s": "ENTWURF",
+  "t": "früher"
+ },
+ "UI-BESUCHER-GESTERN": {
+  "s": "ENTWURF",
+  "t": "gestern"
+ },
+ "UI-BESUCHER-HEUTE": {
+  "s": "ENTWURF",
+  "t": "heute"
+ },
+ "UI-BESUCHER-KEINE": {
+  "s": "ENTWURF",
+  "t": "In den letzten {tage} Tagen hat niemand dein Profil geöffnet."
+ },
+ "UI-BESUCHER-NEU": {
+  "s": "ENTWURF",
+  "t": "{zahl} neu"
+ },
+ "UI-BESUCHER-PREMIUM": {
+  "s": "ENTWURF",
+  "t": "Wer dein Profil angesehen hat, siehst du mit PLUS."
+ },
+ "UI-BESUCHER-PREMIUM-KNOPF": {
+  "s": "ENTWURF",
+  "t": "PLUS ansehen"
+ },
+ "UI-BESUCHER-UNSICHTBAR": {
+  "s": "ENTWURF",
+  "t": "Unsichtbar stöbern"
+ },
+ "UI-BESUCHER-UNSICHTBAR-ERKL": {
+  "s": "ENTWURF",
+  "t": "Deine Besuche werden nicht gespeichert. Andere sehen nicht, dass du ihr Profil angesehen hast."
+ },
+ "UI-BESUCHER-UNSICHTBAR-PLUS": {
+  "s": "ENTWURF",
+  "t": "Nur mit PLUS."
+ },
+ "UI-BESUCHER-WOCHE": {
+  "s": "ENTWURF",
+  "t": "diese Woche"
+ },
  "UI-BLOCKIERT-BIS": {
   "s": "ENTWURF",
   "t": "rücknehmbar bis {datum}"
@@ -295,6 +487,10 @@
   "s": "ENTWURF",
   "t": "Nachricht"
  },
+ "UI-CHAT-NEUE-NACHRICHTEN": {
+  "s": "ENTWURF",
+  "t": "Neue Nachrichten"
+ },
  "UI-CHAT-ORT": {
   "s": "ENTWURF",
   "t": "Treffpunkt"
@@ -322,6 +518,10 @@
  "UI-CHATS-NICHT-MEHR-DA": {
   "s": "ENTWURF",
   "t": "Profil nicht mehr verfügbar"
+ },
+ "UI-CHATS-UNGELESEN": {
+  "s": "ENTWURF",
+  "t": "{zahl} ungelesen"
  },
  "UI-CHATS-WAS-SIND-ANFRAGEN": {
   "s": "ENTWURF",
@@ -402,6 +602,850 @@
  "UI-CODE-WARTEN": {
   "s": "ENTWURF",
   "t": "Bitte warte kurz, bevor du einen neuen Code anforderst."
+ },
+ "UI-DATE": {
+  "s": "ENTWURF",
+  "t": "Date"
+ },
+ "UI-DATE-ALTER-BIS": {
+  "s": "ENTWURF",
+  "t": "bis"
+ },
+ "UI-DATE-ALTER-VON": {
+  "s": "ENTWURF",
+  "t": "Alter von"
+ },
+ "UI-DATE-ARBEITGEBER": {
+  "s": "ENTWURF",
+  "t": "Arbeitgeber (freiwillig)"
+ },
+ "UI-DATE-ARBEITGEBER-ERKL": {
+  "s": "ENTWURF",
+  "t": "Nur wenn du möchtest."
+ },
+ "UI-DATE-ART9-CHECK": {
+  "s": "ENTWURF",
+  "t": "Ich willige ausdrücklich in die Verarbeitung meiner biometrischen Daten für diesen Abgleich ein (Art. 9 Abs. 2 lit. a DSGVO)."
+ },
+ "UI-DATE-ART9-OK": {
+  "s": "ENTWURF",
+  "t": "Einwilligen und weiter"
+ },
+ "UI-DATE-ART9-TEXT": {
+  "s": "ENTWURF",
+  "t": "Für den Abgleich wird dein Selfie einmalig von unserem Prüfdienst mit deinem ersten Date-Foto verglichen. Das Selfie und daraus berechnete Gesichtsmerkmale werden nicht gespeichert. Wir speichern nur das Ergebnis (bestanden oder nicht) und den Zeitpunkt. Du kannst die Einwilligung jederzeit widerrufen, indem du Cruizy Date verlässt."
+ },
+ "UI-DATE-ART9-TITEL": {
+  "s": "ENTWURF",
+  "t": "Einwilligung (biometrische Daten)"
+ },
+ "UI-DATE-AUDIO-PROMPT": {
+  "s": "ENTWURF",
+  "t": "Audio-Antwort"
+ },
+ "UI-DATE-AUDIO-PROMPT-ERKL": {
+  "s": "ENTWURF",
+  "t": "Freiwillig: Beantworte eine Frage mit deiner Stimme."
+ },
+ "UI-DATE-AUF-WARTELISTE": {
+  "s": "ENTWURF",
+  "t": "Auf die Warteliste"
+ },
+ "UI-DATE-AUFNAHME-SPEICHERN": {
+  "s": "ENTWURF",
+  "t": "Speichern"
+ },
+ "UI-DATE-AUTO-PAUSIERT": {
+  "s": "ENTWURF",
+  "t": "Du warst eine Weile nicht da — deshalb haben wir Cruizy Date pausiert. Einfach fortsetzen."
+ },
+ "UI-DATE-BADGE-GRID": {
+  "s": "ENTWURF",
+  "t": "Date-Zeichen im Raster zeigen"
+ },
+ "UI-DATE-BADGE-GRID-ERKL": {
+  "s": "ENTWURF",
+  "t": "Andere Date-Mitglieder sehen auf deiner Kachel, dass du auch bei Cruizy Date bist. Alle anderen sehen es nie."
+ },
+ "UI-DATE-BERUF": {
+  "s": "ENTWURF",
+  "t": "Beruf"
+ },
+ "UI-DATE-CHATS-LEER": {
+  "s": "ENTWURF",
+  "t": "Noch keine Date-Matches. Wenn ihr euch gegenseitig likt, landet euer Chat hier."
+ },
+ "UI-DATE-DEALBREAKER": {
+  "s": "ENTWURF",
+  "t": "Deal-Breaker"
+ },
+ "UI-DATE-DEALBREAKER-ERKL": {
+  "s": "ENTWURF",
+  "t": "Wen du antippst, schlagen wir dir nicht vor — und umgekehrt."
+ },
+ "UI-DATE-DEIN-FOTO": {
+  "s": "ENTWURF",
+  "t": "Foto"
+ },
+ "UI-DATE-DU-HAST-GELIKT": {
+  "s": "ENTWURF",
+  "t": "Du hast diese Person gelikt."
+ },
+ "UI-DATE-DU-HAST-GELIKT-EL": {
+  "s": "ENTWURF",
+  "t": "Du hast gelikt"
+ },
+ "UI-DATE-EIGENES-INTERESSE": {
+  "s": "ENTWURF",
+  "t": "Eigenes hinzufügen"
+ },
+ "UI-DATE-EINRICHTEN": {
+  "s": "ENTWURF",
+  "t": "Date einrichten"
+ },
+ "UI-DATE-EINSTELLUNGEN": {
+  "s": "ENTWURF",
+  "t": "Date-Einstellungen"
+ },
+ "UI-DATE-EINWILLIGUNG-NOETIG": {
+  "s": "ENTWURF",
+  "t": "Bitte stimm der Verarbeitung für die Gesichtsverifizierung zu."
+ },
+ "UI-DATE-ELEMENT-FEHLT": {
+  "s": "ENTWURF",
+  "t": "Das gibt es im Profil nicht mehr."
+ },
+ "UI-DATE-ENTFERNUNG": {
+  "s": "ENTWURF",
+  "t": "Höchstens so weit weg"
+ },
+ "UI-DATE-ERST-FOTOS": {
+  "s": "ENTWURF",
+  "t": "Lade zuerst deine Date-Fotos hoch — das erste wird mit dem Selfie abgeglichen."
+ },
+ "UI-DATE-FEHLT-NOCH": {
+  "s": "ENTWURF",
+  "t": "Damit dein Profil gezeigt wird, fehlt noch:"
+ },
+ "UI-DATE-FERTIG-HEUTE": {
+  "s": "ENTWURF",
+  "t": "Das war’s für heute. Morgen warten neue Vorschläge auf dich."
+ },
+ "UI-DATE-FERTIG-HEUTE-ERKL": {
+  "s": "ENTWURF",
+  "t": "Jeden Tag bis zu {zahl} Vorschläge — ausgewählt nach dem, was euch verbindet."
+ },
+ "UI-DATE-FORTSETZEN": {
+  "s": "ENTWURF",
+  "t": "Fortsetzen"
+ },
+ "UI-DATE-FOTO-ABGELEHNT": {
+  "s": "ENTWURF",
+  "t": "Dieses Foto passt nicht zu Date."
+ },
+ "UI-DATE-FOTO-ERSTES": {
+  "s": "ENTWURF",
+  "t": "Gesicht"
+ },
+ "UI-DATE-FOTO-PRUEFUNG": {
+  "s": "ENTWURF",
+  "t": "in Prüfung"
+ },
+ "UI-DATE-FOTO-VON": {
+  "s": "ENTWURF",
+  "t": "Foto {nr} von {name}"
+ },
+ "UI-DATE-FOTO-VOR": {
+  "s": "ENTWURF",
+  "t": "Nach vorn"
+ },
+ "UI-DATE-FOTO-ZURUECK": {
+  "s": "ENTWURF",
+  "t": "Nach hinten"
+ },
+ "UI-DATE-FOTOS-ERKL": {
+  "s": "ENTWURF",
+  "t": "{min} bis {max} Fotos, getrennt von deinem Raster-Profil. Auf dem ersten muss dein Gesicht gut zu erkennen sein — es wird mit deinem Selfie abgeglichen. Reihenfolge per Ziehen oder mit den Pfeilen."
+ },
+ "UI-DATE-FOTOS-MAX": {
+  "s": "ENTWURF",
+  "t": "Höchstens {max} Fotos."
+ },
+ "UI-DATE-FOTOS-SFW": {
+  "s": "ENTWURF",
+  "t": "Date-Profile sind immer jugendfrei. Jedes Foto wird wie Profilfotos geprüft."
+ },
+ "UI-DATE-FOTOS-TITEL": {
+  "s": "ENTWURF",
+  "t": "Deine Date-Fotos"
+ },
+ "UI-DATE-FREIGESCHALTET": {
+  "s": "ENTWURF",
+  "t": "Willkommen bei Cruizy Date!"
+ },
+ "UI-DATE-FREISCHALTEN": {
+  "s": "ENTWURF",
+  "t": "Date freischalten"
+ },
+ "UI-DATE-FREIWILLIG-NICHT-MATCHING": {
+  "s": "ENTWURF",
+  "t": "freiwillig, zählt nicht fürs Matching"
+ },
+ "UI-DATE-GELIKT": {
+  "s": "ENTWURF",
+  "t": "Like an {name} gesendet."
+ },
+ "UI-DATE-GELIKT-AUDIO": {
+  "s": "ENTWURF",
+  "t": "hat deine Aufnahme gelikt"
+ },
+ "UI-DATE-GELIKT-FOTO": {
+  "s": "ENTWURF",
+  "t": "hat ein Foto gelikt"
+ },
+ "UI-DATE-GELIKT-PROMPT": {
+  "s": "ENTWURF",
+  "t": "hat deine Antwort auf „{prompt}“ gelikt"
+ },
+ "UI-DATE-GESPEICHERT": {
+  "s": "ENTWURF",
+  "t": "Gespeichert."
+ },
+ "UI-DATE-GESPERRT": {
+  "s": "ENTWURF",
+  "t": "Dein Zugang zu Cruizy Date ist gesperrt. Die Cruizy-Hauptseite kannst du weiterhin nutzen."
+ },
+ "UI-DATE-GEWAEHLT": {
+  "s": "ENTWURF",
+  "t": "{zahl} von {max} gewählt"
+ },
+ "UI-DATE-HAT-DICH-GELIKT": {
+  "s": "ENTWURF",
+  "t": "hat dich schon gelikt"
+ },
+ "UI-DATE-HAT-GELIKT-EL": {
+  "s": "ENTWURF",
+  "t": "Hat bei dir gelikt"
+ },
+ "UI-DATE-HEUTE": {
+  "s": "ENTWURF",
+  "t": "Heute"
+ },
+ "UI-DATE-ICH-ERKL": {
+  "s": "ENTWURF",
+  "t": "Ernsthaftes Dating, Einstellungen, Reiter ein- oder ausblenden"
+ },
+ "UI-DATE-IHR-SEID-MATCH": {
+  "s": "ENTWURF",
+  "t": "Ihr seid ein Match."
+ },
+ "UI-DATE-INTENTION-ERKL": {
+  "s": "ENTWURF",
+  "t": "Cruizy Date ist für ernsthaftes Kennenlernen. Eine Casual-Option gibt es hier bewusst nicht."
+ },
+ "UI-DATE-INTENTION-FRAGE": {
+  "s": "ENTWURF",
+  "t": "Was suchst du?"
+ },
+ "UI-DATE-INTERESSEN": {
+  "s": "ENTWURF",
+  "t": "Hobbys und Interessen ({min}–{max})"
+ },
+ "UI-DATE-INTERESSEN-ANZAHL": {
+  "s": "ENTWURF",
+  "t": "Wähl {min} bis {max} Interessen."
+ },
+ "UI-DATE-KACHEL": {
+  "s": "ENTWURF",
+  "t": "Auch bei Cruizy Date"
+ },
+ "UI-DATE-KAMERA-ABGELEHNT": {
+  "s": "ENTWURF",
+  "t": "Der Zugriff auf die Kamera wurde abgelehnt. Erlaube ihn in den Browser- oder Geräteeinstellungen und versuch es erneut."
+ },
+ "UI-DATE-KAMERA-AUS": {
+  "s": "ENTWURF",
+  "t": "Kamera ausschalten"
+ },
+ "UI-DATE-KAMERA-BELEGT": {
+  "s": "ENTWURF",
+  "t": "Die Kamera wird gerade von einer anderen App benutzt."
+ },
+ "UI-DATE-KAMERA-BILD": {
+  "s": "ENTWURF",
+  "t": "Kamerabild"
+ },
+ "UI-DATE-KAMERA-BROWSER": {
+  "s": "ENTWURF",
+  "t": "Dieser Browser kann die Kamera nicht öffnen. Nimm die Kamera-App über den Link darunter."
+ },
+ "UI-DATE-KAMERA-FEHLT": {
+  "s": "ENTWURF",
+  "t": "Keine Kamera gefunden."
+ },
+ "UI-DATE-KAMERA-HTTPS": {
+  "s": "ENTWURF",
+  "t": "Die Kamera geht nur über eine sichere Verbindung (https)."
+ },
+ "UI-DATE-KAMERA-RUECKFALL": {
+  "s": "ENTWURF",
+  "t": "Kamera startet nicht? Foto mit der Kamera-App aufnehmen"
+ },
+ "UI-DATE-KAMERA-STARTEN": {
+  "s": "ENTWURF",
+  "t": "Kamera starten"
+ },
+ "UI-DATE-KODEX-1": {
+  "s": "ENTWURF",
+  "t": "Ich bin hier, weil ich ernsthaft daten möchte."
+ },
+ "UI-DATE-KODEX-2": {
+  "s": "ENTWURF",
+  "t": "Ich suche in Cruizy Date keine Hookups oder Sex-Dates."
+ },
+ "UI-DATE-KODEX-3": {
+  "s": "ENTWURF",
+  "t": "Ich bin ehrlich in meinem Profil und respektvoll im Umgang."
+ },
+ "UI-DATE-KODEX-4": {
+  "s": "ENTWURF",
+  "t": "Ich schicke keine intimen Inhalte ohne Zustimmung."
+ },
+ "UI-DATE-KODEX-5": {
+  "s": "ENTWURF",
+  "t": "Mir ist klar: Wer gegen diese Regeln verstößt, verliert den Zugang zu Cruizy Date."
+ },
+ "UI-DATE-KODEX-CHECK": {
+  "s": "ENTWURF",
+  "t": "Ich stimme dem Date-Kodex zu."
+ },
+ "UI-DATE-KODEX-OK": {
+  "s": "ENTWURF",
+  "t": "Cruizy Date freischalten"
+ },
+ "UI-DATE-KODEX-TITEL": {
+  "s": "ENTWURF",
+  "t": "Der Date-Kodex"
+ },
+ "UI-DATE-KOMMENTAR": {
+  "s": "ENTWURF",
+  "t": "Kommentar (freiwillig)"
+ },
+ "UI-DATE-KOMMENTAR-BSP": {
+  "s": "ENTWURF",
+  "t": "Sag, was dir gefällt …"
+ },
+ "UI-DATE-KOMMENTAR-LANG": {
+  "s": "ENTWURF",
+  "t": "Ein Kommentar darf höchstens {zeichen} Zeichen haben."
+ },
+ "UI-DATE-L-HEADLINE": {
+  "s": "ENTWURF",
+  "t": "Cruizy Date – für mehr als heute Abend."
+ },
+ "UI-DATE-L-HINWEIS": {
+  "s": "ENTWURF",
+  "t": "Cruizy Date ist ausschließlich für ernsthaftes Dating. Hookups, Sex-Dates und Casual-Treffen gehören nicht hierher. Dafür ist die Cruizy-Hauptseite da."
+ },
+ "UI-DATE-L-PUNKT-1": {
+  "s": "ENTWURF",
+  "t": "Verifizierte Gesichter: Jedes Profil zeigt, wer wirklich dahintersteckt."
+ },
+ "UI-DATE-L-PUNKT-2": {
+  "s": "ENTWURF",
+  "t": "Persönliche Profile mit Stimme, Hobbys und dem, was dir wichtig ist."
+ },
+ "UI-DATE-L-PUNKT-3": {
+  "s": "ENTWURF",
+  "t": "Tägliche Vorschläge, die zu dir passen, statt endlosem Scrollen."
+ },
+ "UI-DATE-L-SUB": {
+  "s": "ENTWURF",
+  "t": "Hier geht es um echtes Dating. Um Menschen, die jemanden kennenlernen wollen, nicht nur für eine Nacht."
+ },
+ "UI-DATE-LIKE-AUDIO": {
+  "s": "ENTWURF",
+  "t": "Diese Aufnahme liken"
+ },
+ "UI-DATE-LIKE-FOTO": {
+  "s": "ENTWURF",
+  "t": "Dieses Foto liken"
+ },
+ "UI-DATE-LIKE-PROMPT": {
+  "s": "ENTWURF",
+  "t": "Diese Antwort liken"
+ },
+ "UI-DATE-LIKE-SENDEN": {
+  "s": "ENTWURF",
+  "t": "Like senden"
+ },
+ "UI-DATE-LIKE-TITEL": {
+  "s": "ENTWURF",
+  "t": "{name} liken"
+ },
+ "UI-DATE-LIKES": {
+  "s": "ENTWURF",
+  "t": "Likes"
+ },
+ "UI-DATE-LIKES-ANZAHL": {
+  "s": "ENTWURF",
+  "t": "Personen haben dich gelikt."
+ },
+ "UI-DATE-LIKES-LEER": {
+  "s": "ENTWURF",
+  "t": "Noch keine Likes. Ein vollständiges Profil mit Voice-Intro hilft."
+ },
+ "UI-DATE-LIKES-PREMIUM": {
+  "s": "ENTWURF",
+  "t": "Mit Premium siehst du, wer dich gelikt hat, worauf und mit welchem Kommentar — und kannst direkt zurückliken."
+ },
+ "UI-DATE-LIKES-TIPP": {
+  "s": "ENTWURF",
+  "t": "Tipp: Wer dich gelikt hat, taucht bevorzugt in deinen Tagesvorschlägen auf."
+ },
+ "UI-DATE-MATCH-TEXT": {
+  "s": "ENTWURF",
+  "t": "Du und {name} habt euch gegenseitig gelikt."
+ },
+ "UI-DATE-MATCH-TITEL": {
+  "s": "ENTWURF",
+  "t": "Es ist ein Match!"
+ },
+ "UI-DATE-MIN-BERUF": {
+  "s": "ENTWURF",
+  "t": "Beruf"
+ },
+ "UI-DATE-MIN-FOTOS": {
+  "s": "ENTWURF",
+  "t": "mindestens 3 Fotos"
+ },
+ "UI-DATE-MIN-INTENTION": {
+  "s": "ENTWURF",
+  "t": "Was du suchst"
+ },
+ "UI-DATE-MIN-KODEX": {
+  "s": "ENTWURF",
+  "t": "Date-Kodex"
+ },
+ "UI-DATE-MIN-PROMPTS": {
+  "s": "ENTWURF",
+  "t": "mindestens 2 Fragen"
+ },
+ "UI-DATE-MIN-VERIFIZIERUNG": {
+  "s": "ENTWURF",
+  "t": "Gesichtsverifizierung"
+ },
+ "UI-DATE-MIN-VOICE": {
+  "s": "ENTWURF",
+  "t": "Voice-Intro"
+ },
+ "UI-DATE-MINIMUM-FEHLT": {
+  "s": "ENTWURF",
+  "t": "Dein Profil ist unvollständig und wird gerade nicht vorgeschlagen."
+ },
+ "UI-DATE-N-ENTSPERRT": {
+  "s": "ENTWURF",
+  "t": "Dein Zugang zu Cruizy Date ist wieder freigeschaltet."
+ },
+ "UI-DATE-N-ENTSPERRT-TITEL": {
+  "s": "ENTWURF",
+  "t": "Cruizy Date wieder offen"
+ },
+ "UI-DATE-N-FOTO-ABGELEHNT": {
+  "s": "ENTWURF",
+  "t": "Ein Foto aus deinem Date-Profil passt nicht zu Date (Profile bleiben jugendfrei). Lade bitte ein anderes hoch."
+ },
+ "UI-DATE-N-FOTO-ABGELEHNT-TITEL": {
+  "s": "ENTWURF",
+  "t": "Date-Foto nicht freigegeben"
+ },
+ "UI-DATE-N-GESPERRT": {
+  "s": "ENTWURF",
+  "t": "Dein Zugang zu Cruizy Date wurde gesperrt, weil dein Verhalten nicht zu ernsthaftem Dating gepasst hat. Die Cruizy-Hauptseite kannst du weiterhin nutzen."
+ },
+ "UI-DATE-N-GESPERRT-TITEL": {
+  "s": "ENTWURF",
+  "t": "Cruizy Date gesperrt"
+ },
+ "UI-DATE-N-MATCH": {
+  "s": "ENTWURF",
+  "t": "Ihr habt euch gegenseitig gelikt. Euer Chat liegt unter „Chats“ im Reiter „Date“."
+ },
+ "UI-DATE-N-MATCH-PUSH": {
+  "s": "ENTWURF",
+  "t": "Du hast ein neues Match."
+ },
+ "UI-DATE-N-MATCH-TITEL": {
+  "s": "ENTWURF",
+  "t": "Neues Match in Cruizy Date"
+ },
+ "UI-DATE-NEU-VERIFIZIEREN": {
+  "s": "ENTWURF",
+  "t": "Neues erstes Foto — bitte verifiziere dein Gesicht noch einmal."
+ },
+ "UI-DATE-NOCH-FOTOS": {
+  "s": "ENTWURF",
+  "t": "Noch {zahl} Fotos"
+ },
+ "UI-DATE-NSFW-ABGELEHNT": {
+  "s": "ENTWURF",
+  "t": "Bild abgelehnt."
+ },
+ "UI-DATE-NSFW-ABLEHNEN": {
+  "s": "ENTWURF",
+  "t": "Ablehnen"
+ },
+ "UI-DATE-NSFW-ANSEHEN": {
+  "s": "ENTWURF",
+  "t": "Ansehen"
+ },
+ "UI-DATE-NSFW-EINMAL": {
+  "s": "ENTWURF",
+  "t": "Einmal-Bilder, die intime Inhalte zeigen könnten, gehen in Date-Chats erst, wenn die andere Person sie erlaubt hat."
+ },
+ "UI-DATE-NSFW-ERKL": {
+  "s": "ENTWURF",
+  "t": "Nicht verboten, aber nur mit deiner Zustimmung."
+ },
+ "UI-DATE-NSFW-ERLAUBEN": {
+  "s": "ENTWURF",
+  "t": "Ansehen und künftig erlauben"
+ },
+ "UI-DATE-NSFW-FREIGABE": {
+  "s": "ENTWURF",
+  "t": "Nur nach Freigabe (empfohlen)"
+ },
+ "UI-DATE-NSFW-FREIGABE-ERKL": {
+  "s": "ENTWURF",
+  "t": "Solche Bilder kommen unscharf an. Du entscheidest je Chat."
+ },
+ "UI-DATE-NSFW-HINWEIS": {
+  "s": "ENTWURF",
+  "t": "Dieses Bild könnte intime Inhalte zeigen."
+ },
+ "UI-DATE-NSFW-JA": {
+  "s": "ENTWURF",
+  "t": "Ja"
+ },
+ "UI-DATE-NSFW-JA-ERKL": {
+  "s": "ENTWURF",
+  "t": "Bilder kommen ohne Unschärfe an."
+ },
+ "UI-DATE-NSFW-NEIN": {
+  "s": "ENTWURF",
+  "t": "Nein"
+ },
+ "UI-DATE-NSFW-NEIN-ERKL": {
+  "s": "ENTWURF",
+  "t": "Solche Bilder können dir in Date-Chats nicht geschickt werden."
+ },
+ "UI-DATE-NSFW-TITEL": {
+  "s": "ENTWURF",
+  "t": "Intime Inhalte in Date-Chats"
+ },
+ "UI-DATE-NUR-MITGLIEDER": {
+  "s": "ENTWURF",
+  "t": "Das siehst du nur mit freigeschaltetem Cruizy Date."
+ },
+ "UI-DATE-PAUSE-ERKL": {
+  "s": "ENTWURF",
+  "t": "Dein Profil bleibt erhalten, wird aber niemandem vorgeschlagen. Matches und Chats bleiben."
+ },
+ "UI-DATE-PAUSE-TITEL": {
+  "s": "ENTWURF",
+  "t": "Pause"
+ },
+ "UI-DATE-PAUSIEREN": {
+  "s": "ENTWURF",
+  "t": "Date pausieren"
+ },
+ "UI-DATE-PAUSIERT": {
+  "s": "ENTWURF",
+  "t": "Cruizy Date ist pausiert. Dein Profil bleibt erhalten, wird aber niemandem vorgeschlagen."
+ },
+ "UI-DATE-POSE": {
+  "s": "ENTWURF",
+  "t": "Deine Pose:"
+ },
+ "UI-DATE-POSE-ABGELAUFEN": {
+  "s": "ENTWURF",
+  "t": "Die Aufgabe ist abgelaufen. Hol dir eine neue Pose."
+ },
+ "UI-DATE-PRAEF-TITEL": {
+  "s": "ENTWURF",
+  "t": "Wen möchtest du kennenlernen?"
+ },
+ "UI-DATE-PREMIUM": {
+  "s": "ENTWURF",
+  "t": "Das gehört zu Premium."
+ },
+ "UI-DATE-PREMIUM-ANSEHEN": {
+  "s": "ENTWURF",
+  "t": "Premium ansehen"
+ },
+ "UI-DATE-PROFIL-ANSEHEN": {
+  "s": "ENTWURF",
+  "t": "Date-Profil ansehen"
+ },
+ "UI-DATE-PROFIL-BEARBEITEN": {
+  "s": "ENTWURF",
+  "t": "Date-Profil bearbeiten"
+ },
+ "UI-DATE-PROFIL-TITEL": {
+  "s": "ENTWURF",
+  "t": "Dein Date-Profil"
+ },
+ "UI-DATE-PROMPT-ANTWORT": {
+  "s": "ENTWURF",
+  "t": "Deine Antwort"
+ },
+ "UI-DATE-PROMPT-NEU": {
+  "s": "ENTWURF",
+  "t": "Weitere Frage"
+ },
+ "UI-DATE-PROMPTS": {
+  "s": "ENTWURF",
+  "t": "Fragen ({min}–{max})"
+ },
+ "UI-DATE-PROMPTS-ANZAHL": {
+  "s": "ENTWURF",
+  "t": "Beantworte {min} bis {max} Fragen."
+ },
+ "UI-DATE-REITER-ZEIGEN": {
+  "s": "ENTWURF",
+  "t": "Date in der Navigation zeigen"
+ },
+ "UI-DATE-REITER-ZEIGEN-ERKL": {
+  "s": "ENTWURF",
+  "t": "Aus: Der Reiter „Date“ verschwindet. Jederzeit wieder einblendbar — hier oder unter „Ich“."
+ },
+ "UI-DATE-S-FOTOS": {
+  "s": "ENTWURF",
+  "t": "Fotos"
+ },
+ "UI-DATE-S-INTENTION": {
+  "s": "ENTWURF",
+  "t": "Was du suchst"
+ },
+ "UI-DATE-S-KODEX": {
+  "s": "ENTWURF",
+  "t": "Date-Kodex"
+ },
+ "UI-DATE-S-PRAEFERENZEN": {
+  "s": "ENTWURF",
+  "t": "Präferenzen"
+ },
+ "UI-DATE-S-PROFIL": {
+  "s": "ENTWURF",
+  "t": "Profil"
+ },
+ "UI-DATE-S-VERIFIZIERUNG": {
+  "s": "ENTWURF",
+  "t": "Gesichtsverifizierung"
+ },
+ "UI-DATE-SCHON-GELIKT": {
+  "s": "ENTWURF",
+  "t": "Du hast diese Person schon gelikt."
+ },
+ "UI-DATE-SCHRITT": {
+  "s": "ENTWURF",
+  "t": "Schritt {nr} von {gesamt}: {name}"
+ },
+ "UI-DATE-SELFIE-AUFNEHMEN": {
+  "s": "ENTWURF",
+  "t": "Selfie aufnehmen"
+ },
+ "UI-DATE-SO-SIEHT-ES-AUS": {
+  "s": "ENTWURF",
+  "t": "So sehen andere Date-Mitglieder dein Profil."
+ },
+ "UI-DATE-SPEICHERN-WEITER": {
+  "s": "ENTWURF",
+  "t": "Speichern und weiter"
+ },
+ "UI-DATE-SUCHE-LANG": {
+  "s": "ENTWURF",
+  "t": "„Was ich suche“ darf höchstens {zeichen} Zeichen haben."
+ },
+ "UI-DATE-SUPERLIKE": {
+  "s": "ENTWURF",
+  "t": "Super-Like"
+ },
+ "UI-DATE-SUPERLIKE-ERKL": {
+  "s": "ENTWURF",
+  "t": "Du erscheinst bei der Person weiter oben."
+ },
+ "UI-DATE-TEIL-FOTOS": {
+  "s": "ENTWURF",
+  "t": "Fotos"
+ },
+ "UI-DATE-TEIL-PRAEFERENZEN": {
+  "s": "ENTWURF",
+  "t": "Präferenzen"
+ },
+ "UI-DATE-TEIL-PROFIL": {
+  "s": "ENTWURF",
+  "t": "Profil"
+ },
+ "UI-DATE-TEIL-VERIFIZIERUNG": {
+  "s": "ENTWURF",
+  "t": "Verifizierung"
+ },
+ "UI-DATE-TEIL-VORSCHAU": {
+  "s": "ENTWURF",
+  "t": "Vorschau"
+ },
+ "UI-DATE-TITEL": {
+  "s": "ENTWURF",
+  "t": "Cruizy Date"
+ },
+ "UI-DATE-UNMATCH": {
+  "s": "ENTWURF",
+  "t": "Match auflösen"
+ },
+ "UI-DATE-UNMATCH-ERKL": {
+  "s": "ENTWURF",
+  "t": "Der Chat verschwindet für euch beide aus Date. War er durch das Match entstanden, endet er. Blockieren wirkt wie überall in Cruizy."
+ },
+ "UI-DATE-VERIFIZIERT": {
+  "s": "ENTWURF",
+  "t": "Gesicht verifiziert"
+ },
+ "UI-DATE-VERIFIZIERT-OK": {
+  "s": "ENTWURF",
+  "t": "Verifiziert"
+ },
+ "UI-DATE-VERIFIZIERT-OK-ERKL": {
+  "s": "ENTWURF",
+  "t": "Dein Gesicht ist bestätigt. Andere sehen das Häkchen in deinem Date-Profil."
+ },
+ "UI-DATE-VERIFIZIERUNG-DATENSCHUTZ": {
+  "s": "ENTWURF",
+  "t": "Das Selfie verlässt nach dem Abgleich keinen Speicher — gespeichert werden nur Ergebnis und Zeitpunkt."
+ },
+ "UI-DATE-VERIFIZIERUNG-ERKL": {
+  "s": "ENTWURF",
+  "t": "Ein Selfie mit einer zufälligen Pose. Wir gleichen es mit deinem ersten Date-Foto ab — so sind alle Gesichter bei Cruizy Date echt."
+ },
+ "UI-DATE-VERIFIZIERUNG-KEIN-ABGLEICH": {
+  "s": "ENTWURF",
+  "t": "Das Selfie passt nicht zu deinem ersten Date-Foto. Prüf das Foto oder versuch es erneut."
+ },
+ "UI-DATE-VERIFIZIERUNG-NICHT-VERFUEGBAR": {
+  "s": "ENTWURF",
+  "t": "Die Gesichtsverifizierung ist gerade nicht verfügbar. Bitte versuch es später noch einmal."
+ },
+ "UI-DATE-VERIFIZIERUNG-POSE": {
+  "s": "ENTWURF",
+  "t": "Die Pose war nicht zu erkennen. Versuch es mit einer neuen Pose."
+ },
+ "UI-DATE-VERIFIZIERUNG-TITEL": {
+  "s": "ENTWURF",
+  "t": "Zeig, dass du es bist"
+ },
+ "UI-DATE-VERLASSEN": {
+  "s": "ENTWURF",
+  "t": "Date verlassen"
+ },
+ "UI-DATE-VERLASSEN-ERKL": {
+  "s": "ENTWURF",
+  "t": "Löscht dein Date-Profil mit allen Fotos, Aufnahmen, Likes und Matches. Dein normales Cruizy-Konto bleibt."
+ },
+ "UI-DATE-VERLASSEN-FRAGE": {
+  "s": "ENTWURF",
+  "t": "Wirklich alle Date-Daten löschen? Das lässt sich nicht rückgängig machen."
+ },
+ "UI-DATE-VERLASSEN-JETZT": {
+  "s": "ENTWURF",
+  "t": "Endgültig verlassen"
+ },
+ "UI-DATE-VERLASSEN-TIPPEN": {
+  "s": "ENTWURF",
+  "t": "Zur Bestätigung VERLASSEN eintippen"
+ },
+ "UI-DATE-VOICE-ERKL": {
+  "s": "ENTWURF",
+  "t": "Pflicht: Stell dich in bis zu {s} Sekunden vor. Aufnehmen, anhören, neu aufnehmen."
+ },
+ "UI-DATE-VOICE-FEHLT": {
+  "s": "ENTWURF",
+  "t": "Nimm noch dein Voice-Intro auf."
+ },
+ "UI-DATE-VOICE-INTRO": {
+  "s": "ENTWURF",
+  "t": "Voice-Intro"
+ },
+ "UI-DATE-VORSCHLAG-VON": {
+  "s": "ENTWURF",
+  "t": "Vorschlag {nr} von {gesamt}"
+ },
+ "UI-DATE-WARTELISTE": {
+  "s": "ENTWURF",
+  "t": "Wir starten Cruizy Date Stadt für Stadt. Du bist dabei, sobald es bei dir losgeht."
+ },
+ "UI-DATE-WARTELISTE-DABEI": {
+  "s": "ENTWURF",
+  "t": "Du stehst auf der Warteliste für {stadt}. Wir melden uns, sobald es bei dir losgeht."
+ },
+ "UI-DATE-WAS-ICH-SUCHE": {
+  "s": "ENTWURF",
+  "t": "Was ich suche"
+ },
+ "UI-DATE-WEITER": {
+  "s": "ENTWURF",
+  "t": "Weiter (nicht interessiert)"
+ },
+ "UI-DATE-WEITER-BTN": {
+  "s": "ENTWURF",
+  "t": "Weiter"
+ },
+ "UI-DATE-WEITER-STOEBERN": {
+  "s": "ENTWURF",
+  "t": "Weiter entdecken"
+ },
+ "UI-DATE-WEITER-TASTE": {
+  "s": "ENTWURF",
+  "t": "Weiter — Taste ← oder X, auf dem Handy nach links wischen"
+ },
+ "UI-DATE-WERT-ALCOHOL": {
+  "s": "ENTWURF",
+  "t": "Alkohol"
+ },
+ "UI-DATE-WERT-KIDS": {
+  "s": "ENTWURF",
+  "t": "Kinderwunsch"
+ },
+ "UI-DATE-WERT-POLITICS": {
+  "s": "ENTWURF",
+  "t": "Politik"
+ },
+ "UI-DATE-WERT-RELATIONSHIPMODEL": {
+  "s": "ENTWURF",
+  "t": "Beziehungsmodell"
+ },
+ "UI-DATE-WERT-RELIGION": {
+  "s": "ENTWURF",
+  "t": "Religion"
+ },
+ "UI-DATE-WERT-SMOKING": {
+  "s": "ENTWURF",
+  "t": "Rauchen"
+ },
+ "UI-DATE-WERT-SPORT": {
+  "s": "ENTWURF",
+  "t": "Sport"
+ },
+ "UI-DATE-WERTE": {
+  "s": "ENTWURF",
+  "t": "Werte und Lebensstil"
+ },
+ "UI-DATE-ZUM-CHAT": {
+  "s": "ENTWURF",
+  "t": "Zum Chat"
+ },
+ "UI-DATE-ZURUECK-ZU-DATE": {
+  "s": "ENTWURF",
+  "t": "Zurück zu Cruizy Date"
  },
  "UI-DATEN-ALBUM": {
   "s": "ENTWURF",
@@ -523,6 +1567,58 @@
   "s": "ENTWURF",
   "t": "Bitte prüf deine Eingabe."
  },
+ "UI-EINMAL": {
+  "s": "ENTWURF",
+  "t": "Einmal ansehen"
+ },
+ "UI-EINMAL-ABGELAUFEN": {
+  "s": "ENTWURF",
+  "t": "Abgelaufen"
+ },
+ "UI-EINMAL-ANGESEHEN": {
+  "s": "ENTWURF",
+  "t": "Angesehen"
+ },
+ "UI-EINMAL-ANZEIGE": {
+  "s": "ENTWURF",
+  "t": "Verschwindet nach dem Ansehen, kann aber abfotografiert werden."
+ },
+ "UI-EINMAL-GESENDET": {
+  "s": "ENTWURF",
+  "t": "Einmal-Bild · Gesendet"
+ },
+ "UI-EINMAL-HINWEIS": {
+  "s": "ENTWURF",
+  "t": "Das Bild verschwindet nach dem Ansehen. Screenshots oder Fotos vom Bildschirm können wir aber nicht verhindern. Schick nur, was du wirklich teilen willst."
+ },
+ "UI-EINMAL-KACHEL": {
+  "s": "ENTWURF",
+  "t": "Einmal-Bild · Tippen zum Ansehen"
+ },
+ "UI-EINMAL-NOCH": {
+  "s": "ENTWURF",
+  "t": "noch {sekunden} s"
+ },
+ "UI-EINMAL-SENDEN": {
+  "s": "ENTWURF",
+  "t": "Als Einmal-Bild senden"
+ },
+ "UI-EINMAL-VERSTANDEN": {
+  "s": "ENTWURF",
+  "t": "Verstanden"
+ },
+ "UI-EINMAL-WEG": {
+  "s": "ENTWURF",
+  "t": "Dieses Bild ist nicht mehr verfügbar."
+ },
+ "UI-EINST-AUFFINDBAR": {
+  "s": "ENTWURF",
+  "t": "Über die Namenssuche auffindbar"
+ },
+ "UI-EINST-AUFFINDBAR-ERKL": {
+  "s": "ENTWURF",
+  "t": "Aus: Andere finden dich nicht über deinen Namen. Im Raster bleibst du sichtbar."
+ },
  "UI-EINST-KONTO": {
   "s": "ENTWURF",
   "t": "Konto"
@@ -542,6 +1638,22 @@
  "UI-EINST-RUHE-VON": {
   "s": "ENTWURF",
   "t": "Ruhezeit von"
+ },
+ "UI-EINST-SPRACHE": {
+  "s": "ENTWURF",
+  "t": "Sprachnachrichten empfangen"
+ },
+ "UI-EINST-SPRACHE-ERKL": {
+  "s": "ENTWURF",
+  "t": "Aus: Niemand kann dir Sprachnachrichten schicken. Das gilt auch in Cruizy Date."
+ },
+ "UI-EINST-STARTER": {
+  "s": "ENTWURF",
+  "t": "Gesprächsstarter anzeigen"
+ },
+ "UI-EINST-STARTER-ERKL": {
+  "s": "ENTWURF",
+  "t": "In neuen Chats schlagen wir dir ein paar Einstiege vor — aus dem, was im Profil der anderen Person steht. Nichts davon verlässt unseren Server."
  },
  "UI-EINW-ABGELEHNT": {
   "s": "ENTWURF",
@@ -575,6 +1687,34 @@
   "s": "ENTWURF",
   "t": "Ein Einstieg"
  },
+ "UI-EMOJI": {
+  "s": "ENTWURF",
+  "t": "Emoji"
+ },
+ "UI-EMOJI-GRUPPE-1": {
+  "s": "ENTWURF",
+  "t": "Smileys"
+ },
+ "UI-EMOJI-GRUPPE-2": {
+  "s": "ENTWURF",
+  "t": "Gesten"
+ },
+ "UI-EMOJI-GRUPPE-3": {
+  "s": "ENTWURF",
+  "t": "Herzen"
+ },
+ "UI-EMOJI-GRUPPE-4": {
+  "s": "ENTWURF",
+  "t": "Unterwegs"
+ },
+ "UI-EMOJI-GRUPPE-5": {
+  "s": "ENTWURF",
+  "t": "Essen und Trinken"
+ },
+ "UI-EMOJI-GRUPPE-6": {
+  "s": "ENTWURF",
+  "t": "Symbole"
+ },
  "UI-ENTSCHEIDUNG-AN-BEHOERDE": {
   "s": "ENTWURF",
   "t": "an die zuständige Behörde weitergegeben"
@@ -586,6 +1726,10 @@
  "UI-ENTSCHEIDUNG-BLEIBT": {
   "s": "ENTWURF",
   "t": "kein Verstoß"
+ },
+ "UI-ENTSCHEIDUNG-DATE-VERSTOSS": {
+  "s": "ENTWURF",
+  "t": "Verstoß gegen den Date-Kodex"
  },
  "UI-ENTSCHEIDUNG-EINGESCHRAENKT": {
   "s": "ENTWURF",
@@ -803,6 +1947,10 @@
   "s": "ENTWURF",
   "t": "Absicht"
  },
+ "UI-FILTER-AKTIV": {
+  "s": "ENTWURF",
+  "t": "{zahl} aktiv"
+ },
  "UI-FILTER-ALLE-ENTFERNEN": {
   "s": "ENTWURF",
   "t": "Alle Filter entfernen"
@@ -815,9 +1963,17 @@
   "s": "ENTWURF",
   "t": "Nach Alter filtern"
  },
+ "UI-FILTER-ANTWORTET": {
+  "s": "ENTWURF",
+  "t": "Antwortet meistens oder besser"
+ },
  "UI-FILTER-ANZEIGEN": {
   "s": "ENTWURF",
   "t": "Anzeigen"
+ },
+ "UI-FILTER-BEREICH-AN": {
+  "s": "ENTWURF",
+  "t": "Bereich festlegen"
  },
  "UI-FILTER-BIS": {
   "s": "ENTWURF",
@@ -831,9 +1987,37 @@
   "s": "ENTWURF",
   "t": "Entfernung"
  },
+ "UI-FILTER-GEWICHT": {
+  "s": "ENTWURF",
+  "t": "Gewicht (kg)"
+ },
+ "UI-FILTER-GROESSE": {
+  "s": "ENTWURF",
+  "t": "Größe (cm)"
+ },
  "UI-FILTER-HOECHSTENS-ZWEI": {
   "s": "ENTWURF",
   "t": "Höchstens zwei gleichzeitig."
+ },
+ "UI-FILTER-KINKS": {
+  "s": "ENTWURF",
+  "t": "Kinks und Fetische"
+ },
+ "UI-FILTER-KOERPERTYP": {
+  "s": "ENTWURF",
+  "t": "Körpertyp"
+ },
+ "UI-FILTER-MIT-FOTO": {
+  "s": "ENTWURF",
+  "t": "Nur mit Foto"
+ },
+ "UI-FILTER-ODER": {
+  "s": "ENTWURF",
+  "t": "Mindestens eins davon"
+ },
+ "UI-FILTER-POSITION": {
+  "s": "ENTWURF",
+  "t": "Position"
  },
  "UI-FILTER-TREFFER": {
   "s": "ENTWURF",
@@ -846,6 +2030,10 @@
  "UI-FOTO-ABGELEHNT-TITEL": {
   "s": "ENTWURF",
   "t": "Dein Foto wurde nicht freigegeben"
+ },
+ "UI-FOTO-ALS-ERSTES": {
+  "s": "ENTWURF",
+  "t": "Als erstes Foto zeigen"
  },
  "UI-FOTO-ANDERES": {
   "s": "ENTWURF",
@@ -870,6 +2058,10 @@
  "UI-FOTO-HOCHLADEN": {
   "s": "ENTWURF",
   "t": "Hochladen"
+ },
+ "UI-FOTO-IN-PRUEFUNG": {
+  "s": "ENTWURF",
+  "t": "in Prüfung"
  },
  "UI-FOTO-LINKS": {
   "s": "ENTWURF",
@@ -919,9 +2111,13 @@
   "s": "ENTWURF",
   "t": "Du hast die Fotoprüfung heute schon oft versucht. Morgen geht es wieder."
  },
+ "UI-FOTOS-ANZAHL": {
+  "s": "ENTWURF",
+  "t": "{zahl} von {max} Fotos"
+ },
  "UI-FOTOS-MAX": {
   "s": "ENTWURF",
-  "t": "Mehr als acht Fotos gehen nicht."
+  "t": "Mehr als {max} Fotos gehen nicht."
  },
  "UI-GAST-NETZ": {
   "s": "ENTWURF",
@@ -939,13 +2135,41 @@
   "s": "ENTWURF",
   "t": ""
  },
+ "UI-GEONAMES": {
+  "s": "ENTWURF",
+  "t": "Ortsdaten: GeoNames (CC BY 4.0)"
+ },
  "UI-GRUPPE-SCHLIESST": {
   "s": "ENTWURF",
   "t": "Die Gruppe verschwindet am {zeit}."
  },
+ "UI-HEUTE-ALLE-KATEGORIEN": {
+  "s": "ENTWURF",
+  "t": "Alle Kategorien"
+ },
+ "UI-HEUTE-BALD": {
+  "s": "ENTWURF",
+  "t": "Bald zuerst"
+ },
+ "UI-HEUTE-DACH": {
+  "s": "ENTWURF",
+  "t": "DACH"
+ },
  "UI-HEUTE-DU": {
   "s": "ENTWURF",
   "t": "Du (ungefähr)"
+ },
+ "UI-HEUTE-ENTDECKEN": {
+  "s": "ENTWURF",
+  "t": "Entdecken"
+ },
+ "UI-HEUTE-FILTER-WEG": {
+  "s": "ENTWURF",
+  "t": "Filter zurücksetzen"
+ },
+ "UI-HEUTE-HEUTE": {
+  "s": "ENTWURF",
+  "t": "Heute"
  },
  "UI-HEUTE-JETZT": {
   "s": "ENTWURF",
@@ -955,17 +2179,85 @@
   "s": "ENTWURF",
   "t": "Karte"
  },
+ "UI-HEUTE-KATEGORIEN-N": {
+  "s": "ENTWURF",
+  "t": "{zahl} Kategorien"
+ },
+ "UI-HEUTE-LEER": {
+  "s": "ENTWURF",
+  "t": "Hier ist gerade nichts eingetragen. Versuch einen größeren Umkreis oder weniger Filter."
+ },
  "UI-HEUTE-LISTE": {
   "s": "ENTWURF",
   "t": "Liste"
+ },
+ "UI-HEUTE-MORGEN": {
+  "s": "ENTWURF",
+  "t": "Morgen"
+ },
+ "UI-HEUTE-NAH": {
+  "s": "ENTWURF",
+  "t": "Nah zuerst"
  },
  "UI-HEUTE-OFFEN": {
   "s": "ENTWURF",
   "t": "Orte, die heute geöffnet haben"
  },
+ "UI-HEUTE-OHNE-ORT": {
+  "s": "ENTWURF",
+  "t": "Ohne Standort zeigen wir Veranstaltungen ohne Entfernung."
+ },
+ "UI-HEUTE-ORT-WAEHLEN": {
+  "s": "ENTWURF",
+  "t": "Ort wählen"
+ },
  "UI-HEUTE-SCHEMATISCH": {
   "s": "ENTWURF",
   "t": "Schematische Karte, etwa {km} km um dich. Personen nur als grobe Gruppe."
+ },
+ "UI-HEUTE-SORTIERUNG": {
+  "s": "ENTWURF",
+  "t": "Sortierung wechseln"
+ },
+ "UI-HEUTE-TRAVEL": {
+  "s": "ENTWURF",
+  "t": "Du stöberst gerade per Travel — Entfernungen gelten ab dort."
+ },
+ "UI-HEUTE-UMKREIS": {
+  "s": "ENTWURF",
+  "t": "Umkreis"
+ },
+ "UI-HEUTE-UMKREIS-ERKL": {
+  "s": "ENTWURF",
+  "t": "Wie weit darf es sein? Gemessen von deinem ungefähren Standort — oder vom Ort, an dem du gerade per Travel stöberst."
+ },
+ "UI-HEUTE-UMKREIS-GROESSER": {
+  "s": "ENTWURF",
+  "t": "Umkreis vergrößern"
+ },
+ "UI-HEUTE-WANN-30TAGE": {
+  "s": "ENTWURF",
+  "t": "30 Tage"
+ },
+ "UI-HEUTE-WANN-7TAGE": {
+  "s": "ENTWURF",
+  "t": "7 Tage"
+ },
+ "UI-HEUTE-WANN-ALLE": {
+  "s": "ENTWURF",
+  "t": "Alle Termine"
+ },
+ "UI-HEUTE-WANN-HEUTE": {
+  "s": "ENTWURF",
+  "t": "Heute"
+ },
+ "UI-HEUTE-WANN-MORGEN": {
+  "s": "ENTWURF",
+  "t": "Morgen"
+ },
+ "UI-HEUTE-WANN-WOCHENENDE": {
+  "s": "ENTWURF",
+  "t": "Wochenende"
  },
  "UI-HEUTE-WOCHE": {
   "s": "ENTWURF",
@@ -1083,9 +2375,49 @@
   "s": "ENTWURF",
   "t": "Was sollen wir besser machen?"
  },
+ "UI-KARTE-ANZAHL": {
+  "s": "ENTWURF",
+  "t": "{zahl} Veranstaltungen im Ausschnitt"
+ },
+ "UI-KARTE-GENAU": {
+  "s": "ENTWURF",
+  "t": "genauer Ort"
+ },
+ "UI-KARTE-GRUPPE": {
+  "s": "ENTWURF",
+  "t": "{zahl} Veranstaltungen — hineinzoomen"
+ },
+ "UI-KARTE-LAEDT": {
+  "s": "ENTWURF",
+  "t": "Lädt …"
+ },
+ "UI-KARTE-UNGEFAEHR": {
+  "s": "ENTWURF",
+  "t": "ungefähre Gegend"
+ },
+ "UI-KARTE-ZU-MIR": {
+  "s": "ENTWURF",
+  "t": "Zu meinem Standort"
+ },
  "UI-KEIN-UNKENNTLICHES-FOTO": {
   "s": "ENTWURF",
   "t": "Du hast kein unkenntlich gemachtes Foto, das sich freischalten ließe."
+ },
+ "UI-KINKS-MAX": {
+  "s": "ENTWURF",
+  "t": "Höchstens {max} Angaben."
+ },
+ "UI-KM": {
+  "s": "ENTWURF",
+  "t": "{km} km"
+ },
+ "UI-KM-UNTER-1": {
+  "s": "ENTWURF",
+  "t": "< 1 km"
+ },
+ "UI-KOERPERTYP-MAX": {
+  "s": "ENTWURF",
+  "t": "Höchstens {max} Körpertypen."
  },
  "UI-KONTO-ANMELDEN": {
   "s": "ENTWURF",
@@ -1271,6 +2603,10 @@
   "s": "ENTWURF",
   "t": "Darstellung von sexuellem Kindesmissbrauch"
  },
+ "UI-MEL-DATE": {
+  "s": "ENTWURF",
+  "t": "Sucht nur Hookups / passt nicht zu Date"
+ },
  "UI-MEL-INTIM": {
   "s": "ENTWURF",
   "t": "Intime Bilder ohne Einwilligung"
@@ -1394,6 +2730,10 @@
  "UI-MOD-NOTFALL-2": {
   "s": "ENTWURF",
   "t": "TelefonSeelsorge: 0800 111 0 111 und 0800 111 0 222"
+ },
+ "UI-MOD-NUR-EIGENE": {
+  "s": "ENTWURF",
+  "t": "Empfehlen lassen sich nur eigene Veranstaltungen von Cruizy."
  },
  "UI-MOD-ORT-GESPERRT": {
   "s": "ENTWURF",
@@ -1723,9 +3063,37 @@
   "s": "ENTWURF",
   "t": "Über mich"
  },
+ "UI-PROFIL-FREITEXT-ZAEHLER": {
+  "s": "ENTWURF",
+  "t": "{zahl}/{max}"
+ },
+ "UI-PROFIL-GEWICHT": {
+  "s": "ENTWURF",
+  "t": "Gewicht (kg)"
+ },
+ "UI-PROFIL-GROESSE": {
+  "s": "ENTWURF",
+  "t": "Größe (cm)"
+ },
  "UI-PROFIL-INTERESSEN": {
   "s": "ENTWURF",
   "t": "Interessen"
+ },
+ "UI-PROFIL-KEINE-ANGABE": {
+  "s": "ENTWURF",
+  "t": "Keine Angabe"
+ },
+ "UI-PROFIL-KINKS": {
+  "s": "ENTWURF",
+  "t": "Kinks und Fetische"
+ },
+ "UI-PROFIL-KINKS-ERKL": {
+  "s": "ENTWURF",
+  "t": "Ganz freiwillig. Was du auswählst, steht sichtbar in deinem Profil. Du kannst es jederzeit wieder entfernen."
+ },
+ "UI-PROFIL-KOERPERTYP": {
+  "s": "ENTWURF",
+  "t": "Körpertyp"
  },
  "UI-PROFIL-NAME": {
   "s": "ENTWURF",
@@ -1735,11 +3103,31 @@
   "s": "ENTWURF",
   "t": "Nicht mehr merken"
  },
+ "UI-PROFIL-POSITION": {
+  "s": "ENTWURF",
+  "t": "Position"
+ },
+ "UI-PROFIL-REISEN": {
+  "s": "ENTWURF",
+  "t": "Reisen"
+ },
  "UI-PROFIL-SCHREIBEN": {
   "s": "ENTWURF",
   "t": "Schreiben"
  },
  "UI-PROFIL-SO-SEHEN-DICH": {
+  "s": "ENTWURF",
+  "t": "So sehen dich andere"
+ },
+ "UI-PROFIL-TIPPEN-BEARBEITEN": {
+  "s": "ENTWURF",
+  "t": "Tippen zum Bearbeiten"
+ },
+ "UI-PROFIL-UEBER-MICH": {
+  "s": "ENTWURF",
+  "t": "Über mich"
+ },
+ "UI-PROFIL-VORSCHAU": {
   "s": "ENTWURF",
   "t": "So sehen dich andere"
  },
@@ -1766,6 +3154,66 @@
  "UI-PRUEFUNG-WARUM": {
   "s": "ENTWURF",
   "t": "Warum?"
+ },
+ "UI-RASTER-ANWENDEN": {
+  "s": "ENTWURF",
+  "t": "Übernehmen"
+ },
+ "UI-RASTER-ENDE": {
+  "s": "ENTWURF",
+  "t": "Das sind alle."
+ },
+ "UI-RASTER-ERWEITERN": {
+  "s": "ENTWURF",
+  "t": "Auch Profile außerhalb meines Radius anzeigen"
+ },
+ "UI-RASTER-ERWEITERN-ERKL": {
+  "s": "ENTWURF",
+  "t": "Sind es weniger als {zahl}, zeigen wir darunter Profile weiter weg — getrennt, bis höchstens {km} km."
+ },
+ "UI-RASTER-LAEDT": {
+  "s": "ENTWURF",
+  "t": "Lädt weitere Profile …"
+ },
+ "UI-RASTER-LEER": {
+  "s": "ENTWURF",
+  "t": "Im Umkreis von {km} km ist gerade niemand zu sehen."
+ },
+ "UI-RASTER-LEER-ERWEITERN": {
+  "s": "ENTWURF",
+  "t": "Umkreis vergrößern"
+ },
+ "UI-RASTER-NEU": {
+  "s": "ENTWURF",
+  "t": "Neu"
+ },
+ "UI-RASTER-NEU-REIHE": {
+  "s": "ENTWURF",
+  "t": "Neu in deiner Nähe"
+ },
+ "UI-RASTER-RADIUS": {
+  "s": "ENTWURF",
+  "t": "Umkreis"
+ },
+ "UI-RASTER-RADIUS-ERKL": {
+  "s": "ENTWURF",
+  "t": "Alle, die in diesem Umkreis sichtbar sind, siehst du immer — nur die Reihenfolge wird gemischt."
+ },
+ "UI-RASTER-RADIUS-WERT": {
+  "s": "ENTWURF",
+  "t": "{km} km"
+ },
+ "UI-RASTER-TRAVEL": {
+  "s": "ENTWURF",
+  "t": "Du stöberst in {ort}."
+ },
+ "UI-RASTER-TRENNER": {
+  "s": "ENTWURF",
+  "t": "Das war’s in {x} km. Etwas weiter weg (bis {y} km):"
+ },
+ "UI-RASTER-UMKREIS-TITEL": {
+  "s": "ENTWURF",
+  "t": "Umkreis"
  },
  "UI-RECHT-BEDINGUNGEN": {
   "s": "ENTWURF",
@@ -1802,6 +3250,86 @@
  "UI-RECHT-KONTAKTSTELLEN-TEXT": {
   "s": "ENTWURF",
   "t": "Kontaktstelle für Behörden (Art. 11 DSA) und für Nutzerinnen und Nutzer (Art. 12 DSA): über „Hilfe und Kontakt“. Sprachen: Deutsch, Englisch. [Adresse vor dem Start einzutragen]"
+ },
+ "UI-REISE-DATUM": {
+  "s": "ENTWURF",
+  "t": "Bitte prüf die Daten."
+ },
+ "UI-REISE-ZEILE": {
+  "s": "ENTWURF",
+  "t": "{ort} · {von}–{bis}"
+ },
+ "UI-REISE-ZU-LANG": {
+  "s": "ENTWURF",
+  "t": "Eine Reise dauert höchstens {tage} Tage."
+ },
+ "UI-REISEN": {
+  "s": "ENTWURF",
+  "t": "Meine Reisen"
+ },
+ "UI-REISEN-BIS": {
+  "s": "ENTWURF",
+  "t": "Abreise"
+ },
+ "UI-REISEN-ERKL": {
+  "s": "ENTWURF",
+  "t": "Trag ein, wann du wo bist. Ab {tage} Tagen vor der Anreise erscheinst du dort unter „Bald in der Gegend“ — mit deiner echten Entfernung."
+ },
+ "UI-REISEN-LEER": {
+  "s": "ENTWURF",
+  "t": "Keine Reisen eingetragen."
+ },
+ "UI-REISEN-MAX": {
+  "s": "ENTWURF",
+  "t": "Höchstens {max} Reisen."
+ },
+ "UI-REISEN-NEU": {
+  "s": "ENTWURF",
+  "t": "Reise eintragen"
+ },
+ "UI-REISEN-OEFFENTLICH": {
+  "s": "ENTWURF",
+  "t": "Im Profil zeigen"
+ },
+ "UI-REISEN-OEFFENTLICH-ERKL": {
+  "s": "ENTWURF",
+  "t": "Aus: Die Reise bleibt nur für dich, du erscheinst dort nicht als „bald in der Gegend“."
+ },
+ "UI-REISEN-VON": {
+  "s": "ENTWURF",
+  "t": "Anreise"
+ },
+ "UI-RICHTUNG-N": {
+  "s": "ENTWURF",
+  "t": "Nord"
+ },
+ "UI-RICHTUNG-NO": {
+  "s": "ENTWURF",
+  "t": "Nordost"
+ },
+ "UI-RICHTUNG-NW": {
+  "s": "ENTWURF",
+  "t": "Nordwest"
+ },
+ "UI-RICHTUNG-O": {
+  "s": "ENTWURF",
+  "t": "Ost"
+ },
+ "UI-RICHTUNG-S": {
+  "s": "ENTWURF",
+  "t": "Süd"
+ },
+ "UI-RICHTUNG-SO": {
+  "s": "ENTWURF",
+  "t": "Südost"
+ },
+ "UI-RICHTUNG-SW": {
+  "s": "ENTWURF",
+  "t": "Südwest"
+ },
+ "UI-RICHTUNG-W": {
+  "s": "ENTWURF",
+  "t": "West"
  },
  "UI-RUECKMELDUNG-ANTWORT": {
   "s": "ENTWURF",
@@ -1907,6 +3435,90 @@
   "s": "ENTWURF",
   "t": "Eine Entscheidung zu deinem Konto"
  },
+ "UI-SPRACHE": {
+  "s": "ENTWURF",
+  "t": "Sprachnachricht"
+ },
+ "UI-SPRACHE-ABBRECHEN": {
+  "s": "ENTWURF",
+  "t": "Abbrechen"
+ },
+ "UI-SPRACHE-ANHOEREN": {
+  "s": "ENTWURF",
+  "t": "Anhören"
+ },
+ "UI-SPRACHE-AUS": {
+  "s": "ENTWURF",
+  "t": "Diese Person empfängt gerade keine Sprachnachrichten."
+ },
+ "UI-SPRACHE-BROWSER": {
+  "s": "ENTWURF",
+  "t": "Dieser Browser kann keine Aufnahmen machen."
+ },
+ "UI-SPRACHE-ERST-ANTWORT": {
+  "s": "ENTWURF",
+  "t": "Sprachnachrichten gehen, sobald er geantwortet hat."
+ },
+ "UI-SPRACHE-FORMAT": {
+  "s": "ENTWURF",
+  "t": "Diese Aufnahme können wir nicht verarbeiten."
+ },
+ "UI-SPRACHE-HALTEN": {
+  "s": "ENTWURF",
+  "t": "Zum Aufnehmen gedrückt halten — oder tippen zum Starten"
+ },
+ "UI-SPRACHE-HTTPS": {
+  "s": "ENTWURF",
+  "t": "Aufnahmen gehen nur über eine sichere Verbindung (https)."
+ },
+ "UI-SPRACHE-LEER": {
+  "s": "ENTWURF",
+  "t": "Die Aufnahme ist leer."
+ },
+ "UI-SPRACHE-LOESCHEN": {
+  "s": "ENTWURF",
+  "t": "Löschen"
+ },
+ "UI-SPRACHE-MIKRO-ABGELEHNT": {
+  "s": "ENTWURF",
+  "t": "Das Mikrofon ist gesperrt. Erlaube es in den Einstellungen deines Browsers für diese Seite."
+ },
+ "UI-SPRACHE-MIKRO-FEHLT": {
+  "s": "ENTWURF",
+  "t": "Kein Mikrofon gefunden."
+ },
+ "UI-SPRACHE-NICHT-MOEGLICH": {
+  "s": "ENTWURF",
+  "t": "Sprachnachrichten sind gerade nicht möglich."
+ },
+ "UI-SPRACHE-NIMMT-AUF": {
+  "s": "ENTWURF",
+  "t": "Aufnahme läuft · {zeit}"
+ },
+ "UI-SPRACHE-SENDEN": {
+  "s": "ENTWURF",
+  "t": "Senden"
+ },
+ "UI-SPRACHE-STOPP": {
+  "s": "ENTWURF",
+  "t": "Stopp"
+ },
+ "UI-SPRACHE-TEMPO": {
+  "s": "ENTWURF",
+  "t": "Tempo {tempo}"
+ },
+ "UI-SPRACHE-WISCHEN": {
+  "s": "ENTWURF",
+  "t": "‹ Zum Abbrechen wischen"
+ },
+ "UI-SPRACHE-ZU-GROSS": {
+  "s": "ENTWURF",
+  "t": "Die Aufnahme ist zu groß (höchstens {mb} MB)."
+ },
+ "UI-SPRACHE-ZU-LANG": {
+  "s": "ENTWURF",
+  "t": "Höchstens {sekunden} Sekunden."
+ },
  "UI-STANDORT-ANDERE-SEHEN": {
   "s": "ENTWURF",
   "t": "Andere sehen nur: unter 1 km · 1–3 km · 3–10 km · über 10 km."
@@ -1918,6 +3530,14 @@
  "UI-STANDORT-STADT-ERKL": {
   "s": "ENTWURF",
   "t": "Ohne Standort zeigen wir Profile aus dieser Stadt — ohne Entfernungen."
+ },
+ "UI-STARTER-ANDERE": {
+  "s": "ENTWURF",
+  "t": "Andere Vorschläge"
+ },
+ "UI-STARTER-TITEL": {
+  "s": "ENTWURF",
+  "t": "Ideen für den Anfang"
  },
  "UI-STUFE-AUS": {
   "s": "ENTWURF",
@@ -1959,9 +3579,49 @@
   "s": "ENTWURF",
   "t": "Diese Prüfung hast du schon bestanden."
  },
+ "UI-SUCHE": {
+  "s": "ENTWURF",
+  "t": "Suchen"
+ },
+ "UI-SUCHE-ERKL": {
+  "s": "ENTWURF",
+  "t": "Gesucht wird im Umkreis von {km} km — nur Profile, die gefunden werden möchten. Die Filter gelten auch hier."
+ },
+ "UI-SUCHE-KEINE": {
+  "s": "ENTWURF",
+  "t": "Niemand mit diesem Namen im Umkreis von {km} km."
+ },
+ "UI-SUCHE-PLATZHALTER": {
+  "s": "ENTWURF",
+  "t": "Name"
+ },
+ "UI-SUCHE-TITEL": {
+  "s": "ENTWURF",
+  "t": "Namen suchen"
+ },
+ "UI-SUCHE-TREFFER": {
+  "s": "ENTWURF",
+  "t": "{zahl} Treffer"
+ },
+ "UI-SUCHE-ZU-KURZ": {
+  "s": "ENTWURF",
+  "t": "Mindestens {zahl} Zeichen."
+ },
  "UI-SYS-": {
   "s": "ENTWURF",
   "t": ""
+ },
+ "UI-SYS-DATE-MATCH": {
+  "s": "ENTWURF",
+  "t": "Ihr habt euch in Cruizy Date gematcht."
+ },
+ "UI-SYS-DATE-MATCH-BESTEHEND": {
+  "s": "ENTWURF",
+  "t": "Ihr habt euch auch in Cruizy Date gematcht."
+ },
+ "UI-SYS-DATE-UNMATCH": {
+  "s": "ENTWURF",
+  "t": "Das Date-Match wurde aufgelöst."
  },
  "UI-SYS-GESICHT-AN": {
   "s": "ENTWURF",
@@ -1987,7 +3647,15 @@
   "s": "ENTWURF",
   "t": "Chats"
  },
+ "UI-TAB-DATE": {
+  "s": "ENTWURF",
+  "t": "Date"
+ },
  "UI-TAB-ICH": {
+  "s": "ENTWURF",
+  "t": "Ich"
+ },
+ "UI-TAB-ICH-PROFIL": {
   "s": "ENTWURF",
   "t": "Ich"
  },
@@ -2023,6 +3691,34 @@
   "s": "ENTWURF",
   "t": "So"
  },
+ "UI-TARN-ERKL": {
+  "s": "ENTWURF",
+  "t": "Symbol und Name auf dem Home-Bildschirm — und die App, die nach dem Verstecken erscheint. Beides passt zusammen, damit nichts auffällt."
+ },
+ "UI-TARN-GESTE-A": {
+  "s": "ENTWURF",
+  "t": "Überschrift „Notizen“ lange drücken und die PIN eingeben."
+ },
+ "UI-TARN-GESTE-B": {
+  "s": "ENTWURF",
+  "t": "Die PIN in den Rechner tippen und „=“ drücken."
+ },
+ "UI-TARN-GESTE-C": {
+  "s": "ENTWURF",
+  "t": "Die große Temperatur lange drücken und die PIN eingeben."
+ },
+ "UI-TARN-GESTE-D": {
+  "s": "ENTWURF",
+  "t": "Den Monatsnamen lange drücken und die PIN eingeben."
+ },
+ "UI-TARN-TITEL": {
+  "s": "ENTWURF",
+  "t": "Tarnung"
+ },
+ "UI-TARN-ZURUECK": {
+  "s": "ENTWURF",
+  "t": "Zurück in die App:"
+ },
  "UI-TEAM-KENNUNG-VERGEBEN": {
   "s": "ENTWURF",
   "t": "Diese Kennung ist schon vergeben."
@@ -2039,6 +3735,98 @@
   "s": "ENTWURF",
   "t": "Das neue Passwort muss sich vom alten unterscheiden."
  },
+ "UI-TEST-AKTIVIEREN": {
+  "s": "ENTWURF",
+  "t": "Erinnerung einschalten"
+ },
+ "UI-TEST-AUS": {
+  "s": "ENTWURF",
+  "t": "Erinnerung ausschalten"
+ },
+ "UI-TEST-AUS-FERTIG": {
+  "s": "ENTWURF",
+  "t": "Ausgeschaltet. Deine Angaben sind gelöscht."
+ },
+ "UI-TEST-BEREICH": {
+  "s": "ENTWURF",
+  "t": "Gesundheit & Tests"
+ },
+ "UI-TEST-DATEN": {
+  "s": "ENTWURF",
+  "t": "Gespeichert sind nur: Intervall, Datum der nächsten Erinnerung, Zeitpunkt deiner Einwilligung."
+ },
+ "UI-TEST-EINWILLIGUNG": {
+  "s": "ENTWURF",
+  "t": "Ich willige ein, dass Cruizy mein Erinnerungsintervall und das Datum der nächsten Erinnerung speichert, um mich zu erinnern. Diese Angaben sind nur für mich sichtbar, werden nicht im Profil angezeigt und nie weitergegeben. Ich kann das jederzeit ausschalten, dann werden die Daten gelöscht."
+ },
+ "UI-TEST-ERLEDIGT": {
+  "s": "ENTWURF",
+  "t": "Erledigt"
+ },
+ "UI-TEST-GERADE": {
+  "s": "ENTWURF",
+  "t": "Ich war gerade testen"
+ },
+ "UI-TEST-INTERVALL": {
+  "s": "ENTWURF",
+  "t": "Wie oft?"
+ },
+ "UI-TEST-KANAL": {
+  "s": "ENTWURF",
+  "t": "Wähle mindestens einen Weg."
+ },
+ "UI-TEST-KANAL-APP": {
+  "s": "ENTWURF",
+  "t": "Als Hinweis in der App"
+ },
+ "UI-TEST-KANAL-PUSH": {
+  "s": "ENTWURF",
+  "t": "Per Push-Mitteilung"
+ },
+ "UI-TEST-MONATE-1": {
+  "s": "ENTWURF",
+  "t": "jeden Monat"
+ },
+ "UI-TEST-MONATE-3": {
+  "s": "ENTWURF",
+  "t": "alle 3 Monate"
+ },
+ "UI-TEST-MONATE-6": {
+  "s": "ENTWURF",
+  "t": "alle 6 Monate"
+ },
+ "UI-TEST-NAECHSTE": {
+  "s": "ENTWURF",
+  "t": "Nächste Erinnerung: {datum}"
+ },
+ "UI-TEST-PUSH": {
+  "s": "ENTWURF",
+  "t": "Du hast eine Erinnerung."
+ },
+ "UI-TEST-SCHALTER": {
+  "s": "ENTWURF",
+  "t": "Erinnere mich an einen Test"
+ },
+ "UI-TEST-SCHALTER-ERKL": {
+  "s": "ENTWURF",
+  "t": "Auf sexuell übertragbare Infektionen. Freiwillig, nur für dich sichtbar, nie im Profil."
+ },
+ "UI-TEST-TESTSTELLEN": {
+  "s": "ENTWURF",
+  "t": "Teststellen finden"
+ },
+ "UI-TEST-TEXT": {
+  "s": "ENTWURF",
+  "t": "Regelmäßig testen schützt dich und andere."
+ },
+ "UI-TEST-TITEL": {
+  "s": "ENTWURF",
+  "t": "Zeit für deinen Check!"
+ },
+ "UI-TEST-WOCHE": {
+  "s": "ENTWURF",
+  "t": "In einer Woche erinnern"
+ },
  "UI-TESTBETRIEB-EINLADUNG": {
   "s": "ENTWURF",
   "t": "Wir sind gerade im Testbetrieb. Zum Registrieren brauchst du einen Einladungscode."
@@ -2046,6 +3834,74 @@
  "UI-TESTBETRIEB-HINWEIS": {
   "s": "ENTWURF",
   "t": "Testbetrieb — bitte nur erfundene Angaben und keine echten Fotos von dir."
+ },
+ "UI-TRAVEL-ABO": {
+  "s": "ENTWURF",
+  "t": "Travel gibt es mit PLUS."
+ },
+ "UI-TRAVEL-AKTIV": {
+  "s": "ENTWURF",
+  "t": "Du stöberst gerade in {ort}."
+ },
+ "UI-TRAVEL-BALD-KURZ": {
+  "s": "ENTWURF",
+  "t": "Bald in {ort}"
+ },
+ "UI-TRAVEL-BALD-REIHE": {
+  "s": "ENTWURF",
+  "t": "Bald in der Gegend"
+ },
+ "UI-TRAVEL-BEENDEN": {
+  "s": "ENTWURF",
+  "t": "Zurück zu meinem Ort"
+ },
+ "UI-TRAVEL-KEIN-ORT": {
+  "s": "ENTWURF",
+  "t": "Keinen passenden Ort gefunden. Versuch es mit der nächsten größeren Stadt."
+ },
+ "UI-TRAVEL-MODUS": {
+  "s": "ENTWURF",
+  "t": "Travel-Modus"
+ },
+ "UI-TRAVEL-MODUS-ERKL": {
+  "s": "ENTWURF",
+  "t": "Stöbere an einem anderen Ort und schreib Leuten dort. Sie sehen, wie weit du wirklich weg bist — und ein Reise-Zeichen. So wird niemand getäuscht."
+ },
+ "UI-TRAVEL-ORT": {
+  "s": "ENTWURF",
+  "t": "Ort suchen"
+ },
+ "UI-TRAVEL-ORT-FEHLT": {
+  "s": "ENTWURF",
+  "t": "Diesen Ort kennen wir nicht."
+ },
+ "UI-TRAVEL-ORT-HINWEIS": {
+  "s": "ENTWURF",
+  "t": "Nur ein Dorf, eine Stadt oder ein Stadtteil — keine Region wie „Bayern“. Sonst können wir dich dort nicht als „bald in der Gegend“ zeigen."
+ },
+ "UI-TRAVEL-STARTEN": {
+  "s": "ENTWURF",
+  "t": "Hier stöbern"
+ },
+ "UI-TRAVEL-STOEBERT": {
+  "s": "ENTWURF",
+  "t": "stöbert gerade in {ort}"
+ },
+ "UI-TRAVEL-TITEL": {
+  "s": "ENTWURF",
+  "t": "Travel & Reisen"
+ },
+ "UI-TRAVEL-ZEICHEN-AUTO": {
+  "s": "ENTWURF",
+  "t": "unterwegs"
+ },
+ "UI-TRAVEL-ZEICHEN-FLUG": {
+  "s": "ENTWURF",
+  "t": "auf Reisen"
+ },
+ "UI-TRAVEL-ZU-GROB": {
+  "s": "ENTWURF",
+  "t": "„{ort}“ ist zu grob. Gib ein Dorf, eine Stadt oder einen Stadtteil ein."
  },
  "UI-TREFFPUNKT-SPAETER": {
   "s": "ENTWURF",
@@ -2075,9 +3931,729 @@
   "s": "ENTWURF",
   "t": "Diese Version gibt es nicht als Release."
  },
+ "UI-VA-ABBRECHEN": {
+  "s": "ENTWURF",
+  "t": "Abbrechen"
+ },
+ "UI-VA-ABGELEHNT": {
+  "s": "ENTWURF",
+  "t": "Der Veranstalter hat deine Anfrage nicht angenommen."
+ },
+ "UI-VA-ABGELEHNT-KURZ": {
+  "s": "ENTWURF",
+  "t": "nicht angenommen"
+ },
+ "UI-VA-ABGESAGT-N": {
+  "s": "ENTWURF",
+  "t": "Abgesagt"
+ },
+ "UI-VA-ABLEHNEN": {
+  "s": "ENTWURF",
+  "t": "Nicht annehmen"
+ },
+ "UI-VA-ABSAGE-NOTIZ": {
+  "s": "ENTWURF",
+  "t": "Kurzer Hinweis für die Gäste (freiwillig)"
+ },
+ "UI-VA-ABSAGEN": {
+  "s": "ENTWURF",
+  "t": "Absagen"
+ },
+ "UI-VA-ABSAGEN-BIS": {
+  "s": "ENTWURF",
+  "t": "Absagen bis {zeit}"
+ },
+ "UI-VA-ABSAGEN-FRAGE": {
+  "s": "ENTWURF",
+  "t": "Wirklich absagen? Dein Platz wird für andere frei."
+ },
+ "UI-VA-ABSAGEN-VERANSTALTUNG": {
+  "s": "ENTWURF",
+  "t": "Veranstaltung absagen"
+ },
+ "UI-VA-ABSAGEN-VERANSTALTUNG-ERKL": {
+  "s": "ENTWURF",
+  "t": "Alle Gäste bekommen eine Mitteilung. Das lässt sich nicht rückgängig machen."
+ },
+ "UI-VA-ADRESSE-NACH-ZUSAGE": {
+  "s": "ENTWURF",
+  "t": "Adresse nach deiner Zusage"
+ },
+ "UI-VA-ANFRAGE-GESENDET": {
+  "s": "ENTWURF",
+  "t": "Anfrage gesendet. Du bekommst Bescheid."
+ },
+ "UI-VA-ANFRAGE-OFFEN": {
+  "s": "ENTWURF",
+  "t": "Anfrage offen"
+ },
+ "UI-VA-ANFRAGE-ZURUECK": {
+  "s": "ENTWURF",
+  "t": "Zurückziehen"
+ },
+ "UI-VA-ANFRAGEN": {
+  "s": "ENTWURF",
+  "t": "Teilnahme anfragen"
+ },
+ "UI-VA-ANGEFRAGT": {
+  "s": "ENTWURF",
+  "t": "Angefragt"
+ },
+ "UI-VA-ANNAHME-ERKL": {
+  "s": "ENTWURF",
+  "t": "Der Veranstalter nimmt die Gäste selbst an. Du bekommst Bescheid."
+ },
+ "UI-VA-ANNEHMEN": {
+  "s": "ENTWURF",
+  "t": "Annehmen"
+ },
+ "UI-VA-ANSEHEN": {
+  "s": "ENTWURF",
+  "t": "Ansehen"
+ },
+ "UI-VA-AUF-KARTE": {
+  "s": "ENTWURF",
+  "t": "Auf der Karte zeigen"
+ },
+ "UI-VA-AUSGEBUCHT": {
+  "s": "ENTWURF",
+  "t": "Ausgebucht"
+ },
+ "UI-VA-BEANTRAGT": {
+  "s": "ENTWURF",
+  "t": "Verifizierung beantragt"
+ },
+ "UI-VA-BEANTRAGT-ERKL": {
+  "s": "ENTWURF",
+  "t": "Wir melden uns. Bis dahin kannst du bis zu {max} Veranstaltungen zur Prüfung einreichen."
+ },
+ "UI-VA-BEARBEITEN": {
+  "s": "ENTWURF",
+  "t": "Bearbeiten"
+ },
+ "UI-VA-BEGINN-VORBEI": {
+  "s": "ENTWURF",
+  "t": "Der Beginn liegt in der Vergangenheit."
+ },
+ "UI-VA-BEREICH": {
+  "s": "ENTWURF",
+  "t": "Veranstalter"
+ },
+ "UI-VA-BEREICH-ERKL": {
+  "s": "ENTWURF",
+  "t": "Veranstaltungen eintragen, Gäste, Verifizierung"
+ },
+ "UI-VA-BILDER-MAX": {
+  "s": "ENTWURF",
+  "t": "Höchstens {max} Bilder je Veranstaltung."
+ },
+ "UI-VA-CHAT-ERKL-GAST": {
+  "s": "ENTWURF",
+  "t": "Fragen zur Veranstaltung? Hier schreibst du direkt dem Veranstalter."
+ },
+ "UI-VA-CHAT-ERKL-VERANSTALTER": {
+  "s": "ENTWURF",
+  "t": "Chat mit einem angenommenen Gast deiner Veranstaltung."
+ },
+ "UI-VA-CHAT-MIT-VERANSTALTER": {
+  "s": "ENTWURF",
+  "t": "Dem Veranstalter schreiben"
+ },
+ "UI-VA-CHAT-ZU": {
+  "s": "ENTWURF",
+  "t": "Dieser Chat ist geschlossen."
+ },
+ "UI-VA-CHATS": {
+  "s": "ENTWURF",
+  "t": "Veranstaltungen"
+ },
+ "UI-VA-CHATS-ERKL": {
+  "s": "ENTWURF",
+  "t": "Chats zwischen Veranstaltern und angenommenen Gästen — getrennt von deinen privaten Chats."
+ },
+ "UI-VA-CHATS-LEER": {
+  "s": "ENTWURF",
+  "t": "Noch keine Chats zu Veranstaltungen."
+ },
+ "UI-VA-DABEI": {
+  "s": "ENTWURF",
+  "t": "Dabei"
+ },
+ "UI-VA-DEINE": {
+  "s": "ENTWURF",
+  "t": "Deine"
+ },
+ "UI-VA-DEINE-ERKL": {
+  "s": "ENTWURF",
+  "t": "Das ist deine Veranstaltung."
+ },
+ "UI-VA-DETAILS": {
+  "s": "ENTWURF",
+  "t": "Zur Veranstaltung"
+ },
+ "UI-VA-DU-BIST-DABEI": {
+  "s": "ENTWURF",
+  "t": "Du bist dabei"
+ },
+ "UI-VA-DU-VERANSTALTEST": {
+  "s": "ENTWURF",
+  "t": "Du veranstaltest etwas?"
+ },
+ "UI-VA-DU-VERANSTALTEST-ERKL": {
+  "s": "ENTWURF",
+  "t": "Party, Konzert, Stammtisch oder Brunch — trag es ein."
+ },
+ "UI-VA-EIGENE": {
+  "s": "ENTWURF",
+  "t": "Das ist deine eigene Veranstaltung."
+ },
+ "UI-VA-EINGEREICHT": {
+  "s": "ENTWURF",
+  "t": "geprüft vom Cruizy-Team"
+ },
+ "UI-VA-EINREICHEN": {
+  "s": "ENTWURF",
+  "t": "Veranstaltung einreichen"
+ },
+ "UI-VA-EINREICHUNG-HINWEIS": {
+  "s": "ENTWURF",
+  "t": "Du bist (noch) nicht als Veranstalter verifiziert. Deine Veranstaltung geht zuerst an das Cruizy-Team und ist erst nach der Freigabe sichtbar."
+ },
+ "UI-VA-EINREICHUNGEN-MAX": {
+  "s": "ENTWURF",
+  "t": "Du hast schon {max} Veranstaltungen in Prüfung. Warte bitte, bis das Team entschieden hat."
+ },
+ "UI-VA-EINREICHUNGEN-OFFEN": {
+  "s": "ENTWURF",
+  "t": "{zahl} von {max} Einreichungen in Prüfung"
+ },
+ "UI-VA-EINTRAGEN": {
+  "s": "ENTWURF",
+  "t": "Veranstaltung eintragen"
+ },
+ "UI-VA-EMPFOHLEN": {
+  "s": "ENTWURF",
+  "t": "Empfohlen von Cruizy"
+ },
+ "UI-VA-ENDE": {
+  "s": "ENTWURF",
+  "t": "Das Ende muss nach dem Beginn liegen."
+ },
+ "UI-VA-ERST-ABSAGEN": {
+  "s": "ENTWURF",
+  "t": "Sag die Veranstaltung zuerst ab — die Gäste sollen es erfahren."
+ },
+ "UI-VA-F-ADRESSE": {
+  "s": "ENTWURF",
+  "t": "Adresse"
+ },
+ "UI-VA-F-ADRESSE-OEFFENTLICH": {
+  "s": "ENTWURF",
+  "t": "Für alle sichtbar."
+ },
+ "UI-VA-F-ADRESSE-PRIVAT": {
+  "s": "ENTWURF",
+  "t": "Sehen nur Gäste, die dabei sind. Auf der Karte steht nur die ungefähre Gegend."
+ },
+ "UI-VA-F-ANNAHME": {
+  "s": "ENTWURF",
+  "t": "Gäste selbst annehmen"
+ },
+ "UI-VA-F-ANNAHME-ERKL": {
+  "s": "ENTWURF",
+  "t": "Aus: Zusagen gelten sofort. An: Gäste fragen an, du nimmst an oder lehnst ab."
+ },
+ "UI-VA-F-BEGINN": {
+  "s": "ENTWURF",
+  "t": "Beginn"
+ },
+ "UI-VA-F-BESCHREIBUNG": {
+  "s": "ENTWURF",
+  "t": "Beschreibung"
+ },
+ "UI-VA-F-BESCHREIBUNG-ERKL": {
+  "s": "ENTWURF",
+  "t": "Was erwartet die Gäste? Musik, Ablauf, Einlass, Awareness …"
+ },
+ "UI-VA-F-BILDER": {
+  "s": "ENTWURF",
+  "t": "Bilder (bis zu {max})"
+ },
+ "UI-VA-F-BILDER-ERKL": {
+  "s": "ENTWURF",
+  "t": "Flyer, Location, Stimmung. Keine erkennbaren Personen ohne deren Einverständnis. Alle Metadaten werden entfernt."
+ },
+ "UI-VA-F-DRESSCODE": {
+  "s": "ENTWURF",
+  "t": "Dresscode (freiwillig)"
+ },
+ "UI-VA-F-EINSTUFUNG": {
+  "s": "ENTWURF",
+  "t": "Einstufung"
+ },
+ "UI-VA-F-EINSTUFUNG-GELB": {
+  "s": "ENTWURF",
+  "t": "Erotik angedeutet"
+ },
+ "UI-VA-F-EINSTUFUNG-GRUEN": {
+  "s": "ENTWURF",
+  "t": "Allgemein"
+ },
+ "UI-VA-F-EINSTUFUNG-ROT": {
+  "s": "ENTWURF",
+  "t": "Explizit — nur für Konten mit Altersprüfung sichtbar"
+ },
+ "UI-VA-F-ENDE": {
+  "s": "ENTWURF",
+  "t": "Ende"
+ },
+ "UI-VA-F-FRIST": {
+  "s": "ENTWURF",
+  "t": "Absagen möglich bis"
+ },
+ "UI-VA-F-FRIST-ERKL": {
+  "s": "ENTWURF",
+  "t": "Danach können angenommene Gäste nicht mehr selbst absagen, sondern nur dir schreiben."
+ },
+ "UI-VA-F-FRIST-KEINE": {
+  "s": "ENTWURF",
+  "t": "bis zum Beginn"
+ },
+ "UI-VA-F-FRIST-STD": {
+  "s": "ENTWURF",
+  "t": "{std} Std. vorher"
+ },
+ "UI-VA-F-FRIST-TAGE": {
+  "s": "ENTWURF",
+  "t": "{tage} Tage vorher"
+ },
+ "UI-VA-F-GAESTE": {
+  "s": "ENTWURF",
+  "t": "Gäste"
+ },
+ "UI-VA-F-KATEGORIEN": {
+  "s": "ENTWURF",
+  "t": "Kategorien (bis zu {max})"
+ },
+ "UI-VA-F-MEHR": {
+  "s": "ENTWURF",
+  "t": "Weitere Angaben"
+ },
+ "UI-VA-F-OEFFENTLICH": {
+  "s": "ENTWURF",
+  "t": "Öffentlicher Veranstaltungsort"
+ },
+ "UI-VA-F-OEFFENTLICH-ERKL": {
+  "s": "ENTWURF",
+  "t": "Club, Bar, Konzerthaus, Park … Dann stehen Adresse und genauer Punkt für alle sichtbar. Bei privaten Orten: aus lassen."
+ },
+ "UI-VA-F-ORT": {
+  "s": "ENTWURF",
+  "t": "Ort"
+ },
+ "UI-VA-F-ORT-BISHER": {
+  "s": "ENTWURF",
+  "t": "Bisher: {ort}. Wähl den Ort zum Speichern noch einmal."
+ },
+ "UI-VA-F-PLAETZE": {
+  "s": "ENTWURF",
+  "t": "Plätze (freiwillig)"
+ },
+ "UI-VA-F-PLAETZE-ERKL": {
+  "s": "ENTWURF",
+  "t": "Wie viele Gäste passen? Die Zahl der freien Plätze wird angezeigt."
+ },
+ "UI-VA-F-PREIS": {
+  "s": "ENTWURF",
+  "t": "Eintritt (freiwillig)"
+ },
+ "UI-VA-F-PREIS-BSP": {
+  "s": "ENTWURF",
+  "t": "z. B. 10 € Abendkasse, frei"
+ },
+ "UI-VA-F-TITEL": {
+  "s": "ENTWURF",
+  "t": "Titel"
+ },
+ "UI-VA-F-ZEIT-ERKL": {
+  "s": "ENTWURF",
+  "t": "Bis zu {monate} Monate im Voraus."
+ },
+ "UI-VA-FORM-ART": {
+  "s": "ENTWURF",
+  "t": "Art"
+ },
+ "UI-VA-FORM-ERKL": {
+  "s": "ENTWURF",
+  "t": "Diese Angaben sieht nur das Cruizy-Team. Öffentlich erscheint nur der Name."
+ },
+ "UI-VA-FORM-MAIL": {
+  "s": "ENTWURF",
+  "t": "Mail-Adresse für Rückfragen"
+ },
+ "UI-VA-FORM-MAIL-ERKL": {
+  "s": "ENTWURF",
+  "t": "Am besten eine Adresse auf der Domain deiner Website."
+ },
+ "UI-VA-FORM-NAME": {
+  "s": "ENTWURF",
+  "t": "Name (Bar, Club, Partyreihe …)"
+ },
+ "UI-VA-FORM-NOTIZ": {
+  "s": "ENTWURF",
+  "t": "Was sollen wir wissen? (freiwillig)"
+ },
+ "UI-VA-FORM-NOTIZ-ERKL": {
+  "s": "ENTWURF",
+  "t": "Zum Beispiel: seit wann es euch gibt, wo man euch findet."
+ },
+ "UI-VA-FORM-STADT": {
+  "s": "ENTWURF",
+  "t": "Stadt"
+ },
+ "UI-VA-FORM-WEBSITE": {
+  "s": "ENTWURF",
+  "t": "Website (freiwillig)"
+ },
+ "UI-VA-FORM-WEBSITE-ERKL": {
+  "s": "ENTWURF",
+  "t": "Hilft beim Prüfen — etwa über das Impressum."
+ },
+ "UI-VA-FRIST-LANG": {
+  "s": "ENTWURF",
+  "t": "Die Absagefrist darf höchstens {std} Stunden betragen."
+ },
+ "UI-VA-FRIST-VORBEI": {
+  "s": "ENTWURF",
+  "t": "Die Absagefrist ist vorbei. Schreib dem Veranstalter, wenn du doch nicht kommen kannst."
+ },
+ "UI-VA-GAESTE-LEER": {
+  "s": "ENTWURF",
+  "t": "Hier ist noch niemand."
+ },
+ "UI-VA-GESPEICHERT-PRUEFUNG": {
+  "s": "ENTWURF",
+  "t": "Eingereicht — das Team prüft sie jetzt."
+ },
+ "UI-VA-GESPEICHERT-SICHTBAR": {
+  "s": "ENTWURF",
+  "t": "Gespeichert — deine Veranstaltung ist sichtbar."
+ },
+ "UI-VA-HAFTUNG": {
+  "s": "ENTWURF",
+  "t": "Veranstaltungen werden von den jeweiligen Veranstaltern eingestellt. Cruizy organisiert sie nicht, ist nicht Vertragspartner und übernimmt keine Haftung für Durchführung, Angaben, Preise oder Sicherheit vor Ort. Bei Problemen: melden."
+ },
+ "UI-VA-HAFTUNG-VERANSTALTER": {
+  "s": "ENTWURF",
+  "t": "Du bist Veranstalter und verantwortlich für die Veranstaltung, deine Angaben und die Einhaltung der Gesetze (u. a. Jugendschutz, Hausrecht, Lärmschutz). Cruizy stellt nur die Fläche bereit. Keine Privatadressen anderer Personen, keine Versprechen, die du nicht halten kannst."
+ },
+ "UI-VA-IN-PRUEFUNG": {
+  "s": "ENTWURF",
+  "t": "In Prüfung — das Cruizy-Team schaut sich deine Einreichung an. Erst danach ist sie für andere sichtbar."
+ },
+ "UI-VA-INFO-1": {
+  "s": "ENTWURF",
+  "t": "Veranstaltungen direkt veröffentlichen können nur Konten, die als Veranstalter verifiziert sind — etwa Bars, Clubs, Restaurants, Konzerthäuser, Partyreihen oder Vereine."
+ },
+ "UI-VA-INFO-2": {
+  "s": "ENTWURF",
+  "t": "Ohne Verifizierung kannst du eine Veranstaltung einreichen. Das Cruizy-Team prüft sie und gibt sie im Einzelfall frei — auch private Partys."
+ },
+ "UI-VA-INFO-3": {
+  "s": "ENTWURF",
+  "t": "Voraussetzung ist ein Konto mit Altersprüfung. Verifizierte Veranstaltungen prüft das Team stichprobenartig nach; die Verifizierung lässt sich bei Verstößen entziehen."
+ },
+ "UI-VA-INFO-SCHRITT-1": {
+  "s": "ENTWURF",
+  "t": "Verifizierung beantragen: Name, Art, Stadt, Website und eine Mail-Adresse, unter der wir dich erreichen."
+ },
+ "UI-VA-INFO-SCHRITT-2": {
+  "s": "ENTWURF",
+  "t": "Wir prüfen die Angaben — meist über Website, Impressum oder eine Rückfrage per Mail."
+ },
+ "UI-VA-INFO-SCHRITT-3": {
+  "s": "ENTWURF",
+  "t": "Danach erscheinen deine Veranstaltungen sofort und mit dem Zeichen „verifiziert“."
+ },
+ "UI-VA-INFO-TITEL": {
+  "s": "ENTWURF",
+  "t": "Veranstalter bei Cruizy"
+ },
+ "UI-VA-KATEGORIEN": {
+  "s": "ENTWURF",
+  "t": "Kategorien"
+ },
+ "UI-VA-LAGE-UNGEFAEHR": {
+  "s": "ENTWURF",
+  "t": "Auf der Karte nur ungefähr — die genaue Adresse sehen angenommene Gäste."
+ },
+ "UI-VA-LOESCHEN": {
+  "s": "ENTWURF",
+  "t": "Einreichung löschen"
+ },
+ "UI-VA-MEINE": {
+  "s": "ENTWURF",
+  "t": "Meine Veranstaltungen"
+ },
+ "UI-VA-MEINE-LEER": {
+  "s": "ENTWURF",
+  "t": "Noch keine Veranstaltungen."
+ },
+ "UI-VA-N-ABGELEHNT": {
+  "s": "ENTWURF",
+  "t": "Für „{titel}“ hat es diesmal nicht geklappt."
+ },
+ "UI-VA-N-ABGELEHNT-TITEL": {
+  "s": "ENTWURF",
+  "t": "Anfrage nicht angenommen"
+ },
+ "UI-VA-N-ABGESAGT": {
+  "s": "ENTWURF",
+  "t": "„{titel}“ findet nicht statt."
+ },
+ "UI-VA-N-ABGESAGT-TITEL": {
+  "s": "ENTWURF",
+  "t": "Veranstaltung abgesagt"
+ },
+ "UI-VA-N-ANFRAGE": {
+  "s": "ENTWURF",
+  "t": "Jemand möchte zu „{titel}“ kommen. Nimm die Anfrage in deiner Gästeliste an oder lehne sie ab."
+ },
+ "UI-VA-N-ANFRAGE-TITEL": {
+  "s": "ENTWURF",
+  "t": "Neue Anfrage für deine Veranstaltung"
+ },
+ "UI-VA-N-ANGENOMMEN": {
+  "s": "ENTWURF",
+  "t": "Der Veranstalter hat dich für „{titel}“ angenommen. Bei Fragen kannst du ihm jetzt schreiben."
+ },
+ "UI-VA-N-ANGENOMMEN-TITEL": {
+  "s": "ENTWURF",
+  "t": "Du bist dabei"
+ },
+ "UI-VA-N-FREIGEGEBEN": {
+  "s": "ENTWURF",
+  "t": "„{titel}“ ist jetzt in „Heute“ zu sehen."
+ },
+ "UI-VA-N-FREIGEGEBEN-TITEL": {
+  "s": "ENTWURF",
+  "t": "Veranstaltung freigegeben"
+ },
+ "UI-VA-N-NICHT-FREIGEGEBEN": {
+  "s": "ENTWURF",
+  "t": "„{titel}“ können wir so nicht veröffentlichen. {grund}"
+ },
+ "UI-VA-N-NICHT-FREIGEGEBEN-TITEL": {
+  "s": "ENTWURF",
+  "t": "Veranstaltung nicht freigegeben"
+ },
+ "UI-VA-N-NICHT-VERIFIZIERT": {
+  "s": "ENTWURF",
+  "t": "Wir konnten dich (noch) nicht als Veranstalter verifizieren. {grund}"
+ },
+ "UI-VA-N-NICHT-VERIFIZIERT-TITEL": {
+  "s": "ENTWURF",
+  "t": "Verifizierung als Veranstalter"
+ },
+ "UI-VA-N-VERIFIZIERT": {
+  "s": "ENTWURF",
+  "t": "Deine Veranstaltungen erscheinen ab jetzt ohne Wartezeit in „Heute“ — mit dem Zeichen „verifiziert“."
+ },
+ "UI-VA-N-VERIFIZIERT-TITEL": {
+  "s": "ENTWURF",
+  "t": "Du bist als Veranstalter verifiziert"
+ },
+ "UI-VA-NEU": {
+  "s": "ENTWURF",
+  "t": "Neue Veranstaltung"
+ },
+ "UI-VA-NICHT-AENDERBAR": {
+  "s": "ENTWURF",
+  "t": "Abgesagte oder vergangene Veranstaltungen lassen sich nicht mehr ändern."
+ },
+ "UI-VA-NICHT-FREIGEGEBEN": {
+  "s": "ENTWURF",
+  "t": "Diese Einreichung wurde nicht freigegeben."
+ },
+ "UI-VA-NICHT-VERIFIZIERT": {
+  "s": "ENTWURF",
+  "t": "Noch nicht als Veranstalter verifiziert"
+ },
+ "UI-VA-NICHT-VERIFIZIERT-ERKL": {
+  "s": "ENTWURF",
+  "t": "Du kannst bis zu {max} Veranstaltungen gleichzeitig zur Prüfung einreichen — oder dich als Veranstalter verifizieren lassen."
+ },
+ "UI-VA-ORT-FEHLT": {
+  "s": "ENTWURF",
+  "t": "Bitte wähl einen Ort."
+ },
+ "UI-VA-ORT-NEU-WAEHLEN": {
+  "s": "ENTWURF",
+  "t": "Bitte wähl den Ort noch einmal."
+ },
+ "UI-VA-PIN": {
+  "s": "ENTWURF",
+  "t": "Genauer Punkt auf der Karte"
+ },
+ "UI-VA-PIN-ERKL": {
+  "s": "ENTWURF",
+  "t": "Tipp auf die Karte, um den Eingang zu markieren (freiwillig)."
+ },
+ "UI-VA-PIN-GESETZT": {
+  "s": "ENTWURF",
+  "t": "Punkt gesetzt — tipp erneut, um ihn zu verschieben."
+ },
+ "UI-VA-PIN-WEIT": {
+  "s": "ENTWURF",
+  "t": "Die Stecknadel liegt zu weit vom gewählten Ort entfernt."
+ },
+ "UI-VA-PLAETZE-FREI": {
+  "s": "ENTWURF",
+  "t": "noch {frei} von {gesamt} Plätzen frei"
+ },
+ "UI-VA-ROLLE-GAST": {
+  "s": "ENTWURF",
+  "t": "Gast"
+ },
+ "UI-VA-ROLLE-VERANSTALTER": {
+  "s": "ENTWURF",
+  "t": "Veranstalter"
+ },
+ "UI-VA-SCHON-BEANTRAGT": {
+  "s": "ENTWURF",
+  "t": "Du hast die Verifizierung schon beantragt."
+ },
+ "UI-VA-SCHREIBEN": {
+  "s": "ENTWURF",
+  "t": "Schreiben"
+ },
+ "UI-VA-STATUS-ABGELEHNT": {
+  "s": "ENTWURF",
+  "t": "Nicht freigegeben"
+ },
+ "UI-VA-STATUS-ABGESAGT": {
+  "s": "ENTWURF",
+  "t": "Abgesagt"
+ },
+ "UI-VA-STATUS-PRUEFUNG": {
+  "s": "ENTWURF",
+  "t": "In Prüfung"
+ },
+ "UI-VA-STATUS-SICHTBAR": {
+  "s": "ENTWURF",
+  "t": "Sichtbar"
+ },
+ "UI-VA-STATUS-VORBEI": {
+  "s": "ENTWURF",
+  "t": "Vorbei"
+ },
+ "UI-VA-TESTGAESTE": {
+  "s": "ENTWURF",
+  "t": "Davon {zahl} erfundene Testgäste (Testbetrieb)."
+ },
+ "UI-VA-TEXT-LANG": {
+  "s": "ENTWURF",
+  "t": "Die Beschreibung darf höchstens {zeichen} Zeichen haben."
+ },
+ "UI-VA-VERIFIZIERT": {
+  "s": "ENTWURF",
+  "t": "verifizierter Veranstalter"
+ },
+ "UI-VA-VERIFIZIERT-ERKL": {
+  "s": "ENTWURF",
+  "t": "Du bist als Veranstalter verifiziert. Deine Veranstaltungen erscheinen sofort."
+ },
+ "UI-VA-VERIFIZIERUNG-BEANTRAGEN": {
+  "s": "ENTWURF",
+  "t": "Verifizierung beantragen"
+ },
+ "UI-VA-VEROEFFENTLICHEN": {
+  "s": "ENTWURF",
+  "t": "Veröffentlichen"
+ },
+ "UI-VA-VERWALTEN": {
+  "s": "ENTWURF",
+  "t": "Verwalten"
+ },
+ "UI-VA-VOLL": {
+  "s": "ENTWURF",
+  "t": "Leider ausgebucht — es gibt keine freien Plätze mehr."
+ },
+ "UI-VA-VON": {
+  "s": "ENTWURF",
+  "t": "von {name}"
+ },
+ "UI-VA-VON-PLAETZEN": {
+  "s": "ENTWURF",
+  "t": "von {zahl} Plätzen"
+ },
+ "UI-VA-WIE": {
+  "s": "ENTWURF",
+  "t": "Wie geht das?"
+ },
+ "UI-VA-ZAHL-ABGESAGT": {
+  "s": "ENTWURF",
+  "t": "{zahl} abgesagt"
+ },
+ "UI-VA-ZAHL-ANFRAGEN": {
+  "s": "ENTWURF",
+  "t": "{zahl} Anfragen"
+ },
+ "UI-VA-ZAHL-DABEI": {
+  "s": "ENTWURF",
+  "t": "{zahl} dabei"
+ },
+ "UI-VA-ZU-LANG": {
+  "s": "ENTWURF",
+  "t": "Eine Veranstaltung dauert höchstens 14 Tage."
+ },
+ "UI-VA-ZU-WEIT": {
+  "s": "ENTWURF",
+  "t": "Veranstaltungen gehen höchstens {monate} Monate im Voraus."
+ },
+ "UI-VA-ZUGESAGT": {
+  "s": "ENTWURF",
+  "t": "Du bist dabei!"
+ },
  "UI-VERFALL-NICHT-DU": {
   "s": "ENTWURF",
   "t": "Nur wer das Verschwinden eingeschaltet hat, kann es ausschalten."
+ },
+ "UI-VERSCHIEBEN": {
+  "s": "ENTWURF",
+  "t": "Punkt verschieben"
+ },
+ "UI-VERSCHIEBEN-AKTIV": {
+  "s": "ENTWURF",
+  "t": "Dein Punkt ist verschoben."
+ },
+ "UI-VERSCHIEBEN-ERKL": {
+  "s": "ENTWURF",
+  "t": "Setz deinen Punkt bis zu {km} km von dort weg, wo du bist. Andere sehen Entfernungen von dort aus und „ungefährer Ort“."
+ },
+ "UI-VERSCHIEBEN-OHNE-ORT": {
+  "s": "ENTWURF",
+  "t": "Dafür braucht die App deinen Standort."
+ },
+ "UI-VERSCHIEBEN-RICHTUNG": {
+  "s": "ENTWURF",
+  "t": "Richtung"
+ },
+ "UI-VERSCHIEBEN-SETZEN": {
+  "s": "ENTWURF",
+  "t": "Punkt setzen"
+ },
+ "UI-VERSCHIEBEN-WEITE": {
+  "s": "ENTWURF",
+  "t": "Wie weit: {km} km"
+ },
+ "UI-VERSCHIEBEN-ZU-WEIT": {
+  "s": "ENTWURF",
+  "t": "Höchstens {km} km. Für weiter weg gibt es den Travel-Modus."
+ },
+ "UI-VERSCHIEBEN-ZURUECK": {
+  "s": "ENTWURF",
+  "t": "Zurück auf meinen Ort"
  },
  "UI-VERSTECKEN-JETZT": {
   "s": "ENTWURF",
@@ -2114,6 +4690,90 @@
  "UI-VERSTECKT-TITEL": {
   "s": "ENTWURF",
   "t": "Einkaufsliste"
+ },
+ "UI-VOLL-FERTIG": {
+  "s": "ENTWURF",
+  "t": "Dein Profil ist komplett!"
+ },
+ "UI-VOLL-HINWEIS": {
+  "s": "ENTWURF",
+  "t": "Dein Profil ist erst zu {prozent} % fertig. Mit ein paar Angaben mehr bekommst du deutlich mehr Nachrichten."
+ },
+ "UI-VOLL-JETZT": {
+  "s": "ENTWURF",
+  "t": "Jetzt ergänzen"
+ },
+ "UI-VOLL-TIPP-ABSICHT": {
+  "s": "ENTWURF",
+  "t": "Setz eine Absicht – dann wissen andere, was du gerade suchst."
+ },
+ "UI-VOLL-TIPP-BASIS": {
+  "s": "ENTWURF",
+  "t": "Ergänze Alter, Größe, Gewicht und Körpertyp."
+ },
+ "UI-VOLL-TIPP-BIO": {
+  "s": "ENTWURF",
+  "t": "Schreib ein paar Sätze über dich."
+ },
+ "UI-VOLL-TIPP-DREI-FOTOS": {
+  "s": "ENTWURF",
+  "t": "Füg noch {zahl} Fotos hinzu."
+ },
+ "UI-VOLL-TIPP-DREI-FOTOS-1": {
+  "s": "ENTWURF",
+  "t": "Füg noch ein Foto hinzu."
+ },
+ "UI-VOLL-TIPP-FOTO-ECHT": {
+  "s": "ENTWURF",
+  "t": "Lass dein Foto verifizieren – das schafft Vertrauen."
+ },
+ "UI-VOLL-TIPP-INTERESSEN": {
+  "s": "ENTWURF",
+  "t": "Wähle ein paar Interessen aus."
+ },
+ "UI-VOLL-TIPP-PROFILBILD": {
+  "s": "ENTWURF",
+  "t": "Lade ein Profilbild hoch – Profile mit Bild bekommen deutlich mehr Nachrichten."
+ },
+ "UI-VOLL-TITEL": {
+  "s": "ENTWURF",
+  "t": "Dein Profil ist zu {prozent} % fertig"
+ },
+ "UI-VORLAGEN": {
+  "s": "ENTWURF",
+  "t": "Vorlagen"
+ },
+ "UI-VORLAGEN-BEARBEITEN": {
+  "s": "ENTWURF",
+  "t": "Bearbeiten"
+ },
+ "UI-VORLAGEN-ERKL": {
+  "s": "ENTWURF",
+  "t": "Ein Tipp sendet den Text so, wie er hier steht."
+ },
+ "UI-VORLAGEN-FERTIG": {
+  "s": "ENTWURF",
+  "t": "Fertig"
+ },
+ "UI-VORLAGEN-LEER": {
+  "s": "ENTWURF",
+  "t": "Noch keine Vorlagen. Leg dir Antworten auf Fragen an, die immer wieder kommen."
+ },
+ "UI-VORLAGEN-MAX": {
+  "s": "ENTWURF",
+  "t": "Höchstens {max} Vorlagen."
+ },
+ "UI-VORLAGEN-NEU": {
+  "s": "ENTWURF",
+  "t": "Neue Vorlage"
+ },
+ "UI-VORLAGEN-PLATZHALTER": {
+  "s": "ENTWURF",
+  "t": "z. B. „Ich bin eher spontan unterwegs – schreib mir einfach, wenn du in der Nähe bist.“"
+ },
+ "UI-VORLAGEN-TITEL": {
+  "s": "ENTWURF",
+  "t": "Vorformulierte Nachrichten"
  },
  "UI-WARTEFRIST": {
   "s": "ENTWURF",

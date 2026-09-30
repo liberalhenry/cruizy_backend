@@ -9,17 +9,18 @@ import { ReportSheet, useBlock } from '../components/report';
 import { api, ApiError, errText } from '../lib/api';
 import { useApp } from '../lib/app';
 import { idbGet, idbSet } from '../lib/idb';
-import { hasPin, hideNow, removePin, setPin } from '../lib/hide';
+import { currentDisguise, hasPin, hideNow, lockSettings, removePin, setLock, setPin } from '../lib/hide';
 import { disablePush, enablePush, isIosSafariNotInstalled, pushSupported } from '../lib/push';
-import { BAND_TEXT, fmtDate, parts, plain, t } from '../lib/texts';
+import { fmtDate, fmtKm, parts, plain, t } from '../lib/texts';
 import { LocationSheet } from './naehe';
 import { SymbolPicker } from './einstieg';
+import { CompletenessCard, PremiumTest } from './extras';
 
 // ─────────────────────────── S50 · Übersicht ───────────────────────────
 
 export function Ich() {
   const nav = useNavigate();
-  const { me, unread, logout, refreshMe, toast } = useApp();
+  const { me, unread, logout, refreshMe, toast, dot } = useApp();
   const [feedback, setFeedback] = useState('');
   const [wantsReply, setWantsReply] = useState(false);
   const [recovery, setRecovery] = useState<string | null>(null);
@@ -31,7 +32,7 @@ export function Ich() {
     <>
       <Header title={t('UI-TAB-ICH')} />
       <Page>
-        <button className="card p-4 w-full flex items-center gap-4 text-left mb-4" onClick={() => nav('/ich/profil')}>
+        <button className="card p-4 w-full flex items-center gap-4 text-left mb-4" onClick={() => nav('/ich/profil/bearbeiten')} aria-label={t('UI-PROFIL-BEARBEITEN')}>
           <Avatar name={p.name} color={p.color} photo={photo} size={56} />
           <span className="flex-1">
             <span className="block text-lg font-semibold">{p.name}</span>
@@ -39,6 +40,8 @@ export function Ich() {
           </span>
           <span className="muted">›</span>
         </button>
+
+        <CompletenessCard />
 
         {p.account.restricted && (
           <div className="mb-3">
@@ -103,10 +106,15 @@ export function Ich() {
 
         <ListCard>
           <RowLink to="/ich/mitteilungen" label={t('ST-SIC-50')} badge={unread ? <span className="rounded-full bg-akzent text-grund px-2 text-xs">{unread}</span> : undefined} />
-          <RowLink to="/ich/profil" label={t('UI-ICH-PROFIL')} />
+          <RowLink to="/ich/profil/bearbeiten" label={t('UI-ICH-PROFIL')} hint={t('UI-PROFIL-BEARBEITEN')} />
+          <RowLink to="/date/einstellungen" label={t('UI-DATE-TITEL')} hint={t('UI-DATE-ICH-ERKL')} />
+          <RowLink to="/veranstalter" label={t('UI-VA-BEREICH')} hint={t('UI-VA-BEREICH-ERKL')} />
+          <RowLink to="/ich/reisen" label={t('UI-TRAVEL-TITEL')} hint={me.profile.location?.travel ? t('UI-TRAVEL-AKTIV', { ort: me.profile.location.travel.place }) : undefined} />
+          <RowLink to="/ich/besucher" label={t('UI-BESUCHER')} badge={dot.ich ? <span className="rounded-full bg-gefahr text-white px-2 text-xs">{t('UI-APP-NEUES')}</span> : undefined} />
           <RowLink to="/ich/merkliste" label={t('UI-ICH-MERKLISTE')} />
-          <RowLink to="/album" label={t('UI-ALBUM-MEINS')} />
+          <RowLink to="/alben" label={t('UI-ALBUM-MEINS')} />
           <RowLink to="/ich/sicherheit" label={t('ST-SIC-01')} hint={t('ST-SIC-02')} />
+          <RowLink to="/ich/gesundheit" label={t('UI-TEST-BEREICH')} />
           <RowLink to="/ich/daten" label={t('ST-DAT-01')} />
           <RowLink to="/ich/abo" label={t('UI-ICH-ABO')} />
           <RowLink to="/ich/einstellungen" label={t('UI-ICH-EINSTELLUNGEN')} />
@@ -439,7 +447,7 @@ export function Treffpunkt() {
                   </span>
                   <span className="block text-sm muted">
                     {p.district}
-                    {p.band ? ` · ${t(BAND_TEXT[p.band])}` : ''}
+                    {p.km !== null && p.km !== undefined ? ` · ${fmtKm(p.km)}` : ''}
                     {p.openToday ? ` · ${t('UI-ORT-HEUTE-OFFEN-KURZ')}` : ''}
                   </span>
                 </button>
@@ -474,16 +482,29 @@ export function Verstecken() {
   const len = config?.params.pinLength ?? 4;
   const [pin, setPinValue] = useState('');
   const [has, setHas] = useState(hasPin());
+  const [lock, setLockState] = useState(lockSettings());
+  const [kind, setKind] = useState(currentDisguise());
   useEffect(() => {
     if (location.hash === '#symbol') document.getElementById('symbol')?.scrollIntoView();
   }, []);
+  const gesture: Record<string, string> = { a: 'UI-TARN-GESTE-A', b: 'UI-TARN-GESTE-B', c: 'UI-TARN-GESTE-C', d: 'UI-TARN-GESTE-D' };
   return (
     <div className="min-h-screen">
       <Header title={t('ST-SIC-30')} back />
       <Page>
         <p className="mb-3">{t('ST-SIC-31')}</p>
-        <Banner>{t('UI-VERSTECKEN-WEB-GRENZE')}</Banner>
-        <section className="card p-4 mt-4">
+
+        <section id="symbol" className="mb-6">
+          <h2 className="font-semibold mb-1">{t('UI-TARN-TITEL')}</h2>
+          <p className="text-sm muted mb-3">{t('UI-TARN-ERKL')}</p>
+          <SymbolPicker onChange={(k) => setKind(k as typeof kind)} />
+          <p className="text-sm mt-3">
+            <span className="muted">{t('UI-TARN-ZURUECK')}</span> {t(gesture[kind])}
+          </p>
+          <p className="text-xs muted mt-2">{t('UI-VERSTECKEN-WEB-GRENZE')}</p>
+        </section>
+
+        <section className="card p-4">
           <p className="mb-2">{t('ST-SIC-32', { n: len })}</p>
           {has ? (
             <div className="flex gap-2">
@@ -493,6 +514,7 @@ export function Verstecken() {
                 onClick={() => {
                   removePin();
                   setHas(false);
+                  setLockState({ on: false, minutes: lock.minutes });
                 }}
               >
                 {t('UI-APP-LOESCHEN')}
@@ -500,7 +522,7 @@ export function Verstecken() {
             </div>
           ) : (
             <div className="flex gap-2">
-              <input className="input" inputMode="numeric" maxLength={len} value={pin} onChange={(e) => setPinValue(e.target.value.replace(/\D/g, ''))} aria-label="PIN" />
+              <input className="input" type="password" inputMode="numeric" maxLength={len} value={pin} onChange={(e) => setPinValue(e.target.value.replace(/\D/g, ''))} aria-label="PIN" />
               <button
                 className="btn-primary"
                 disabled={pin.length !== len}
@@ -515,22 +537,42 @@ export function Verstecken() {
               </button>
             </div>
           )}
-        </section>
-        <section className="mt-4">
-          <p className="label">{t('UI-VERSTECKEN-VORSCHAU')}</p>
-          <div className="rounded-xl bg-[#f6f5f1] text-[#222] p-4 font-serif">
-            <p className="text-lg">{t('UI-VERSTECKT-TITEL')}</p>
-            <p>☐ {t('UI-VERSTECKT-1')}</p>
+          <div className="mt-3 border-t border-linie pt-3">
+            <Toggle
+              checked={lock.on}
+              disabled={!has}
+              onChange={(v) => {
+                setLock(v, lock.minutes);
+                setLockState(lockSettings());
+              }}
+              label={t('UI-APPSPERRE')}
+              hint={has ? t('UI-APPSPERRE-ERKL') : t('UI-APPSPERRE-PIN-ZUERST')}
+            />
+            {lock.on && (
+              <div className="flex flex-wrap gap-2 mt-1" role="radiogroup" aria-label={t('UI-APPSPERRE-NACH')}>
+                <span className="text-sm muted w-full">{t('UI-APPSPERRE-NACH')}</span>
+                {[0, 1, 5, 15].map((m) => (
+                  <button
+                    key={m}
+                    role="radio"
+                    aria-checked={lock.minutes === m}
+                    className={`chip min-h-tap ${lock.minutes === m ? 'border-akzent text-akzent' : ''}`}
+                    onClick={() => {
+                      setLock(true, m);
+                      setLockState(lockSettings());
+                    }}
+                  >
+                    {m === 0 ? t('UI-APPSPERRE-SOFORT') : t('UI-APPSPERRE-MIN', { min: m })}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
-          <button className="btn-secondary w-full mt-3" onClick={hideNow}>
-            {t('UI-VERSTECKEN-JETZT')}
-          </button>
         </section>
-        <section id="symbol" className="mt-8">
-          <h2 className="font-semibold mb-1">{t('ST-SIC-40')}</h2>
-          <p className="text-sm muted mb-3">{t('ST-SIC-41')}</p>
-          <SymbolPicker />
-        </section>
+
+        <button className="btn-secondary w-full mt-4" onClick={hideNow}>
+          {t('UI-VERSTECKEN-JETZT')}
+        </button>
       </Page>
     </div>
   );
@@ -583,7 +625,7 @@ export function Mitteilungen() {
           <div className="flex flex-col gap-3">
             <p className="text-sm muted">
               {fmtDate(open.createdAt, true)}
-              {open.ref && open.kind !== 'wiederherstellung' ? ` · ${open.ref}` : ''}
+              {open.ref && !['wiederherstellung', 'test_erinnerung', 'veranstaltung', 'date'].includes(open.kind) ? ` · ${open.ref}` : ''}
             </p>
             <p className="whitespace-pre-wrap">{open.body.replace(/\s*\[[^\]]+\]/g, '')}</p>
             {open.kind === 'wiederherstellung' && (
@@ -607,6 +649,18 @@ export function Mitteilungen() {
               <button className="btn-secondary" onClick={() => nav('/ich/meldungen')}>
                 {t('UI-MELDUNGEN-TITEL')}
               </button>
+            )}
+            {open.kind === 'test_erinnerung' && (
+              <>
+                {open.ref && (
+                  <a className="btn-secondary" href={open.ref} target="_blank" rel="noopener noreferrer">
+                    {t('UI-TEST-TESTSTELLEN')} ↗
+                  </a>
+                )}
+                <button className="btn-primary" onClick={() => nav('/ich/gesundheit')}>
+                  {t('UI-TEST-BEREICH')}
+                </button>
+              </>
             )}
             {open.kind === 'export_bereit' && (
               <button className="btn-secondary" onClick={() => nav('/ich/daten')}>
@@ -970,7 +1024,8 @@ export function Abo() {
             ))}
           </ul>
         </Section>
-        <p className="text-sm muted">{t('ST-ABO-19')}</p>
+        <PremiumTest />
+        <p className="text-sm muted mt-4">{t('ST-ABO-19')}</p>
       </Page>
     </div>
   );
@@ -1040,6 +1095,8 @@ export function Einstellungen() {
         <Section title={t('UI-TAB-CHATS')}>
           <div className="card p-4 flex flex-col gap-3">
             <Toggle checked={s.disappearingDefault} onChange={(v) => patch({ disappearingDefault: v })} label={t('ST-CHAT-30')} hint={t('ST-CHAT-31')} />
+            <Toggle checked={s.voiceReceive !== false} onChange={(v) => patch({ voiceReceive: v })} label={t('UI-EINST-SPRACHE')} hint={t('UI-EINST-SPRACHE-ERKL')} />
+            <Toggle checked={s.startersEnabled !== false} onChange={(v) => patch({ startersEnabled: v })} label={t('UI-EINST-STARTER')} hint={t('UI-EINST-STARTER-ERKL')} />
             <div>
               <p className="mb-2">{media[0]}</p>
               <Choice
@@ -1067,6 +1124,17 @@ export function Einstellungen() {
               }}
               label={t('UI-PROFIL-ANTWORTQUOTE')}
               hint={t('ST-PRO-13')}
+            />
+          </div>
+        </Section>
+        <Section title={t('UI-TAB-NAEHE')}>
+          <div className="card p-4">
+            <Toggle checked={s.nameSearchable} onChange={(v) => patch({ nameSearchable: v })} label={t('UI-EINST-AUFFINDBAR')} hint={t('UI-EINST-AUFFINDBAR-ERKL')} />
+            <Toggle
+              checked={s.gridExpand}
+              onChange={(v) => patch({ gridExpand: v })}
+              label={t('UI-RASTER-ERWEITERN')}
+              hint={t('UI-RASTER-ERWEITERN-ERKL', { zahl: config?.params.gridMin ?? 50, km: (s.gridRadiusKm ?? 10) >= 150 ? s.gridRadiusKm : (s.gridRadiusKm ?? 10) >= 100 ? 150 : 100 })}
             />
           </div>
         </Section>

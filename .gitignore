@@ -11,3 +11,4 @@ data/
 frontend/dist/
 backups/
 deploy/logs/
+__pycache__/

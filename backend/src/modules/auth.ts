@@ -9,6 +9,7 @@
  *  * Wiederherstellung und neues Passwort beenden alle anderen Sitzungen (FV-94).
  *  * Vertrauenspersonen: Der Server speichert weder Namen noch Kontaktwege noch Zahl (AK-Z09-04).
  */
+import { reactivateAfterLogin } from '../services/date.js';
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import { z } from 'zod';
 import { createRemoteJWKSet, jwtVerify } from 'jose';
@@ -98,6 +99,8 @@ async function nextStep(accountId: string) {
 
 async function finishLogin(req: FastifyRequest, reply: FastifyReply, accountId: string) {
   await createSession(accountId, reply);
+  // Issue #19: automatisch pausiertes Date wird beim Anmelden wieder aktiv
+  await reactivateAfterLogin(accountId);
   const d = deviceId(req, reply);
   await q(`INSERT INTO known_devices (account_id, device_hash) VALUES ($1, $2) ON CONFLICT DO NOTHING`, [
     accountId,

@@ -79,6 +79,16 @@ const schema = z.object({
   AGE_PROVIDER: z.enum(['ausweis', 'mock']).default('ausweis'),
   AGE_WEBHOOK_SECRET: z.string().default(''),
 
+  /*
+   * Issue #19: Gesichtsverifizierung für Cruizy Date über einen externen Anbieter (FaceVerificationProvider).
+   * stub = Attrappe (nur Testbetrieb, gibt „passt“ zurück; im Echtbetrieb gesperrt)
+   * http = Anbieter über HTTP: POST multipart {selfie, reference, pose} → {match, livenessOk?, confidence?}
+   * none = keine Verifizierung möglich → Date lässt sich nicht freischalten
+   */
+  DATE_FACE_PROVIDER: z.enum(['none', 'stub', 'http']).default('stub'),
+  DATE_FACE_URL: z.string().default(''),
+  DATE_FACE_HEADERS: z.string().default('{}'),
+
   /* Prüfkette (M-02) */
   CLASSIFIER: z.enum(['queue', 'http', 'mock-allow']).default('queue'),
   CLASSIFIER_URL: z.string().default(''),
@@ -97,6 +107,14 @@ const schema = z.object({
   /* Karte: Adresse eines selbst betriebenen oder EU-Kachelservers. Leer = schematische Karte. */
   MAP_TILE_URL: z.string().default(''),
   MAP_ATTRIBUTION: z.string().default(''),
+  /*
+   * Issue #17: Kacheln eines EU-Kachelservers über den eigenen Server abrufen (mit Zwischenspeicher),
+   * z. B. https://tile.openstreetmap.de/{z}/{x}/{y}.png (FOSSGIS e. V., Deutschland). Die Geräte
+   * sprechen dann nur mit uns — der Kachelserver sieht weder Netzadressen noch Sitzungen.
+   * Leer = Grundkarte ohne Kacheln (Ländergrenzen und Ortsnamen aus dem eigenen Verzeichnis).
+   */
+  MAP_TILE_UPSTREAM: z.string().default(''),
+  MAP_TILE_UPSTREAM_ATTRIBUTION: z.string().default('© OpenStreetMap-Mitwirkende'),
 
   /*
    * Discord-Webhooks (Issue #6): je Kategorie ein Kanal. Leer = Kategorie aus bzw. DEFAULT.

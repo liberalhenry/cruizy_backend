@@ -7,7 +7,7 @@
 import { p } from '../config/params.js';
 import { openToken, sealToken } from '../lib/crypto.js';
 
-export type ImgKind = 'photo' | 'album' | 'chat' | 'own' | 'ticket';
+export type ImgKind = 'photo' | 'album' | 'chat' | 'own' | 'ticket' | 'once' | 'audio' | 'teaser' | 'event' | 'date';
 export type PhotoVariant = 'public' | 'clear' | 'guest' | 'original';
 
 export interface ImgToken {
@@ -18,9 +18,15 @@ export interface ImgToken {
   e: number;
 }
 
-export function imgUrl(k: ImgKind, id: string, viewer: string, v?: PhotoVariant): string {
-  const tok = sealToken({ k, id, v, r: viewer, e: Date.now() + p('P-BILDLINK-GUELTIG') * 1000 } satisfies ImgToken);
+export function imgUrl(k: ImgKind, id: string, viewer: string, v?: PhotoVariant, ttlS?: number): string {
+  const tok = sealToken({ k, id, v, r: viewer, e: Date.now() + (ttlS ?? p('P-BILDLINK-GUELTIG')) * 1000 } satisfies ImgToken);
   return `/api/img/${tok}`;
+}
+
+/** Adresse einer Sprachaufnahme — gleiche Regeln wie Bilder, eigener Pfad (Range-Anfragen für Safari). */
+export function audioUrl(id: string, viewer: string, kind: 'audio' | 'date' = 'audio'): string {
+  const tok = sealToken({ k: kind, id, r: viewer, e: Date.now() + Math.max(p('P-BILDLINK-GUELTIG'), 30 * 60) * 1000 } satisfies ImgToken);
+  return `/api/audio/${tok}`;
 }
 
 export function readImgToken(token: string): ImgToken | null {

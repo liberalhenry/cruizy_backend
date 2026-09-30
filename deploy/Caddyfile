@@ -13,7 +13,7 @@
 		X-Content-Type-Options nosniff
 		X-Frame-Options DENY
 		Referrer-Policy no-referrer
-		Permissions-Policy "geolocation=(self), camera=(self), microphone=(), payment=(), usb=(), interest-cohort=()"
+		Permissions-Policy "geolocation=(self), camera=(self), microphone=(self), payment=(), usb=(), interest-cohort=()"
 		Cross-Origin-Opener-Policy same-origin
 		Content-Security-Policy "default-src 'self'; img-src 'self' data: blob: {$MAP_TILE_ORIGIN}; connect-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self'; worker-src 'self'; manifest-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'; object-src 'none'"
 		-Server

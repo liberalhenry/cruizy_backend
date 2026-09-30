@@ -621,7 +621,7 @@ export const SYMBOLS = [
   { key: 'a', name: 'Notizen' },
   { key: 'b', name: 'Rechner' },
   { key: 'c', name: 'Wetter' },
-  { key: 'd', name: 'Liste' },
+  { key: 'd', name: 'Kalender' },
 ];
 
 export function applySymbol(key: string) {
@@ -638,7 +638,7 @@ export function applySymbol(key: string) {
   document.title = s.name;
 }
 
-export function SymbolPicker() {
+export function SymbolPicker({ onChange }: { onChange?: (key: string) => void } = {}) {
   const [sel, setSel] = useState(() => localStorage.getItem('tarn-symbol') ?? 'a');
   return (
     <div className="grid grid-cols-4 gap-3" role="radiogroup">
@@ -650,6 +650,7 @@ export function SymbolPicker() {
           onClick={() => {
             setSel(s.key);
             applySymbol(s.key);
+            onChange?.(s.key);
           }}
           className={`card p-2 flex flex-col items-center gap-1 ${sel === s.key ? 'border-akzent' : ''}`}
         >

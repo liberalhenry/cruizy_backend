@@ -14,6 +14,8 @@ export function startupProblems(): string[] {
   if (!e.SMTP_URL) out.push('Kein Mailversand eingerichtet (SMTP_URL leer) — Mails landen nur im Protokoll.');
   if (e.SMS_PROVIDER === 'log') out.push('Kein SMS-Versand eingerichtet (SMS_PROVIDER=log).');
   if (e.CLASSIFIER === 'mock-allow') out.push('Klassifikator-Attrappe gibt alles frei (CLASSIFIER=mock-allow).');
+  // Issue #19: die Attrappe der Gesichtsverifizierung gibt jedem Selfie recht
+  if (p('P-DATE-AKTIV') && e.DATE_FACE_PROVIDER === 'stub') out.push('Cruizy Date: Gesichtsverifizierung läuft über die Attrappe (DATE_FACE_PROVIDER=stub) — Anbieter anbinden oder DATE_FACE_PROVIDER=none.');
   if (!hashProviderConfigured()) out.push('Kein Hash-Abgleich angebunden (HASH_PROVIDER).');
   if (!p('P-HASH-AKTIV')) out.push('Hash-Abgleich ist ausgeschaltet (P-HASH-AKTIV) — Betrieb nur mit erfundenen Daten (AK-M02-11).');
   if (!e.COOKIE_SECURE) out.push('Cookies ohne Secure-Kennzeichen (COOKIE_SECURE=0).');

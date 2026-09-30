@@ -15,10 +15,11 @@ import { one } from '../db/pool.js';
 import { loadAccount } from '../lib/context.js';
 import { getFile } from '../lib/files.js';
 import { params } from '../lib/http.js';
-import { applyWatermark, clearVersion, guestVersion, privateVersion } from '../lib/images.js';
+import { applyWatermark, blurredVersion, clearVersion, guestVersion, privateVersion } from '../lib/images.js';
 import { readImgToken } from '../services/media-tokens.js';
 import { canSee, isBlockedEitherWay } from '../services/profiles.js';
 import { stage2Satisfied } from '../services/stage2.js';
+import { canSeeDateProfile, isActiveMember } from '../services/date.js';
 
 const cache = new Map<string, Buffer>();
 let cacheBytes = 0;
@@ -106,6 +107,49 @@ export default async function mediaRoutes(app: FastifyInstance) {
 
     if (!acc || acc.id !== tok.r) return deny(reply);
 
+    // Issue #27: Vorschau der Profilbesucher ohne Premium — nur die stark verkleinerte, unkenntliche Fassung
+    if (tok.k === 'teaser') {
+      const ph = await one(`SELECT public_file FROM photos WHERE id = $1 AND status = 'approved'`, [tok.id]);
+      if (!ph?.public_file) return deny(reply);
+      const k = `g:${ph.public_file}`;
+      let data = cacheGet(k);
+      if (!data) cachePut(k, (data = await guestVersion(await getFile('zone1-public', ph.public_file))));
+      return send(reply, data, tok.e);
+    }
+
+    // Issue #16: Bilder einer Veranstaltung — für alle, die die Veranstaltung sehen dürfen
+    if (tok.k === 'event') {
+      const im = await one(
+        `SELECT ei.file, e.status, e.host_id, e.ampel FROM event_images ei JOIN events e ON e.id = ei.event_id WHERE ei.id = $1`,
+        [tok.id],
+      );
+      if (!im) return deny(reply);
+      if (im.host_id !== acc.id && (!['approved', 'cancelled'].includes(im.status) || (im.ampel === 'rot' && !acc.age1))) return deny(reply);
+      const k = `e:${im.file}`;
+      let data = cacheGet(k);
+      if (!data) cachePut(k, (data = await getFile('zone1-public', im.file)));
+      return send(reply, data, tok.e);
+    }
+
+    // Issue #19: Fotos der Date-Galerie — nur für aktive Date-Mitglieder; unscharfe Vorschau (Likes ohne Premium)
+    if (tok.k === 'date') {
+      const ph = await one(`SELECT account_id, file, status FROM date_photos WHERE id = $1`, [tok.id]);
+      if (!ph) return deny(reply);
+      if (ph.account_id !== acc.id) {
+        if (ph.status !== 'approved') return deny(reply);
+        const liker = tok.v === 'guest' && (await one(`SELECT 1 FROM date_likes WHERE from_id = $1 AND to_id = $2`, [ph.account_id, acc.id]));
+        if (!liker && !(await canSeeDateProfile(acc.id, ph.account_id))) return deny(reply);
+        if (liker && !(await isActiveMember(acc.id))) return deny(reply);
+      }
+      const k = `${tok.v === 'guest' ? 'dg' : 'd'}:${ph.file}`;
+      let data = cacheGet(k);
+      if (!data) {
+        const orig = await getFile('zone1-public', ph.file);
+        cachePut(k, (data = tok.v === 'guest' ? await guestVersion(await blurredVersion(orig)) : orig));
+      }
+      return send(reply, data, tok.e);
+    }
+
     if (tok.k === 'own') {
       const ph = await one(`SELECT original_file FROM photos WHERE id = $1 AND account_id = $2 AND status <> 'blocked'`, [tok.id, acc.id]);
       if (!ph) return deny(reply);
@@ -116,12 +160,13 @@ export default async function mediaRoutes(app: FastifyInstance) {
     }
 
     if (tok.k === 'album') {
-      const m = await one(`SELECT id, owner_id, file FROM private_media WHERE id = $1 AND kind = 'album'`, [tok.id]);
+      const m = await one(`SELECT id, owner_id, file, album_id FROM private_media WHERE id = $1 AND kind = 'album'`, [tok.id]);
       if (!m) return deny(reply);
       if (m.owner_id !== acc.id) {
         const share = await one(
-          `SELECT 1 FROM album_shares WHERE owner_id = $1 AND viewer_id = $2 AND state = 'accepted'`,
-          [m.owner_id, acc.id],
+          // Issue #23: nur das geteilte Album — nicht alle Alben der Person
+          `SELECT 1 FROM album_shares WHERE owner_id = $1 AND viewer_id = $2 AND album_id = $3 AND state = 'accepted'`,
+          [m.owner_id, acc.id, m.album_id],
         );
         // AK-F48-04: nach dem Ende der Freigabe keine Albumbilder mehr
         if (!share || (await isBlockedEitherWay(m.owner_id, acc.id))) return deny(reply);
@@ -131,12 +176,31 @@ export default async function mediaRoutes(app: FastifyInstance) {
       return send(reply, await getFile('zone2', m.file), tok.e);
     }
 
+    if (tok.k === 'once') {
+      // Issue #26: genau ein Abruf — danach liefert der Server nichts mehr
+      const msg = await one(
+        `UPDATE messages m SET once_served_at = now()
+           FROM conversations c, private_media pm
+          WHERE m.id = $1 AND m.once AND m.once_served_at IS NULL AND m.once_viewed_at IS NOT NULL
+            AND m.sender_id <> $2 AND c.id = m.conversation_id AND (c.user_low = $2 OR c.user_high = $2)
+            AND pm.id = m.media_id AND pm.file IS NOT NULL
+          RETURNING pm.file, m.sender_id`,
+        [tok.id, acc.id],
+      );
+      if (!msg || (await isBlockedEitherWay(acc.id, msg.sender_id))) return deny(reply);
+      reply.header('cache-control', 'no-store');
+      const data = await applyWatermark(await privateVersion(await getFile('zone2', msg.file)), acc.id);
+      reply.header('content-type', 'image/jpeg');
+      reply.header('content-disposition', 'inline');
+      return reply.send(data);
+    }
+
     if (tok.k === 'chat') {
       const msg = await one(
-        `SELECT m.id, m.sender_id, m.delivery, m.expires_at, pm.file, c.user_low, c.user_high
+        `SELECT m.id, m.sender_id, m.delivery, m.expires_at, m.nsfw, m.nsfw_decision, m.conversation_id, pm.file, c.user_low, c.user_high
            FROM messages m JOIN private_media pm ON pm.id = m.media_id
            JOIN conversations c ON c.id = m.conversation_id
-          WHERE m.id = $1 AND m.kind = 'image'`,
+          WHERE m.id = $1 AND m.kind = 'image' AND NOT m.once`,
         [tok.id],
       );
       if (!msg || (msg.user_low !== acc.id && msg.user_high !== acc.id)) return deny(reply);
@@ -146,9 +210,71 @@ export default async function mediaRoutes(app: FastifyInstance) {
       if (msg.sender_id === acc.id) return send(reply, await privateVersion(await getFile('zone2', msg.file)), tok.e);
       // Empfänger: nur zugestellte Bilder, nur mit Stufe 2, wenn der Schalter sie verlangt (FV-85, AK-F43-07)
       if (msg.delivery !== 'sent' || !(await stage2Satisfied(acc))) return deny(reply);
+      // Issue #19: NSFW in Date-Chats — ohne Freigabe nur die serverseitig unscharfe Fassung, nie das Original
+      if (msg.nsfw) {
+        const consent = await one(`SELECT state FROM nsfw_consent WHERE conversation_id = $1 AND recipient_id = $2`, [msg.conversation_id, acc.id]);
+        const released = consent?.state === 'erlaubt' || msg.nsfw_decision === 'angesehen';
+        if (msg.nsfw_decision === 'abgelehnt' || consent?.state === 'abgelehnt') return deny(reply);
+        if (!released || tok.v !== 'clear') {
+          if (tok.v === 'clear') return deny(reply);
+          return send(reply, await blurredVersion(await getFile('zone2', msg.file)), tok.e);
+        }
+      }
       return send(reply, await applyWatermark(await privateVersion(await getFile('zone2', msg.file)), acc.id), tok.e);
     }
 
     return deny(reply);
+  });
+
+  /**
+   * Sprachnachrichten (Issue #28) — gleiche Prüfung wie Bilder im Gespräch. Mit Range-Anfragen,
+   * ohne die Safari (auch iOS) Audio nicht abspielt.
+   */
+  app.get('/api/audio/:token', async (req, reply) => {
+    const { token } = params(req, z.object({ token: z.string().max(2000) }));
+    const tok = readImgToken(token);
+    const acc = await loadAccount(req);
+    if (!tok || !acc || acc.id !== tok.r) return deny(reply);
+    let file: string | null = null;
+    if (tok.k === 'audio') {
+      const msg = await one(
+        `SELECT m.sender_id, m.delivery, m.expires_at, pm.file, c.user_low, c.user_high
+           FROM messages m JOIN private_media pm ON pm.id = m.media_id JOIN conversations c ON c.id = m.conversation_id
+          WHERE m.id = $1 AND m.kind = 'audio'`,
+        [tok.id],
+      );
+      if (!msg || (msg.user_low !== acc.id && msg.user_high !== acc.id)) return deny(reply);
+      if (msg.expires_at && new Date(msg.expires_at) < new Date()) return deny(reply);
+      const other = msg.user_low === acc.id ? msg.user_high : msg.user_low;
+      if (await isBlockedEitherWay(acc.id, other)) return deny(reply);
+      file = msg.file;
+    }
+    // Issue #19: Voice-Intro und Audio-Prompt im Date-Profil — nur für aktive Date-Mitglieder (Gegenseitigkeit)
+    if (tok.k === 'date') {
+      const au = await one(`SELECT account_id, file FROM date_audio WHERE id = $1`, [tok.id]);
+      if (!au || !(await canSeeDateProfile(acc.id, au.account_id))) return deny(reply);
+      file = au.file;
+    }
+    if (!file) return deny(reply);
+    const data = await getFile('zone2', file);
+    reply.header('content-type', 'audio/mp4');
+    reply.header('accept-ranges', 'bytes');
+    reply.header('cache-control', 'private, max-age=600');
+    const range = /^bytes=(\d*)-(\d*)$/.exec(String(req.headers.range ?? ''));
+    if (range) {
+      const size = data.length;
+      let start = range[1] ? Number(range[1]) : size - Number(range[2] || 0);
+      let end = range[1] && range[2] ? Number(range[2]) : size - 1;
+      if (!range[1] && range[2]) end = size - 1;
+      start = Math.max(0, start);
+      end = Math.min(size - 1, end);
+      if (start > end || start >= size) {
+        reply.header('content-range', `bytes */${size}`);
+        return reply.status(416).send();
+      }
+      reply.header('content-range', `bytes ${start}-${end}/${size}`);
+      return reply.status(206).send(data.subarray(start, end + 1));
+    }
+    return reply.send(data);
   });
 }

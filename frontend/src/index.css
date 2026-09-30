@@ -33,3 +33,31 @@ body {
   .row { @apply flex items-center justify-between gap-3 px-4 min-h-[52px] border-b border-linie last:border-b-0 w-full text-left; }
   .muted { @apply text-leise; }
 }
+
+/* Karte (Issue #17): Ortsnamen der Grundkarte und Veranstaltungspunkte */
+.leaflet-container { font: inherit; background: #0d1420; }
+.leaflet-control-attribution { background: rgba(17, 20, 26, 0.8) !important; color: #9aa3b2 !important; font-size: 10px; }
+.leaflet-control-attribution a { color: #9aa3b2 !important; }
+.leaflet-bar a { background: #191d25 !important; color: #e8ecf2 !important; border-color: #2e3441 !important; }
+.karte-ort span {
+  position: absolute; transform: translate(-50%, -50%); white-space: nowrap; pointer-events: none;
+  font-size: 11px; color: #9aa3b2; text-shadow: 0 0 3px #0d1420, 0 0 3px #0d1420;
+}
+.karte-ort span.gross { font-size: 13px; font-weight: 600; color: #cfd6e2; }
+.karte-ort span.teil { font-size: 10px; font-style: italic; color: #7d8697; }
+.va-punkt {
+  width: 36px; height: 36px; border-radius: 9999px; display: grid; place-items: center; font-size: 17px;
+  background: #191d25; border: 2px solid #5aa9ff; box-shadow: 0 2px 8px rgba(0,0,0,.5); cursor: pointer;
+  transition: transform .15s;
+}
+.va-punkt:hover { transform: scale(1.12); }
+.va-punkt.ungefaehr { border-style: dashed; background: rgba(25, 29, 37, .85); }
+.va-punkt.empfohlen { border-color: #f5c451; box-shadow: 0 0 0 3px rgba(245,196,81,.25), 0 2px 8px rgba(0,0,0,.5); }
+.va-gruppe {
+  border-radius: 9999px; display: grid; place-items: center; font-weight: 700; font-size: 14px; color: #11141a;
+  background: #5aa9ff; border: 3px solid rgba(90,169,255,.35); background-clip: padding-box; box-shadow: 0 2px 10px rgba(0,0,0,.5); cursor: pointer;
+}
+.va-gruppe.empfohlen { background-color: #f5c451; border-color: rgba(245,196,81,.35); }
+.scroll-x { overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.scroll-x::-webkit-scrollbar { display: none; }
+.scroll-x > * { flex-shrink: 0; white-space: nowrap; }

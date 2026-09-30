@@ -27,10 +27,11 @@ import ticketRoutes from './tickets.js';
 import overviewRoutes from './overview.js';
 import teamRoutes from './team.js';
 import idcheckRoutes from './idcheck.js';
+import dateModRoutes from './date.js';
 import updateRoutes from './updates.js';
 
-export function modImgUrl(store: Store, file: string, staffId: string) {
-  return `/mod-api/img/${sealToken({ k: 'mod', s: store, f: file, st: staffId, e: Date.now() + 5 * 60_000 })}`;
+export function modImgUrl(store: Store, file: string, staffId: string, mime?: 'audio/mp4') {
+  return `/mod-api/img/${sealToken({ k: 'mod', s: store, f: file, st: staffId, e: Date.now() + 5 * 60_000, ...(mime ? { m: mime } : {}) })}`;
 }
 
 export default async function modRoutes(app: FastifyInstance) {
@@ -98,7 +99,7 @@ export default async function modRoutes(app: FastifyInstance) {
     mod.get('/mod-api/img/:token', async (req, reply) => {
       const s = await requireStaff(req);
       const { token } = params(req, z.object({ token: z.string().max(2000) }));
-      const tok = openToken<{ k: string; s: Store; f: string; st: string; e: number }>(token);
+      const tok = openToken<{ k: string; s: Store; f: string; st: string; e: number; m?: string }>(token);
       if (!tok || tok.k !== 'mod' || tok.st !== s.id || tok.e < Date.now()) return reply.status(404).send();
       // Zone 2 ist für das Werkzeug nicht lesbar — nur Kopien im Fall („sealed“) und Zone 1 (AK-M01-04/05)
       // „idcheck“: Ausweisbilder einer offenen Altersprüfung (Issue #7)
@@ -106,7 +107,8 @@ export default async function modRoutes(app: FastifyInstance) {
       // gelöscht (z. B. Ausweisbild nach der Entscheidung) → nicht mehr vorhanden
       const data = await getFile(tok.s, tok.f).catch(() => null);
       if (!data) return reply.status(404).send();
-      reply.header('content-type', 'image/jpeg');
+      // gemeldete Sprachnachricht (Issue #28)
+      reply.header('content-type', tok.m === 'audio/mp4' ? 'audio/mp4' : 'image/jpeg');
       reply.header('cache-control', 'no-store');
       return reply.send(data);
     });
@@ -118,6 +120,7 @@ export default async function modRoutes(app: FastifyInstance) {
     await mod.register(appealRoutes);
     await mod.register(logRoutes);
     await mod.register(placeRoutes);
+    await mod.register(dateModRoutes);
     await mod.register(art18Routes);
     await mod.register(ticketRoutes);
     await mod.register(overviewRoutes);

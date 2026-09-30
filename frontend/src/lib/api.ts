@@ -57,7 +57,7 @@ export const api = {
   post: <T = any>(url: string, body: unknown = {}) => request<T>('POST', url, body),
   put: <T = any>(url: string, body: unknown = {}) => request<T>('PUT', url, body),
   patch: <T = any>(url: string, body: unknown = {}) => request<T>('PATCH', url, body),
-  del: <T = any>(url: string) => request<T>('DELETE', url),
+  del: <T = any>(url: string, body?: unknown) => request<T>('DELETE', url, body),
   upload: <T = any>(url: string, file: Blob, fields: Record<string, string> = {}) => {
     const fd = new FormData();
     for (const [k, v] of Object.entries(fields)) fd.append(k, v);

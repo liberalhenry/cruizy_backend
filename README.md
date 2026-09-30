@@ -141,6 +141,34 @@ Migrationen sind nur additiv — nach einem Rückfall läuft der alte Stand mit 
 Die Sicherungen gehören zusätzlich auf einen zweiten Ort (z. B. Hetzner Storage Box):
 `BACKUP_DIR=/mnt/storagebox bash deploy/backup.sh`.
 
+### Karte, Veranstaltungen und Cruizy Date
+
+**Karte „Heute“ (ohne Google oder US-Dienste).** Drei Stufen, die erste gesetzte gilt:
+`MAP_TILE_URL` (eigener Kachelserver, dazu `MAP_TILE_ORIGIN` für die Sicherheitsrichtlinie),
+`MAP_TILE_UPSTREAM` (EU-Kachelserver wie `https://tile.openstreetmap.de/{z}/{x}/{y}.png`, abgerufen
+über den eigenen Server mit Zwischenspeicher unter `/data/kacheln` — die Geräte sprechen nur mit uns;
+Nutzungsregeln des Anbieters beachten) oder, wenn beides leer ist, die mitgelieferte Grundkarte
+(Ländergrenzen: Natural Earth, gemeinfrei; Orte: GeoNames, CC BY 4.0 — neu erzeugen mit
+`node backend/scripts/build-karte.mjs`).
+
+**Veranstaltungen.** Veranstalter-Anträge, Einreichungen und die Gegenprüfung laufen im Werkzeug
+unter „Veranstalter“, „Freigabe Termine“ und „Veranstaltungen prüfen“. Die empfohlene
+„Cruizy Test-Party“ legt nur `npm run seed:test` an (Testbetrieb).
+
+**Cruizy Date.** Schalter `P-DATE-AKTIV` (Werkzeug → Verwaltung → Parameter). Vor dem Echtbetrieb:
+- Gesichtsverifizierung anbinden: `DATE_FACE_PROVIDER=http`, `DATE_FACE_URL`, `DATE_FACE_HEADERS`
+  (Anbieter mit EU-Verarbeitung und AV-Vertrag, ohne Speicherung von Gesichtsmerkmalen). Die
+  Attrappe `stub` ist im Echtbetrieb gesperrt; `none` lässt Date nicht freischalten.
+- Regionen: `P-DATE-REGIONEN` (`modus` `alle` oder `liste` mit Städte-IDs, Umkreis, Warteliste-Schwelle).
+- Weitere Parameter: Tagesvorschläge (`P-DATE-VORSCHLAEGE`), Auto-Pause (`P-DATE-PAUSE-TAGE`),
+  Schwelle für die Date-Sperre (`P-DATE-MELDUNGEN-SPERRE`), Premium-Zuordnung (`P-DATE-PREMIUM`).
+- Ohne Klassifikatordienst (`CLASSIFIER=queue`) prüft das Team alle Date-Fotos im Werkzeug unter
+  „Cruizy Date“, und Bilder in Date-Chats gelten vorsichtshalber als „könnte intim sein“ (unscharf bis zur Freigabe).
+- Vorberechnung der Tagesvorschläge und Auto-Pause laufen als Hintergrundaufträge im API-Dienst —
+  kein eigener Cronjob nötig.
+- Rückweg der Datenbank: `docker compose exec api node dist/src/db/migrate-cli.js down 012_date`
+  (entfernt alle Date-Tabellen).
+
 ### Ressourcen auf 4 GB RAM
 
 PostgreSQL ist auf etwa ein Viertel des Speichers abgestimmt (`shared_buffers=256MB`,
@@ -201,14 +229,15 @@ Uhrzeitsperre für Hash-Fälle sind absichtlich **keine** Parameter.
 - Löschung mit 30 Tagen Karenz, danach vollständig (ein Test prüft jede Tabelle mit
   Kontobezug); Export als AES-verschlüsselte ZIP-Datei; Vollständigkeit ebenfalls per Test.
 - Keine Drittanbieter im Browser: keine Analyse, keine Schriften oder Karten Dritter
-  (die Karte ist schematisch, bis ein eigener Kachelserver eingetragen ist).
+  (Kacheln kommen vom eigenen Server — selbst betrieben oder vermittelt —, sonst die mitgelieferte Grundkarte).
 
 **Bewusst nicht gebaut (Phase 2 oder ruhend laut Beschlusslage)**
 
 - Bezahlung und Abo (PLUS/PRO, Travel) — der Bildschirm zeigt nur die Leistungen, der Kauf ist
   nicht möglich; die Tabelle `entitlements` ist die Grundlage.
 - „Nur geprüfte Profile“ (F08) und die Erstkontakt-Grenze (F57) — ruhen bis Nr. 40.
-- Private Veranstaltungen und Inserate von Nutzern, Werkzeugkonten für Orte, native Apps.
+- Inserate von Nutzern, Werkzeugkonten für Orte, native Apps. (Veranstaltungen von Mitgliedern gibt es
+  seit 0.3.0 — ohne Verifizierung nur nach Prüfung durch das Team.)
 
 ---
 
@@ -222,7 +251,7 @@ geprüft; wo sie beibehalten wurden, steht das nicht extra hier. Abgewichen wurd
 | Supabase (selbst gehostet) mit Auth, Edge Functions, RLS | eigener Node-Server mit PostgreSQL | ein Supabase-Stack braucht auf 4 GB RAM allein den halben Speicher; die Sicherheitsregeln (Protokoll zuerst, vier Augen, Standortrundung) stehen so an einer Stelle im Server statt verteilt über RLS-Regeln und Funktionen |
 | PostGIS-Spalte `precise_location` mit „deny-all“ | die genaue Position wird gar nicht gespeichert, nur die Rasterzelle | strenger als die Vorgabe und so, wie F70 es verlangt; Entfernungen auf Zellebene brauchen kein PostGIS |
 | Sweego als fester SMS-Dienst | frei konfigurierbarer HTTP-Versand mit Vorlage (Sweego als Beispiel) | Dienst wechselbar ohne Codeänderung; die Feldnamen sind vor dem Start mit der Sweego-Dokumentation abzugleichen |
-| Kartenkacheln (Karte „Heute“) | schematische Karte ohne Dritte; eigener Kachelserver über `MAP_TILE_URL` | ohne eigenen Server würden Kacheln eines Dritten den Aufenthaltsort der Nutzer verraten |
+| Kartenkacheln (Karte „Heute“) | Grundkarte ohne Dritte; eigener Kachelserver (`MAP_TILE_URL`) oder EU-Kachelserver über den eigenen Server (`MAP_TILE_UPSTREAM`) | direkt geladene Kacheln eines Dritten würden den Aufenthaltsort der Nutzer verraten |
 | Web-Push „ohne Umweg“ | nach eigener Erklärung, auf dem iPhone erst nach „Zum Home-Bildschirm“ | anders stellt iOS keine Mitteilungen zu |
 
 Alles, was die Rechtsprüfung noch offen hat (Wortlaut der Einwilligung, Rechtstexte,

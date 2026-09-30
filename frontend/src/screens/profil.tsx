@@ -6,8 +6,9 @@ import { intentionLabel } from '../components/tile';
 import { ReportSheet, useBlock } from '../components/report';
 import { api, errText } from '../lib/api';
 import { useApp } from '../lib/app';
-import { ACTIVITY_TEXT, BAND_TEXT, RESPONSE_TEXT, fmtDate, t } from '../lib/texts';
+import { ACTIVITY_TEXT, fmtDate, fmtKm, t } from '../lib/texts';
 import { IntentionPicker } from './einstieg';
+import { CompletenessCard, OwnResponseCard, ResponseBadge, ResponseInfo } from './extras';
 import { isIosSafariNotInstalled } from '../lib/push';
 
 function traitNames(ids: number[], traits: { items: { id: number; name: string }[] }[] | undefined) {
@@ -46,11 +47,32 @@ function Photos({ photos, fallback }: { photos: { url: string; blurred: boolean 
   );
 }
 
+/** Kurzangaben (Issue #13): Größe, Gewicht, Position, Körpertyp. */
+function facts(p: any, config: any): string[] {
+  const out: string[] = [];
+  if (p.heightCm) out.push(`${p.heightCm} cm`);
+  if (p.weightKg) out.push(`${p.weightKg} kg`);
+  const pos = config?.positions?.find((x: any) => x.key === p.position)?.label;
+  if (pos) out.push(pos);
+  for (const b of p.bodyTypes ?? []) {
+    const l = config?.bodyTypes?.find((x: any) => x.key === b)?.label;
+    if (l) out.push(l);
+  }
+  return out;
+}
+
+function kinkNames(keys: string[], config: any): string[] {
+  const all = (config?.kinks ?? []).flatMap((g: any) => g.items);
+  return keys.map((k) => all.find((x: any) => x.key === k)?.name).filter(Boolean);
+}
+
 function ProfileBody({ p, own }: { p: any; own?: boolean }) {
   const { config } = useApp();
   const [info, setInfo] = useState<null | 'quote' | 'verified' | 'approx'>(null);
   const traits = traitNames(p.traits ?? [], config?.traits);
   const gender = genderLabel(p.gender, config?.genders);
+  const fx = facts(p, config);
+  const kinks = kinkNames(p.kinks ?? [], config);
   return (
     <>
       <Photos
@@ -68,7 +90,7 @@ function ProfileBody({ p, own }: { p: any; own?: boolean }) {
             {p.age ? <span className="font-normal">, {p.age}</span> : null}
           </h2>
           <p className="muted text-sm">
-            {p.band ? t(BAND_TEXT[p.band]) : own ? t('UI-PROFIL-DU') : ''}
+            {p.km !== null && p.km !== undefined ? fmtKm(p.km) : own ? t('UI-PROFIL-DU') : ''}
             {p.approx && (
               <button className="ml-1 underline" onClick={() => setInfo('approx')}>
                 · {t('ST-STO-41')}
@@ -83,12 +105,37 @@ function ProfileBody({ p, own }: { p: any; own?: boolean }) {
           </button>
         )}
       </div>
-      <p className="mt-3">{intentionLabel(p.intention)}</p>
-      {p.response && (
-        <button className="mt-1 text-sm muted underline" onClick={() => setInfo('quote')}>
-          {t(RESPONSE_TEXT[p.response])}
-        </button>
+      {fx.length > 0 && (
+        <ul className="mt-3 flex flex-wrap gap-x-3 gap-y-1 text-sm" aria-label={t('UI-PROFIL-UEBER-MICH')}>
+          {fx.map((f, i) => (
+            <li key={i} className="flex items-center gap-3">
+              {i > 0 && <span className="muted" aria-hidden="true">·</span>}
+              {f}
+            </li>
+          ))}
+        </ul>
       )}
+      {p.travel && (
+        <p className="mt-2 text-sm text-warn flex items-center gap-1">
+          {p.travel.mode === 'flug' ? '✈' : '🚗'} {p.travelPlace ? t('UI-TRAVEL-STOEBERT', { ort: p.travelPlace }) : t(p.travel.mode === 'flug' ? 'UI-TRAVEL-ZEICHEN-FLUG' : 'UI-TRAVEL-ZEICHEN-AUTO')}
+        </p>
+      )}
+      {p.trips?.length > 0 && (
+        <ul className="mt-2 text-sm flex flex-col gap-1" aria-label={t('UI-PROFIL-REISEN')}>
+          {p.trips.map((tr: any, i: number) => (
+            <li key={i} className="flex items-center gap-2">
+              <Icon name="calendar" className="w-4 h-4 text-akzent" />
+              {t('UI-REISE-ZEILE', {
+                ort: tr.place,
+                von: new Date(`${tr.from}T12:00:00`).toLocaleDateString('de-DE', { day: 'numeric', month: 'numeric' }),
+                bis: new Date(`${tr.to}T12:00:00`).toLocaleDateString('de-DE', { day: 'numeric', month: 'numeric', year: 'numeric' }),
+              })}
+            </li>
+          ))}
+        </ul>
+      )}
+      <p className="mt-3">{intentionLabel(p.intention)}</p>
+      <ResponseBadge stage={p.response} onInfo={() => setInfo('quote')} />
       {traits.length > 0 && (
         <div className="flex flex-wrap gap-2 mt-4">
           {traits.map((x) => (
@@ -98,10 +145,23 @@ function ProfileBody({ p, own }: { p: any; own?: boolean }) {
           ))}
         </div>
       )}
-      {p.freeText && <p className="mt-4 whitespace-pre-wrap">{p.freeText}</p>}
+      {p.freeText && <p className="mt-4 whitespace-pre-wrap break-words">{p.freeText}</p>}
+      {kinks.length > 0 && (
+        <section className="mt-4">
+          <h3 className="text-sm muted mb-1">{t('UI-PROFIL-KINKS')}</h3>
+          <div className="flex flex-wrap gap-2">
+            {kinks.map((x) => (
+              <span key={x} className="chip">
+                {x}
+              </span>
+            ))}
+          </div>
+        </section>
+      )}
       {gender && <p className="mt-4 text-sm muted">{gender}</p>}
-      <Sheet open={!!info} onClose={() => setInfo(null)} title={info === 'quote' ? t(RESPONSE_TEXT[p.response ?? 1]) : info === 'verified' ? t('UI-APP-GEPRUEFT') : t('ST-STO-41')}>
-        <p>{info === 'quote' ? t('ST-PRO-13') : info === 'verified' ? t('ST-VER-22') : t('ST-STO-42')}</p>
+      <ResponseInfo open={info === 'quote'} onClose={() => setInfo(null)} />
+      <Sheet open={info === 'verified' || info === 'approx'} onClose={() => setInfo(null)} title={info === 'verified' ? t('UI-APP-GEPRUEFT') : t('ST-STO-41')}>
+        <p>{info === 'verified' ? t('ST-VER-22') : t('ST-STO-42')}</p>
       </Sheet>
     </>
   );
@@ -159,6 +219,12 @@ export function ProfilFremd() {
           <button className="btn-primary" onClick={() => nav(`/chats/neu?an=${id}`)}>
             {t('UI-PROFIL-SCHREIBEN')}
           </button>
+          {/* Issue #19: nur, wenn beide Date-Mitglieder sind (vom Server entschieden) */}
+          {p.dateProfile && (
+            <button className="btn-secondary !border-rose-400/60 !text-rose-200" onClick={() => nav(`/date/u/${id}`)}>
+              ♥ {t('UI-DATE-PROFIL-ANSEHEN')}
+            </button>
+          )}
           <button className="btn-ghost" onClick={bookmark}>
             {p.bookmarked ? t('UI-PROFIL-NICHT-MERKEN') : t('ST-PRO-50')}
           </button>
@@ -211,7 +277,7 @@ export function ProfilEigen() {
   const preview = {
     ...pr,
     initial: [...(pr.name ?? '?')][0]?.toUpperCase(),
-    band: null,
+    km: null,
     response: pr.responseRate.enabled ? pr.responseRate.band : null,
     verified: pr.verified.photos,
     photos: pr.photoMode === 'photo' ? me.photos.filter((x: any) => x.status === 'approved').map((x: any) => ({ url: x.url, blurred: false })) : [],
@@ -221,7 +287,15 @@ export function ProfilEigen() {
   const rejected = me.photos.filter((x: any) => x.status === 'rejected');
   return (
     <div className="min-h-screen flex flex-col">
-      <Header title={t('UI-PROFIL-SO-SEHEN-DICH')} back="/ich" />
+      <Header
+        title={t('UI-PROFIL-SO-SEHEN-DICH')}
+        back="/ich"
+        right={
+          <button className="btn-ghost px-2" onClick={() => nav('/ich/profil/bearbeiten')} aria-label={t('UI-PROFIL-BEARBEITEN')}>
+            <Icon name="edit" />
+          </button>
+        }
+      />
       <Page className="flex-1">
         {pending.length > 0 && (
           <div className="mb-3">
@@ -235,7 +309,9 @@ export function ProfilEigen() {
             </Banner>
           </div>
         )}
+        <CompletenessCard />
         <ProfileBody p={preview} own />
+        <OwnResponseCard />
         <section className="card mt-6 overflow-hidden">
           <button className="row" onClick={() => nav('/pruefung')}>
             <span className="flex-1 py-3">{t('UI-PROFIL-ALTERSPRUEFUNG')}</span>
@@ -267,6 +343,12 @@ export function ProfilEditor() {
   const pr = me?.profile;
   const [name, setName] = useState(pr?.name ?? '');
   const [age, setAge] = useState<string>(pr?.age ? String(pr.age) : '');
+  const [height, setHeight] = useState<string>(pr?.heightCm ? String(pr.heightCm) : '');
+  const [weight, setWeight] = useState<string>(pr?.weightKg ? String(pr.weightKg) : '');
+  const [position, setPosition] = useState<string | null>(pr?.position ?? null);
+  const [bodyTypes, setBodyTypes] = useState<string[]>(pr?.bodyTypes ?? []);
+  const [kinks, setKinks] = useState<string[]>(pr?.kinks ?? []);
+  const [kinksOpen, setKinksOpen] = useState<boolean>((pr?.kinks ?? []).length > 0);
   const [traits, setTraits] = useState<number[]>(pr?.traits ?? []);
   const [freeText, setFreeText] = useState(pr?.freeText ?? '');
   const [gender, setGender] = useState(pr?.gender ?? { category: null, text: null, visible: false });
@@ -281,18 +363,38 @@ export function ProfilEditor() {
   const [err, setErr] = useState<string | null>(null);
   const [hint, setHint] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [photoMenu, setPhotoMenu] = useState<any | null>(null);
   const photos = me?.photos ?? [];
   const max = config?.params.traitsMax ?? 10;
+  const photosMax = config?.params.photosMax ?? 20;
+  const textMax = config?.params.freeTextMax ?? 2000;
+  const bodyMax = config?.params.bodyTypesMax ?? 3;
+  const kinksMax = config?.params.kinksMax ?? 12;
+
+  // Sprungmarken aus den Tipps zur Vollständigkeit (Issue #29): /ich/profil/bearbeiten#fotos
+  useEffect(() => {
+    const id = location.hash.slice(1);
+    if (id) setTimeout(() => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+  }, []);
 
   if (!pr) return null;
+  const num = (v: string) => (v ? Number(v) : null);
   const dirty =
     name !== pr.name ||
     age !== (pr.age ? String(pr.age) : '') ||
+    height !== (pr.heightCm ? String(pr.heightCm) : '') ||
+    weight !== (pr.weightKg ? String(pr.weightKg) : '') ||
+    position !== (pr.position ?? null) ||
+    JSON.stringify(bodyTypes) !== JSON.stringify(pr.bodyTypes ?? []) ||
+    JSON.stringify(kinks) !== JSON.stringify(pr.kinks ?? []) ||
     JSON.stringify(traits) !== JSON.stringify(pr.traits) ||
     freeText !== pr.freeText ||
     JSON.stringify(gender) !== JSON.stringify(pr.gender) ||
     JSON.stringify(seeGroups) !== JSON.stringify(pr.seeGroups) ||
     responseRate !== pr.responseRate.enabled;
+
+  const heightBad = !!height && (Number(height) < 120 || Number(height) > 230);
+  const weightBad = !!weight && (Number(weight) < 35 || Number(weight) > 250);
 
   const save = async () => {
     setBusy(true);
@@ -301,6 +403,11 @@ export function ProfilEditor() {
       const r = await api.patch('/api/profile', {
         name,
         age: age ? Number(age) : null,
+        heightCm: num(height),
+        weightKg: num(weight),
+        position,
+        bodyTypes,
+        kinks,
         traits,
         freeText,
         gender,
@@ -349,63 +456,51 @@ export function ProfilEditor() {
     ids.splice(i + d, 0, x);
     photoAction(() => api.put('/api/photos/order', { ids }));
   };
+  const toggleIn = <T,>(list: T[], v: T, limit: number) => (list.includes(v) ? list.filter((x) => x !== v) : list.length >= limit ? list : [...list, v]);
 
   return (
     <div className="min-h-screen flex flex-col">
       <Header
         title={t('UI-PROFIL-BEARBEITEN')}
         back
+        right={
+          <button className="btn-ghost px-2" onClick={() => nav('/ich/profil')} aria-label={t('UI-PROFIL-VORSCHAU')}>
+            <Icon name="eye" />
+            <span className="text-xs hidden sm:inline">{t('UI-PROFIL-VORSCHAU')}</span>
+          </button>
+        }
       />
       <Page className="flex-1">
-        <section className="mb-6">
-          <h2 className="font-semibold mb-1">{t('UI-PROFIL-FOTOS')}</h2>
+        <section id="fotos" className="mb-6 scroll-mt-20">
+          <div className="flex items-baseline justify-between mb-1">
+            <h2 className="font-semibold">{t('UI-PROFIL-FOTOS')}</h2>
+            <span className="text-sm muted">{t('UI-FOTOS-ANZAHL', { zahl: photos.length, max: photosMax })}</span>
+          </div>
           <p className="text-sm muted mb-3">{t('ST-PRO-60')}</p>
-          <ul className="flex flex-col gap-2">
+          <ul className="grid grid-cols-3 sm:grid-cols-4 gap-2">
             {photos.map((ph: any, i: number) => (
-              <li key={ph.id} className="card p-2 flex items-center gap-3">
-                {ph.url ? <img src={ph.url} alt="" className="w-16 h-20 object-cover rounded-lg" /> : <div className="w-16 h-20 rounded-lg bg-flaeche2" />}
-                <div className="flex-1 text-sm">
-                  <p>
-                    {ph.status === 'approved'
-                      ? t('UI-FOTO-SICHTBAR')
-                      : ph.status === 'rejected'
-                        ? t('ST-FEH-12', { grund: t(ph.rejection?.reason ?? 'ST-FEH-13') })
-                        : t('ST-FEH-16', { stunden: 24 })}
-                  </p>
-                  {ph.status !== 'rejected' && (
-                    <Toggle checked={ph.blurred} onChange={(v) => photoAction(() => api.patch(`/api/photos/${ph.id}`, { blurred: v }))} label={t('ST-KON-43')} />
-                  )}
-                  {ph.status === 'rejected' && (
-                    <button
-                      className="btn-ghost px-0"
-                      onClick={async () => {
-                        const text = prompt(t('UI-FOTO-EINSPRUCH-TEXT')) ?? '';
-                        if (text.trim()) photoAction(() => api.post(`/api/photos/${ph.id}/appeal`, { text }));
-                      }}
-                    >
-                      {t('UI-FOTO-EINSPRUCH')}
-                    </button>
-                  )}
-                </div>
-                <div className="flex flex-col">
-                  <button className="btn-ghost px-2" disabled={i === 0} onClick={() => move(i, -1)} aria-label={t('UI-FOTO-NACH-VORNE')}>
-                    ↑
-                  </button>
-                  <button className="btn-ghost px-2" disabled={i === photos.length - 1} onClick={() => move(i, 1)} aria-label={t('UI-FOTO-NACH-HINTEN')}>
-                    ↓
-                  </button>
-                </div>
-                <button className="btn-ghost px-2" onClick={() => photoAction(() => api.del(`/api/photos/${ph.id}`))} aria-label={t('UI-APP-LOESCHEN')}>
-                  <Icon name="trash" />
+              <li key={ph.id} className="relative">
+                <button className="block w-full aspect-[3/4] rounded-xl overflow-hidden bg-flaeche2 border border-linie" onClick={() => setPhotoMenu({ ...ph, index: i })} aria-label={t('UI-APP-MENUE')}>
+                  {ph.url && <img src={ph.url} alt="" className={`w-full h-full object-cover ${ph.blurred ? 'blur-md scale-110' : ''}`} />}
                 </button>
+                {i === 0 && <span className="absolute top-1 left-1 rounded-full bg-akzent text-grund text-[10px] px-1.5 py-0.5 font-semibold">1</span>}
+                <span
+                  className={`absolute bottom-1 left-1 right-1 rounded-md text-[10px] px-1 py-0.5 text-center ${
+                    ph.status === 'approved' ? 'bg-black/60' : ph.status === 'rejected' ? 'bg-gefahr/90 text-white' : 'bg-warn/90 text-grund'
+                  }`}
+                >
+                  {ph.status === 'approved' ? (ph.blurred ? t('ST-KON-43') : t('UI-FOTO-SICHTBAR')) : ph.status === 'rejected' ? t('UI-ALBUM-STATUS-DECLINED') : t('UI-FOTO-IN-PRUEFUNG')}
+                </span>
               </li>
             ))}
+            {photos.length < photosMax && (
+              <li>
+                <button className="w-full aspect-[3/4] rounded-xl border-2 border-dashed border-linie grid place-items-center text-leise hover:border-akzent hover:text-akzent" onClick={() => nav('/ich/fotos')} aria-label={t('UI-FOTO-HINZU')}>
+                  <Icon name="plus" className="w-8 h-8" />
+                </button>
+              </li>
+            )}
           </ul>
-          {photos.length < 8 && (
-            <button className="btn-secondary w-full mt-2" onClick={() => nav('/ich/fotos')}>
-              {t('UI-FOTO-HINZU')}
-            </button>
-          )}
           {photos.some((x: any) => x.status === 'approved') && (
             <Toggle
               checked={pr.photoMode === 'photo'}
@@ -422,24 +517,79 @@ export function ProfilEditor() {
         <input id="name" className="input mb-1" value={name} maxLength={config?.params.nameMax ?? 20} onChange={(e) => setName(e.target.value)} />
         <p className="text-sm muted mb-4">{t('ST-KON-47')}</p>
 
-        <label className="label" htmlFor="alter">
-          {t('UI-PROFIL-ALTER')}
-        </label>
-        <input id="alter" className="input mb-1" inputMode="numeric" value={age} onChange={(e) => setAge(e.target.value.replace(/\D/g, '').slice(0, 3))} />
-        <p className="text-sm muted mb-4">{t('UI-PROFIL-ALTER-ERKL')}</p>
+        <section id="ueber" className="mb-6 scroll-mt-20">
+          <h2 className="font-semibold mb-2">{t('UI-PROFIL-UEBER-MICH')}</h2>
+          <div className="grid grid-cols-3 gap-3">
+            <label>
+              <span className="label">{t('UI-PROFIL-ALTER')}</span>
+              <input className="input" inputMode="numeric" value={age} onChange={(e) => setAge(e.target.value.replace(/\D/g, '').slice(0, 3))} />
+            </label>
+            <label>
+              <span className="label">{t('UI-PROFIL-GROESSE')}</span>
+              <input className="input" inputMode="numeric" aria-invalid={heightBad} value={height} onChange={(e) => setHeight(e.target.value.replace(/\D/g, '').slice(0, 3))} />
+            </label>
+            <label>
+              <span className="label">{t('UI-PROFIL-GEWICHT')}</span>
+              <input className="input" inputMode="numeric" aria-invalid={weightBad} value={weight} onChange={(e) => setWeight(e.target.value.replace(/\D/g, '').slice(0, 3))} />
+            </label>
+          </div>
+          <p className="text-sm muted mt-1 mb-4">{t('UI-PROFIL-ALTER-ERKL')}</p>
+          {(heightBad || weightBad) && <p className="text-sm text-gefahr -mt-3 mb-3">{t('UI-EINGABE-PRUEFEN')}</p>}
 
-        <section className="mb-6">
+          <fieldset className="mb-4">
+            <legend className="label">{t('UI-PROFIL-POSITION')}</legend>
+            <div className="flex flex-wrap gap-2">
+              {[{ key: null, label: t('UI-PROFIL-KEINE-ANGABE') }, ...(config?.positions ?? [])].map((o: any) => (
+                <button key={o.key ?? 'keine'} className={`chip min-h-tap ${position === o.key ? 'border-akzent text-akzent' : ''}`} aria-pressed={position === o.key} onClick={() => setPosition(o.key)}>
+                  {o.label}
+                </button>
+              ))}
+            </div>
+          </fieldset>
+
+          <fieldset className="mb-2">
+            <legend className="label">
+              {t('UI-PROFIL-KOERPERTYP')} · {t('UI-KOERPERTYP-MAX', { max: bodyMax })}
+            </legend>
+            <div className="flex flex-wrap gap-2">
+              {(config?.bodyTypes ?? []).map((b) => {
+                const on = bodyTypes.includes(b.key);
+                return (
+                  <button
+                    key={b.key}
+                    title={b.hint || undefined}
+                    className={`chip min-h-tap ${on ? 'border-akzent text-akzent' : ''}`}
+                    aria-pressed={on}
+                    disabled={!on && bodyTypes.length >= bodyMax}
+                    onClick={() => setBodyTypes(toggleIn(bodyTypes, b.key, bodyMax))}
+                  >
+                    {b.label}
+                  </button>
+                );
+              })}
+            </div>
+          </fieldset>
+        </section>
+
+        <section id="absicht" className="mb-6 scroll-mt-20">
           <h2 className="font-semibold mb-2">{t('ST-KON-48')}</h2>
-          <IntentionPicker
-            value={intention.key}
-            duration={intention.duration}
-            disabled={intentionBusy}
-            onChange={saveIntention}
-          />
+          <IntentionPicker value={intention.key} duration={intention.duration} disabled={intentionBusy} onChange={saveIntention} />
           <p className="text-sm muted mt-2">{t('ST-KON-49')}</p>
         </section>
 
-        <section className="mb-6">
+        <section id="text" className="mb-6 scroll-mt-20">
+          <TextArea
+            label={t('UI-PROFIL-FREITEXT')}
+            value={freeText}
+            rows={6}
+            onChange={(e) => setFreeText(e.target.value)}
+            hint={t('UI-PROFIL-FREITEXT-ZAEHLER', { zahl: [...freeText].length, max: textMax })}
+            error={[...freeText].length > textMax ? t('ST-FEH-64', { zahl: [...freeText].length, max: textMax }) : null}
+          />
+          {pr.freeTextFlagged && !hint && <Banner kind="warn">{t('ST-FEH-62')}</Banner>}
+        </section>
+
+        <section id="interessen" className="mb-6 scroll-mt-20">
           <h2 className="font-semibold mb-1">{t('UI-PROFIL-INTERESSEN')}</h2>
           <p className="text-sm muted mb-2">{t('UI-MERKMALE-MAX', { max })}</p>
           {config?.traits.map((g) => (
@@ -465,8 +615,41 @@ export function ProfilEditor() {
           ))}
         </section>
 
-        <TextArea label={t('UI-PROFIL-FREITEXT')} value={freeText} onChange={(e) => setFreeText(e.target.value)} hint={`${[...freeText].length}/400`} error={[...freeText].length > 400 ? t('ST-FEH-64', { zahl: [...freeText].length }) : null} />
-        {pr.freeTextFlagged && !hint && <Banner kind="warn">{t('ST-FEH-62')}</Banner>}
+        <section id="kinks" className="mb-6 card p-4 scroll-mt-20">
+          <button className="w-full flex items-center justify-between text-left" onClick={() => setKinksOpen(!kinksOpen)} aria-expanded={kinksOpen}>
+            <span>
+              <span className="block font-semibold">{t('UI-PROFIL-KINKS')}</span>
+              <span className="block text-sm muted">{t('UI-PROFIL-KINKS-ERKL')}</span>
+            </span>
+            <span className="muted text-xl">{kinksOpen ? '−' : '+'}</span>
+          </button>
+          {kinksOpen && (
+            <div className="mt-3">
+              <p className="text-xs muted mb-2">{t('UI-KINKS-MAX', { max: kinksMax })}</p>
+              {(config?.kinks ?? []).map((g) => (
+                <div key={g.group} className="mb-3">
+                  <p className="text-sm muted mb-1">{g.group}</p>
+                  <div className="flex flex-wrap gap-2">
+                    {g.items.map((it) => {
+                      const on = kinks.includes(it.key);
+                      return (
+                        <button
+                          key={it.key}
+                          className={`chip min-h-tap ${on ? 'border-akzent text-akzent' : ''}`}
+                          aria-pressed={on}
+                          disabled={!on && kinks.length >= kinksMax}
+                          onClick={() => setKinks(toggleIn(kinks, it.key, kinksMax))}
+                        >
+                          {it.name}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
 
         <section className="my-6">
           <h2 className="font-semibold mb-1">{t('ST-PRO-40')}</h2>
@@ -502,21 +685,81 @@ export function ProfilEditor() {
         </section>
 
         <section className="mb-6">
-          <Toggle
-            checked={responseRate}
-            onChange={(v) => (v ? setResponseRate(true) : setConfirmRR(true))}
-            label={t('UI-PROFIL-ANTWORTQUOTE')}
-            hint={t('ST-PRO-13')}
-          />
+          <Toggle checked={responseRate} onChange={(v) => (v ? setResponseRate(true) : setConfirmRR(true))} label={t('UI-PROFIL-ANTWORTQUOTE')} hint={t('ST-PRO-13')} />
         </section>
         {hint && <Banner kind="warn">{t(hint)}</Banner>}
         {err && <Banner kind="error">{err}</Banner>}
       </Page>
       <BottomBar>
-        <button className="btn-primary" disabled={!dirty || busy} onClick={save}>
+        <button className="btn-primary" disabled={!dirty || busy || heightBad || weightBad || [...freeText].length > textMax} onClick={save}>
           {t('UI-APP-SPEICHERN')}
         </button>
       </BottomBar>
+      <Sheet open={!!photoMenu} onClose={() => setPhotoMenu(null)} title={t('UI-PROFIL-FOTOS')}>
+        {photoMenu && (
+          <div className="flex flex-col gap-3">
+            {photoMenu.url && <img src={photoMenu.url} alt="" className="w-40 aspect-[3/4] object-cover rounded-xl self-center" />}
+            <p className="text-sm">
+              {photoMenu.status === 'approved'
+                ? t('UI-FOTO-SICHTBAR')
+                : photoMenu.status === 'rejected'
+                  ? t('ST-FEH-12', { grund: t(photoMenu.rejection?.reason ?? 'ST-FEH-13') })
+                  : t('ST-FEH-16', { stunden: 24 })}
+            </p>
+            {photoMenu.status !== 'rejected' && (
+              <Toggle
+                checked={photoMenu.blurred}
+                onChange={(v) => {
+                  setPhotoMenu({ ...photoMenu, blurred: v });
+                  photoAction(() => api.patch(`/api/photos/${photoMenu.id}`, { blurred: v }));
+                }}
+                label={t('ST-KON-43')}
+              />
+            )}
+            <div className="flex gap-2">
+              <button className="btn-secondary flex-1" disabled={photoMenu.index === 0} onClick={() => (move(photoMenu.index, -1), setPhotoMenu(null))}>
+                ← {t('UI-FOTO-NACH-VORNE')}
+              </button>
+              <button className="btn-secondary flex-1" disabled={photoMenu.index >= photos.length - 1} onClick={() => (move(photoMenu.index, 1), setPhotoMenu(null))}>
+                {t('UI-FOTO-NACH-HINTEN')} →
+              </button>
+            </div>
+            {photoMenu.index > 0 && (
+              <button
+                className="btn-secondary"
+                onClick={() => {
+                  const ids = photos.map((x: any) => x.id).filter((x: string) => x !== photoMenu.id);
+                  photoAction(() => api.put('/api/photos/order', { ids: [photoMenu.id, ...ids] }));
+                  setPhotoMenu(null);
+                }}
+              >
+                {t('UI-FOTO-ALS-ERSTES')}
+              </button>
+            )}
+            {photoMenu.status === 'rejected' && (
+              <button
+                className="btn-ghost"
+                onClick={async () => {
+                  const text = prompt(t('UI-FOTO-EINSPRUCH-TEXT')) ?? '';
+                  if (text.trim()) photoAction(() => api.post(`/api/photos/${photoMenu.id}/appeal`, { text }));
+                  setPhotoMenu(null);
+                }}
+              >
+                {t('UI-FOTO-EINSPRUCH')}
+              </button>
+            )}
+            <button
+              className="btn-danger"
+              onClick={() => {
+                photoAction(() => api.del(`/api/photos/${photoMenu.id}`));
+                setPhotoMenu(null);
+              }}
+            >
+              {t('UI-APP-LOESCHEN')}
+            </button>
+          </div>
+        )}
+      </Sheet>
       <Sheet open={confirmRR} onClose={() => setConfirmRR(false)} title={t('UI-PROFIL-ANTWORTQUOTE')}>
         <p className="mb-4">{t('ST-PRO-14')}</p>
         <div className="flex flex-col gap-2">

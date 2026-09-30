@@ -5,7 +5,8 @@
  * eine Position genauer als die Rasterzelle der gewählten Stufe bestimmt werden?“
  * Antwort dieses Moduls: Nein. Jede Position wird sofort auf den Mittelpunkt
  * einer Rasterzelle gerundet; alle Entfernungen werden zwischen Zellmittelpunkten
- * berechnet und verlassen den Server nur als eines von vier Bändern.
+ * berechnet und verlassen den Server nur gerundet (displayKm, Issue #12) — nie
+ * genauer als die Zelle der anderen Person.
  */
 import { p } from '../config/params.js';
 
@@ -77,6 +78,19 @@ export function band(km: number): Band {
   if (km < 3) return 2;
   if (km < 10) return 3;
   return 4;
+}
+
+/**
+ * Angezeigte Entfernung (Issue #12, #22): unter 1 km → 0 („< 1 km“), bis 14 km in
+ * ganzen Kilometern, ab 15 km in 5er-, ab 100 km in 10er-Schritten. Nie Meter.
+ * Gerechnet wird immer zwischen Zellmittelpunkten (500 m bzw. 2 km) — die Zahl ist
+ * nie genauer als die Rasterzelle der anderen Person.
+ */
+export function displayKm(km: number): number {
+  if (!Number.isFinite(km) || km < 1) return 0;
+  if (km < 14.5) return Math.max(1, Math.round(km));
+  if (km < 97.5) return Math.max(15, Math.round(km / 5) * 5);
+  return Math.round(km / 10) * 10;
 }
 
 export const BAND_TEXT_ID: Record<Band, string> = {

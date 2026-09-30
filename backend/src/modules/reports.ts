@@ -33,13 +33,14 @@ export const REASONS = {
   sexgeld: 'ST-MEL-08',
   gefahr: 'ST-MEL-09',
   intim_ohne_einwilligung: 'UI-MEL-INTIM', // FV-73
+  passt_nicht_zu_date: 'UI-MEL-DATE', // Issue #19: sucht nur Hookups / passt nicht zu Date
   anderes: 'ST-MEL-10',
 } as const;
 type Reason = keyof typeof REASONS;
 const reasonSchema = z.enum(Object.keys(REASONS) as [Reason, ...Reason[]]);
 
 const itemSchema = z.object({
-  kind: z.enum(['message', 'album_image', 'group_message']),
+  kind: z.enum(['message', 'album_image', 'group_message', 'event_chat_message']),
   id: uuid,
 });
 
@@ -55,17 +56,19 @@ async function snapshotItems(reporter: string, context: string, contextId: strin
       // AK-X11-02: bereits verfallene Nachrichten lassen sich nicht mehr melden
       if (!m || (contextId && m.conversation_id !== contextId)) throw bad('UI-MELDEN-INHALT-WEG', {}, 'inhalt_weg');
       if (m.sender_id === reporter) continue;
-      if (m.kind === 'image' && m.delivery !== 'sent' && m.delivery !== 'held_stage2') continue;
+      if ((m.kind === 'image' || m.kind === 'audio') && m.delivery !== 'sent' && m.delivery !== 'held_stage2') continue;
       let sealed: string | null = null;
       let text: string | null = null;
-      if (m.kind === 'image') {
+      if (m.kind === 'image' || m.kind === 'audio') {
         const pm = await one(`SELECT file FROM private_media WHERE id = $1`, [m.media_id]);
-        if (pm) sealed = await copyFile('zone2', pm.file, 'sealed');
+        // Einmal-Bild (Issue #26): nur solange die Datei noch da ist — dann bleibt eine Kopie für die Prüfung
+        if (pm?.file) sealed = await copyFile('zone2', pm.file, 'sealed');
+        else if (m.once) throw bad('UI-MELDEN-INHALT-WEG', {}, 'inhalt_weg');
       } else if (m.body_enc) {
         text = decStr('messages', m.body_enc, `msg:${m.conversation_id}`);
       }
       out.push({
-        kind: m.kind === 'image' ? 'bild_gespraech' : 'nachricht',
+        kind: m.kind === 'image' ? (m.once ? 'einmal_bild' : 'bild_gespraech') : m.kind === 'audio' ? 'sprachnachricht' : 'nachricht',
         snapshot: encStr('sealed', JSON.stringify({ text, at: m.created_at, kind: m.kind }), 'report'),
         sealed,
         ref: m.id,
@@ -73,15 +76,30 @@ async function snapshotItems(reporter: string, context: string, contextId: strin
       });
     } else if (it.kind === 'album_image') {
       const pm = await one(
-        `SELECT pm.* FROM private_media pm JOIN album_shares s ON s.owner_id = pm.owner_id
+        `SELECT pm.* FROM private_media pm JOIN album_shares s ON s.owner_id = pm.owner_id AND s.album_id = pm.album_id
           WHERE pm.id = $1 AND pm.kind = 'album' AND s.viewer_id = $2 AND s.state = 'accepted'`,
         [it.id, reporter],
       );
       if (!pm) throw bad('UI-MELDEN-INHALT-WEG', {}, 'inhalt_weg');
       out.push({ kind: 'bild_album', snapshot: null, sealed: await copyFile('zone2', pm.file, 'sealed'), ref: pm.id, owner: pm.owner_id });
+    } else if (it.kind === 'event_chat_message') {
+      // Issue #16: Chat Veranstalter ↔ Gast — nur die eigenen Gesprächspartner
+      const m = await one(
+        `SELECT m.* FROM event_chat_messages m JOIN events e ON e.id = m.event_id WHERE m.id = $1 AND (m.guest_id = $2 OR e.host_id = $2)`,
+        [it.id, reporter],
+      );
+      if (!m) throw bad('UI-MELDEN-INHALT-WEG', {}, 'inhalt_weg');
+      if (m.sender_id === reporter) continue;
+      out.push({
+        kind: 'veranstaltungschat',
+        snapshot: encStr('sealed', JSON.stringify({ text: decStr('messages', m.body_enc, `echat:${m.event_id}:${m.guest_id}`), at: m.created_at }), 'report'),
+        sealed: null,
+        ref: m.id,
+        owner: m.sender_id,
+      });
     } else {
       const gm = await one(
-        `SELECT g.* FROM event_group_messages g JOIN event_rsvps r ON r.event_id = g.event_id AND r.account_id = $2 WHERE g.id = $1`,
+        `SELECT g.* FROM event_group_messages g JOIN event_rsvps r ON r.event_id = g.event_id AND r.account_id = $2 AND r.status = 'angenommen' WHERE g.id = $1`,
         [it.id, reporter],
       );
       if (!gm) throw bad('UI-MELDEN-INHALT-WEG', {}, 'inhalt_weg');
@@ -184,7 +202,7 @@ export default async function reportRoutes(app: FastifyInstance) {
         reason: reasonSchema,
         description: z.string().max(3000).optional(),
         targetId: uuid.optional(),
-        context: z.enum(['profil', 'gespraech', 'album', 'gruppe', 'ort', 'ereignis', 'geloeschtes_gespraech']),
+        context: z.enum(['profil', 'gespraech', 'album', 'gruppe', 'ort', 'ereignis', 'geloeschtes_gespraech', 'veranstaltung_chat', 'date']),
         contextId: uuid.optional(),
         items: z.array(itemSchema).max(50).default([]),
         alsoBlock: z.boolean().optional(),
@@ -193,17 +211,22 @@ export default async function reportRoutes(app: FastifyInstance) {
     if (!hit('report', a.id, 30, 3600_000)) throw tooMany();
     let items: Awaited<ReturnType<typeof snapshotItems>> = [];
     let target = b.targetId ?? null;
-    if (b.context === 'gespraech' || b.context === 'album' || b.context === 'gruppe') {
+    if (b.context === 'gespraech' || b.context === 'album' || b.context === 'gruppe' || b.context === 'veranstaltung_chat') {
       items = await snapshotItems(a.id, b.context, b.context === 'gespraech' ? b.contextId : undefined, b.items);
       target ??= items.find((i) => i.owner && i.owner !== a.id)?.owner ?? null;
       if (b.context === 'gespraech' && b.contextId && !target) {
         const c = await one(`SELECT user_low, user_high FROM conversations WHERE id = $1 AND (user_low = $2 OR user_high = $2)`, [b.contextId, a.id]);
         if (c) target = c.user_low === a.id ? c.user_high : c.user_low;
       }
-    } else if (b.context === 'profil' && target) {
+    } else if ((b.context === 'profil' || b.context === 'date') && target) {
       const exists = await one(`SELECT 1 FROM profiles WHERE account_id = $1`, [target]);
       if (!exists) throw notFound();
       items = (await snapshotProfile(target)) as typeof items;
+    } else if (b.context === 'ereignis' && b.contextId) {
+      // Issue #16: Veranstaltung melden — betroffen ist, wer sie eingestellt hat
+      const e = await one(`SELECT host_id FROM events WHERE id = $1`, [b.contextId]);
+      if (!e) throw notFound();
+      target ??= e.host_id ?? null;
     }
     const res = await createReport({
       reporter: a.id,

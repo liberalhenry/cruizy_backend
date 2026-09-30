@@ -3,6 +3,7 @@
  * Läuft ausschließlich bei OPERATION_MODE=test. Alle Zeilen tragen is_test_data.
  *
  *   npm run seed:test            legt 40 Testkonten rund um Köln an, dazu Orte und Termine
+ *                                und die empfohlene „Cruizy Test-Party“ in Hamburg (Issue #16)
  *   npm run seed:test -- --clear löscht alle Testdaten wieder
  *
  * Anmeldung: test1@example.invalid … test40@example.invalid, Passwort aus
@@ -24,6 +25,7 @@ import { acceptPosition } from '../modules/location.js';
 import { CONSENT_PURPOSE, CONSENT_VERSION } from '../modules/auth.js';
 import { CONTRACT_VARIANT, CONTRACT_VERSION } from '../modules/verification.js';
 import { deleteAccountNow } from '../services/deletion.js';
+import { clearTestEvents, seedTestEvents } from './veranstaltungen.js';
 
 const NAMES = ['Alex', 'Ben', 'Can', 'Dario', 'Eli', 'Finn', 'Gabriel', 'Hakan', 'Ilias', 'Jonas', 'Kai', 'Luca', 'Mika', 'Noah', 'Oskar', 'Paul', 'Quentin', 'Rafael', 'Sami', 'Tom', 'Umut', 'Vince', 'Wim', 'Xaver', 'Yusuf', 'Zeno', 'Arne', 'Bastian', 'Cem', 'David', 'Emil', 'Felix', 'Gino', 'Henrik', 'Ivo', 'Jan', 'Kilian', 'Levin', 'Malte', 'Nico'];
 const TEXTS = [
@@ -64,7 +66,7 @@ async function testImage(seed: number): Promise<Buffer> {
 async function clear() {
   const rows = await q(`SELECT id FROM accounts WHERE is_test_data`);
   for (const r of rows) await deleteAccountNow(r.id, { vault: false });
-  await q(`DELETE FROM events WHERE is_test_data`);
+  await clearTestEvents();
   await q(`DELETE FROM places WHERE is_test_data`);
   console.log(`Testdaten entfernt (${rows.length} Konten).`);
 }
@@ -152,6 +154,7 @@ async function seed() {
       [ids[0], ids[2], inDays(1, 2), inDays(1, 6), inDays(3, 4), inDays(3, 10)],
     );
   }
+  await seedTestEvents();
   console.log(`Testdaten angelegt: ${created} neue Konten. Anmeldung: test1@example.invalid … test40@example.invalid / ${password}`);
 }
 

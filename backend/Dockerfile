@@ -14,9 +14,10 @@ RUN npx tsc -p tsconfig.json \
  && npm prune --omit=dev --no-audit --no-fund
 
 FROM node:22-bookworm-slim
-# Texterkennung für die Altersprüfung per Ausweis (Issue #7) — läuft lokal, nichts geht an Dritte
+# Texterkennung für die Altersprüfung per Ausweis (Issue #7) und ffmpeg für Sprachaufnahmen
+# (Issues #19, #28) — beides läuft lokal, nichts geht an Dritte
 RUN apt-get update \
- && apt-get install -y --no-install-recommends tesseract-ocr tesseract-ocr-deu tesseract-ocr-eng \
+ && apt-get install -y --no-install-recommends tesseract-ocr tesseract-ocr-deu tesseract-ocr-eng ffmpeg \
  && rm -rf /var/lib/apt/lists/*
 ENV NODE_ENV=production \
     TEXTS_DIR=/app/shared/texts \
@@ -28,6 +29,8 @@ WORKDIR /app/backend
 COPY --from=build /app/backend/node_modules ./node_modules
 COPY --from=build /app/backend/dist ./dist
 COPY backend/package.json ./
+# Ortsverzeichnis DE/AT/CH für Travel und Reisen (Issue #18, GeoNames CC BY 4.0)
+COPY backend/verzeichnis ./verzeichnis
 COPY shared/texts /app/shared/texts
 # Logo für die HTML-Mails (Issue #9)
 COPY shared/brand /app/shared/brand

@@ -1,0 +1,95 @@
+{
+ "UI-TAB-DATE": {
+  "t": "Date"
+ },
+ "UI-DATE-TITEL": {
+  "t": "Cruizy Date"
+ },
+ "UI-DATE-L-HEADLINE": {
+  "t": "Cruizy Date – for more than tonight."
+ },
+ "UI-DATE-L-SUB": {
+  "t": "This is about real dating. About people who want to get to know someone, not just for one night."
+ },
+ "UI-DATE-L-PUNKT-1": {
+  "t": "Verified faces: every profile shows who is really behind it."
+ },
+ "UI-DATE-L-PUNKT-2": {
+  "t": "Personal profiles with voice, hobbies and what matters to you."
+ },
+ "UI-DATE-L-PUNKT-3": {
+  "t": "Daily suggestions that fit you instead of endless scrolling."
+ },
+ "UI-DATE-L-HINWEIS": {
+  "t": "Cruizy Date is exclusively for serious dating. Hookups, sex dates and casual meetups do not belong here. That is what the main Cruizy area is for."
+ },
+ "UI-DATE-FREISCHALTEN": {
+  "t": "Unlock Date"
+ },
+ "UI-DATE-WARTELISTE": {
+  "t": "We are launching Cruizy Date city by city. You are in as soon as it starts near you."
+ },
+ "UI-DATE-AUF-WARTELISTE": {
+  "t": "Join the waitlist"
+ },
+ "UI-DATE-HEUTE": {
+  "t": "Today"
+ },
+ "UI-DATE-LIKES": {
+  "t": "Likes"
+ },
+ "UI-DATE-FERTIG-HEUTE": {
+  "t": "That’s it for today. New suggestions are waiting for you tomorrow."
+ },
+ "UI-DATE-KODEX-1": {
+  "t": "I am here because I want to date seriously."
+ },
+ "UI-DATE-KODEX-2": {
+  "t": "I am not looking for hookups or sex dates in Cruizy Date."
+ },
+ "UI-DATE-KODEX-3": {
+  "t": "I am honest in my profile and respectful towards others."
+ },
+ "UI-DATE-KODEX-4": {
+  "t": "I do not send intimate content without consent."
+ },
+ "UI-DATE-KODEX-5": {
+  "t": "I understand: anyone who breaks these rules loses access to Cruizy Date."
+ },
+ "UI-DATE-NSFW-HINWEIS": {
+  "t": "This image may show intimate content."
+ },
+ "UI-DATE-NSFW-ANSEHEN": {
+  "t": "View"
+ },
+ "UI-DATE-NSFW-ERLAUBEN": {
+  "t": "View and allow from now on"
+ },
+ "UI-DATE-NSFW-ABLEHNEN": {
+  "t": "Decline"
+ },
+ "UI-DATE-N-GESPERRT": {
+  "t": "Your access to Cruizy Date has been blocked because your behaviour did not fit serious dating. You can keep using the main Cruizy area."
+ },
+ "UI-MEL-DATE": {
+  "t": "Only looking for hookups / does not fit Date"
+ },
+ "UI-SYS-DATE-MATCH": {
+  "t": "You matched on Cruizy Date."
+ },
+ "UI-SYS-DATE-MATCH-BESTEHEND": {
+  "t": "You also matched on Cruizy Date."
+ },
+ "UI-DATE-MATCH-TITEL": {
+  "t": "It’s a match!"
+ },
+ "UI-DATE-FERTIG-HEUTE-ERKL": {
+  "t": "Up to {zahl} suggestions a day — chosen by what you have in common."
+ },
+ "UI-DATE-VERIFIZIERUNG-TITEL": {
+  "t": "Show it’s you"
+ },
+ "UI-DATE-ART9-CHECK": {
+  "t": "I explicitly consent to the processing of my biometric data for this comparison (Art. 9(2)(a) GDPR)."
+ }
+}
