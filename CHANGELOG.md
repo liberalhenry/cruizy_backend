@@ -29,6 +29,11 @@ Werkzeug → „Aktualisierung“ (Owner) oder `bash deploy/update.sh`.
 - **HTML-Mails und Corporate Design** (#9): neues Logo, Leitfaden in `shared/brand/`, alle Mails als HTML
   mit Text-Alternative; Diskretion von Betreff und Vorschauzeile bleibt; `MAIL_BRANDING=dezent`.
 
+### Geändert
+- **Owner brauchen keine zweite Person** (#3): Sperren, Kontext ausklappen, Dateiansicht und
+  Art.-18-Gegenzeichnung wirken bei Owner-Zugängen sofort und stehen als „ohne zweite Person“ im
+  Zugriffsprotokoll. Für alle anderen Zugänge gilt das Vier-Augen-Prinzip weiter — auch als Datenbankregel.
+
 ### Behoben
 - Profil bearbeiten: die Dauer einer Absicht („Wie lange?“) ließ sich nicht einstellen — die Auswahl
   sprang immer auf den Standardwert zurück (#4).

@@ -76,6 +76,14 @@ export async function requireStaff(req: FastifyRequest, role?: 'BETRIEB'): Promi
   return req.staff;
 }
 
+/**
+ * Vier-Augen-Prinzip (Issue #3): Owner (Gründer) geben selbst frei, alle anderen brauchen
+ * eine zweite Person. Die Datenbank prüft dasselbe (Trigger enforce_second_person).
+ */
+export function needsSecondPerson(s: StaffCtx): boolean {
+  return !s.founder;
+}
+
 /** Protokolleintrag — muss vor der Handlung und in derselben Transaktion stehen. */
 export async function logAccess(
   c: Queryable,

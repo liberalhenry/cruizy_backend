@@ -72,7 +72,8 @@ describe('Zusage 1 — kein Zugriff ohne Anlass', () => {
 
   it('Meldefall zeigt nur die markierten Inhalte; Kontext nur mit zweiter Person', async () => {
     const { number } = await reportedConversation();
-    const s1 = await staff();
+    // Vier-Augen-Prinzip gilt für Zugänge ohne Owner-Kennzeichen (Issue #3)
+    const s1 = await staff('MOD', false);
     const s2 = await staff();
     const rep = await one(`SELECT id FROM reports WHERE number = $1`, [number]);
     const open = await s1.c.post(`/mod-api/reports/${rep!.id}/open`, { reason: 'Belästigung prüfen' });
@@ -162,7 +163,7 @@ describe('Zusage 2 — jeder Zugriff protokolliert, nichts löschbar', () => {
 describe('Zusage 3 — Vier-Augen-Prinzip bei Sperren', () => {
   it('Antrag und Freigabe mit derselben Kennung scheitern — auch über zwei Sitzungen, auch als BETRIEB', async () => {
     const { a, number } = await reportedConversation();
-    const s = await staff('BETRIEB');
+    const s = await staff('BETRIEB', false);
     const req = await s.c.post('/mod-api/suspensions', { action: 'suspend', reason: 'wiederholte Drohungen im Gespräch', caseRef: number });
     expect(req.status).toBe(200);
     const self = await s.c.post(`/mod-api/suspensions/${req.body.id}/approve`, { reason: 'selbst' });
@@ -189,7 +190,7 @@ describe('Zusage 3 — Vier-Augen-Prinzip bei Sperren', () => {
 
   it('die zweite Person gibt frei — erst dann wirkt die Sperre; Mitteilung mit Widerspruchsweg', async () => {
     const { a, number } = await reportedConversation();
-    const s1 = await staff();
+    const s1 = await staff('MOD', false);
     const s2 = await staff();
     const req = await s1.c.post('/mod-api/suspensions', { action: 'restrict', reason: 'Drohung im Erstkontakt', caseRef: number });
     const ok = await s2.c.post(`/mod-api/suspensions/${req.body.id}/approve`, { reason: 'nachvollzogen' });
@@ -206,7 +207,7 @@ describe('Zusage 3 — Vier-Augen-Prinzip bei Sperren', () => {
 
   it('abgelehnte Freigabe bleibt im Fall; derselbe Grund taugt nicht für einen neuen Anlauf', async () => {
     const { number } = await reportedConversation();
-    const s1 = await staff();
+    const s1 = await staff('MOD', false);
     const s2 = await staff();
     const req = await s1.c.post('/mod-api/suspensions', { action: 'suspend', reason: 'zu hart für den Anlass', caseRef: number });
     const rej = await s2.c.post(`/mod-api/suspensions/${req.body.id}/reject`, { reason: 'Einschränkung reicht hier aus' });
@@ -219,7 +220,7 @@ describe('Zusage 3 — Vier-Augen-Prinzip bei Sperren', () => {
 
   it('Widerspruch entscheidet nie die Person, die gesperrt hat (M50.04)', async () => {
     const { a, number } = await reportedConversation();
-    const s1 = await staff();
+    const s1 = await staff('MOD', false);
     const s2 = await staff();
     const s3 = await staff();
     const req = await s1.c.post('/mod-api/suspensions', { action: 'suspend', reason: 'Drohung, zweiter Vorfall', caseRef: number });
@@ -240,7 +241,7 @@ describe('Zusage 3 — Vier-Augen-Prinzip bei Sperren', () => {
 describe('Zusage 4 — keine Vorschaubilder bei Hash-Treffern', () => {
   it('die Fallansicht enthält keinen Bildverweis; Dateiansicht nur mit Grund und zweiter Person', async () => {
     const hc = await hashCase();
-    const s1 = await staff();
+    const s1 = await staff('MOD', false);
     const s2 = await staff();
     beforeLock();
     const open = await s1.c.post(`/mod-api/hash-cases/${hc.id}/open`, { reason: 'Treffer prüfen' });
@@ -327,5 +328,77 @@ describe('Warteschlange Zone 1', () => {
     expect(ph!.public_file).toBeNull();
     expect(await one(`SELECT 1 FROM hash_cases WHERE account_ref = $1`, [m.id])).toBeTruthy();
     mockHashList.clear();
+  });
+});
+
+describe('Issue #3 — Owner brauchen keine zweite Person', () => {
+  it('Sperre durch einen Owner wirkt sofort; das Protokoll kennzeichnet „ohne zweite Person“', async () => {
+    const { a, number } = await reportedConversation();
+    const owner = await staff('MOD', true);
+    const r = await owner.c.post('/mod-api/suspensions', { action: 'restrict', reason: 'Drohung im Erstkontakt, eindeutig', caseRef: number });
+    expect(r.status).toBe(200);
+    expect(r.body).toMatchObject({ state: 'wirksam', selfApproved: true });
+    expect((await one(`SELECT moderation_state FROM accounts WHERE id = $1`, [a.id]))!.moderation_state).toBe('restricted');
+    const su = await one(`SELECT requested_by, approved_by FROM suspensions WHERE id = $1`, [r.body.id]);
+    expect(su!.approved_by).toBe(owner.id);
+    expect(su!.requested_by).toBe(owner.id);
+    const log = await one(`SELECT 1 FROM access_log WHERE staff_id = $1 AND action = 'sperre_freigegeben_restrict_ohne_zweite_person'`, [owner.id]);
+    expect(log).toBeTruthy();
+    expect(await one(`SELECT 1 FROM notices WHERE account_id = $1 AND kind = 'sperre'`, [a.id])).toBeTruthy();
+  });
+
+  it('Kontext ausklappen: ein Owner braucht keine Freigabe, ein MOD weiter schon', async () => {
+    const { number } = await reportedConversation();
+    const rep = await one(`SELECT id FROM reports WHERE number = $1`, [number]);
+    const owner = await staff('BETRIEB', true);
+    const req = await owner.c.post(`/mod-api/reports/${rep!.id}/context/request`, { reason: 'Zusammenhang unklar' });
+    expect(req.body.approved).toBe(true);
+    const ctx = await owner.c.post(`/mod-api/reports/${rep!.id}/context`, { approvalId: req.body.approvalId, reason: 'Zusammenhang' });
+    expect(ctx.status).toBe(200);
+    expect(await one(`SELECT 1 FROM access_log WHERE staff_id = $1 AND action = 'kontext_ohne_zweite_person'`, [owner.id])).toBeTruthy();
+
+    const mod = await staff('MOD', false);
+    const mreq = await mod.c.post(`/mod-api/reports/${rep!.id}/context/request`, { reason: 'Zusammenhang unklar' });
+    expect(mreq.body.approved).toBe(false);
+    expect((await mod.c.post(`/mod-api/reports/${rep!.id}/context`, { approvalId: mreq.body.approvalId, reason: 'x' })).status).toBe(403);
+  });
+
+  it('Datei ansehen (Hash-Fall): ein Owner ohne zweite Person', async () => {
+    const hc = await hashCase();
+    const owner = await staff('BETRIEB', true);
+    beforeLock();
+    await owner.c.post(`/mod-api/hash-cases/${hc.id}/open`, { reason: 'Treffer prüfen' });
+    const rq = await owner.c.post(`/mod-api/hash-cases/${hc.id}/view/request`, { reason: 'Falschtreffer ausschließen, Liste meldet Abweichung' });
+    expect(rq.body.approved).toBe(true);
+    const view = await owner.c.post(`/mod-api/hash-cases/${hc.id}/view`, { approvalId: rq.body.approvalId, reason: 'Abgleich' });
+    expect(view.status).toBe(200);
+  });
+
+  it('Art. 18: ein Owner zeichnet den eigenen Entwurf gegen, ein MOD nicht', async () => {
+    const { number } = await reportedConversation();
+    const owner = await staff('BETRIEB', true);
+    const d = await owner.c.post('/mod-api/art18', { caseRef: number, reason: 'Verdacht auf Gefahr für Leib und Leben' });
+    const text = d.body.content as string;
+    await owner.c.post(`/mod-api/art18/${d.body.id}/confirm`, { content: text, read: true });
+    expect((await owner.c.post(`/mod-api/art18/${d.body.id}/countersign`, { reason: 'geprüft' })).status).toBe(200);
+    expect((await one(`SELECT countersigned_by FROM authority_reports WHERE id = $1`, [d.body.id]))!.countersigned_by).toBe(owner.id);
+
+    const { number: n2 } = await reportedConversation();
+    const mod = await staff('BETRIEB', false);
+    const d2 = await mod.c.post('/mod-api/art18', { caseRef: n2, reason: 'Verdacht auf Gefahr für Leib und Leben' });
+    await mod.c.post(`/mod-api/art18/${d2.body.id}/confirm`, { content: d2.body.content, read: true });
+    expect((await mod.c.post(`/mod-api/art18/${d2.body.id}/countersign`, { reason: 'selbst' })).status).toBe(403);
+  });
+
+  it('die Datenbank erlaubt die Selbstfreigabe nur einem aktiven Owner', async () => {
+    const { number } = await reportedConversation();
+    const mod = await staff('MOD', false);
+    const r = await mod.c.post('/mod-api/suspensions', { action: 'suspend', reason: 'wiederholte Drohungen im Gespräch', caseRef: number });
+    await expect(q(`UPDATE suspensions SET approved_by = requested_by, approved_at = now() WHERE id = $1`, [r.body.id])).rejects.toThrow(/Vier-Augen/);
+    // wird die Person zum Owner, ist es erlaubt; gesperrte Owner nicht
+    await q(`UPDATE staff SET founder = true, disabled_at = now() WHERE id = $1`, [mod.id]);
+    await expect(q(`UPDATE suspensions SET approved_by = requested_by, approved_at = now() WHERE id = $1`, [r.body.id])).rejects.toThrow(/Vier-Augen/);
+    await q(`UPDATE staff SET disabled_at = NULL WHERE id = $1`, [mod.id]);
+    await q(`UPDATE suspensions SET approved_by = requested_by, approved_at = now() WHERE id = $1`, [r.body.id]);
   });
 });

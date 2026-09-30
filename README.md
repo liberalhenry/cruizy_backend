@@ -62,8 +62,10 @@ Name, Rolle und Owner-Status ändern, sperren, neues Passwort oder neuen zweiten
 löschen. Jede Änderung braucht eine Begründung und steht im Zugriffsprotokoll; es bleibt immer
 mindestens ein aktiver Owner. Unter **„Mein Zugang“** ändert jede Person ihr eigenes Passwort.
 
-Mindestens **zwei** Zugänge sind nötig: Sperren, Kontext ausklappen, Dateiansicht und
-Art.-18-Meldungen brauchen immer eine zweite Person. Es gibt keinen Notfallzugang.
+**Vier-Augen-Prinzip:** Für MOD- und BETRIEB-Zugänge ohne Owner-Kennzeichen brauchen Sperren,
+Kontext ausklappen, Dateiansicht und Art.-18-Meldungen eine zweite Person. **Owner** handeln dabei
+ohne zweite Person; jede solche Handlung steht als „ohne zweite Person“ im Zugriffsprotokoll. Die
+Regel steht zusätzlich in der Datenbank (Trigger `enforce_second_person`). Es gibt keinen Notfallzugang.
 
 ### Testbetrieb und Echtbetrieb
 
@@ -193,7 +195,7 @@ Uhrzeitsperre für Hash-Fälle sind absichtlich **keine** Parameter.
 - Erstkontakt nur Text; Bilder erst nach Antwort oder Freigabe; höflicher Ausstieg mit
   5 Sekunden „Rückgängig“; keine Lese- oder Tippanzeige.
 - Moderation: jede Einsicht zuerst ins unveränderliche Zugriffsprotokoll (Datenbank-Trigger),
-  sonst geschieht nichts; Vier-Augen-Prinzip in der Anwendung **und** als Datenbankregel;
+  sonst geschieht nichts; Vier-Augen-Prinzip für Nicht-Owner in der Anwendung **und** als Datenbankregel;
   Hash-Fälle ohne Vorschaubild; keine Suche über private Inhalte; kein Werkzeugzugang von der
   App-Adresse aus.
 - Löschung mit 30 Tagen Karenz, danach vollständig (ein Test prüft jede Tabelle mit
