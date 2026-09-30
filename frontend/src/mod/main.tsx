@@ -9,7 +9,7 @@ import { api, ApiError, errText, setUnauthorizedHandler } from '../lib/api';
 import { Banner, Field } from '../components/ui';
 import { t } from '../lib/texts';
 import { Screens, type Staff } from './screens';
-import { Logo } from './common';
+import { Logo, setOwnerMode } from './common';
 
 function Login({ onDone }: { onDone: () => void }) {
   const [login, setLogin] = useState('');
@@ -71,6 +71,7 @@ function ModApp() {
   }, []);
   if (me === undefined) return <p className="p-6 muted">…</p>;
   if (me === null) return <Login onDone={load} />;
+  setOwnerMode(!!me.staff.founder);
   return <Screens me={me} onLogout={async () => (await api.post('/mod-api/logout').catch(() => {}), setMe(null))} reloadMe={load} />;
 }
 

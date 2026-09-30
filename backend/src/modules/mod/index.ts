@@ -14,7 +14,7 @@ import { body, ipKey, params } from '../../lib/http.js';
 import { hit } from '../../lib/rate.js';
 import { discord } from '../../services/discord.js';
 import { appVersion } from '../../lib/version.js';
-import { STAFF_COOKIE, afterHashLock, createStaffSession, hashCasesToday, requireStaff, HASH_CASES_PER_DAY } from './core.js';
+import { STAFF_COOKIE, afterHashLock, createStaffSession, fillOwnerReason, hashCasesToday, requireStaff, HASH_CASES_PER_DAY } from './core.js';
 import queueRoutes from './queue.js';
 import reportRoutes from './reports.js';
 import hashRoutes from './hash.js';
@@ -43,6 +43,16 @@ export default async function modRoutes(app: FastifyInstance) {
       const modHost = new URL(e.MOD_URL).host;
       const host = (req.headers['x-forwarded-host'] as string) ?? req.headers.host;
       if (host !== modHost) throw new AppError(404, 'UI-NICHT-VERFUEGBAR', {}, 'nicht_gefunden');
+    });
+
+    // Owner brauchen nie eine Begründung: fehlt sie, wird der Platzhalter eingesetzt, bevor die Route
+    // ihre Eingaben prüft — für jede Werkzeug-Route, auch künftige.
+    mod.addHook('preHandler', async (req) => {
+      if (req.url.startsWith('/mod-api/login') || req.url.startsWith('/mod-api/logout')) return;
+      const s = await requireStaff(req).catch(() => null);
+      if (!s?.founder) return;
+      fillOwnerReason(req.body);
+      fillOwnerReason(req.query);
     });
 
     mod.post('/mod-api/login', async (req, reply) => {

@@ -2731,6 +2731,10 @@
   "s": "ENTWURF",
   "t": "Ohne Begründung wird nichts ausgeführt."
  },
+ "UI-MOD-GRUND-NEUTRAL": {
+  "s": "ENTWURF",
+  "t": "Nach Prüfung durch unser Team."
+ },
  "UI-MOD-HASH-WIDERSPRUCH": {
   "s": "ENTWURF",
   "t": "Einen Hash-Fall entscheidet nicht das Werkzeug, sondern die Behörde."
@@ -3758,6 +3762,10 @@
  "UI-SUP-GRUND": {
   "s": "ENTWURF",
   "t": "Begründung des Teams:"
+ },
+ "UI-SUP-GRUND-NEUTRAL": {
+  "s": "ENTWURF",
+  "t": "Damit wir dir bei deiner Anfrage helfen können."
  },
  "UI-SUP-KEINE-FREIGABE": {
   "s": "ENTWURF",

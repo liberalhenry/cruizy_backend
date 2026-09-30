@@ -361,7 +361,8 @@ sys.dont_write_bytecode = True
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from ui_funktionen import ERSETZT, NEU  # noqa: E402
 from ui_v040 import ERSETZT as ERSETZT_040, NEU as NEU_040  # noqa: E402  (Issues #32–#39)
-for _neu, _ersetzt in ((NEU, ERSETZT), (NEU_040, ERSETZT_040)):
+from ui_postfach import ERSETZT as ERSETZT_PF, NEU as NEU_PF  # noqa: E402  (Postfach, Tickets, Teams)
+for _neu, _ersetzt in ((NEU, ERSETZT), (NEU_040, ERSETZT_040), (NEU_PF, ERSETZT_PF)):
     for _k in _neu:
         if _k in T:
             raise SystemExit(f'Text {_k} doppelt')

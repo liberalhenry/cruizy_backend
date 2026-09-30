@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Banner, Sheet, Toggle, useAsync } from '../components/ui';
 import { api } from '../lib/api';
 import { fmtDate } from '../lib/texts';
-import { Card, Reason, useAction } from './common';
+import { Card, Reason, useAction, tooShort } from './common';
 
 interface Member {
   id: string;
@@ -70,7 +70,7 @@ export function Team({ meId }: { meId: string }) {
   const [secret, setSecret] = useState<Secret | null>(null);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const { run, box } = useAction();
-  const reasonOk = reason.trim().length >= 5;
+  const reasonOk = !tooShort(reason, 5);
   const items: Member[] = data?.items ?? [];
 
   const act = async (fn: () => Promise<any>, ok: string, after?: (r: any) => void) => {

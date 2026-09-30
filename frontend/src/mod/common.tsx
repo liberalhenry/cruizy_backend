@@ -35,9 +35,25 @@ export function useAction() {
   return { run, box };
 }
 
-/** Grund-Eingabe: ohne Begründung wird nichts ausgeführt (M60). */
+// Owner handeln allein und ohne Begründung — gesetzt beim Laden des eigenen Zugangs (main.tsx).
+// Der Server füllt eine fehlende Begründung bei Owner selbst; hier wird nur nichts mehr gesperrt.
+let ownerMode = false;
+export function setOwnerMode(on: boolean) {
+  ownerMode = on;
+}
+export function isOwnerMode() {
+  return ownerMode;
+}
+
+/** Begründung zu kurz? Für Owner nie — sie brauchen keine. */
+export function tooShort(value: string, min: number) {
+  return !ownerMode && value.trim().length < min;
+}
+
+/** Grund-Eingabe: ohne Begründung wird nichts ausgeführt (M60) — außer von Owner. */
 export function Reason({ value, onChange, label = 'Begründung (wird protokolliert)', min = 1 }: { value: string; onChange: (v: string) => void; label?: string; min?: number }) {
-  return <TextArea label={label} value={value} onChange={(e) => onChange(e.target.value)} hint={min > 1 ? `mindestens ${min} Zeichen` : undefined} />;
+  const hint = ownerMode ? 'als Owner freiwillig' : min > 1 ? `mindestens ${min} Zeichen` : undefined;
+  return <TextArea label={label} value={value} onChange={(e) => onChange(e.target.value)} hint={hint} />;
 }
 
 export function Card({ title, children, right }: { title?: ReactNode; children: ReactNode; right?: ReactNode }) {

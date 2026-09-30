@@ -11,6 +11,7 @@
 import { p } from '../config/params.js';
 import { one, q } from '../db/pool.js';
 import { decStr, encStr } from '../lib/crypto.js';
+import { t } from '../lib/texts.js';
 
 export const SCOPES = ['konto', 'profil', 'diagnose'] as const;
 export type Scope = (typeof SCOPES)[number];
@@ -29,7 +30,8 @@ export function viewRequest(r: Record<string, any>): DataRequestView {
   return {
     id: r.id,
     scope: r.scope,
-    reason: r.reason,
+    // Owner ohne Begründung: die Person sieht einen neutralen Satz statt des Platzhalters
+    reason: r.reason === 'Ohne Begründung (Owner)' ? t('UI-SUP-GRUND-NEUTRAL') : r.reason,
     status: r.status,
     createdAt: r.created_at,
     decidedAt: r.decided_at,

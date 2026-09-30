@@ -107,9 +107,9 @@ describe('Zusage 2 — jeder Zugriff protokolliert, nichts löschbar', () => {
     await expect(q(`TRUNCATE access_log`)).rejects.toThrow(/Unveränderliche/);
   });
 
-  it('ohne Begründung wird nicht gehandelt', async () => {
+  it('ohne Begründung wird nicht gehandelt (außer von Owner, siehe owner.test.ts)', async () => {
     const { number } = await reportedConversation();
-    const s = await staff();
+    const s = await staff('MOD', false);
     const rep = await one(`SELECT id FROM reports WHERE number = $1`, [number]);
     const r = await s.c.post(`/mod-api/reports/${rep!.id}/open`, { reason: '   ' });
     expect(r.status).toBe(400);

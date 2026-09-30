@@ -118,7 +118,8 @@ export default async function appealRoutes(app: FastifyInstance) {
         text: decStr('tickets', ap.text_enc, 'appeal'),
         original,
         automated: ap.original_auto,
-        mayDecide: !excluded.includes(s.id),
+        // Owner entscheiden alles allein — auch Widersprüche gegen eigene Entscheidungen
+        mayDecide: s.founder || !excluded.includes(s.id),
         disclose: involved.includes(s.id),
         hashCase,
       };
@@ -141,8 +142,9 @@ export default async function appealRoutes(app: FastifyInstance) {
     const ap = await one(`SELECT * FROM appeals WHERE id = $1 AND decided_at IS NULL`, [id]);
     if (!ap) throw notFound();
     const { excluded, involved } = await excludedDeciders(ap);
-    // M50.04: technisch erzwungen — keine Rolle hebt das auf
-    if (excluded.includes(s.id)) throw new AppError(403, 'UI-MOD-EIGENER-FALL', {}, 'eigener_fall');
+    // M50.04: technisch erzwungen — nur Owner dürfen auch über eigene Entscheidungen befinden
+    const ownCase = excluded.includes(s.id);
+    if (ownCase && !s.founder) throw new AppError(403, 'UI-MOD-EIGENER-FALL', {}, 'eigener_fall');
     const hashCase = await isHashCase(ap);
     if (hashCase && b.outcome !== 'bleibt') throw bad('UI-MOD-HASH-WIDERSPRUCH', {}, 'hash_fall');
     let answer = b.answer;
@@ -150,7 +152,7 @@ export default async function appealRoutes(app: FastifyInstance) {
     if (hashCase) answer += `\n\n${t('UI-WIDERSPRUCH-HASH-WEG')}`;
 
     const restorePhoto = ap.photo_id && b.outcome === 'aufgehoben' && !hashCase;
-    await logged(s, ap.number, `widerspruch_${b.outcome}`, b.answer, async (c) => {
+    await logged(s, ap.number, ownCase ? `widerspruch_${b.outcome}_ohne_zweite_person` : `widerspruch_${b.outcome}`, b.answer, async (c) => {
       await c.query(`UPDATE appeals SET decided_by = $2, decided_at = now(), outcome = $3, answer = $4, our_error = $5 WHERE id = $1`, [id, s.id, b.outcome, answer, b.ourError]);
       if (b.outcome === 'bleibt') return;
       // Sperre aufheben oder abmildern — stellt vollständig her (M50.07)

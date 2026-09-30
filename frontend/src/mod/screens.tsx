@@ -5,7 +5,7 @@ import { api, errText } from '../lib/api';
 import { fmtDate, t } from '../lib/texts';
 import { EventDetail, Veranstalter, VeranstaltungenPruefen } from './veranstaltungen';
 import { DateAdmin } from './date';
-import { Card, Logo, Reason, useAction } from './common';
+import { Card, Logo, Reason, isOwnerMode, useAction, tooShort } from './common';
 import { MeinZugang, Team } from './team';
 import { Ausweise } from './ausweis';
 import { Aktualisierung } from './updates';
@@ -461,7 +461,7 @@ function Meldungen({ owner }: { owner: boolean }) {
                   <Reason value={ctxReason} onChange={setCtxReason} min={5} />
                   <button
                     className="btn-secondary"
-                    disabled={ctxReason.trim().length < 5}
+                    disabled={tooShort(ctxReason, 5)}
                     onClick={async () => {
                       const r: any = await run(
                         () => api.post(`/mod-api/reports/${open.report.id}/context/request`, { reason: ctxReason }),
@@ -514,8 +514,8 @@ function Meldungen({ owner }: { owner: boolean }) {
               <select className="input mb-2" value={decision} onChange={(e) => setDecision(e.target.value)}>
                 <option value="bleibt">Kein Verstoß</option>
                 <option value="inhalt_entfernt">Inhalt entfernen</option>
-                <option value="eingeschraenkt">Einschränken (Antrag, zweite Person)</option>
-                <option value="gesperrt">Sperren (Antrag, zweite Person)</option>
+                <option value="eingeschraenkt">{isOwnerMode() ? 'Einschränken (wirkt sofort)' : 'Einschränken (Antrag, zweite Person)'}</option>
+                <option value="gesperrt">{isOwnerMode() ? 'Sperren (wirkt sofort)' : 'Sperren (Antrag, zweite Person)'}</option>
                 <option value="an_behoerde">An Behörde (Art. 18 vorbereiten)</option>
                 <option value="date_verstoss">Date-Verstoß (zählt zur Date-Sperre, Hauptkonto bleibt)</option>
               </select>
@@ -523,7 +523,7 @@ function Meldungen({ owner }: { owner: boolean }) {
               <div className="flex gap-2 flex-wrap">
                 <button
                   className="btn-primary"
-                  disabled={decReason.trim().length < 10}
+                  disabled={tooShort(decReason, 10)}
                   onClick={async () => {
                     const r = await run(() => api.post(`/mod-api/reports/${open.report.id}/decide`, { decision, reason: decReason }), 'Gespeichert.');
                     if (r) {
@@ -627,7 +627,7 @@ function Hash({ me, reloadMe }: { me: Staff; reloadMe: () => void }) {
                   <Reason value={viewReason} onChange={setViewReason} min={20} />
                   <button
                     className="btn-secondary"
-                    disabled={viewReason.trim().length < 20}
+                    disabled={tooShort(viewReason, 20)}
                     onClick={async () => {
                       const r: any = await run(() => api.post(`/mod-api/hash-cases/${open.id}/view/request`, { reason: viewReason }), me.staff.founder ? undefined : 'Beantragt.');
                       if (!r) return;
@@ -729,7 +729,7 @@ function Freigaben({ owner }: { owner: boolean }) {
               <button className="btn-danger" disabled={!reason.trim()} onClick={() => run(() => api.post(`/mod-api/suspensions/${s.id}/approve`, { reason }), 'Freigegeben — wirkt jetzt.').then(susp.reload)}>
                 Freigeben
               </button>
-              <button className="btn-ghost" disabled={reason.trim().length < 10} onClick={() => run(() => api.post(`/mod-api/suspensions/${s.id}/reject`, { reason }), 'Abgelehnt — die Begründung bleibt im Fall.').then(susp.reload)}>
+              <button className="btn-ghost" disabled={tooShort(reason, 10)} onClick={() => run(() => api.post(`/mod-api/suspensions/${s.id}/reject`, { reason }), 'Abgelehnt — die Begründung bleibt im Fall.').then(susp.reload)}>
                 Ablehnen (mind. 10 Zeichen)
               </button>
             </div>
@@ -766,7 +766,7 @@ function Sperren({ owner }: { owner: boolean }) {
         </select>
         <input className="input mb-2" placeholder="Fall- oder Meldenummer (M-… oder T-…)" value={caseRef} onChange={(e) => setCaseRef(e.target.value)} />
         <Reason value={reason} onChange={setReason} label="Grund — geht wörtlich in die Mitteilung" min={10} />
-        <button className="btn-primary" disabled={reason.trim().length < 10 || !caseRef} onClick={() => run(() => api.post('/mod-api/suspensions', { action, caseRef, reason }), owner ? 'Wirksam.' : 'Beantragt — wartet auf die zweite Person.').then(reload)}>
+        <button className="btn-primary" disabled={tooShort(reason, 10) || !caseRef} onClick={() => run(() => api.post('/mod-api/suspensions', { action, caseRef, reason }), owner ? 'Wirksam.' : 'Beantragt — wartet auf die zweite Person.').then(reload)}>
           {owner ? 'Jetzt wirksam machen' : 'Beantragen'}
         </button>
       </Card>
@@ -936,7 +936,7 @@ function Protokoll({ isBetrieb }: { isBetrieb: boolean }) {
           <Reason value={reason} onChange={setReason} min={10} />
           <button
             className="btn-secondary"
-            disabled={reason.trim().length < 10}
+            disabled={tooShort(reason, 10)}
             onClick={async () => {
               const res = await fetch('/mod-api/log/export', { method: 'POST', headers: { 'x-cruizy': '1', 'content-type': 'application/json' }, body: JSON.stringify({ reason }) });
               if (!res.ok) return;
@@ -1008,7 +1008,7 @@ function Orte() {
             <Reason value={reason} onChange={setReason} min={5} />
             <button
               className="btn-primary"
-              disabled={reason.trim().length < 5}
+              disabled={tooShort(reason, 5)}
               onClick={async () => {
                 const r = await run(() => api.post(`/mod-api/claims/${open.id}/decide`, { decision, reason, message: message || undefined }), 'Gespeichert.');
                 if (r) {
@@ -1039,7 +1039,7 @@ function Orte() {
                     </button>
                   )}
                   {p.claimed_at && (
-                    <button className="btn-ghost" disabled={reason.trim().length < 5} onClick={() => run(() => api.post(`/mod-api/places/${p.id}/revoke-claim`, { reason }), 'Widerrufen.').then(places.reload)}>
+                    <button className="btn-ghost" disabled={tooShort(reason, 5)} onClick={() => run(() => api.post(`/mod-api/places/${p.id}/revoke-claim`, { reason }), 'Widerrufen.').then(places.reload)}>
                       Widerrufen
                     </button>
                   )}
@@ -1264,7 +1264,7 @@ function Art18({ isBetrieb, owner }: { isBetrieb: boolean; owner: boolean }) {
       <Card title="Entwurf aus einem Fall">
         <input className="input mb-2" placeholder="Fallnummer (M-… oder T-…)" value={caseRef} onChange={(e) => setCaseRef(e.target.value)} />
         <Reason value={reason} onChange={setReason} min={5} />
-        <button className="btn-primary" disabled={reason.trim().length < 5 || !caseRef} onClick={async () => { const r: any = await run(() => api.post('/mod-api/art18', { caseRef, reason }), 'Entwurf angelegt.'); if (r) { reload(); show(r.id); } }}>
+        <button className="btn-primary" disabled={tooShort(reason, 5) || !caseRef} onClick={async () => { const r: any = await run(() => api.post('/mod-api/art18', { caseRef, reason }), 'Entwurf angelegt.'); if (r) { reload(); show(r.id); } }}>
           Entwurf anlegen
         </button>
       </Card>
@@ -1402,7 +1402,7 @@ function DataRelease({ ticket, onChange }: { ticket: any; onChange: () => void }
           <TextArea label="Begründung (sieht die Person)" value={why} onChange={(e) => setWhy(e.target.value)} />
           <button
             className="btn-secondary self-start"
-            disabled={!scope.length || why.trim().length < 10}
+            disabled={!scope.length || tooShort(why, 10)}
             onClick={() => run(() => api.post(`/mod-api/tickets/${ticket.id}/data-request`, { scope, reason: why }), 'Anfrage gesendet.').then((r) => r && (setWhy(''), onChange()))}
           >
             Um Freigabe bitten
@@ -1538,7 +1538,7 @@ function Vorgaenge() {
                     </option>
                   ))}
               </select>
-              <button className="btn-secondary" disabled={reason.trim().length < 3 || cat === open.category} onClick={() => run(() => api.post(`/mod-api/tickets/${open.id}/category`, { category: cat, reason }), 'Kategorie geändert — neue Frist.').then(() => openTicket(open.id))}>
+              <button className="btn-secondary" disabled={tooShort(reason, 3) || cat === open.category} onClick={() => run(() => api.post(`/mod-api/tickets/${open.id}/category`, { category: cat, reason }), 'Kategorie geändert — neue Frist.').then(() => openTicket(open.id))}>
                 Kategorie ändern
               </button>
             </div>
@@ -1562,7 +1562,7 @@ function Vorgaenge() {
                   </option>
                 ))}
               </select>
-              <button className="btn-secondary" disabled={reason.trim().length < 5} onClick={() => run(() => api.post(`/mod-api/tickets/${open.id}/to-case`, { reportReason, reason }), 'Als Moderationsfall angelegt.').then(() => (setOpen(null), reload()))}>
+              <button className="btn-secondary" disabled={tooShort(reason, 5)} onClick={() => run(() => api.post(`/mod-api/tickets/${open.id}/to-case`, { reportReason, reason }), 'Als Moderationsfall angelegt.').then(() => (setOpen(null), reload()))}>
                 Als Moderationsfall öffnen
               </button>
             </div>
@@ -1656,7 +1656,7 @@ function Verwaltung() {
                     <input className="input h-9 min-h-0 text-xs" placeholder="neuer Wert (JSON)" value={edit[p.key] ?? ''} onChange={(e) => setEdit({ ...edit, [p.key]: e.target.value })} />
                     <button
                       className="btn-secondary min-h-0 h-9"
-                      disabled={!edit[p.key] || reason.trim().length < 5}
+                      disabled={!edit[p.key] || tooShort(reason, 5)}
                       onClick={() => {
                         let value: unknown;
                         try {

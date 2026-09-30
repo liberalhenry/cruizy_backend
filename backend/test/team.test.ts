@@ -45,8 +45,9 @@ describe('Teamverwaltung (Issue #8)', () => {
     // doppelte Kennung
     const dup = await owner.c.post('/mod-api/team', { name: 'Noch wer', login, role: 'MOD', reason: 'Verstärkung' });
     expect(dup.status).toBe(409);
-    // ohne Begründung nichts
-    expect((await owner.c.post('/mod-api/team', { name: 'Ohne Grund', login: uniq(), role: 'MOD', reason: '' })).status).toBe(400);
+    // Owner brauchen keine Begründung — der Platzhalter steht im Protokoll
+    const noReason = await owner.c.post('/mod-api/team', { name: 'Ohne Grund', login: uniq(), role: 'MOD', reason: '' });
+    expect(noReason.status).toBe(200);
   });
 
   it('Rolle ändern, sperren, neues Passwort, neuer zweiter Faktor', async () => {

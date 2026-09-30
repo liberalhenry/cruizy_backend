@@ -19,7 +19,7 @@ import { body, idParam, params } from '../../lib/http.js';
 import { t } from '../../lib/texts.js';
 import { closeAllFor, emit } from '../../services/hub.js';
 import { createNotice } from '../../services/notify.js';
-import { logged, needsSecondPerson, requireStaff, type StaffCtx } from './core.js';
+import { logged, needsSecondPerson, requireStaff, userFacingReason, type StaffCtx } from './core.js';
 import { informParties } from './reports.js';
 
 const ACTIONS = ['restrict', 'suspend', 'suspend_delete', 'lift'] as const;
@@ -70,7 +70,7 @@ async function applySuspension(c: Queryable, s: { id: string; account_id: string
 }
 
 /** Freigabe — durch die zweite Person oder, ohne sie, durch einen Owner (Issue #3). */
-async function approveSuspension(s: StaffCtx, id: string, reason: string) {
+export async function approveSuspension(s: StaffCtx, id: string, reason: string) {
   const su = await one(`SELECT * FROM suspensions WHERE id = $1`, [id]);
   if (!su || su.approved_at || su.rejected_at) throw notFound();
   // Kein Umweg: dieselbe Kennung — gleich welche Sitzung, gleich welche Rolle — gibt nie frei.
@@ -108,7 +108,7 @@ async function approveSuspension(s: StaffCtx, id: string, reason: string) {
       su.account_id,
       'sperre',
       t('UI-SPERRE-TITEL'),
-      `${t('ST-MEL-23', { inhalt: what, begruendung: su.reason })}\n\n${t('UI-SPERRE-AB', { zeit: new Date(effectiveAt).toISOString() })}\n${t('UI-WIDERSPRUCH-FRIST', { stunden: hours })}${su.action === 'suspend_delete' ? `\n${t('UI-SPERRE-LOESCHUNG')}` : ''}`,
+      `${t('ST-MEL-23', { inhalt: what, begruendung: userFacingReason(su.reason, t('UI-MOD-GRUND-NEUTRAL')) })}\n\n${t('UI-SPERRE-AB', { zeit: new Date(effectiveAt).toISOString() })}\n${t('UI-WIDERSPRUCH-FRIST', { stunden: hours })}${su.action === 'suspend_delete' ? `\n${t('UI-SPERRE-LOESCHUNG')}` : ''}`,
       id,
     );
     emit(su.account_id, 'konto', { moderation: STATE_FOR[su.action as Action] });
@@ -237,7 +237,8 @@ export default async function suspensionRoutes(app: FastifyInstance) {
     const b = body(req, z.object({ reason: z.string().trim().min(10).max(2000) }));
     const su = await one(`SELECT * FROM suspensions WHERE id = $1`, [id]);
     if (!su || su.approved_at || su.rejected_at) throw notFound();
-    if (su.requested_by === s.id) throw new AppError(403, 'UI-MOD-EIGENER-ANTRAG', {}, 'eigener_antrag');
+    // Owner dürfen auch den eigenen Antrag verwerfen
+    if (su.requested_by === s.id && needsSecondPerson(s)) throw new AppError(403, 'UI-MOD-EIGENER-ANTRAG', {}, 'eigener_antrag');
     const ref = su.report_id ? (await one(`SELECT number FROM reports WHERE id = $1`, [su.report_id]))?.number : `sperre:${id}`;
     await logged(s, ref ?? `sperre:${id}`, 'sperre_freigabe_abgelehnt', b.reason, async (c) => {
       await c.query(`UPDATE suspensions SET rejected_by = $2, rejected_at = now(), rejection_reason = $3 WHERE id = $1`, [id, s.id, b.reason]);
