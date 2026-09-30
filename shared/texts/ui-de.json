@@ -2331,6 +2331,10 @@
   "s": "ENTWURF",
   "t": "Presse, Behörde, rechtliche Anfrage"
  },
+ "UI-HLF-KAT-ALLGEMEIN": {
+  "s": "ENTWURF",
+  "t": "Allgemeine Frage"
+ },
  "UI-HOME-SCHRITT-1": {
   "s": "ENTWURF",
   "t": "Tippe unten in Safari auf „Teilen“ (Quadrat mit Pfeil)."
@@ -2731,6 +2735,10 @@
   "s": "ENTWURF",
   "t": "Ohne Begründung wird nichts ausgeführt."
  },
+ "UI-MOD-GRUND-NEUTRAL": {
+  "s": "ENTWURF",
+  "t": "Nach Prüfung durch unser Team."
+ },
  "UI-MOD-HASH-WIDERSPRUCH": {
   "s": "ENTWURF",
   "t": "Einen Hash-Fall entscheidet nicht das Werkzeug, sondern die Behörde."
@@ -3098,6 +3106,34 @@
  "UI-PASSWORT-KURZ": {
   "s": "ENTWURF",
   "t": "Das Passwort braucht mindestens {zahl} Zeichen."
+ },
+ "UI-PF-KEIN-GEGENUEBER": {
+  "s": "ENTWURF",
+  "t": "Zu diesem Ticket gibt es niemanden, dem wir schreiben könnten."
+ },
+ "UI-PF-MELDUNG": {
+  "s": "ENTWURF",
+  "t": "Meldung"
+ },
+ "UI-PF-OHNE-BESCHREIBUNG": {
+  "s": "ENTWURF",
+  "t": "(Ohne Beschreibung gemeldet.)"
+ },
+ "UI-PF-RUECKMELDUNG": {
+  "s": "ENTWURF",
+  "t": "Rückmeldung"
+ },
+ "UI-PF-SCHON-IM-TEAM": {
+  "s": "ENTWURF",
+  "t": "Das Ticket liegt schon bei diesem Team."
+ },
+ "UI-PF-WEITERGEGEBEN": {
+  "s": "ENTWURF",
+  "t": "Von {von} an {an} weitergegeben ({person})."
+ },
+ "UI-PF-WIDERSPRUCH": {
+  "s": "ENTWURF",
+  "t": "Widerspruch"
  },
  "UI-PIN-FALSCH": {
   "s": "ENTWURF",
@@ -3758,6 +3794,10 @@
  "UI-SUP-GRUND": {
   "s": "ENTWURF",
   "t": "Begründung des Teams:"
+ },
+ "UI-SUP-GRUND-NEUTRAL": {
+  "s": "ENTWURF",
+  "t": "Damit wir dir bei deiner Anfrage helfen können."
  },
  "UI-SUP-KEINE-FREIGABE": {
   "s": "ENTWURF",

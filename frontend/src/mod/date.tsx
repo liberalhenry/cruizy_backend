@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { Sheet, useAsync } from '../components/ui';
 import { api } from '../lib/api';
 import { fmtDate } from '../lib/texts';
-import { Card, Reason, useAction } from './common';
+import { Card, Reason, useAction, tooShort } from './common';
 
 export function DateAdmin() {
   const [tab, setTab] = useState<'mitglieder' | 'fotos' | 'meldungen'>('mitglieder');
@@ -97,11 +97,11 @@ function Mitglieder({ onChange }: { onChange: () => void }) {
             <MemberPhotos id={open.id} />
             <Reason value={reason} onChange={setReason} min={5} />
             {open.status === 'gesperrt' ? (
-              <button className="btn-primary" disabled={reason.trim().length < 5} onClick={() => act('unsuspend')}>
+              <button className="btn-primary" disabled={tooShort(reason, 5)} onClick={() => act('unsuspend')}>
                 Date-Zugang entsperren
               </button>
             ) : (
-              <button className="btn-danger" disabled={reason.trim().length < 5} onClick={() => act('suspend')}>
+              <button className="btn-danger" disabled={tooShort(reason, 5)} onClick={() => act('suspend')}>
                 Date-Zugang sperren (nur Date)
               </button>
             )}
@@ -155,10 +155,10 @@ function Fotos({ onChange }: { onChange: () => void }) {
               {ph.position === 0 ? ' · erstes Foto (Gesicht)' : ''} · {fmtDate(ph.at, true)}
             </p>
             <div className="flex gap-1">
-              <button className="btn-primary flex-1 text-xs" disabled={reason.trim().length < 3} onClick={() => decide(ph.id, 'freigeben')}>
+              <button className="btn-primary flex-1 text-xs" disabled={tooShort(reason, 3)} onClick={() => decide(ph.id, 'freigeben')}>
                 Frei
               </button>
-              <button className="btn-danger flex-1 text-xs" disabled={reason.trim().length < 3} onClick={() => decide(ph.id, 'ablehnen')}>
+              <button className="btn-danger flex-1 text-xs" disabled={tooShort(reason, 3)} onClick={() => decide(ph.id, 'ablehnen')}>
                 Ablehnen
               </button>
             </div>

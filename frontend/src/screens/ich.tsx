@@ -1510,6 +1510,7 @@ function SupportTicket({ tk, statusLabel, initiallyOpen, onChange }: { tk: any; 
             {tk.number}
             {(tk.unread > 0 || openRequests.length > 0) && <span className="ml-2 rounded-full bg-akzent text-grund px-2 text-xs">{t('UI-SUP-NEU')}</span>}
           </span>
+          {tk.subject && <span className="block text-sm">{tk.subject}</span>}
           <span className="block text-sm muted">
             {statusLabel} · {fmtDate(tk.createdAt)}
           </span>
@@ -1646,7 +1647,7 @@ export function Hilfe({ publicMode }: { publicMode?: boolean }) {
     try {
       const r = await api.post(
         '/api/help/tickets',
-        loggedIn ? { category, text, notifyEmail } : { category, text, replyWay: 'email', email: email || undefined },
+        loggedIn ? { category: category ?? undefined, text, notifyEmail } : { category: category ?? undefined, text, replyWay: 'email', email: email || undefined },
       );
       if (r.redirect === 'widerspruch') {
         setErr(t('ST-HLF-23'));
@@ -1741,7 +1742,8 @@ export function Hilfe({ publicMode }: { publicMode?: boolean }) {
                 setDanger(v === 1);
               }}
             >
-              <option value="">—</option>
+              {/* Postfach: ohne Anlass landet die Frage im allgemeinen Support */}
+              <option value="">{t('UI-HLF-KAT-ALLGEMEIN')}</option>
               {Array.from({ length: 10 }, (_, i) => i + 1).map((n) => (
                 <option key={n} value={n}>
                   {t(`UI-HLF-KAT-${n}`)}
@@ -1789,7 +1791,7 @@ export function Hilfe({ publicMode }: { publicMode?: boolean }) {
                 <p className="text-sm muted">{t('ST-HLF-13')}</p>
                 <p className="text-sm muted">{t('ST-HLF-14')}</p>
                 {err && <Banner kind="error">{err}</Banner>}
-                <button className="btn-primary" disabled={!category || !text.trim() || (!loggedIn && !email)} onClick={submit}>
+                <button className="btn-primary" disabled={!text.trim() || (!loggedIn && !email)} onClick={submit}>
                   {t('ST-HLF-15')}
                 </button>
               </>

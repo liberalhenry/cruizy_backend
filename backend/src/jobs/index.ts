@@ -33,6 +33,7 @@ import { sendHealthReminders } from '../modules/health.js';
 import { recomputeResponseRates } from '../services/response-rate.js';
 import { purgeTelegram } from '../services/telegram.js';
 import { expireDataRequests } from '../services/support.js';
+import { syncPostfach } from '../services/postfach.js';
 
 interface Job {
   name: string;
@@ -314,6 +315,7 @@ const JOBS: Job[] = [
   { name: 'params', everyS: () => MIN, run: reloadParams },
   { name: 'telegram', everyS: () => 10 * MIN, run: purgeTelegram },
   { name: 'support_requests', everyS: () => 10 * MIN, run: expireDataRequests },
+  { name: 'postfach', everyS: () => MIN, run: syncPostfach },
 ];
 
 const lastRun = new Map<string, number>();

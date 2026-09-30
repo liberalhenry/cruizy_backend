@@ -19,7 +19,7 @@ import { body, idParam, params } from '../../lib/http.js';
 import { t } from '../../lib/texts.js';
 import { closeAllFor, emit } from '../../services/hub.js';
 import { createNotice } from '../../services/notify.js';
-import { logged, needsSecondPerson, requireStaff, type StaffCtx } from './core.js';
+import { logged, needsSecondPerson, requireStaff, userFacingReason, type StaffCtx } from './core.js';
 import { informParties } from './reports.js';
 
 const ACTIONS = ['restrict', 'suspend', 'suspend_delete', 'lift'] as const;
@@ -34,9 +34,12 @@ const STATE_FOR: Record<Action, 'none' | 'restricted' | 'suspended'> = {
 
 async function resolveCase(ref: string, c?: Queryable) {
   const r = await one(`SELECT id, number, target_id FROM reports WHERE number = $1`, [ref.trim()], c);
-  if (r) return { reportId: r.id as string, hashCaseId: null, accountId: r.target_id as string | null, number: r.number as string };
+  if (r) return { reportId: r.id as string, hashCaseId: null, ticketId: null, accountId: r.target_id as string | null, number: r.number as string };
   const h = await one(`SELECT id, number, account_ref FROM hash_cases WHERE number = $1`, [ref.trim()], c);
-  if (h) return { reportId: null, hashCaseId: h.id as string, accountId: h.account_ref as string | null, number: h.number as string };
+  if (h) return { reportId: null, hashCaseId: h.id as string, ticketId: null, accountId: h.account_ref as string | null, number: h.number as string };
+  // Postfach: Bezug auf ein Ticket — betroffen ist die Person, mit der das Ticket geführt wird
+  const tk = await one(`SELECT id, number, account_id FROM tickets WHERE number = $1`, [ref.trim()], c);
+  if (tk) return { reportId: null, hashCaseId: null, ticketId: tk.id as string, accountId: tk.account_id as string | null, number: tk.number as string };
   return null;
 }
 
@@ -70,7 +73,7 @@ async function applySuspension(c: Queryable, s: { id: string; account_id: string
 }
 
 /** Freigabe — durch die zweite Person oder, ohne sie, durch einen Owner (Issue #3). */
-async function approveSuspension(s: StaffCtx, id: string, reason: string) {
+export async function approveSuspension(s: StaffCtx, id: string, reason: string) {
   const su = await one(`SELECT * FROM suspensions WHERE id = $1`, [id]);
   if (!su || su.approved_at || su.rejected_at) throw notFound();
   // Kein Umweg: dieselbe Kennung — gleich welche Sitzung, gleich welche Rolle — gibt nie frei.
@@ -78,7 +81,11 @@ async function approveSuspension(s: StaffCtx, id: string, reason: string) {
   const self = su.requested_by === s.id;
   if (self && needsSecondPerson(s)) throw new AppError(403, 'UI-MOD-EIGENER-ANTRAG', {}, 'eigener_antrag');
   if (!su.account_id) throw bad('UI-MOD-KEIN-KONTO', {}, 'kein_konto');
-  const ref = su.report_id ? (await one(`SELECT number FROM reports WHERE id = $1`, [su.report_id]))?.number : (await one(`SELECT number FROM hash_cases WHERE id = $1`, [su.hash_case_id]))?.number;
+  const ref = su.report_id
+    ? (await one(`SELECT number FROM reports WHERE id = $1`, [su.report_id]))?.number
+    : su.hash_case_id
+      ? (await one(`SELECT number FROM hash_cases WHERE id = $1`, [su.hash_case_id]))?.number
+      : (await one(`SELECT number FROM tickets WHERE id = $1`, [su.ticket_id]))?.number;
   const effectiveAt = await logged(s, ref ?? `sperre:${id}`, self ? `sperre_freigegeben_${su.action}_ohne_zweite_person` : `sperre_freigegeben_${su.action}`, reason, async (c) => {
     const upd = (
       await c.query(
@@ -108,7 +115,7 @@ async function approveSuspension(s: StaffCtx, id: string, reason: string) {
       su.account_id,
       'sperre',
       t('UI-SPERRE-TITEL'),
-      `${t('ST-MEL-23', { inhalt: what, begruendung: su.reason })}\n\n${t('UI-SPERRE-AB', { zeit: new Date(effectiveAt).toISOString() })}\n${t('UI-WIDERSPRUCH-FRIST', { stunden: hours })}${su.action === 'suspend_delete' ? `\n${t('UI-SPERRE-LOESCHUNG')}` : ''}`,
+      `${t('ST-MEL-23', { inhalt: what, begruendung: userFacingReason(su.reason, t('UI-MOD-GRUND-NEUTRAL')) })}\n\n${t('UI-SPERRE-AB', { zeit: new Date(effectiveAt).toISOString() })}\n${t('UI-WIDERSPRUCH-FRIST', { stunden: hours })}${su.action === 'suspend_delete' ? `\n${t('UI-SPERRE-LOESCHUNG')}` : ''}`,
       id,
     );
     emit(su.account_id, 'konto', { moderation: STATE_FOR[su.action as Action] });
@@ -179,8 +186,8 @@ export default async function suspensionRoutes(app: FastifyInstance) {
     const created = await logged(s, cs.number, `sperre_beantragt_${b.action}`, b.reason, async (c) => {
       const row = (
         await c.query(
-          `INSERT INTO suspensions (account_id, action, reason, report_id, hash_case_id, requested_by) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`,
-          [cs.accountId, b.action, b.reason, cs.reportId, cs.hashCaseId, s.id],
+          `INSERT INTO suspensions (account_id, action, reason, report_id, hash_case_id, ticket_id, requested_by) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id`,
+          [cs.accountId, b.action, b.reason, cs.reportId, cs.hashCaseId, cs.ticketId, s.id],
         )
       ).rows[0];
       if (cs.reportId) await c.query(`INSERT INTO report_events (report_id, status, note) VALUES ($1, 'sperre_beantragt', $2)`, [cs.reportId, b.action]);
@@ -237,7 +244,8 @@ export default async function suspensionRoutes(app: FastifyInstance) {
     const b = body(req, z.object({ reason: z.string().trim().min(10).max(2000) }));
     const su = await one(`SELECT * FROM suspensions WHERE id = $1`, [id]);
     if (!su || su.approved_at || su.rejected_at) throw notFound();
-    if (su.requested_by === s.id) throw new AppError(403, 'UI-MOD-EIGENER-ANTRAG', {}, 'eigener_antrag');
+    // Owner dürfen auch den eigenen Antrag verwerfen
+    if (su.requested_by === s.id && needsSecondPerson(s)) throw new AppError(403, 'UI-MOD-EIGENER-ANTRAG', {}, 'eigener_antrag');
     const ref = su.report_id ? (await one(`SELECT number FROM reports WHERE id = $1`, [su.report_id]))?.number : `sperre:${id}`;
     await logged(s, ref ?? `sperre:${id}`, 'sperre_freigabe_abgelehnt', b.reason, async (c) => {
       await c.query(`UPDATE suspensions SET rejected_by = $2, rejected_at = now(), rejection_reason = $3 WHERE id = $1`, [id, s.id, b.reason]);

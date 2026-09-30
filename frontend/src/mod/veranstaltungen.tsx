@@ -9,7 +9,7 @@ import { useState } from 'react';
 import { Sheet, useAsync } from '../components/ui';
 import { api } from '../lib/api';
 import { fmtDate } from '../lib/texts';
-import { Card, Reason, useAction } from './common';
+import { Card, Reason, useAction, tooShort } from './common';
 
 export const CHECKS = [
   ['ampel', 'Ampel eingehalten'],
@@ -119,16 +119,16 @@ export function Veranstalter() {
             <div className="flex gap-2 flex-wrap">
               {open.status === 'beantragt' && (
                 <>
-                  <button className="btn-primary" disabled={reason.trim().length < 3} onClick={() => decide('verifizieren')}>
+                  <button className="btn-primary" disabled={tooShort(reason, 3)} onClick={() => decide('verifizieren')}>
                     Verifizieren
                   </button>
-                  <button className="btn-secondary" disabled={reason.trim().length < 3} onClick={() => decide('ablehnen')}>
+                  <button className="btn-secondary" disabled={tooShort(reason, 3)} onClick={() => decide('ablehnen')}>
                     Ablehnen
                   </button>
                 </>
               )}
               {open.status === 'verifiziert' && (
-                <button className="btn-danger" disabled={reason.trim().length < 3} onClick={() => decide('entziehen')}>
+                <button className="btn-danger" disabled={tooShort(reason, 3)} onClick={() => decide('entziehen')}>
                   Verifizierung entziehen
                 </button>
               )}

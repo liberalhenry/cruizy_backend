@@ -8,6 +8,7 @@ import { requireMember } from '../lib/context.js';
 import { encStr } from '../lib/crypto.js';
 import { tooMany } from '../lib/errors.js';
 import { noticeTarget } from '../services/notify.js';
+import { ensureFeedbackTicket } from '../services/postfach.js';
 import { body, idParam, params } from '../lib/http.js';
 import { hit } from '../lib/rate.js';
 
@@ -57,11 +58,13 @@ export default async function noticeRoutes(app: FastifyInstance) {
     const a = await requireMember(req, { allowDeletionPending: true });
     const b = body(req, z.object({ text: z.string().min(1).max(3000), wantsReply: z.boolean().default(false) }));
     if (!hit('feedback', a.id, 10, 3600_000)) throw tooMany();
-    await q(`INSERT INTO feedback (account_id, text_enc, wants_reply) VALUES ($1, $2, $3)`, [
+    const f = await one(`INSERT INTO feedback (account_id, text_enc, wants_reply) VALUES ($1, $2, $3) RETURNING id`, [
       b.wantsReply ? a.id : null,
       encStr('tickets', b.text, 'feedback'),
       b.wantsReply,
     ]);
+    // Postfach: mit Antwortwunsch wird daraus ein Ticket — die Antwort steht dann unter „Hilfe“
+    if (b.wantsReply) await ensureFeedbackTicket(f!.id);
     return { ok: true };
   });
 }

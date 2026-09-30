@@ -235,7 +235,8 @@ export const PARAMETER = {
   'P-SITZUNG-DAUER': { wert: 30 * TAG, einheit: 's ohne Nutzung', quelle: 'FV-90' },
   'P-NEU-ANMELDUNG-EXPORT': { wert: 10 * MIN, einheit: 's (erneute Anmeldung vor dem Download)', quelle: 'FV-76, FV-90' },
   'P-TICKET-MAX': { wert: 4000, einheit: 'Zeichen', quelle: 'kontaktservice-und-tickets.md' },
-  'P-TICKET-FRIST': { wert: 72 * STD, einheit: 's', quelle: 'F75 (Obergrenze 72 h)' },
+  // Postfach: erste Antwort binnen 24 h, danach 24 h ab der letzten Nachricht der Person
+  'P-TICKET-FRIST': { wert: 24 * STD, einheit: 's', quelle: 'Postfach (24 h bis zur Antwort)' },
   'P-TICKET-FRIST-DATENSCHUTZ': { wert: 30 * TAG, einheit: 's', quelle: 'Art. 12 Abs. 3 DSGVO' },
   // Issue #37: wie lange eine Datenfreigabe für das Support-Team gilt, und wie lange eine Anfrage offen bleibt
   'P-SUPPORT-FREIGABE': { wert: 7 * TAG, einheit: 's', quelle: 'Issue #37 (Vorschlag)' },

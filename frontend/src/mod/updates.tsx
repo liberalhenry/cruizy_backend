@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { Banner, Sheet, useAsync } from '../components/ui';
 import { api } from '../lib/api';
 import { fmtDate } from '../lib/texts';
-import { Card, Reason, useAction } from './common';
+import { Card, Reason, useAction, tooShort } from './common';
 
 const STATUS: Record<string, { text: string; cls: string }> = {
   angefordert: { text: 'angefordert — wartet auf den Updater', cls: 'text-warn' },
@@ -148,7 +148,7 @@ export function Aktualisierung() {
             <Reason value={reason} onChange={setReason} min={5} />
             <button
               className="btn-primary"
-              disabled={reason.trim().length < 5}
+              disabled={tooShort(reason, 5)}
               onClick={async () => {
                 const r = await run(() => api.post('/mod-api/updates', { version: pick.version, reason }), 'Angefordert — der Updater beginnt in wenigen Sekunden.');
                 if (r) {

@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Banner, Sheet, useAsync } from '../components/ui';
 import { api } from '../lib/api';
 import { fmtDate } from '../lib/texts';
-import { Card, Reason, useAction } from './common';
+import { Card, Reason, useAction, tooShort } from './common';
 
 const LABEL: Record<string, string> = {
   volljaehrig: '18 oder älter',
@@ -101,13 +101,13 @@ export function Ausweise() {
             {box}
             <Reason value={reason} onChange={setReason} min={3} label="Begründung (wird protokolliert — kein Geburtsdatum eintragen)" />
             <div className="flex flex-wrap gap-2">
-              <button className="btn-primary" disabled={reason.trim().length < 3} onClick={() => decide('volljaehrig')}>
+              <button className="btn-primary" disabled={tooShort(reason, 3)} onClick={() => decide('volljaehrig')}>
                 18 oder älter
               </button>
-              <button className="btn-secondary" disabled={reason.trim().length < 3} onClick={() => decide('unlesbar')}>
+              <button className="btn-secondary" disabled={tooShort(reason, 3)} onClick={() => decide('unlesbar')}>
                 Nicht lesbar — neu versuchen lassen
               </button>
-              <button className="btn-danger" disabled={reason.trim().length < 3} onClick={() => decide('minderjaehrig')}>
+              <button className="btn-danger" disabled={tooShort(reason, 3)} onClick={() => decide('minderjaehrig')}>
                 Unter 18 — Konto sperren
               </button>
             </div>

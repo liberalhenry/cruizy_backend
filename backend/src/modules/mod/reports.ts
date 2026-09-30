@@ -22,7 +22,8 @@ import { purgeVaultEntry, readVault } from '../../services/deletion.js';
 import { rejectPhoto } from '../../services/photo-chain.js';
 import { deleteMessages } from '../chat.js';
 import { sendMail } from '../../providers/mail.js';
-import { ampel, logged, needsSecondPerson, requireStaff } from './core.js';
+import { ampel, logged, needsSecondPerson, requireStaff, userFacingReason } from './core.js';
+import { approveSuspension } from './suspensions.js';
 import { modImgUrl } from './index.js';
 
 // date_verstoss (Issue #19): berechtigte Date-Meldung — ab P-DATE-MELDUNGEN-SPERRE nur Date gesperrt
@@ -187,8 +188,9 @@ export default async function reportRoutes(app: FastifyInstance) {
     const r = await one(`SELECT * FROM reports WHERE id = $1`, [id]);
     if (!r) throw notFound();
     if (r.status === 'decided' || r.status === 'closed') throw bad('UI-MOD-SCHON-ENTSCHIEDEN');
-    // Einschränken und Sperren wirken nur über M40 (zwei Personen)
+    // Einschränken und Sperren wirken nur über M40 (zwei Personen) — ein Owner gibt sie gleich selbst frei
     const final = b.decision === 'eingeschraenkt' || b.decision === 'gesperrt' ? null : b.decision;
+    let suspensionId: string | null = null;
     await logged(s, r.number, `meldung_${b.decision}`, b.reason, async (c) => {
       if (b.decision === 'inhalt_entfernt') {
         const items = (await c.query(`SELECT kind, original_ref FROM report_items WHERE report_id = $1`, [id])).rows;
@@ -203,10 +205,12 @@ export default async function reportRoutes(app: FastifyInstance) {
       }
       if (b.decision === 'eingeschraenkt' || b.decision === 'gesperrt') {
         if (!r.target_id) throw bad('UI-MOD-KEIN-KONTO');
-        await c.query(
-          `INSERT INTO suspensions (account_id, action, reason, report_id, requested_by) VALUES ($1, $2, $3, $4, $5)`,
-          [r.target_id, b.decision === 'gesperrt' ? 'suspend' : 'restrict', b.reason, id, s.id],
-        );
+        suspensionId = (
+          await c.query(
+            `INSERT INTO suspensions (account_id, action, reason, report_id, requested_by) VALUES ($1, $2, $3, $4, $5) RETURNING id`,
+            [r.target_id, b.decision === 'gesperrt' ? 'suspend' : 'restrict', b.reason, id, s.id],
+          )
+        ).rows[0].id;
       }
       await c.query(
         `UPDATE reports SET status = CASE WHEN $2::text IS NULL THEN status ELSE 'decided' END, decision = $3, decision_reason = $4,
@@ -216,8 +220,14 @@ export default async function reportRoutes(app: FastifyInstance) {
       await c.query(`INSERT INTO report_events (report_id, status, note) VALUES ($1, $2, $3)`, [id, final ? 'decided' : 'sperre_beantragt', b.decision]);
     });
     if (final) await informParties(id);
+    // Owner: keine zweite Person — die Sperre wirkt sofort (Protokoll: „ohne zweite Person“)
+    let selfApproved = false;
+    if (suspensionId && !needsSecondPerson(s)) {
+      await approveSuspension(s, suspensionId, b.reason);
+      selfApproved = true;
+    }
     const dateSuspended = b.decision === 'date_verstoss' && r.target_id ? await checkDateStrikes(r.target_id, s.id) : false;
-    return { ok: true, pendingSecondPerson: !final, dateSuspended };
+    return { ok: true, pendingSecondPerson: !final && !selfApproved, selfApproved, dateSuspended };
   });
 
   app.post('/mod-api/reports/:id/close', async (req) => {
@@ -289,7 +299,7 @@ export async function informParties(reportId: string) {
   const text =
     r.decision === 'bleibt'
       ? t('ST-MEL-22', { name: t('UI-DIE-PERSON') })
-      : t('ST-MEL-21', { entscheidung: t(`UI-ENTSCHEIDUNG-${r.decision.toUpperCase().replace(/_/g, '-')}`), begruendung: r.decision_reason });
+      : t('ST-MEL-21', { entscheidung: t(`UI-ENTSCHEIDUNG-${r.decision.toUpperCase().replace(/_/g, '-')}`), begruendung: userFacingReason(r.decision_reason, t('UI-MOD-GRUND-NEUTRAL')) });
   if (r.reporter_id) {
     await createNotice(r.reporter_id, 'meldung_entscheidung', t('UI-MELDUNG-ENTSCHIEDEN', { fallnummer: r.number }), `${text}\n\n${t('UI-WEGE-DAGEGEN')}`, r.number);
   } else if (r.reporter_contact_enc) {
@@ -308,7 +318,7 @@ export async function informParties(reportId: string) {
       r.target_id,
       'entscheidung_betroffen',
       t('UI-ENTSCHEIDUNG-BETROFFEN'),
-      t('ST-MEL-23', { inhalt: t('UI-EINEN-INHALT'), begruendung: r.decision_reason }),
+      t('ST-MEL-23', { inhalt: t('UI-EINEN-INHALT'), begruendung: userFacingReason(r.decision_reason, t('UI-MOD-GRUND-NEUTRAL')) }),
       r.id,
     );
   }

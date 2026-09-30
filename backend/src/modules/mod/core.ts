@@ -84,6 +84,29 @@ export function needsSecondPerson(s: StaffCtx): boolean {
   return !s.founder;
 }
 
+/**
+ * Owner handeln ohne Begründung: fehlt sie, steht dieser Text im Zugriffsprotokoll. Gefüllt wird
+ * zentral vor jeder Werkzeug-Route (mod/index.ts) — so gilt die Regel für jede Handlung.
+ */
+export const OWNER_NO_REASON = 'Ohne Begründung (Owner)';
+
+/** Felder, die im Werkzeug eine Begründung tragen. */
+const REASON_FIELDS = ['reason'] as const;
+
+export function fillOwnerReason(target: unknown) {
+  if (!target || typeof target !== 'object' || Array.isArray(target)) return;
+  const o = target as Record<string, unknown>;
+  for (const k of REASON_FIELDS) {
+    const v = o[k];
+    if (v === undefined || v === null || (typeof v === 'string' && !v.trim())) o[k] = OWNER_NO_REASON;
+  }
+}
+
+/** Texte an Nutzer: statt des Platzhalters eine neutrale Begründung. */
+export function userFacingReason(reason: string | null | undefined, fallback: string): string {
+  return !reason || reason === OWNER_NO_REASON ? fallback : reason;
+}
+
 /** Protokolleintrag — muss vor der Handlung und in derselben Transaktion stehen. */
 export async function logAccess(
   c: Queryable,
@@ -94,6 +117,7 @@ export async function logAccess(
   special = false,
 ) {
   if (!reason || !reason.trim()) throw new AppError(400, 'UI-MOD-GRUND', {}, 'grund_fehlt');
+  // Owner handeln auch ohne Begründung — der Platzhalter steht dann im Protokoll
   await c.query(`INSERT INTO access_log (staff_id, case_ref, action, reason, special) VALUES ($1, $2, $3, $4, $5)`, [
     staffId,
     caseRef,
@@ -113,7 +137,7 @@ export async function logged<T>(
   special = false,
 ): Promise<T> {
   const result = await tx(async (c) => {
-    await logAccess(c, staff.id, caseRef, action, reason, special);
+    await logAccess(c, staff.id, caseRef, action, reason?.trim() ? reason : staff.founder ? OWNER_NO_REASON : reason, special);
     return fn(c);
   });
   // erst nach dem Festschreiben melden — ohne Begründungstext (Issue #6)

@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Banner, Sheet, Toggle, useAsync } from '../components/ui';
 import { api } from '../lib/api';
 import { fmtDate } from '../lib/texts';
-import { Card, Reason, useAction } from './common';
+import { Card, Reason, useAction, tooShort } from './common';
 
 interface Member {
   id: string;
@@ -11,6 +11,7 @@ interface Member {
   login: string;
   role: 'MOD' | 'BETRIEB';
   founder: boolean;
+  teams: string[];
   createdAt: string;
   disabledAt: string | null;
   lastSeenAt: string | null;
@@ -70,7 +71,7 @@ export function Team({ meId }: { meId: string }) {
   const [secret, setSecret] = useState<Secret | null>(null);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const { run, box } = useAction();
-  const reasonOk = reason.trim().length >= 5;
+  const reasonOk = !tooShort(reason, 5);
   const items: Member[] = data?.items ?? [];
 
   const act = async (fn: () => Promise<any>, ok: string, after?: (r: any) => void) => {
@@ -138,6 +139,7 @@ export function Team({ meId }: { meId: string }) {
                   {m.role}
                   {m.founder ? ' · Owner' : ''}
                   {m.disabledAt ? ' · gesperrt' : ''}
+                  {m.teams?.length ? <span className="block text-xs muted">{m.teams.map((k) => data?.teams?.find((x: any) => x.key === k)?.label ?? k).join(', ')}</span> : null}
                 </td>
                 <td className="muted">{m.lastSeenAt ? fmtDate(m.lastSeenAt, true) : '—'}</td>
                 <td>
@@ -166,10 +168,23 @@ export function Team({ meId }: { meId: string }) {
               <option value="BETRIEB">BETRIEB — Moderation und Betrieb</option>
             </select>
             <Toggle checked={edit.founder} onChange={(v) => setEdit({ ...edit, founder: v })} label="Owner (Gründer)" hint="Rechte gelten ab der nächsten Anmeldung" />
+            <fieldset className="flex flex-col gap-1">
+              <legend className="label">Teams im Postfach</legend>
+              {data?.teams?.map((x: any) => (
+                <label key={x.key} className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={edit.teams?.includes(x.key) ?? false}
+                    onChange={(e) => setEdit({ ...edit, teams: e.target.checked ? [...(edit.teams ?? []), x.key] : (edit.teams ?? []).filter((k) => k !== x.key) })}
+                  />
+                  {x.label}
+                </label>
+              ))}
+            </fieldset>
             <button
               className="btn-primary"
               disabled={!reasonOk}
-              onClick={() => act(() => api.patch(`/mod-api/team/${edit.id}`, { name: edit.name, role: edit.role, founder: edit.founder, reason }), 'Gespeichert.')}
+              onClick={() => act(() => api.patch(`/mod-api/team/${edit.id}`, { name: edit.name, role: edit.role, founder: edit.founder, teams: edit.teams ?? [], reason }), 'Gespeichert.')}
             >
               Änderungen speichern
             </button>
