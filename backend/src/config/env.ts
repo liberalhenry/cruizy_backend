@@ -97,6 +97,14 @@ const schema = z.object({
   /* Karte: Adresse eines selbst betriebenen oder EU-Kachelservers. Leer = schematische Karte. */
   MAP_TILE_URL: z.string().default(''),
   MAP_ATTRIBUTION: z.string().default(''),
+  /*
+   * Issue #17: Kacheln eines EU-Kachelservers über den eigenen Server abrufen (mit Zwischenspeicher),
+   * z. B. https://tile.openstreetmap.de/{z}/{x}/{y}.png (FOSSGIS e. V., Deutschland). Die Geräte
+   * sprechen dann nur mit uns — der Kachelserver sieht weder Netzadressen noch Sitzungen.
+   * Leer = Grundkarte ohne Kacheln (Ländergrenzen und Ortsnamen aus dem eigenen Verzeichnis).
+   */
+  MAP_TILE_UPSTREAM: z.string().default(''),
+  MAP_TILE_UPSTREAM_ATTRIBUTION: z.string().default('© OpenStreetMap-Mitwirkende'),
 
   /*
    * Discord-Webhooks (Issue #6): je Kategorie ein Kanal. Leer = Kategorie aus bzw. DEFAULT.

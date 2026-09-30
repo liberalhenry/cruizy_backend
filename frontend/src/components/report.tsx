@@ -19,7 +19,7 @@ export const REPORT_REASONS: { key: string; textId: string }[] = [
 ];
 
 export interface ReportItem {
-  kind: 'message' | 'album_image' | 'group_message';
+  kind: 'message' | 'album_image' | 'group_message' | 'event_chat_message';
   id: string;
   label: string;
   image?: boolean;
@@ -39,7 +39,7 @@ export function ReportSheet({
   onClose: () => void;
   targetId?: string | null;
   targetName?: string | null;
-  context: 'profil' | 'gespraech' | 'album' | 'gruppe' | 'ort' | 'ereignis';
+  context: 'profil' | 'gespraech' | 'album' | 'gruppe' | 'ort' | 'ereignis' | 'veranstaltung_chat';
   contextId?: string;
   items?: ReportItem[];
   onBlocked?: () => void;

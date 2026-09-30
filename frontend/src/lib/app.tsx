@@ -17,7 +17,18 @@ export interface Config {
   stage2: boolean;
   zone2Check: boolean;
   beforeEntry: boolean;
-  map: { tiles: string | null; attribution: string | null };
+  map: { mode: 'eigen' | 'vermittelt' | 'grundkarte'; tiles: string | null; attribution: string | null; maxZoom: number };
+  events?: {
+    categories: { key: string; label: string; icon: string }[];
+    categoryMax: number;
+    organizerKinds: { key: string; label: string }[];
+    monthsAhead: number;
+    images: number;
+    textMax: number;
+    radius: number;
+    radii: number[];
+    cancelMaxHours: number;
+  };
   params: Record<string, any>;
   intentions: { key: string; textId: string; default: string; durations: string[] }[];
   traits: { group: string; items: { id: number; name: string }[] }[];
@@ -80,7 +91,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
       .get('/api/conversations/unread')
       .then((r) => {
         setConvBadge(r.conversations);
-        setDot((d) => ({ ...d, chats: r.requests > 0 }));
+        // Issue #16: Chats mit Veranstaltern/Gästen ebenfalls als Punkt
+        setDot((d) => ({ ...d, chats: r.requests > 0 || (r.events ?? 0) > 0 }));
       })
       .catch(() => {});
     // Issue #27: neue Profilbesucher als Punkt am Reiter „Ich“ — gebündelt, keine Push je Besuch
@@ -148,6 +160,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     const offs = [
       on('mitteilung', () => refreshCounts()),
       on('nachricht', () => refreshCounts()),
+      on('veranstaltung_chat', () => refreshCounts()),
       on('konto', () => refreshMe()),
       on('foto', () => refreshMe()),
     ];

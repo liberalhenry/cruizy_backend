@@ -11,6 +11,7 @@ import { Einwilligung, Gast, HomeBildschirm, Konto, PasswortNeu, ProfilAnlegen, 
 import { Naehe, Suche } from './screens/naehe';
 import { Besucher, Gesundheit } from './screens/extras';
 import { Reisen } from './screens/reisen';
+import { Veranstalter, VeranstalterVerifizieren, VeranstaltungBearbeiten, VeranstaltungChat, VeranstaltungVerwalten } from './screens/veranstalter';
 import { FotoHinzufuegen, ProfilEditor, ProfilEigen, ProfilFremd } from './screens/profil';
 import { AlbumAnsicht, AlbumBearbeiten, Alben, Chat, Chats } from './screens/chats';
 import { Pruefung, PruefungAusweis, PruefungFertig } from './screens/pruefung';
@@ -228,6 +229,12 @@ export default function App() {
       <Route path="/pruefung" element={<Pruefung />} />
       <Route path="/orte/:id" element={<Ort />} />
       <Route path="/ereignisse/:id" element={<Ereignis />} />
+      <Route path="/veranstalter" element={<Veranstalter />} />
+      <Route path="/veranstalter/verifizieren" element={<VeranstalterVerifizieren />} />
+      <Route path="/veranstalter/neu" element={<VeranstaltungBearbeiten />} />
+      <Route path="/veranstalter/veranstaltungen/:id" element={<VeranstaltungVerwalten />} />
+      <Route path="/veranstalter/veranstaltungen/:id/bearbeiten" element={<VeranstaltungBearbeiten />} />
+      <Route path="/veranstaltungen/:id/chat/:guestId" element={<VeranstaltungChat />} />
       <Route path="/ich/profil" element={<ProfilEigen />} />
       <Route path="/ich/profil/bearbeiten" element={<ProfilEditor />} />
       <Route path="/ich/fotos" element={<FotoHinzufuegen />} />

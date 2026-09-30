@@ -5,11 +5,13 @@ import { api, errText } from '../lib/api';
 import { useApp } from '../lib/app';
 import { t } from '../lib/texts';
 
-interface PlaceHit {
+export interface PlaceHit {
   id: number;
   label: string;
   detail: string;
   kind: 'ort' | 'stadtteil';
+  lat?: number;
+  lng?: number;
 }
 
 /** Ortssuche im mitgelieferten Verzeichnis — nur Dörfer, Städte, Stadtteile. */

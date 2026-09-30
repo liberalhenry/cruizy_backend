@@ -341,6 +341,7 @@ export default async function eventRoutes(app: FastifyInstance) {
       myStatus: my?.status ?? null,
       canCancel: !my || my.status !== 'angenommen' || Date.now() < deadline.getTime(),
       canChat: !!e.host_id && !isHost && mine,
+      myGuestId: mine ? a.id : null,
       count: attendees ? taken : null,
       attendees,
       group: { open: mine && g.open, opensAt: g.opensAt, closesAt: g.closesAt },

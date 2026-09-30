@@ -6,6 +6,7 @@
 import type { FastifyInstance } from 'fastify';
 import { env } from '../config/env.js';
 import { p } from '../config/params.js';
+import { mapConfig } from './karte.js';
 import { BODY_TYPES, EVENT_CATEGORIES, EVENT_CATEGORY_MAX, GENDER_CATEGORIES, INTENTIONS, KINK_GROUPS, ORGANIZER_KINDS, POSITIONS, TRAIT_GROUPS } from '../services/catalogs.js';
 import { allowedDurations } from '../services/intentions.js';
 import { vapidPublicKey } from '../services/push.js';
@@ -27,7 +28,7 @@ export default async function publicRoutes(app: FastifyInstance) {
       stage2: p('P-STUFE2-SCHALTER'),
       zone2Check: p('P-ZONE2-ABGLEICH'),
       beforeEntry: p('P-PRUEFUNG-VOR-EINTRITT'),
-      map: { tiles: e.MAP_TILE_URL || null, attribution: e.MAP_ATTRIBUTION || null },
+      map: mapConfig(),
       params: {
         guestMinutes: Math.round(p('P-GAST-DAUER') / 60),
         nameMax: p('P-NAME-MAX'),

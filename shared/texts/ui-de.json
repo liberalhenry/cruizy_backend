@@ -1295,9 +1295,33 @@
   "s": "ENTWURF",
   "t": "Die Gruppe verschwindet am {zeit}."
  },
+ "UI-HEUTE-ALLE-KATEGORIEN": {
+  "s": "ENTWURF",
+  "t": "Alle Kategorien"
+ },
+ "UI-HEUTE-BALD": {
+  "s": "ENTWURF",
+  "t": "Bald zuerst"
+ },
+ "UI-HEUTE-DACH": {
+  "s": "ENTWURF",
+  "t": "DACH"
+ },
  "UI-HEUTE-DU": {
   "s": "ENTWURF",
   "t": "Du (ungefähr)"
+ },
+ "UI-HEUTE-ENTDECKEN": {
+  "s": "ENTWURF",
+  "t": "Entdecken"
+ },
+ "UI-HEUTE-FILTER-WEG": {
+  "s": "ENTWURF",
+  "t": "Filter zurücksetzen"
+ },
+ "UI-HEUTE-HEUTE": {
+  "s": "ENTWURF",
+  "t": "Heute"
  },
  "UI-HEUTE-JETZT": {
   "s": "ENTWURF",
@@ -1307,17 +1331,85 @@
   "s": "ENTWURF",
   "t": "Karte"
  },
+ "UI-HEUTE-KATEGORIEN-N": {
+  "s": "ENTWURF",
+  "t": "{zahl} Kategorien"
+ },
+ "UI-HEUTE-LEER": {
+  "s": "ENTWURF",
+  "t": "Hier ist gerade nichts eingetragen. Versuch einen größeren Umkreis oder weniger Filter."
+ },
  "UI-HEUTE-LISTE": {
   "s": "ENTWURF",
   "t": "Liste"
+ },
+ "UI-HEUTE-MORGEN": {
+  "s": "ENTWURF",
+  "t": "Morgen"
+ },
+ "UI-HEUTE-NAH": {
+  "s": "ENTWURF",
+  "t": "Nah zuerst"
  },
  "UI-HEUTE-OFFEN": {
   "s": "ENTWURF",
   "t": "Orte, die heute geöffnet haben"
  },
+ "UI-HEUTE-OHNE-ORT": {
+  "s": "ENTWURF",
+  "t": "Ohne Standort zeigen wir Veranstaltungen ohne Entfernung."
+ },
+ "UI-HEUTE-ORT-WAEHLEN": {
+  "s": "ENTWURF",
+  "t": "Ort wählen"
+ },
  "UI-HEUTE-SCHEMATISCH": {
   "s": "ENTWURF",
   "t": "Schematische Karte, etwa {km} km um dich. Personen nur als grobe Gruppe."
+ },
+ "UI-HEUTE-SORTIERUNG": {
+  "s": "ENTWURF",
+  "t": "Sortierung wechseln"
+ },
+ "UI-HEUTE-TRAVEL": {
+  "s": "ENTWURF",
+  "t": "Du stöberst gerade per Travel — Entfernungen gelten ab dort."
+ },
+ "UI-HEUTE-UMKREIS": {
+  "s": "ENTWURF",
+  "t": "Umkreis"
+ },
+ "UI-HEUTE-UMKREIS-ERKL": {
+  "s": "ENTWURF",
+  "t": "Wie weit darf es sein? Gemessen von deinem ungefähren Standort — oder vom Ort, an dem du gerade per Travel stöberst."
+ },
+ "UI-HEUTE-UMKREIS-GROESSER": {
+  "s": "ENTWURF",
+  "t": "Umkreis vergrößern"
+ },
+ "UI-HEUTE-WANN-30TAGE": {
+  "s": "ENTWURF",
+  "t": "30 Tage"
+ },
+ "UI-HEUTE-WANN-7TAGE": {
+  "s": "ENTWURF",
+  "t": "7 Tage"
+ },
+ "UI-HEUTE-WANN-ALLE": {
+  "s": "ENTWURF",
+  "t": "Alle Termine"
+ },
+ "UI-HEUTE-WANN-HEUTE": {
+  "s": "ENTWURF",
+  "t": "Heute"
+ },
+ "UI-HEUTE-WANN-MORGEN": {
+  "s": "ENTWURF",
+  "t": "Morgen"
+ },
+ "UI-HEUTE-WANN-WOCHENENDE": {
+  "s": "ENTWURF",
+  "t": "Wochenende"
  },
  "UI-HEUTE-WOCHE": {
   "s": "ENTWURF",
@@ -1434,6 +1526,30 @@
  "UI-ICH-RUECKMELDUNG": {
   "s": "ENTWURF",
   "t": "Was sollen wir besser machen?"
+ },
+ "UI-KARTE-ANZAHL": {
+  "s": "ENTWURF",
+  "t": "{zahl} Veranstaltungen im Ausschnitt"
+ },
+ "UI-KARTE-GENAU": {
+  "s": "ENTWURF",
+  "t": "genauer Ort"
+ },
+ "UI-KARTE-GRUPPE": {
+  "s": "ENTWURF",
+  "t": "{zahl} Veranstaltungen — hineinzoomen"
+ },
+ "UI-KARTE-LAEDT": {
+  "s": "ENTWURF",
+  "t": "Lädt …"
+ },
+ "UI-KARTE-UNGEFAEHR": {
+  "s": "ENTWURF",
+  "t": "ungefähre Gegend"
+ },
+ "UI-KARTE-ZU-MIR": {
+  "s": "ENTWURF",
+  "t": "Zu meinem Standort"
  },
  "UI-KEIN-UNKENNTLICHES-FOTO": {
   "s": "ENTWURF",
@@ -2947,29 +3063,209 @@
   "s": "ENTWURF",
   "t": "Diese Version gibt es nicht als Release."
  },
+ "UI-VA-ABBRECHEN": {
+  "s": "ENTWURF",
+  "t": "Abbrechen"
+ },
  "UI-VA-ABGELEHNT": {
   "s": "ENTWURF",
   "t": "Der Veranstalter hat deine Anfrage nicht angenommen."
+ },
+ "UI-VA-ABGELEHNT-KURZ": {
+  "s": "ENTWURF",
+  "t": "nicht angenommen"
+ },
+ "UI-VA-ABGESAGT-N": {
+  "s": "ENTWURF",
+  "t": "Abgesagt"
+ },
+ "UI-VA-ABLEHNEN": {
+  "s": "ENTWURF",
+  "t": "Nicht annehmen"
+ },
+ "UI-VA-ABSAGE-NOTIZ": {
+  "s": "ENTWURF",
+  "t": "Kurzer Hinweis für die Gäste (freiwillig)"
+ },
+ "UI-VA-ABSAGEN": {
+  "s": "ENTWURF",
+  "t": "Absagen"
+ },
+ "UI-VA-ABSAGEN-BIS": {
+  "s": "ENTWURF",
+  "t": "Absagen bis {zeit}"
+ },
+ "UI-VA-ABSAGEN-FRAGE": {
+  "s": "ENTWURF",
+  "t": "Wirklich absagen? Dein Platz wird für andere frei."
+ },
+ "UI-VA-ABSAGEN-VERANSTALTUNG": {
+  "s": "ENTWURF",
+  "t": "Veranstaltung absagen"
+ },
+ "UI-VA-ABSAGEN-VERANSTALTUNG-ERKL": {
+  "s": "ENTWURF",
+  "t": "Alle Gäste bekommen eine Mitteilung. Das lässt sich nicht rückgängig machen."
+ },
+ "UI-VA-ADRESSE-NACH-ZUSAGE": {
+  "s": "ENTWURF",
+  "t": "Adresse nach deiner Zusage"
+ },
+ "UI-VA-ANFRAGE-GESENDET": {
+  "s": "ENTWURF",
+  "t": "Anfrage gesendet. Du bekommst Bescheid."
+ },
+ "UI-VA-ANFRAGE-OFFEN": {
+  "s": "ENTWURF",
+  "t": "Anfrage offen"
+ },
+ "UI-VA-ANFRAGE-ZURUECK": {
+  "s": "ENTWURF",
+  "t": "Zurückziehen"
+ },
+ "UI-VA-ANFRAGEN": {
+  "s": "ENTWURF",
+  "t": "Teilnahme anfragen"
+ },
+ "UI-VA-ANGEFRAGT": {
+  "s": "ENTWURF",
+  "t": "Angefragt"
+ },
+ "UI-VA-ANNAHME-ERKL": {
+  "s": "ENTWURF",
+  "t": "Der Veranstalter nimmt die Gäste selbst an. Du bekommst Bescheid."
+ },
+ "UI-VA-ANNEHMEN": {
+  "s": "ENTWURF",
+  "t": "Annehmen"
+ },
+ "UI-VA-ANSEHEN": {
+  "s": "ENTWURF",
+  "t": "Ansehen"
+ },
+ "UI-VA-AUF-KARTE": {
+  "s": "ENTWURF",
+  "t": "Auf der Karte zeigen"
+ },
+ "UI-VA-AUSGEBUCHT": {
+  "s": "ENTWURF",
+  "t": "Ausgebucht"
+ },
+ "UI-VA-BEANTRAGT": {
+  "s": "ENTWURF",
+  "t": "Verifizierung beantragt"
+ },
+ "UI-VA-BEANTRAGT-ERKL": {
+  "s": "ENTWURF",
+  "t": "Wir melden uns. Bis dahin kannst du bis zu {max} Veranstaltungen zur Prüfung einreichen."
+ },
+ "UI-VA-BEARBEITEN": {
+  "s": "ENTWURF",
+  "t": "Bearbeiten"
  },
  "UI-VA-BEGINN-VORBEI": {
   "s": "ENTWURF",
   "t": "Der Beginn liegt in der Vergangenheit."
  },
+ "UI-VA-BEREICH": {
+  "s": "ENTWURF",
+  "t": "Veranstalter"
+ },
+ "UI-VA-BEREICH-ERKL": {
+  "s": "ENTWURF",
+  "t": "Veranstaltungen eintragen, Gäste, Verifizierung"
+ },
  "UI-VA-BILDER-MAX": {
   "s": "ENTWURF",
   "t": "Höchstens {max} Bilder je Veranstaltung."
+ },
+ "UI-VA-CHAT-ERKL-GAST": {
+  "s": "ENTWURF",
+  "t": "Fragen zur Veranstaltung? Hier schreibst du direkt dem Veranstalter."
+ },
+ "UI-VA-CHAT-ERKL-VERANSTALTER": {
+  "s": "ENTWURF",
+  "t": "Chat mit einem angenommenen Gast deiner Veranstaltung."
+ },
+ "UI-VA-CHAT-MIT-VERANSTALTER": {
+  "s": "ENTWURF",
+  "t": "Dem Veranstalter schreiben"
  },
  "UI-VA-CHAT-ZU": {
   "s": "ENTWURF",
   "t": "Dieser Chat ist geschlossen."
  },
+ "UI-VA-CHATS": {
+  "s": "ENTWURF",
+  "t": "Veranstaltungen"
+ },
+ "UI-VA-CHATS-ERKL": {
+  "s": "ENTWURF",
+  "t": "Chats zwischen Veranstaltern und angenommenen Gästen — getrennt von deinen privaten Chats."
+ },
+ "UI-VA-CHATS-LEER": {
+  "s": "ENTWURF",
+  "t": "Noch keine Chats zu Veranstaltungen."
+ },
+ "UI-VA-DABEI": {
+  "s": "ENTWURF",
+  "t": "Dabei"
+ },
+ "UI-VA-DEINE": {
+  "s": "ENTWURF",
+  "t": "Deine"
+ },
+ "UI-VA-DEINE-ERKL": {
+  "s": "ENTWURF",
+  "t": "Das ist deine Veranstaltung."
+ },
+ "UI-VA-DETAILS": {
+  "s": "ENTWURF",
+  "t": "Zur Veranstaltung"
+ },
+ "UI-VA-DU-BIST-DABEI": {
+  "s": "ENTWURF",
+  "t": "Du bist dabei"
+ },
+ "UI-VA-DU-VERANSTALTEST": {
+  "s": "ENTWURF",
+  "t": "Du veranstaltest etwas?"
+ },
+ "UI-VA-DU-VERANSTALTEST-ERKL": {
+  "s": "ENTWURF",
+  "t": "Party, Konzert, Stammtisch oder Brunch — trag es ein."
+ },
  "UI-VA-EIGENE": {
   "s": "ENTWURF",
   "t": "Das ist deine eigene Veranstaltung."
  },
+ "UI-VA-EINGEREICHT": {
+  "s": "ENTWURF",
+  "t": "geprüft vom Cruizy-Team"
+ },
+ "UI-VA-EINREICHEN": {
+  "s": "ENTWURF",
+  "t": "Veranstaltung einreichen"
+ },
+ "UI-VA-EINREICHUNG-HINWEIS": {
+  "s": "ENTWURF",
+  "t": "Du bist (noch) nicht als Veranstalter verifiziert. Deine Veranstaltung geht zuerst an das Cruizy-Team und ist erst nach der Freigabe sichtbar."
+ },
  "UI-VA-EINREICHUNGEN-MAX": {
   "s": "ENTWURF",
   "t": "Du hast schon {max} Veranstaltungen in Prüfung. Warte bitte, bis das Team entschieden hat."
+ },
+ "UI-VA-EINREICHUNGEN-OFFEN": {
+  "s": "ENTWURF",
+  "t": "{zahl} von {max} Einreichungen in Prüfung"
+ },
+ "UI-VA-EINTRAGEN": {
+  "s": "ENTWURF",
+  "t": "Veranstaltung eintragen"
+ },
+ "UI-VA-EMPFOHLEN": {
+  "s": "ENTWURF",
+  "t": "Empfohlen von Cruizy"
  },
  "UI-VA-ENDE": {
   "s": "ENTWURF",
@@ -2979,6 +3275,182 @@
   "s": "ENTWURF",
   "t": "Sag die Veranstaltung zuerst ab — die Gäste sollen es erfahren."
  },
+ "UI-VA-F-ADRESSE": {
+  "s": "ENTWURF",
+  "t": "Adresse"
+ },
+ "UI-VA-F-ADRESSE-OEFFENTLICH": {
+  "s": "ENTWURF",
+  "t": "Für alle sichtbar."
+ },
+ "UI-VA-F-ADRESSE-PRIVAT": {
+  "s": "ENTWURF",
+  "t": "Sehen nur Gäste, die dabei sind. Auf der Karte steht nur die ungefähre Gegend."
+ },
+ "UI-VA-F-ANNAHME": {
+  "s": "ENTWURF",
+  "t": "Gäste selbst annehmen"
+ },
+ "UI-VA-F-ANNAHME-ERKL": {
+  "s": "ENTWURF",
+  "t": "Aus: Zusagen gelten sofort. An: Gäste fragen an, du nimmst an oder lehnst ab."
+ },
+ "UI-VA-F-BEGINN": {
+  "s": "ENTWURF",
+  "t": "Beginn"
+ },
+ "UI-VA-F-BESCHREIBUNG": {
+  "s": "ENTWURF",
+  "t": "Beschreibung"
+ },
+ "UI-VA-F-BESCHREIBUNG-ERKL": {
+  "s": "ENTWURF",
+  "t": "Was erwartet die Gäste? Musik, Ablauf, Einlass, Awareness …"
+ },
+ "UI-VA-F-BILDER": {
+  "s": "ENTWURF",
+  "t": "Bilder (bis zu {max})"
+ },
+ "UI-VA-F-BILDER-ERKL": {
+  "s": "ENTWURF",
+  "t": "Flyer, Location, Stimmung. Keine erkennbaren Personen ohne deren Einverständnis. Alle Metadaten werden entfernt."
+ },
+ "UI-VA-F-DRESSCODE": {
+  "s": "ENTWURF",
+  "t": "Dresscode (freiwillig)"
+ },
+ "UI-VA-F-EINSTUFUNG": {
+  "s": "ENTWURF",
+  "t": "Einstufung"
+ },
+ "UI-VA-F-EINSTUFUNG-GELB": {
+  "s": "ENTWURF",
+  "t": "Erotik angedeutet"
+ },
+ "UI-VA-F-EINSTUFUNG-GRUEN": {
+  "s": "ENTWURF",
+  "t": "Allgemein"
+ },
+ "UI-VA-F-EINSTUFUNG-ROT": {
+  "s": "ENTWURF",
+  "t": "Explizit — nur für Konten mit Altersprüfung sichtbar"
+ },
+ "UI-VA-F-ENDE": {
+  "s": "ENTWURF",
+  "t": "Ende"
+ },
+ "UI-VA-F-FRIST": {
+  "s": "ENTWURF",
+  "t": "Absagen möglich bis"
+ },
+ "UI-VA-F-FRIST-ERKL": {
+  "s": "ENTWURF",
+  "t": "Danach können angenommene Gäste nicht mehr selbst absagen, sondern nur dir schreiben."
+ },
+ "UI-VA-F-FRIST-KEINE": {
+  "s": "ENTWURF",
+  "t": "bis zum Beginn"
+ },
+ "UI-VA-F-FRIST-STD": {
+  "s": "ENTWURF",
+  "t": "{std} Std. vorher"
+ },
+ "UI-VA-F-FRIST-TAGE": {
+  "s": "ENTWURF",
+  "t": "{tage} Tage vorher"
+ },
+ "UI-VA-F-GAESTE": {
+  "s": "ENTWURF",
+  "t": "Gäste"
+ },
+ "UI-VA-F-KATEGORIEN": {
+  "s": "ENTWURF",
+  "t": "Kategorien (bis zu {max})"
+ },
+ "UI-VA-F-MEHR": {
+  "s": "ENTWURF",
+  "t": "Weitere Angaben"
+ },
+ "UI-VA-F-OEFFENTLICH": {
+  "s": "ENTWURF",
+  "t": "Öffentlicher Veranstaltungsort"
+ },
+ "UI-VA-F-OEFFENTLICH-ERKL": {
+  "s": "ENTWURF",
+  "t": "Club, Bar, Konzerthaus, Park … Dann stehen Adresse und genauer Punkt für alle sichtbar. Bei privaten Orten: aus lassen."
+ },
+ "UI-VA-F-ORT": {
+  "s": "ENTWURF",
+  "t": "Ort"
+ },
+ "UI-VA-F-ORT-BISHER": {
+  "s": "ENTWURF",
+  "t": "Bisher: {ort}. Wähl den Ort zum Speichern noch einmal."
+ },
+ "UI-VA-F-PLAETZE": {
+  "s": "ENTWURF",
+  "t": "Plätze (freiwillig)"
+ },
+ "UI-VA-F-PLAETZE-ERKL": {
+  "s": "ENTWURF",
+  "t": "Wie viele Gäste passen? Die Zahl der freien Plätze wird angezeigt."
+ },
+ "UI-VA-F-PREIS": {
+  "s": "ENTWURF",
+  "t": "Eintritt (freiwillig)"
+ },
+ "UI-VA-F-PREIS-BSP": {
+  "s": "ENTWURF",
+  "t": "z. B. 10 € Abendkasse, frei"
+ },
+ "UI-VA-F-TITEL": {
+  "s": "ENTWURF",
+  "t": "Titel"
+ },
+ "UI-VA-F-ZEIT-ERKL": {
+  "s": "ENTWURF",
+  "t": "Bis zu {monate} Monate im Voraus."
+ },
+ "UI-VA-FORM-ART": {
+  "s": "ENTWURF",
+  "t": "Art"
+ },
+ "UI-VA-FORM-ERKL": {
+  "s": "ENTWURF",
+  "t": "Diese Angaben sieht nur das Cruizy-Team. Öffentlich erscheint nur der Name."
+ },
+ "UI-VA-FORM-MAIL": {
+  "s": "ENTWURF",
+  "t": "Mail-Adresse für Rückfragen"
+ },
+ "UI-VA-FORM-MAIL-ERKL": {
+  "s": "ENTWURF",
+  "t": "Am besten eine Adresse auf der Domain deiner Website."
+ },
+ "UI-VA-FORM-NAME": {
+  "s": "ENTWURF",
+  "t": "Name (Bar, Club, Partyreihe …)"
+ },
+ "UI-VA-FORM-NOTIZ": {
+  "s": "ENTWURF",
+  "t": "Was sollen wir wissen? (freiwillig)"
+ },
+ "UI-VA-FORM-NOTIZ-ERKL": {
+  "s": "ENTWURF",
+  "t": "Zum Beispiel: seit wann es euch gibt, wo man euch findet."
+ },
+ "UI-VA-FORM-STADT": {
+  "s": "ENTWURF",
+  "t": "Stadt"
+ },
+ "UI-VA-FORM-WEBSITE": {
+  "s": "ENTWURF",
+  "t": "Website (freiwillig)"
+ },
+ "UI-VA-FORM-WEBSITE-ERKL": {
+  "s": "ENTWURF",
+  "t": "Hilft beim Prüfen — etwa über das Impressum."
+ },
  "UI-VA-FRIST-LANG": {
   "s": "ENTWURF",
   "t": "Die Absagefrist darf höchstens {std} Stunden betragen."
@@ -2986,6 +3458,78 @@
  "UI-VA-FRIST-VORBEI": {
   "s": "ENTWURF",
   "t": "Die Absagefrist ist vorbei. Schreib dem Veranstalter, wenn du doch nicht kommen kannst."
+ },
+ "UI-VA-GAESTE-LEER": {
+  "s": "ENTWURF",
+  "t": "Hier ist noch niemand."
+ },
+ "UI-VA-GESPEICHERT-PRUEFUNG": {
+  "s": "ENTWURF",
+  "t": "Eingereicht — das Team prüft sie jetzt."
+ },
+ "UI-VA-GESPEICHERT-SICHTBAR": {
+  "s": "ENTWURF",
+  "t": "Gespeichert — deine Veranstaltung ist sichtbar."
+ },
+ "UI-VA-HAFTUNG": {
+  "s": "ENTWURF",
+  "t": "Veranstaltungen werden von den jeweiligen Veranstaltern eingestellt. Cruizy organisiert sie nicht, ist nicht Vertragspartner und übernimmt keine Haftung für Durchführung, Angaben, Preise oder Sicherheit vor Ort. Bei Problemen: melden."
+ },
+ "UI-VA-HAFTUNG-VERANSTALTER": {
+  "s": "ENTWURF",
+  "t": "Du bist Veranstalter und verantwortlich für die Veranstaltung, deine Angaben und die Einhaltung der Gesetze (u. a. Jugendschutz, Hausrecht, Lärmschutz). Cruizy stellt nur die Fläche bereit. Keine Privatadressen anderer Personen, keine Versprechen, die du nicht halten kannst."
+ },
+ "UI-VA-IN-PRUEFUNG": {
+  "s": "ENTWURF",
+  "t": "In Prüfung — das Cruizy-Team schaut sich deine Einreichung an. Erst danach ist sie für andere sichtbar."
+ },
+ "UI-VA-INFO-1": {
+  "s": "ENTWURF",
+  "t": "Veranstaltungen direkt veröffentlichen können nur Konten, die als Veranstalter verifiziert sind — etwa Bars, Clubs, Restaurants, Konzerthäuser, Partyreihen oder Vereine."
+ },
+ "UI-VA-INFO-2": {
+  "s": "ENTWURF",
+  "t": "Ohne Verifizierung kannst du eine Veranstaltung einreichen. Das Cruizy-Team prüft sie und gibt sie im Einzelfall frei — auch private Partys."
+ },
+ "UI-VA-INFO-3": {
+  "s": "ENTWURF",
+  "t": "Voraussetzung ist ein Konto mit Altersprüfung. Verifizierte Veranstaltungen prüft das Team stichprobenartig nach; die Verifizierung lässt sich bei Verstößen entziehen."
+ },
+ "UI-VA-INFO-SCHRITT-1": {
+  "s": "ENTWURF",
+  "t": "Verifizierung beantragen: Name, Art, Stadt, Website und eine Mail-Adresse, unter der wir dich erreichen."
+ },
+ "UI-VA-INFO-SCHRITT-2": {
+  "s": "ENTWURF",
+  "t": "Wir prüfen die Angaben — meist über Website, Impressum oder eine Rückfrage per Mail."
+ },
+ "UI-VA-INFO-SCHRITT-3": {
+  "s": "ENTWURF",
+  "t": "Danach erscheinen deine Veranstaltungen sofort und mit dem Zeichen „verifiziert“."
+ },
+ "UI-VA-INFO-TITEL": {
+  "s": "ENTWURF",
+  "t": "Veranstalter bei Cruizy"
+ },
+ "UI-VA-KATEGORIEN": {
+  "s": "ENTWURF",
+  "t": "Kategorien"
+ },
+ "UI-VA-LAGE-UNGEFAEHR": {
+  "s": "ENTWURF",
+  "t": "Auf der Karte nur ungefähr — die genaue Adresse sehen angenommene Gäste."
+ },
+ "UI-VA-LOESCHEN": {
+  "s": "ENTWURF",
+  "t": "Einreichung löschen"
+ },
+ "UI-VA-MEINE": {
+  "s": "ENTWURF",
+  "t": "Meine Veranstaltungen"
+ },
+ "UI-VA-MEINE-LEER": {
+  "s": "ENTWURF",
+  "t": "Noch keine Veranstaltungen."
  },
  "UI-VA-N-ABGELEHNT": {
   "s": "ENTWURF",
@@ -3051,29 +3595,145 @@
   "s": "ENTWURF",
   "t": "Du bist als Veranstalter verifiziert"
  },
+ "UI-VA-NEU": {
+  "s": "ENTWURF",
+  "t": "Neue Veranstaltung"
+ },
  "UI-VA-NICHT-AENDERBAR": {
   "s": "ENTWURF",
   "t": "Abgesagte oder vergangene Veranstaltungen lassen sich nicht mehr ändern."
+ },
+ "UI-VA-NICHT-FREIGEGEBEN": {
+  "s": "ENTWURF",
+  "t": "Diese Einreichung wurde nicht freigegeben."
+ },
+ "UI-VA-NICHT-VERIFIZIERT": {
+  "s": "ENTWURF",
+  "t": "Noch nicht als Veranstalter verifiziert"
+ },
+ "UI-VA-NICHT-VERIFIZIERT-ERKL": {
+  "s": "ENTWURF",
+  "t": "Du kannst bis zu {max} Veranstaltungen gleichzeitig zur Prüfung einreichen — oder dich als Veranstalter verifizieren lassen."
  },
  "UI-VA-ORT-FEHLT": {
   "s": "ENTWURF",
   "t": "Bitte wähl einen Ort."
  },
+ "UI-VA-ORT-NEU-WAEHLEN": {
+  "s": "ENTWURF",
+  "t": "Bitte wähl den Ort noch einmal."
+ },
+ "UI-VA-PIN": {
+  "s": "ENTWURF",
+  "t": "Genauer Punkt auf der Karte"
+ },
+ "UI-VA-PIN-ERKL": {
+  "s": "ENTWURF",
+  "t": "Tipp auf die Karte, um den Eingang zu markieren (freiwillig)."
+ },
+ "UI-VA-PIN-GESETZT": {
+  "s": "ENTWURF",
+  "t": "Punkt gesetzt — tipp erneut, um ihn zu verschieben."
+ },
  "UI-VA-PIN-WEIT": {
   "s": "ENTWURF",
   "t": "Die Stecknadel liegt zu weit vom gewählten Ort entfernt."
+ },
+ "UI-VA-PLAETZE-FREI": {
+  "s": "ENTWURF",
+  "t": "noch {frei} von {gesamt} Plätzen frei"
+ },
+ "UI-VA-ROLLE-GAST": {
+  "s": "ENTWURF",
+  "t": "Gast"
+ },
+ "UI-VA-ROLLE-VERANSTALTER": {
+  "s": "ENTWURF",
+  "t": "Veranstalter"
  },
  "UI-VA-SCHON-BEANTRAGT": {
   "s": "ENTWURF",
   "t": "Du hast die Verifizierung schon beantragt."
  },
+ "UI-VA-SCHREIBEN": {
+  "s": "ENTWURF",
+  "t": "Schreiben"
+ },
+ "UI-VA-STATUS-ABGELEHNT": {
+  "s": "ENTWURF",
+  "t": "Nicht freigegeben"
+ },
+ "UI-VA-STATUS-ABGESAGT": {
+  "s": "ENTWURF",
+  "t": "Abgesagt"
+ },
+ "UI-VA-STATUS-PRUEFUNG": {
+  "s": "ENTWURF",
+  "t": "In Prüfung"
+ },
+ "UI-VA-STATUS-SICHTBAR": {
+  "s": "ENTWURF",
+  "t": "Sichtbar"
+ },
+ "UI-VA-STATUS-VORBEI": {
+  "s": "ENTWURF",
+  "t": "Vorbei"
+ },
+ "UI-VA-TESTGAESTE": {
+  "s": "ENTWURF",
+  "t": "Davon {zahl} erfundene Testgäste (Testbetrieb)."
+ },
  "UI-VA-TEXT-LANG": {
   "s": "ENTWURF",
   "t": "Die Beschreibung darf höchstens {zeichen} Zeichen haben."
  },
+ "UI-VA-VERIFIZIERT": {
+  "s": "ENTWURF",
+  "t": "verifizierter Veranstalter"
+ },
+ "UI-VA-VERIFIZIERT-ERKL": {
+  "s": "ENTWURF",
+  "t": "Du bist als Veranstalter verifiziert. Deine Veranstaltungen erscheinen sofort."
+ },
+ "UI-VA-VERIFIZIERUNG-BEANTRAGEN": {
+  "s": "ENTWURF",
+  "t": "Verifizierung beantragen"
+ },
+ "UI-VA-VEROEFFENTLICHEN": {
+  "s": "ENTWURF",
+  "t": "Veröffentlichen"
+ },
+ "UI-VA-VERWALTEN": {
+  "s": "ENTWURF",
+  "t": "Verwalten"
+ },
  "UI-VA-VOLL": {
   "s": "ENTWURF",
   "t": "Leider ausgebucht — es gibt keine freien Plätze mehr."
+ },
+ "UI-VA-VON": {
+  "s": "ENTWURF",
+  "t": "von {name}"
+ },
+ "UI-VA-VON-PLAETZEN": {
+  "s": "ENTWURF",
+  "t": "von {zahl} Plätzen"
+ },
+ "UI-VA-WIE": {
+  "s": "ENTWURF",
+  "t": "Wie geht das?"
+ },
+ "UI-VA-ZAHL-ABGESAGT": {
+  "s": "ENTWURF",
+  "t": "{zahl} abgesagt"
+ },
+ "UI-VA-ZAHL-ANFRAGEN": {
+  "s": "ENTWURF",
+  "t": "{zahl} Anfragen"
+ },
+ "UI-VA-ZAHL-DABEI": {
+  "s": "ENTWURF",
+  "t": "{zahl} dabei"
  },
  "UI-VA-ZU-LANG": {
   "s": "ENTWURF",
@@ -3082,6 +3742,10 @@
  "UI-VA-ZU-WEIT": {
   "s": "ENTWURF",
   "t": "Veranstaltungen gehen höchstens {monate} Monate im Voraus."
+ },
+ "UI-VA-ZUGESAGT": {
+  "s": "ENTWURF",
+  "t": "Du bist dabei!"
  },
  "UI-VERFALL-NICHT-DU": {
   "s": "ENTWURF",

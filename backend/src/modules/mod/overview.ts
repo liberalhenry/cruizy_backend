@@ -120,6 +120,9 @@ export default async function overviewRoutes(app: FastifyInstance) {
       hashCases: { open: hash.n, urgent: hash.urgent, zone2Active: p('P-ZONE2-ABGLEICH'), hashActive: p('P-HASH-AKTIV') },
       claims: claims.n,
       submissions: subs.n,
+      // Issue #16
+      organizerApplications: (await one(`SELECT count(*)::int AS n FROM organizers WHERE status = 'beantragt'`))!.n,
+      eventsUnchecked: (await one(`SELECT count(*)::int AS n FROM events WHERE status = 'approved' AND checked_at IS NULL AND ends_at > now()`))!.n,
       suspensionsToApprove: susp.n,
       approvalsToGive: appr.n,
       art18Drafts: art18.n,

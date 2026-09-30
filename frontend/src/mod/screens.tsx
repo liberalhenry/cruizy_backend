@@ -3,6 +3,7 @@ import { useEffect, useState, type ReactNode } from 'react';
 import { Banner, Sheet, TextArea, Toggle, useAsync } from '../components/ui';
 import { api, errText } from '../lib/api';
 import { fmtDate, t } from '../lib/texts';
+import { EventDetail, Veranstalter, VeranstaltungenPruefen } from './veranstaltungen';
 import { Card, Logo, Reason, useAction } from './common';
 import { MeinZugang, Team } from './team';
 import { Ausweise } from './ausweis';
@@ -18,7 +19,7 @@ export interface Staff {
   version?: string;
 }
 
-type Screen = 'uebersicht' | 'warteschlange' | 'meldungen' | 'hash' | 'freigaben' | 'sperren' | 'widerspruch' | 'protokoll' | 'orte' | 'einreichungen' | 'art18' | 'vorgaenge' | 'verwaltung' | 'team' | 'zugang' | 'ausweis' | 'updates';
+type Screen = 'uebersicht' | 'warteschlange' | 'meldungen' | 'hash' | 'freigaben' | 'sperren' | 'widerspruch' | 'protokoll' | 'orte' | 'einreichungen' | 'veranstalter' | 'veranstaltungen' | 'art18' | 'vorgaenge' | 'verwaltung' | 'team' | 'zugang' | 'ausweis' | 'updates';
 
 const NAV: { key: Screen; label: string; betrieb?: boolean; owner?: boolean }[] = [
   { key: 'uebersicht', label: 'Tagesübersicht' },
@@ -32,6 +33,8 @@ const NAV: { key: Screen; label: string; betrieb?: boolean; owner?: boolean }[] 
   { key: 'vorgaenge', label: 'Kontaktservice' },
   { key: 'orte', label: 'Orte' },
   { key: 'einreichungen', label: 'Freigabe Termine' },
+  { key: 'veranstaltungen', label: 'Veranstaltungen prüfen' },
+  { key: 'veranstalter', label: 'Veranstalter' },
   { key: 'art18', label: 'Art. 18 DSA' },
   { key: 'protokoll', label: 'Zugriffsprotokoll' },
   { key: 'verwaltung', label: 'Verwaltung', betrieb: true },
@@ -89,6 +92,8 @@ export function Screens({ me, onLogout, reloadMe }: { me: Staff; onLogout: () =>
         {screen === 'protokoll' && <Protokoll isBetrieb={isBetrieb} />}
         {screen === 'orte' && <Orte />}
         {screen === 'einreichungen' && <Einreichungen />}
+        {screen === 'veranstaltungen' && <VeranstaltungenPruefen />}
+        {screen === 'veranstalter' && <Veranstalter />}
         {screen === 'art18' && <Art18 isBetrieb={isBetrieb} owner={me.staff.founder} />}
         {screen === 'vorgaenge' && <Vorgaenge />}
         {screen === 'verwaltung' && isBetrieb && <Verwaltung />}
@@ -180,6 +185,16 @@ function Uebersicht({ me, go }: { me: Staff; go: (s: Screen) => void }) {
             <li>
               <button className="underline" onClick={() => go('einreichungen')}>
                 Einreichungen: {data.submissions}
+              </button>
+            </li>
+            <li>
+              <button className="underline" onClick={() => go('veranstalter')}>
+                Veranstalter-Anträge: {data.organizerApplications}
+              </button>
+            </li>
+            <li>
+              <button className="underline" onClick={() => go('veranstaltungen')}>
+                Ungeprüfte Veranstaltungen: {data.eventsUnchecked}
               </button>
             </li>
             <li>
@@ -1078,6 +1093,7 @@ const CHECKS = [
 
 function Einreichungen() {
   const { data, reload } = useAsync(() => api.get('/mod-api/submissions'), []);
+  const [detail, setDetail] = useState<string | null>(null);
   const [open, setOpen] = useState<any | null>(null);
   const [checks, setChecks] = useState<Record<string, boolean>>({});
   const [ev, setEv] = useState<any>({});
@@ -1122,36 +1138,31 @@ function Einreichungen() {
       <Card title="Eingereichte Veranstaltungen">
         {!data?.events.length && <p className="muted text-sm">Nichts offen.</p>}
         {data?.events.map((e: any) => (
-          <div key={e.id} className="border-t border-linie py-2 text-sm">
-            <p>
+          <div key={e.id} className="border-t border-linie py-2 text-sm flex items-center gap-2">
+            <span className="flex-1">
               {e.soon ? '⚡ ' : ''}
-              {e.title} · {fmtDate(e.startsAt, true)} · {e.place ?? '—'}
-            </p>
-            <div className="flex gap-2 mt-1 flex-wrap">
-              {CHECKS.map(([k, l]) => (
-                <label key={k} className="text-xs flex items-center gap-1">
-                  <input type="checkbox" checked={!!checks[`${e.id}:${k}`]} onChange={(x) => setChecks({ ...checks, [`${e.id}:${k}`]: x.target.checked })} /> {l}
-                </label>
-              ))}
-            </div>
-            <div className="flex gap-2 mt-1">
-              <button
-                className="btn-secondary"
-                disabled={!reason.trim() || !CHECKS.every(([k]) => checks[`${e.id}:${k}`])}
-                onClick={() =>
-                  run(() => api.post(`/mod-api/events/${e.id}/decide`, { decision: 'freigeben', reason, ampel: 'gruen', checklist: Object.fromEntries(CHECKS.map(([k]) => [k, true])) }), 'Freigegeben.').then(reload)
-                }
-              >
-                Freigeben (grün)
-              </button>
-              <button className="btn-ghost" disabled={!reason.trim()} onClick={() => run(() => api.post(`/mod-api/events/${e.id}/decide`, { decision: 'ablehnen', reason }), 'Abgelehnt.').then(reload)}>
-                Ablehnen
-              </button>
-            </div>
+              <b>{e.title}</b> · {fmtDate(e.startsAt, true)} · {e.place ?? '—'}
+              <span className="block text-xs muted">
+                {e.fromMember ? 'Mitglied ohne Verifizierung' : e.source} · {(e.categories ?? []).join(', ')}
+              </span>
+            </span>
+            <button className="btn-ghost" onClick={() => setDetail(e.id)}>
+              Prüfen
+            </button>
           </div>
         ))}
-        <Reason value={reason} onChange={setReason} />
       </Card>
+      <Sheet open={!!detail} onClose={() => setDetail(null)} title="Einreichung prüfen">
+        {detail && (
+          <EventDetail
+            id={detail}
+            onDone={() => {
+              setDetail(null);
+              reload();
+            }}
+          />
+        )}
+      </Sheet>
       <Sheet open={!!open} onClose={() => setOpen(null)} title="Einreichung">
         {open && (
           <div className="flex flex-col gap-2 text-sm">

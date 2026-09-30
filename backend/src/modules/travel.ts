@@ -51,7 +51,8 @@ export default async function travelRoutes(app: FastifyInstance) {
     // „Bayern“ o. Ä.: zu grob — ein Dorf, eine Stadt oder ein Stadtteil muss es sein
     if (looksLikeRegion(qq)) return { results: [], region: true };
     const list = searchPlaces(qq, 8);
-    return { results: list.map((x) => ({ id: x.id, label: placeLabel(x), detail: placeDetail(x), kind: x.kind })), region: false };
+    // Mittelpunkt eines Ortes ist öffentlich (für die Stecknadel bei Veranstaltungsorten, Issue #16)
+    return { results: list.map((x) => ({ id: x.id, label: placeLabel(x), detail: placeDetail(x), kind: x.kind, lat: x.lat, lng: x.lng })), region: false };
   });
 
   app.get('/api/travel', async (req) => {

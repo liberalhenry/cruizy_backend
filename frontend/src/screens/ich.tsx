@@ -107,6 +107,7 @@ export function Ich() {
         <ListCard>
           <RowLink to="/ich/mitteilungen" label={t('ST-SIC-50')} badge={unread ? <span className="rounded-full bg-akzent text-grund px-2 text-xs">{unread}</span> : undefined} />
           <RowLink to="/ich/profil/bearbeiten" label={t('UI-ICH-PROFIL')} hint={t('UI-PROFIL-BEARBEITEN')} />
+          <RowLink to="/veranstalter" label={t('UI-VA-BEREICH')} hint={t('UI-VA-BEREICH-ERKL')} />
           <RowLink to="/ich/reisen" label={t('UI-TRAVEL-TITEL')} hint={me.profile.location?.travel ? t('UI-TRAVEL-AKTIV', { ort: me.profile.location.travel.place }) : undefined} />
           <RowLink to="/ich/besucher" label={t('UI-BESUCHER')} badge={dot.ich ? <span className="rounded-full bg-gefahr text-white px-2 text-xs">{t('UI-APP-NEUES')}</span> : undefined} />
           <RowLink to="/ich/merkliste" label={t('UI-ICH-MERKLISTE')} />

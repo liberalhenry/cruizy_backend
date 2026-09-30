@@ -11,12 +11,14 @@ import { idbGet, idbSet } from '../lib/idb';
 import { on } from '../lib/realtime';
 import { enablePush, isIosSafariNotInstalled, pushSupported } from '../lib/push';
 import { ACTIVITY_TEXT, fmtTime, fmtWhen, t } from '../lib/texts';
+import { VeranstaltungsChats } from './veranstalter';
 
 // ─────────────────────────── S30 · Liste ───────────────────────────
 
 export function Chats() {
   const nav = useNavigate();
-  const [box, setBox] = useState<'gespraeche' | 'anfragen' | 'archiv'>('gespraeche');
+  const [box, setBox] = useState<'gespraeche' | 'anfragen' | 'veranstaltungen' | 'archiv'>(() => (new URLSearchParams(location.search).get('reiter') === 'veranstaltungen' ? 'veranstaltungen' : 'gespraeche'));
+  const [eventUnread, setEventUnread] = useState(0);
   const [list, setList] = useState<any[] | null>(null);
   const [err, setErr] = useState<string | null>(null);
   const [explain, setExplain] = useState(true);
@@ -41,6 +43,12 @@ export function Chats() {
     load();
     return on('nachricht', () => load());
   }, [load]);
+  // Issue #16: Chats mit Veranstaltern bzw. Gästen — eigener Reiter, nicht vermischt mit privaten
+  useEffect(() => {
+    const f = () => api.get('/api/conversations/unread').then((r) => setEventUnread(r.events ?? 0)).catch(() => {});
+    f();
+    return on('veranstaltung_chat', f);
+  }, []);
 
   const rows = (list ?? []).filter((c) => c.box === box);
   // Issue #14: ungelesene Gespräche je Reiter — der Lesestand kommt vom Server (nur der eigene)
@@ -54,13 +62,17 @@ export function Chats() {
       <Header
         title={t('UI-TAB-CHATS')}
         sub={
-          <div className="flex gap-2 px-4 pb-2" role="tablist">
+          <div className="scroll-x flex gap-2 px-4 pb-2" role="tablist">
             {(['gespraeche', 'anfragen'] as const).map((b) => (
               <button key={b} role="tab" aria-selected={box === b} className={`chip min-h-tap ${box === b ? 'border-akzent text-akzent' : ''}`} onClick={() => setBox(b)}>
                 {t(b === 'gespraeche' ? 'ST-CHAT-02' : 'ST-CHAT-01')}
                 {counts[b] > 0 && <span className="ml-1 rounded-full bg-gefahr text-white px-1.5 text-xs" aria-label={t('UI-CHATS-UNGELESEN', { zahl: counts[b] })}>{counts[b]}</span>}
               </button>
             ))}
+            <button role="tab" aria-selected={box === 'veranstaltungen'} className={`chip min-h-tap shrink-0 ${box === 'veranstaltungen' ? 'border-akzent text-akzent' : ''}`} onClick={() => setBox('veranstaltungen')}>
+              🎟️ {t('UI-VA-CHATS')}
+              {eventUnread > 0 && <span className="ml-1 w-2 h-2 rounded-full bg-gefahr inline-block" aria-label={t('UI-CHATS-UNGELESEN', { zahl: eventUnread })} />}
+            </button>
             <button role="tab" aria-selected={box === 'archiv'} className={`chip min-h-tap ${box === 'archiv' ? 'border-akzent text-akzent' : ''}`} onClick={() => setBox('archiv')}>
               {t('UI-CHATS-ARCHIV')}
             </button>
@@ -78,7 +90,12 @@ export function Chats() {
           </div>
         )}
         {box === 'archiv' && <p className="text-sm muted mb-3">{t('ST-CHAT-20')}</p>}
-        {!list ? (
+        {box === 'veranstaltungen' ? (
+          <>
+            <p className="text-sm muted mb-3">{t('UI-VA-CHATS-ERKL')}</p>
+            <VeranstaltungsChats />
+          </>
+        ) : !list ? (
           <div className="flex flex-col gap-2">
             {[0, 1, 2].map((i) => (
               <Skeleton key={i} className="h-16" />
