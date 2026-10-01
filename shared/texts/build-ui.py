@@ -12,8 +12,6 @@ T = {
   'UI-ZU-SPAET': 'Dafür ist es jetzt zu spät.',
   'UI-LINK-UNGUELTIG': 'Dieser Link ist nicht mehr gültig.',
   'UI-NEU-ANMELDEN': 'Bitte gib zur Sicherheit noch einmal dein Passwort oder einen Code ein.',
-  'UI-TESTBETRIEB-EINLADUNG': 'Wir sind gerade im Testbetrieb. Zum Registrieren brauchst du einen Einladungscode.',
-  'UI-TESTBETRIEB-HINWEIS': 'Testbetrieb — bitte nur erfundene Angaben und keine echten Fotos von dir.',
   'UI-WARTEFRIST': 'Die Wartefrist läuft noch.',
   'UI-DAUER-TAGE': '{tage} Tage',
   'UI-DAUER-GESPEICHERT': 'Gespeichert — gilt bis {zeit}.',
@@ -206,7 +204,7 @@ APP = {
   'UI-TAB-NAEHE': 'Nähe', 'UI-TAB-CHATS': 'Chats', 'UI-TAB-ICH': 'Ich',
 
   'UI-GAST-STADT': 'Oder wähl eine Stadt:',
-  'UI-KONTO-ANMELDEN': 'Anmelden', 'UI-KONTO-EINLADUNG': 'Einladungscode', 'UI-KONTO-EMAIL': 'E-Mail-Adresse',
+  'UI-KONTO-ANMELDEN': 'Anmelden', 'UI-KONTO-EMAIL': 'E-Mail-Adresse',
   'UI-KONTO-EMAIL-ODER-NUMMER': 'E-Mail-Adresse oder Telefonnummer', 'UI-KONTO-NUMMER': 'Telefonnummer', 'UI-KONTO-PASSWORT': 'Passwort',
   'UI-KONTO-PASSWORT-NEU': 'Neues Passwort', 'UI-KONTO-PASSWORT-ALT': 'Bisheriges Passwort', 'UI-KONTO-PASSWORT-AENDERN': 'Passwort ändern',
   'UI-KONTO-PASSWORT-GEAENDERT': 'Passwort geändert. Andere Geräte sind abgemeldet.',
@@ -280,7 +278,7 @@ APP = {
   'UI-MEL-CSAM': 'Darstellung von sexuellem Kindesmissbrauch',
 
   'UI-PRUEFUNG-WARUM': 'Warum?', 'UI-PRUEFUNG-STARTEN': 'Prüfung starten', 'UI-PRUEFUNG-LAEUFT': 'Die Prüfung läuft noch …',
-  'UI-PRUEFUNG-NACHRICHT-SENDEN': 'Weiter zur Nachricht', 'UI-PRUEFUNG-ATTRAPPE': 'Testbetrieb: Es ist noch kein Prüfpartner angebunden. Die Prüfung wird nur nachgestellt.',
+  'UI-PRUEFUNG-NACHRICHT-SENDEN': 'Weiter zur Nachricht',
   'UI-STUFE2-SCHLUESSEL': 'Bestätige dich jetzt mit einem Schlüssel, der nur auf diesem Gerät liegt (Fingerabdruck, Gesicht oder Geräte-PIN).',
   'UI-STUFE2-BESTAETIGEN': 'Mit dem Gerät bestätigen', 'UI-STUFE2-NICHT-MOEGLICH': 'Dieser Browser kann keinen gerätegebundenen Schlüssel anlegen.',
 
@@ -362,7 +360,8 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from ui_funktionen import ERSETZT, NEU  # noqa: E402
 from ui_v040 import ERSETZT as ERSETZT_040, NEU as NEU_040  # noqa: E402  (Issues #32–#39)
 from ui_postfach import ERSETZT as ERSETZT_PF, NEU as NEU_PF  # noqa: E402  (Postfach, Tickets, Teams)
-for _neu, _ersetzt in ((NEU, ERSETZT), (NEU_040, ERSETZT_040), (NEU_PF, ERSETZT_PF)):
+from ui_bestaetigen import ERSETZT as ERSETZT_BT, NEU as NEU_BT  # noqa: E402  (ohne Testbetrieb: das Team bestätigt)
+for _neu, _ersetzt in ((NEU, ERSETZT), (NEU_040, ERSETZT_040), (NEU_PF, ERSETZT_PF), (NEU_BT, ERSETZT_BT)):
     for _k in _neu:
         if _k in T:
             raise SystemExit(f'Text {_k} doppelt')
@@ -376,7 +375,7 @@ FAQ = [
   ('Ich komme nicht mehr in mein Konto — was kann ich tun?', 'Auf der Anmeldeseite unter „Passwort vergessen“ schicken wir dir einen Code an deine bestätigte Adresse oder Nummer. Hast du beides nicht mehr, hilft dein Wiederherstellungscode oder der Weg über eine Vertrauensperson.'),
   ('Ich habe meinen Wiederherstellungscode verloren.', 'Solange du angemeldet bist, kannst du unter „Ich“ → „Konto“ einen neuen Code erzeugen. Der alte gilt dann nicht mehr.'),
   ('Warum muss ich mein Alter prüfen lassen, bevor ich schreiben kann?', 'Weil hier nur Volljährige sein dürfen. Wir speichern davon nur „geprüft ja/nein“, den Zeitpunkt und den Weg — kein Geburtsdatum. Ein Foto deines Ausweises behalten wir nur, solange ein Mensch aus unserem Team es prüfen muss; danach löschen wir es.'),
-  ('Was passiert mit meinem Selfie bei der Altersprüfung?', 'Die Prüfung macht ein Prüfpartner. Wir erhalten nur das Ergebnis. Was der Partner speichert und wie lange, steht in unserer Datenschutzerklärung.'),
+  ('Was passiert mit meinem Selfie bei der Prüfung?', 'Solange kein Prüfpartner angebunden ist, schaut sich ein Mensch aus unserem Team dein Selfie an — nur um zu entscheiden, ob es passt. Danach löschen wir es. Gespeichert bleibt nur das Ergebnis und der Zeitpunkt.'),
   ('Warum sehe ich manche Profile nicht?', 'Wer dich blockiert hat oder wen du blockiert hast, erscheint nicht. Manche Personen sind nur für bestimmte Gruppen sichtbar oder gerade unsichtbar.'),
   ('Wie genau wird mein Standort angezeigt?', 'Nie genau. Wir runden auf ein Raster (ungefähr 2 km oder 500 m, je nach Einstellung) und zeigen anderen nur eine Entfernungsstufe, keine Meter.'),
   ('Was ist eine Zone, und wie viele sind kostenlos?', 'Eine Zone ist ein Bereich, etwa um deine Wohnung. Darin zeigen wir statt deines Ortes einen Ersatzpunkt. Die Zahl der Zonen steht in den Einstellungen.'),

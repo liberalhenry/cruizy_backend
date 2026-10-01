@@ -98,7 +98,7 @@ export async function member(
   const c = new Client(app);
   const email = `t-${randomUUID()}@example.invalid`;
   const password = 'ein-langes-testpasswort';
-  const r = await c.post('/api/auth/register', { method: 'email', email, password, invite: 'einladung' });
+  const r = await c.post('/api/auth/register', { method: 'email', email, password });
   if (r.status !== 200) throw new Error(`Registrierung: ${r.status} ${JSON.stringify(r.body)}`);
   const v = await c.post('/api/auth/verify', { token: r.body.token, code: lastCode(email) });
   if (v.status !== 200) throw new Error(`Bestätigung: ${v.status} ${JSON.stringify(v.body)}`);
@@ -174,4 +174,12 @@ export function multipart(file: Buffer, fields: Record<string, string> = {}, fil
 export async function upload(c: Client, url: string, file: Buffer, fields: Record<string, string> = {}) {
   const m = multipart(file, fields);
   return c.req('POST', url, m.payload, m.headers);
+}
+
+/** PLUS für 7 Tage — früher über den Testbetrieb, jetzt direkt in der Datenbank. */
+export async function grantPlus(accountId: string) {
+  await q(`INSERT INTO entitlements (account_id, tier, source, valid_until) VALUES ($1, 'plus', 'test', now() + interval '7 days')`, [accountId]);
+}
+export async function endPlus(accountId: string) {
+  await q(`DELETE FROM entitlements WHERE account_id = $1 AND source = 'test'`, [accountId]);
 }

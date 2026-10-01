@@ -8,7 +8,8 @@ import { DateAdmin } from './date';
 import { Postfach } from './postfach';
 import { Card, Logo, Reason, isOwnerMode, useAction, tooShort } from './common';
 import { MeinZugang, Team } from './team';
-import { Ausweise } from './ausweis';
+import { Bestaetigen } from './bestaetigen';
+import { Einrichtung } from './einrichtung';
 import { Aktualisierung } from './updates';
 
 export interface Staff {
@@ -17,34 +18,101 @@ export interface Staff {
   hashToday: number;
   hashLimit: number;
   hashLocked: boolean;
-  mode: 'test' | 'live';
   version?: string;
 }
 
-type Screen = 'postfach' | 'uebersicht' | 'warteschlange' | 'meldungen' | 'hash' | 'freigaben' | 'sperren' | 'widerspruch' | 'protokoll' | 'orte' | 'einreichungen' | 'veranstalter' | 'veranstaltungen' | 'date' | 'art18' | 'verwaltung' | 'team' | 'zugang' | 'ausweis' | 'updates';
+type Screen =
+  | 'uebersicht'
+  | 'postfach'
+  | 'bestaetigen'
+  | 'warteschlange'
+  | 'meldungen'
+  | 'hash'
+  | 'freigaben'
+  | 'sperren'
+  | 'widerspruch'
+  | 'protokoll'
+  | 'orte'
+  | 'einreichungen'
+  | 'veranstalter'
+  | 'veranstaltungen'
+  | 'date'
+  | 'art18'
+  | 'verwaltung'
+  | 'einrichtung'
+  | 'team'
+  | 'zugang'
+  | 'updates';
 
-const NAV: { key: Screen; label: string; betrieb?: boolean; owner?: boolean }[] = [
-  { key: 'postfach', label: 'Postfach' },
-  { key: 'uebersicht', label: 'Tagesübersicht' },
-  { key: 'warteschlange', label: 'Warteschlange Zone 1' },
-  { key: 'meldungen', label: 'Meldungen' },
-  { key: 'hash', label: 'Hash-Treffer' },
-  { key: 'ausweis', label: 'Altersprüfung' },
-  { key: 'freigaben', label: 'Zweite Person' },
-  { key: 'sperren', label: 'Sperren' },
-  { key: 'widerspruch', label: 'Einspruch/Widerspruch' },
-  { key: 'orte', label: 'Orte' },
-  { key: 'einreichungen', label: 'Freigabe Termine' },
-  { key: 'veranstaltungen', label: 'Veranstaltungen prüfen' },
-  { key: 'veranstalter', label: 'Veranstalter' },
-  { key: 'date', label: 'Cruizy Date' },
-  { key: 'art18', label: 'Art. 18 DSA' },
-  { key: 'protokoll', label: 'Zugriffsprotokoll' },
-  { key: 'verwaltung', label: 'Verwaltung', betrieb: true },
-  { key: 'team', label: 'Team', owner: true },
-  { key: 'updates', label: 'Aktualisierung', owner: true },
-  { key: 'zugang', label: 'Mein Zugang' },
+interface NavItem {
+  key: Screen;
+  label: string;
+  /** Zähler aus /mod-api/nav */
+  count?: string;
+  /** Zähler rot, wenn dieser Wert > 0 */
+  alarm?: string;
+  betrieb?: boolean;
+  owner?: boolean;
+  /** Owner oder BETRIEB */
+  leitung?: boolean;
+}
+
+/** Seitenleiste in Gruppen — oben, was täglich anfällt; unten, was selten gebraucht wird. */
+const NAV: { group: string | null; items: NavItem[] }[] = [
+  {
+    group: null,
+    items: [
+      { key: 'uebersicht', label: 'Überblick' },
+      { key: 'postfach', label: 'Postfach', count: 'postfach', alarm: 'postfach_rot' },
+      { key: 'bestaetigen', label: 'Bestätigen', count: 'bestaetigen' },
+    ],
+  },
+  {
+    group: 'Prüfen',
+    items: [
+      { key: 'warteschlange', label: 'Bilder', count: 'bilder' },
+      { key: 'meldungen', label: 'Meldungen', count: 'meldungen' },
+      { key: 'hash', label: 'Hash-Treffer', count: 'hash', alarm: 'hash' },
+    ],
+  },
+  {
+    group: 'Entscheiden',
+    items: [
+      { key: 'freigaben', label: 'Vier-Augen-Freigaben', count: 'freigaben' },
+      { key: 'sperren', label: 'Sperren' },
+      { key: 'widerspruch', label: 'Widersprüche', count: 'widersprueche' },
+    ],
+  },
+  {
+    group: 'Inhalte',
+    items: [
+      { key: 'orte', label: 'Orte', count: 'orte' },
+      { key: 'einreichungen', label: 'Termine per E-Mail', count: 'termine' },
+      { key: 'veranstaltungen', label: 'Veranstaltungen', count: 'veranstaltungen' },
+      { key: 'veranstalter', label: 'Veranstalter', count: 'veranstalter' },
+      { key: 'date', label: 'Cruizy Date', count: 'date' },
+    ],
+  },
+  {
+    group: 'Recht und Protokoll',
+    items: [
+      { key: 'art18', label: 'Art. 18 DSA', count: 'art18' },
+      { key: 'protokoll', label: 'Zugriffsprotokoll' },
+    ],
+  },
+  {
+    group: 'Verwaltung',
+    items: [
+      { key: 'einrichtung', label: 'Einrichtung', leitung: true },
+      { key: 'verwaltung', label: 'Parameter und Kennzahlen', betrieb: true },
+      { key: 'team', label: 'Team', owner: true },
+      { key: 'updates', label: 'Aktualisierung', owner: true },
+      { key: 'zugang', label: 'Mein Zugang' },
+    ],
+  },
 ];
+
+const ALL_ITEMS = NAV.flatMap((g) => g.items);
 
 function Ampel({ v }: { v: string }) {
   const c = v === 'rot' ? 'bg-gefahr' : v === 'gelb' ? 'bg-warn' : 'bg-gut';
@@ -57,36 +125,104 @@ const EMERGENCY = (
   </p>
 );
 
+function Badge({ n, alarm }: { n?: number; alarm?: boolean }) {
+  if (!n) return null;
+  return (
+    <span className={`ml-auto min-w-[22px] h-[20px] px-1.5 rounded-full text-[11px] font-semibold grid place-items-center ${alarm ? 'bg-gefahr text-white' : 'bg-akzent/15 text-akzent'}`}>
+      {n > 99 ? '99+' : n}
+    </span>
+  );
+}
+
 export function Screens({ me, onLogout, reloadMe }: { me: Staff; onLogout: () => void; reloadMe: () => void }) {
-  const [screen, setScreen] = useState<Screen>('postfach');
+  const [screen, setScreenRaw] = useState<Screen>(() => {
+    // zuletzt geöffneter Bereich bleibt beim Neuladen erhalten
+    try {
+      const saved = sessionStorage.getItem('werkzeug-bereich') as Screen | null;
+      if (saved && ALL_ITEMS.some((x) => x.key === saved)) return saved;
+    } catch {
+      /* ohne Speicher: Überblick */
+    }
+    return 'uebersicht';
+  });
+  const [menu, setMenu] = useState(false);
+  const counts = useAsync<Record<string, number>>(() => api.get('/mod-api/nav'), [screen]);
+  const reloadCounts = counts.reload;
+  useEffect(() => {
+    const i = setInterval(reloadCounts, 60_000);
+    return () => clearInterval(i);
+  }, [reloadCounts]);
+  const setScreen = (s: Screen) => {
+    setScreenRaw(s);
+    setMenu(false);
+    try {
+      sessionStorage.setItem('werkzeug-bereich', s);
+    } catch {
+      /* egal */
+    }
+  };
   const isBetrieb = me.staff.role === 'BETRIEB';
+  const allowed = (n: NavItem) => (!n.betrieb || isBetrieb) && (!n.owner || me.staff.founder) && (!n.leitung || me.staff.founder || isBetrieb);
+  const c = counts.data ?? {};
+  const current = ALL_ITEMS.find((x) => x.key === screen);
+
+  const nav = (
+    <nav className="flex flex-col py-2" aria-label="Bereiche">
+      {NAV.map((g) => {
+        const items = g.items.filter(allowed);
+        if (!items.length) return null;
+        return (
+          <div key={g.group ?? 'start'} className="mb-1">
+            {g.group && <p className="px-4 pt-3 pb-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-leise/80">{g.group}</p>}
+            {items.map((n) => (
+              <button
+                key={n.key}
+                className={`w-full flex items-center gap-2 text-left px-4 py-2 text-sm transition ${
+                  screen === n.key ? 'bg-akzent/10 text-akzent border-r-2 border-akzent' : 'hover:bg-white/[0.03]'
+                }`}
+                aria-current={screen === n.key ? 'page' : undefined}
+                onClick={() => setScreen(n.key)}
+              >
+                {n.label}
+                <Badge n={n.count ? c[n.count] : undefined} alarm={!!(n.alarm && c[n.alarm])} />
+              </button>
+            ))}
+          </div>
+        );
+      })}
+      <button className="text-left px-4 py-2 mt-2 text-sm muted hover:text-text" onClick={onLogout}>
+        Abmelden
+      </button>
+    </nav>
+  );
+
   return (
     <div className="min-h-screen md:flex">
-      <aside className="md:w-60 md:min-h-screen bg-flaeche border-b md:border-b-0 md:border-r border-linie">
+      {/* Handy: Kopfzeile mit Menü statt einer langen Leiste */}
+      <header className="md:hidden sticky top-0 z-30 bg-flaeche/95 backdrop-blur border-b border-linie flex items-center gap-3 px-4 min-h-[56px]">
+        <button className="btn-secondary min-h-[40px]" onClick={() => setMenu(!menu)} aria-expanded={menu}>
+          Menü
+          <Badge n={(c.postfach ?? 0) + (c.bestaetigen ?? 0)} alarm={!!c.postfach_rot} />
+        </button>
+        <span className="font-semibold truncate">{current?.label}</span>
+      </header>
+      {menu && <div className="md:hidden border-b border-linie bg-flaeche">{nav}</div>}
+      <aside className="hidden md:block md:w-64 md:min-h-screen md:sticky md:top-0 md:self-start md:max-h-screen md:overflow-y-auto bg-flaeche border-r border-linie">
         <div className="p-4 border-b border-linie">
           <Logo className="h-6 w-auto mb-3" />
           <p className="font-semibold">{me.staff.name}</p>
           <p className="text-xs muted">
-            {me.staff.role}
+            {me.staff.role === 'BETRIEB' ? 'Betrieb' : 'Moderation'}
             {me.staff.founder ? ' · Owner' : ''}
+            {me.version ? ` · v${me.version}` : ''}
           </p>
-          {me.mode === 'test' && <p className="text-xs text-warn mt-1">Testbetrieb — nur erfundene Daten</p>}
-          {me.version && <p className="text-xs muted mt-1 font-mono">v{me.version}</p>}
         </div>
-        <nav className="flex md:flex-col overflow-x-auto">
-          {NAV.filter((n) => (!n.betrieb || isBetrieb) && (!n.owner || me.staff.founder)).map((n) => (
-            <button key={n.key} className={`text-left px-4 py-2.5 text-sm whitespace-nowrap ${screen === n.key ? 'bg-flaeche2 text-akzent' : ''}`} onClick={() => setScreen(n.key)}>
-              {n.label}
-            </button>
-          ))}
-          <button className="text-left px-4 py-2.5 text-sm muted" onClick={onLogout}>
-            Abmelden
-          </button>
-        </nav>
+        {nav}
       </aside>
-      <main className={`flex-1 p-4 ${screen === 'postfach' ? 'max-w-7xl' : 'max-w-5xl'}`}>
-        {screen === 'postfach' && <Postfach myTeams={me.staff.teams ?? []} goTo={(k) => setScreen(k as Screen)} />}
-        {screen === 'uebersicht' && <Uebersicht me={me} go={setScreen} />}
+      <main className={`flex-1 min-w-0 p-4 md:p-6 ${screen === 'postfach' ? 'max-w-7xl' : 'max-w-5xl'}`}>
+        {screen === 'uebersicht' && <Uebersicht me={me} go={setScreen} counts={c} />}
+        {screen === 'postfach' && <Postfach myTeams={me.staff.teams ?? []} />}
+        {screen === 'bestaetigen' && <Bestaetigen onChange={reloadCounts} />}
         {screen === 'warteschlange' && <Warteschlange />}
         {screen === 'meldungen' && <Meldungen owner={me.staff.founder} />}
         {screen === 'hash' && <Hash me={me} reloadMe={reloadMe} />}
@@ -101,30 +237,73 @@ export function Screens({ me, onLogout, reloadMe }: { me: Staff; onLogout: () =>
         {screen === 'date' && <DateAdmin />}
         {screen === 'art18' && <Art18 isBetrieb={isBetrieb} owner={me.staff.founder} />}
         {screen === 'verwaltung' && isBetrieb && <Verwaltung />}
+        {screen === 'einrichtung' && (me.staff.founder || isBetrieb) && <Einrichtung owner={me.staff.founder} />}
         {screen === 'team' && me.staff.founder && <Team meId={me.staff.id} />}
         {screen === 'zugang' && <MeinZugang />}
-        {screen === 'ausweis' && <Ausweise />}
         {screen === 'updates' && me.staff.founder && <Aktualisierung />}
       </main>
     </div>
   );
 }
 
-// ─────────────────────────── M90 · Tagesübersicht ───────────────────────────
+// ─────────────────────────── M90 · Überblick ───────────────────────────
 
-function Uebersicht({ me, go }: { me: Staff; go: (s: Screen) => void }) {
+/** Kacheln „Was ansteht“: Zähler aus /mod-api/nav, sortiert — was wartet, steht vorn. */
+const TODO: { key: Screen; count: string; label: string; hint: string; alarm?: string }[] = [
+  { key: 'postfach', count: 'postfach', alarm: 'postfach_rot', label: 'Postfach', hint: 'Anfragen, Meldungen, Widersprüche' },
+  { key: 'bestaetigen', count: 'bestaetigen', label: 'Bestätigen', hint: 'Ausweise, Selfies, Adressen' },
+  { key: 'warteschlange', count: 'bilder', label: 'Bilder', hint: 'Profilbilder vor der Freigabe' },
+  { key: 'meldungen', count: 'meldungen', label: 'Meldungen', hint: 'noch nicht entschieden' },
+  { key: 'hash', count: 'hash', alarm: 'hash', label: 'Hash-Treffer', hint: 'offene Fälle' },
+  { key: 'freigaben', count: 'freigaben', label: 'Vier-Augen-Freigaben', hint: 'warten auf dich' },
+  { key: 'widerspruch', count: 'widersprueche', label: 'Widersprüche', hint: 'noch nicht entschieden' },
+  { key: 'orte', count: 'orte', label: 'Orte', hint: 'Beanspruchungen' },
+  { key: 'einreichungen', count: 'termine', label: 'Termine per E-Mail', hint: 'eingereicht' },
+  { key: 'veranstaltungen', count: 'veranstaltungen', label: 'Veranstaltungen', hint: 'noch nicht geprüft' },
+  { key: 'veranstalter', count: 'veranstalter', label: 'Veranstalter', hint: 'Anträge' },
+  { key: 'date', count: 'date', label: 'Cruizy Date', hint: 'Fotos vor der Freigabe' },
+  { key: 'art18', count: 'art18', label: 'Art. 18 DSA', hint: 'Entwürfe' },
+];
+
+function Uebersicht({ me, go, counts }: { me: Staff; go: (s: Screen) => void; counts: Record<string, number> }) {
   const { data, reload } = useAsync(() => api.get('/mod-api/overview'), []);
   const { run, box } = useAction();
   if (!data) return <p className="muted">…</p>;
+  const todo = TODO.map((x) => ({ ...x, n: counts[x.count] ?? 0, red: !!(x.alarm && counts[x.alarm]) })).sort((a, b) => Number(b.red) - Number(a.red) || Number(b.n > 0) - Number(a.n > 0));
+  const open = todo.filter((x) => x.n > 0);
+  const redCount = (counts.postfach_rot ?? 0) + data.reports.red + data.appeals.red;
   return (
     <>
-      <h1 className="text-xl font-semibold mb-4">Tagesübersicht</h1>
+      <h1 className="text-xl font-semibold mb-1">Überblick</h1>
+      <p className="text-sm muted mb-4">{open.length ? `${open.length} Bereiche mit offenen Aufgaben — rot zuerst.` : 'Alles erledigt. Nichts wartet.'}</p>
       {box}
       {data.redDay && (
-        <div className="mb-3">
-          <Banner kind="error">Es gibt rote Fristen. Ein Tag mit einer roten Frist ist kein normaler Tag.</Banner>
+        <div className="mb-4">
+          <Banner
+            kind="error"
+            action={
+              <button className="btn-secondary" onClick={() => go('postfach')}>
+                Zum Postfach
+              </button>
+            }
+          >
+            {redCount > 0 ? `${redCount} ${redCount === 1 ? 'Fall hat' : 'Fälle haben'} die Frist überschritten` : 'Es gibt überschrittene Fristen'} (oder jemand ist in Gefahr). Heute zuerst diese Fälle bearbeiten — alles andere wartet.
+          </Banner>
         </div>
       )}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 mb-6">
+        {todo.map((x) => (
+          <button
+            key={x.key}
+            className={`card p-4 text-left flex flex-col justify-start transition hover:border-akzent/50 ${x.n ? '' : 'opacity-50'} ${x.red ? '!border-gefahr/60' : ''}`}
+            onClick={() => go(x.key)}
+          >
+            <span className={`block font-display text-3xl font-bold ${x.red ? 'text-gefahr' : x.n ? 'text-akzent' : 'text-leise'}`}>{x.n}</span>
+            <span className="block font-medium mt-1">{x.label}</span>
+            <span className="block text-xs muted">{x.hint}</span>
+          </button>
+        ))}
+      </div>
       {data.stopExpansion && (
         <div className="mb-3">
           <Banner kind="warn">Moderationsfristen zwei Monate in Folge gerissen — Abbruchkriterium: Expansion stoppen, bevor jemand zusammenbricht.</Banner>
@@ -154,75 +333,14 @@ function Uebersicht({ me, go }: { me: Staff; go: (s: Screen) => void }) {
               </p>
             ))}
         </Card>
-        <Card title="Offen">
-          <ul className="text-sm flex flex-col gap-1">
-            <li>
-              <button className="underline" onClick={() => go('warteschlange')}>
-                Warteschlange: {data.queue.open}
-              </button>
-            </li>
-            <li>
-              <button className="underline" onClick={() => go('meldungen')}>
-                Meldungen: {data.reports.open} (rot {data.reports.red}, Vorrang {data.reports.priority})
-              </button>
-            </li>
-            <li>
-              <button className="underline" onClick={() => go('hash')}>
-                Hash-Fälle: {data.hashCases.open} (dringend {data.hashCases.urgent})
-              </button>
-            </li>
-            <li>
-              <button className="underline" onClick={() => go('widerspruch')}>
-                Einsprüche: {data.appeals.open} (rot {data.appeals.red})
-              </button>
-            </li>
-            <li>
-              <button className="underline" onClick={() => go('freigaben')}>
-                Freigaben für dich: {data.approvalsToGive + data.suspensionsToApprove}
-              </button>
-            </li>
-            <li>
-              <button className="underline" onClick={() => go('orte')}>
-                Beanspruchungen: {data.claims}
-              </button>
-            </li>
-            <li>
-              <button className="underline" onClick={() => go('einreichungen')}>
-                Einreichungen: {data.submissions}
-              </button>
-            </li>
-            <li>
-              <button className="underline" onClick={() => go('veranstalter')}>
-                Veranstalter-Anträge: {data.organizerApplications}
-              </button>
-            </li>
-            <li>
-              <button className="underline" onClick={() => go('veranstaltungen')}>
-                Ungeprüfte Veranstaltungen: {data.eventsUnchecked}
-              </button>
-            </li>
-            <li>
-              <button className="underline" onClick={() => go('art18')}>
-                Art.-18-Entwürfe: {data.art18Drafts}
-              </button>
-            </li>
-          </ul>
-        </Card>
-        <Card title="Kontaktservice">
-          {data.dangerTickets > 0 && <p className="text-gefahr font-semibold mb-2">Jemand ist in Gefahr: {data.dangerTickets}</p>}
-          <ul className="text-sm">
-            {data.pots.map((p: any) => (
-              <li key={p.pot}>
-                {p.pot}: {p.open} offen · rot {p.red}
-                {p.oldest ? ` · ältester ${fmtDate(p.oldest)}` : ''}
-              </li>
-            ))}
-          </ul>
-          <button className="btn-ghost px-0" onClick={() => go('postfach')}>
-            Zu den Vorgängen
-          </button>
-        </Card>
       </div>
+      {data.dangerTickets > 0 && (
+        <div className="mb-4">
+          <Banner kind="error" action={<button className="btn-secondary" onClick={() => go('postfach')}>Zum Postfach</button>}>
+            Jemand ist in Gefahr: {data.dangerTickets} {data.dangerTickets === 1 ? 'Ticket' : 'Tickets'} der Kategorie „akute Gefahr“.
+          </Banner>
+        </div>
+      )}
       {data.quarterReview && (
         <Card title={`Quartalsdurchsicht ${data.quarterReview.quarter}`}>
           <ul className="text-sm mb-2">
@@ -273,7 +391,7 @@ function Warteschlange() {
   const { run, box } = useAction();
   return (
     <>
-      <h1 className="text-xl font-semibold mb-1">Warteschlange Zone 1</h1>
+      <h1 className="text-xl font-semibold mb-1">Bilder prüfen</h1>
       <p className="text-sm muted mb-4">Nur öffentliche Profilbilder. Reihenfolge nach Alter. Zurücklegen ist ausdrücklich erwünscht.</p>
       {box}
       <table className="w-full text-sm mb-4">
@@ -386,7 +504,7 @@ function Meldungen({ owner }: { owner: boolean }) {
 
   return (
     <>
-      <h1 className="text-xl font-semibold mb-1">Meldungen (Zone 3)</h1>
+      <h1 className="text-xl font-semibold mb-1">Meldungen</h1>
       <p className="text-sm muted mb-4">Nur die markierten Inhalte. Mehrere Meldungen zum selben Konto werden gebündelt gezeigt, nie automatisch zu einer Sperre aufaddiert.</p>
       {box}
       <input className="input mb-3" placeholder="Grund zum Öffnen (sonst Meldegrund)" value={openReason} onChange={(e) => setOpenReason(e.target.value)} />
@@ -691,7 +809,7 @@ function Freigaben({ owner }: { owner: boolean }) {
   const toDecide = (susp.data?.items ?? []).filter((s: any) => s.canDecide);
   return (
     <>
-      <h1 className="text-xl font-semibold mb-4">Freigaben durch die zweite Person</h1>
+      <h1 className="text-xl font-semibold mb-4">Vier-Augen-Freigaben</h1>
       <p className="text-sm muted mb-3">
         {owner
           ? 'Anfragen anderer Personen. Als Owner brauchst du selbst keine zweite Person — deine Handlungen wirken sofort und stehen als „ohne zweite Person“ im Protokoll.'
@@ -804,7 +922,7 @@ function Widerspruch() {
   const { run, box } = useAction();
   return (
     <>
-      <h1 className="text-xl font-semibold mb-1">Einspruch und Widerspruch</h1>
+      <h1 className="text-xl font-semibold mb-1">Widersprüche und Einsprüche</h1>
       <p className="text-sm muted mb-4">Über die eigene Entscheidung entscheidet eine andere Person — technisch erzwungen. Ausnahme: Owner.</p>
       {box}
       <table className="w-full text-sm">
@@ -1124,7 +1242,7 @@ function Einreichungen() {
   };
   return (
     <>
-      <h1 className="text-xl font-semibold mb-1">Freigabe von Veranstaltungen</h1>
+      <h1 className="text-xl font-semibold mb-1">Termine per E-Mail</h1>
       <p className="text-sm muted mb-4">Fünf Prüfpunkte, eine Entscheidung, ein Grund. Die Adresse privater Veranstaltungen sieht niemand.</p>
       {box}
       <Card title="Eingang termine@">
@@ -1362,7 +1480,7 @@ function Verwaltung() {
   const { run, box } = useAction();
   return (
     <>
-      <h1 className="text-xl font-semibold mb-4">Verwaltung</h1>
+      <h1 className="text-xl font-semibold mb-4">Parameter und Kennzahlen</h1>
       {box}
       <Card title="Ansprechperson (M90.06)">
         <div className="grid sm:grid-cols-2 gap-2">

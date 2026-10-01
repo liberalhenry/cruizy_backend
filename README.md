@@ -68,31 +68,33 @@ allein und ohne Begründung; jede solche Handlung steht als „ohne zweite Perso
 (Owner)“ im Zugriffsprotokoll. Die
 Regel steht zusätzlich in der Datenbank (Trigger `enforce_second_person`). Es gibt keinen Notfallzugang.
 
-### Testbetrieb und Echtbetrieb
+### Prüf- und Versandwege — und was das Team übernimmt
 
-`OPERATION_MODE=test` ist voreingestellt: Registrierung nur mit Einladungscode
-(`TEST_INVITE_CODE` in `.env`), jede Antwort trägt `x-betrieb: test`, die App zeigt den Hinweis
-„nur erfundene Angaben“. Erfundene Testdaten (40 Konten rund um Köln, Orte, Termine):
+Einen Testbetrieb gibt es nicht mehr: kein Einladungscode, keine Attrappen, kein Hinweis „nur erfundene Angaben“.
+Der Server startet immer. Fehlt ein Prüf- oder Versandweg in der `.env`, landen die Fälle im Werkzeug unter
+**„Bestätigen“**, und ein Mensch aus dem Team entscheidet. Welcher Weg angebunden ist, zeigt **„Einrichtung“**
+(Owner und BETRIEB) — dasselbe steht beim Start im Protokoll.
 
-```bash
-docker compose exec api node dist/src/seed/testdaten.js          # anlegen
-docker compose exec api node dist/src/seed/testdaten.js --clear  # wieder entfernen
-```
+| Weg | angebunden über | ohne ihn |
+|---|---|---|
+| E-Mail-Versand | `SMTP_URL`, `MAIL_FROM` | Das Team bestätigt E-Mail-Adressen (Registrierung, zweiter Weg); die App wartet und geht danach von selbst weiter. Passwort-Zurücksetzen per E-Mail nur über den Support. |
+| Telegram-Bot | `TELEGRAM_MODE=polling`, `TELEGRAM_BOT_TOKEN`, `TELEGRAM_BOT_NAME` | Das Team bestätigt Mobilnummern und die Anmeldung auf neuen Geräten (mit Warnhinweis). Zurücksetzen per Nummer nur über den Support. |
+| Altersprüfung Stufe 1 | `AGE_PROVIDER=ausweis` (Voreinstellung, siehe unten) | — der Server liest das Ausweisbild selbst; unsichere Fälle entscheidet das Team |
+| Stufe 2 und Fotoprüfung | Prüfpartner (`backend/src/providers/verification.ts`, Webhook vorhanden) | Die Person lädt Ausweis und Selfie bzw. ein Selfie mit vorgegebener Geste hoch; das Team vergleicht. |
+| Cruizy Date: Gesicht | `DATE_FACE_PROVIDER=http`, `DATE_FACE_URL` | Das Team vergleicht Selfie (mit Geste) und erstes Date-Foto. |
+| Hash-Abgleich | `HASH_PROVIDER=http`, `HASH_URL`, dazu `P-HASH-AKTIV` (nur mit hinterlegter Ansprechperson) | Jedes Profilbild prüft das Team, bevor es sichtbar wird („Bilder“). |
+| Bild-Klassifikator | `CLASSIFIER=http`, `CLASSIFIER_URL` | Jedes Profilbild prüft das Team. |
 
-Anmeldung dann mit `test1@example.invalid` … `test40@example.invalid`, Passwort `testpasswort-123`.
-Alle Profile sind vollständig; test4 … test40 haben ein fertiges Cruizy-Date-Profil, test1 … test3 nicht
-(zum Ausprobieren des Onboardings). Ein erneuter Aufruf vervollständigt schon vorhandene Testkonten.
+Bilder aus „Bestätigen“ liegen verschlüsselt und nur bis zur Entscheidung (spätestens `P-AUSWEIS-AUFBEWAHRUNG`);
+jedes Öffnen und Entscheiden steht im Zugriffsprotokoll. Alte Werte aus dem Testbetrieb in der `.env`
+(`OPERATION_MODE`, `TEST_INVITE_CODE`, `AGE_PROVIDER=mock`, `DATE_FACE_PROVIDER=stub`, `CLASSIFIER=mock-allow`,
+`HASH_PROVIDER=mock`) stören nicht: Sie werden ignoriert bzw. durch den sicheren Wert ersetzt.
 
-`OPERATION_MODE=live` startet **nur**, wenn nichts mehr auf Attrappen läuft. Der Server nennt
-beim Start, was fehlt — derzeit:
+**Erfundene Beispieldaten** aus dem früheren Testbetrieb (Kennzeichen `is_test_data`) löscht ein Owner im Werkzeug
+unter „Einrichtung“ → „Beispieldaten löschen“. Echte Konten bleiben unberührt.
 
-| Offen für den Echtbetrieb | wo es angebunden wird |
-|---|---|
-| Stufe 2 und Fotoprüfung über einen Prüfpartner (Stufe 1 läuft über das Ausweisfoto, siehe unten) | `backend/src/providers/verification.ts` (Schnittstelle vorhanden; die Attrappe ist nur im Testbetrieb erreichbar) |
-| Hash-Abgleich (bekannte Missbrauchsdarstellungen) | `HASH_PROVIDER=http`, `HASH_URL` — danach im Werkzeug `P-HASH-AKTIV` einschalten (geht nur mit hinterlegter Ansprechperson) |
-| Mailversand über einen EU-Dienst | `SMTP_URL` |
-| Codes an Telefonnummern (Telegram-Bot statt SMS) | `TELEGRAM_MODE=polling`, `TELEGRAM_BOT_TOKEN`, `TELEGRAM_BOT_NAME` (siehe unten) |
-| Rechtstexte (Impressum, Bedingungen, Datenschutz, Einwilligung) | Platzhalter in `shared/texts/` (IDs `UI-RECHT-*`, `ST-KON-27`) |
+Noch offen vor dem Start: **Rechtstexte** (Impressum, Bedingungen, Datenschutz, Einwilligung) — Platzhalter in
+`shared/texts/` (IDs `UI-RECHT-*`, `ST-KON-27`).
 
 ### Altersprüfung per Ausweisfoto
 
@@ -101,7 +103,7 @@ auch die Rückseite. **Nur das Geburtsdatum zählt**; Name, Foto, Adresse und Nu
 Der Server liest das Datum selbst (Tesseract im API-Abbild, kein Dritter) — aus der maschinenlesbaren Zone
 mit gültigen Prüfziffern oder aus einem beschrifteten Datum, wenn genug Merkmale eines Ausweises erkennbar
 sind. Sicher volljährig → sofort frei, kein Bild wird gespeichert. Unsicher oder unter 18 → das Bild liegt
-verschlüsselt bereit und ein Mensch entscheidet im Werkzeug unter **„Altersprüfung“**; danach, spätestens
+verschlüsselt bereit und ein Mensch entscheidet im Werkzeug unter **„Bestätigen“**; danach, spätestens
 nach `P-AUSWEIS-AUFBEWAHRUNG` (7 Tage), wird es gelöscht. Ein Ergebnis unter 18 entscheidet immer ein Mensch.
 **Vor dem Echtbetrieb:** die Datenschutzerklärung um die Verarbeitung des Ausweisfotos ergänzen.
 
@@ -196,13 +198,12 @@ Nutzungsregeln des Anbieters beachten) oder, wenn beides leer ist, die mitgelief
 `node backend/scripts/build-karte.mjs`).
 
 **Veranstaltungen.** Veranstalter-Anträge, Einreichungen und die Gegenprüfung laufen im Werkzeug
-unter „Veranstalter“, „Freigabe Termine“ und „Veranstaltungen prüfen“. Die empfohlene
-„Cruizy Test-Party“ legt nur `npm run seed:test` an (Testbetrieb).
+unter „Veranstalter“, „Termine per E-Mail“ und „Veranstaltungen“.
 
-**Cruizy Date.** Schalter `P-DATE-AKTIV` (Werkzeug → Verwaltung → Parameter). Vor dem Echtbetrieb:
+**Cruizy Date.** Schalter `P-DATE-AKTIV` (Werkzeug → Parameter und Kennzahlen). Vor dem Echtbetrieb:
 - Gesichtsverifizierung anbinden: `DATE_FACE_PROVIDER=http`, `DATE_FACE_URL`, `DATE_FACE_HEADERS`
-  (Anbieter mit EU-Verarbeitung und AV-Vertrag, ohne Speicherung von Gesichtsmerkmalen). Die
-  Attrappe `stub` ist im Echtbetrieb gesperrt; `none` lässt Date nicht freischalten.
+  (Anbieter mit EU-Verarbeitung und AV-Vertrag, ohne Speicherung von Gesichtsmerkmalen). Ohne
+  Anbieter (`none`) vergleicht das Team Selfie und erstes Date-Foto unter „Bestätigen“.
 - Regionen: `P-DATE-REGIONEN` (`modus` `alle` oder `liste` mit Städte-IDs, Umkreis, Warteliste-Schwelle).
 - Weitere Parameter: Tagesvorschläge (`P-DATE-VORSCHLAEGE`), Auto-Pause (`P-DATE-PAUSE-TAGE`),
   Schwelle für die Date-Sperre (`P-DATE-MELDUNGEN-SPERRE`), Premium-Zuordnung (`P-DATE-PREMIUM`).
@@ -230,8 +231,8 @@ Voraussetzungen: Node 22, PostgreSQL 16, für die Ausweisprüfung `tesseract-ocr
 createdb cruizy_dev && createdb cruizy_test          # Rolle cruizy/cruizy oder DATABASE_URL anpassen
 
 cd backend && npm ci
-MASTER_KEY=$(openssl rand -base64 32) OPERATION_MODE=test TEST_INVITE_CODE=einladung \
-  COOKIE_SECURE=0 NODE_ENV=development npm run dev    # API auf :3000
+MASTER_KEY=$(openssl rand -base64 32) COOKIE_SECURE=0 NODE_ENV=development npm run dev    # API auf :3000
+npm run seed:test                                     # erfundene Beispieldaten (nur NODE_ENV=development)
 
 cd frontend && npm ci && npm run dev                  # App auf :5173, Werkzeug auf :5173/mod.html
 ```
@@ -247,7 +248,7 @@ Texte ändern: `shared/texts/de.json` direkt, Oberflächentexte in `shared/texts
 und danach `python3 shared/texts/build-ui.py`.
 
 Produktparameter (`P-…`, `backend/src/config/params.ts`) lassen sich ohne Codeänderung im
-Werkzeug unter „Verwaltung“ ändern (nur BETRIEB, protokolliert). Tagesgrenze und
+Werkzeug unter „Parameter und Kennzahlen“ ändern (nur BETRIEB, protokolliert). Tagesgrenze und
 Uhrzeitsperre für Hash-Fälle sind absichtlich **keine** Parameter.
 
 ---

@@ -20,8 +20,6 @@ export default async function publicRoutes(app: FastifyInstance) {
   app.get('/api/config', async () => {
     const e = env();
     return {
-      mode: e.OPERATION_MODE,
-      inviteRequired: e.OPERATION_MODE === 'test' && !!e.TEST_INVITE_CODE,
       apple: !!(e.APPLE_CLIENT_ID && e.APPLE_REDIRECT_URI),
       telegramBot: botLink(),
       vapidKey: vapidPublicKey(),

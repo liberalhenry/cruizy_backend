@@ -1,5 +1,5 @@
 /**
- * Testveranstaltungen (Issue #16/#17) — nur für den Testbetrieb, alle Zeilen mit is_test_data.
+ * Testveranstaltungen (Issue #16/#17) — nur für die Entwicklung, alle Zeilen mit is_test_data.
  *  * „Cruizy Test-Party“ in Hamburg: von Cruizy selbst, empfohlen (oben), 400 Plätze, Testbilder.
  *  * Einige erfundene Veranstaltungen in anderen Städten, damit die Karte beim Herauszoomen
  *    (etwa von Hamburg Richtung München) Punkte zeigt.
@@ -57,7 +57,7 @@ export async function seedTestEvents(opts: { images?: boolean } = {}) {
              $5, $6, $7, $8, false, '12 € Abendkasse (Test)', 'Komm, wie du dich wohlfühlst', true, 137, true) RETURNING id`,
     [
       [
-        'Das ist eine erfundene Veranstaltung für den Testbetrieb — sie findet nicht statt.',
+        'Das ist eine erfundene Veranstaltung für die Entwicklung — sie findet nicht statt.',
         '',
         'Was dich erwartet:',
         '• zwei Floors: House & Pop, dazu eine ruhige Lounge zum Reden',
@@ -95,16 +95,9 @@ export async function seedTestEvents(opts: { images?: boolean } = {}) {
     const m = mapPoint({ lat, lng }, false);
     await q(
       `INSERT INTO events (title, description, starts_at, ends_at, source, status, ampel, approved_at, checked_at, categories, capacity, area, lat, lng, map_lat, map_lng, is_test_data)
-       VALUES ($1, 'Erfundene Veranstaltung für den Testbetrieb.', $2, $3, 'Testdaten', 'approved', 'gruen', now(), now(), $4, $5, $6, $7, $8, $9, $10, true)`,
+       VALUES ($1, 'Erfundene Veranstaltung für die Entwicklung.', $2, $3, 'Testdaten', 'approved', 'gruen', now(), now(), $4, $5, $6, $7, $8, $9, $10, true)`,
       [title, inDays(d, h), inDays(d, h + 4), cats, cap, area, lat, lng, m.lat, m.lng],
     );
   }
   return party!.id as string;
-}
-
-export async function clearTestEvents() {
-  const files = await q(`SELECT ei.file FROM event_images ei JOIN events e ON e.id = ei.event_id WHERE e.is_test_data`);
-  for (const f of files) await deleteFile('zone1-public', f.file);
-  await q(`DELETE FROM events WHERE is_test_data`);
-  await q(`DELETE FROM organizers WHERE is_test_data`);
 }

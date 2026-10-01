@@ -266,49 +266,6 @@ export function Besucher() {
   );
 }
 
-/** PLUS im Testbetrieb ausprobieren (Abo-Seite). */
-export function PremiumTest() {
-  const { toast, refreshMe } = useApp();
-  const { data, reload } = useAsync(() => api.get('/api/premium'), []);
-  if (!data?.test) return null;
-  return (
-    <div className="card p-4 mt-4">
-      {data.plus ? (
-        <div className="flex items-center gap-3">
-          <p className="flex-1 text-sm">{t('UI-ABO-TEST-AKTIV', { datum: fmtDate(data.until) })}</p>
-          {data.source === 'testbetrieb' && (
-            <button
-              className="btn-secondary"
-              onClick={async () => {
-                await api.del('/api/premium/test');
-                reload();
-                refreshMe();
-              }}
-            >
-              {t('UI-ABO-TEST-BEENDEN')}
-            </button>
-          )}
-        </div>
-      ) : (
-        <button
-          className="btn-primary w-full"
-          onClick={async () => {
-            try {
-              await api.post('/api/premium/test');
-              reload();
-              refreshMe();
-            } catch (e) {
-              toast(errText(e));
-            }
-          }}
-        >
-          {t('UI-ABO-TEST')}
-        </button>
-      )}
-    </div>
-  );
-}
-
 // ─────────────────────────── Gesundheit & Tests ───────────────────────────
 
 export function Gesundheit() {

@@ -3,6 +3,7 @@ import { useEffect, useId, useRef, useState, type ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { t } from '../lib/texts';
 import { tripleTap } from '../lib/hide';
+import { ApiError, errText } from '../lib/api';
 
 export function Icon({ name, className = 'w-5 h-5' }: { name: string; className?: string }) {
   const paths: Record<string, string> = {
@@ -219,6 +220,43 @@ export function Avatar({ name, initial, color, photo, blurred, size = 48 }: { na
   return (
     <div style={{ ...style, background: color ?? '#3b4cc0' }} className="rounded-full grid place-items-center font-semibold text-white" aria-hidden="true">
       <span style={{ fontSize: size * 0.42 }}>{initial ?? (name ? [...name][0]?.toUpperCase() : '?')}</span>
+    </div>
+  );
+}
+
+/**
+ * Warten auf das Team (kein Versandweg eingerichtet): fragt alle paar Sekunden nach, bis bestätigt.
+ * `ask` wirft mit dem Code „wartet“, solange niemand bestätigt hat.
+ */
+export function TeamWait({ text, ask, onDone }: { text: ReactNode; ask: () => Promise<unknown>; onDone: () => void }) {
+  const [err, setErr] = useState<string | null>(null);
+  const fn = useRef(ask);
+  fn.current = ask;
+  const done = useRef(onDone);
+  done.current = onDone;
+  useEffect(() => {
+    let alive = true;
+    const i = setInterval(async () => {
+      try {
+        await fn.current();
+        if (alive) done.current();
+      } catch (e) {
+        if (alive && !(e instanceof ApiError && e.code === 'wartet')) setErr(errText(e));
+      }
+    }, 8000);
+    return () => {
+      alive = false;
+      clearInterval(i);
+    };
+  }, []);
+  return (
+    <div className="flex flex-col gap-2">
+      <Banner kind="info">{text}</Banner>
+      <p className="flex items-center gap-2 text-sm muted">
+        <span className="w-4 h-4 rounded-full border-2 border-akzent border-t-transparent animate-spin" aria-hidden="true" />
+        {t('UI-TEAM-WARTET-KURZ')}
+      </p>
+      {err && <Banner kind="error">{err}</Banner>}
     </div>
   );
 }

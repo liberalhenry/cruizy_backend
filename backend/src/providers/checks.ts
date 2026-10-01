@@ -10,7 +10,8 @@
  *
  * Stufe 2 (Klassifikator): selbst gehostet; Ergebnis ist eine Weiche, keine
  * Entscheidung. Ohne Klassifikator („queue“) geht jedes öffentliche Bild an
- * einen Menschen — die sichere Voreinstellung.
+ * einen Menschen — die sichere Voreinstellung. Ohne Hash-Abgleich ebenso: Dann
+ * ersetzt der Blick des Teams den fehlenden Abgleich (services/photo-chain.ts).
  */
 import sharp from 'sharp';
 import { env } from '../config/env.js';
@@ -30,22 +31,20 @@ export interface HashMatcher {
   check(input: HashInput): Promise<HashResult>;
 }
 
-/** Attrappe für Tests: Treffer, wenn der Hash auf der Testliste steht. */
-export const mockHashList = new Set<string>();
-const mockMatcher: HashMatcher = {
-  name: 'mock',
-  async check(input) {
-    return mockHashList.has(input.hash) ? { hit: true, list: 'Testliste' } : { hit: false };
-  },
-};
+let matcherOverride: HashMatcher | null = null;
+let classifierOverride: ((img: Buffer) => Promise<number | null>) | null = null;
+/** Für Tests: eigenen Abgleich bzw. Klassifikator einsetzen (null = wieder aus der Konfiguration). */
+export function setHashMatcher(m: HashMatcher | null) {
+  matcherOverride = m;
+}
+export function setClassifier(fn: ((img: Buffer) => Promise<number | null>) | null) {
+  classifierOverride = fn;
+}
 
 export function hashMatcher(): HashMatcher | null {
   if (!p('P-HASH-AKTIV')) return null;
+  if (matcherOverride) return matcherOverride;
   const e = env();
-  if (e.HASH_PROVIDER === 'mock') {
-    if (e.OPERATION_MODE === 'live') return null;
-    return mockMatcher;
-  }
   if (e.HASH_PROVIDER === 'http' && e.HASH_URL) return httpMatcher;
   return null;
 }
@@ -75,8 +74,8 @@ const httpMatcher: HashMatcher = {
 
 /** Ist ein Abgleich tatsächlich angebunden (unabhängig vom Schalter)? */
 export function hashProviderConfigured(): boolean {
+  if (matcherOverride) return true;
   const e = env();
-  if (e.HASH_PROVIDER === 'mock') return e.OPERATION_MODE !== 'live';
   return e.HASH_PROVIDER === 'http' && !!e.HASH_URL;
 }
 
@@ -110,11 +109,8 @@ export async function runHashCheck(img: Buffer): Promise<{ state: 'checked' | 'p
 
 /** Klassifikator. null = kein Wert → Warteschlange für einen Menschen. */
 export async function classify(img: Buffer): Promise<number | null> {
+  if (classifierOverride) return classifierOverride(img);
   const e = env();
-  if (e.CLASSIFIER === 'mock-allow') {
-    if (e.OPERATION_MODE === 'live') throw new Error('mock-allow ist im Echtbetrieb gesperrt');
-    return 0;
-  }
   if (e.CLASSIFIER === 'http' && e.CLASSIFIER_URL) {
     try {
       const res = await fetch(e.CLASSIFIER_URL, {

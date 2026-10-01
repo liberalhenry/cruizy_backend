@@ -5,7 +5,7 @@
  * teilt dort ihre Nummer („Nummer teilen“); Telegram bestätigt, dass es ihre eigene ist. Ab dann gehen
  * Codes und — auf Wunsch — Mitteilungen dorthin (siehe services/telegram.ts).
  *
- *   log      = nichts verlassen den Server, Nachrichten stehen nur im Protokoll (nur Testbetrieb)
+ *   log      = kein Bot eingerichtet: nichts verlässt den Server; Nummern bestätigt das Team im Werkzeug
  *   polling  = der Server holt neue Nachrichten an den Bot selbst ab (kein offener Eingang nötig)
  *   webhook  = Telegram liefert an /api/telegram/webhook, gesichert mit TELEGRAM_WEBHOOK_SECRET
  *
@@ -22,7 +22,7 @@ export interface TgMessage {
   contactLabel?: string;
 }
 
-export const sentTelegram: TgMessage[] = [];
+export const sentTelegram: TgMessage[] = []; // nur für die automatischen Tests (ohne Bot)
 
 export function telegramActive(): boolean {
   const e = env();
@@ -46,10 +46,12 @@ export async function tgCall<T>(method: string, payload: object, timeoutMs = 10_
 export async function sendTelegram(m: TgMessage): Promise<void> {
   const e = env();
   if (e.TELEGRAM_MODE === 'log' || !e.TELEGRAM_BOT_TOKEN) {
-    if (e.OPERATION_MODE === 'live') throw new Error('Telegram-Bot ist nicht eingerichtet (TELEGRAM_MODE/TELEGRAM_BOT_TOKEN)');
-    sentTelegram.push(m);
-    if (sentTelegram.length > 200) sentTelegram.shift();
-    if (e.NODE_ENV !== 'test') console.log(`[Telegram an ${m.chatId}] ${m.text}`);
+    if (e.NODE_ENV === 'test') {
+      sentTelegram.push(m);
+      if (sentTelegram.length > 200) sentTelegram.shift();
+    } else if (e.NODE_ENV === 'development') {
+      console.log(`[Telegram an ${m.chatId}] ${m.text}`);
+    }
     return;
   }
   const replyMarkup =

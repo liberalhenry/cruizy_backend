@@ -96,7 +96,7 @@ export function buildPayload(cat: DiscordCategory, ev: DiscordEvent) {
         description: ev.description ? cut(clean(ev.description), 2000) : undefined,
         color: COLOR[ev.level ?? 'info'],
         fields: (ev.fields ?? []).slice(0, 20).map((f) => ({ name: cut(clean(f.name), 256), value: cut(clean(f.value || '—'), 1024), inline: f.inline ?? true })),
-        footer: { text: `${LABEL[cat]} · ${e.OPERATION_MODE === 'live' ? 'Echtbetrieb' : 'Testbetrieb'} · ${new URL(e.APP_URL).host}` },
+        footer: { text: `${LABEL[cat]} · ${new URL(e.APP_URL).host}` },
         timestamp: new Date().toISOString(),
       },
     ],

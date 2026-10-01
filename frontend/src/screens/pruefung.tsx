@@ -57,11 +57,13 @@ export function Pruefung({ gate }: { gate?: boolean }) {
         <Page className="flex-1">
           <p className="mb-3">{t('ST-VER-41')}</p>
           <p className="text-sm muted mb-4">{t('ST-VER-42')}</p>
-          {needsCheck ? (
+          {needsCheck && state.reviewAge2 ? (
+            <Banner kind="info">{t('UI-TEAMPRUEFUNG-LAEUFT')}</Banner>
+          ) : needsCheck ? (
             <div className="flex flex-col gap-2">
               {state.methods.age2.map((m: string) => (
                 <button key={m} className="btn-secondary" disabled={busy} onClick={() => run(() => startCheck('age2', m, weiter))}>
-                  {m === 'eid' ? t('ST-VER-08') : t('ST-VER-07')}
+                  {m === 'eid' ? t('ST-VER-08') : m === 'team' ? t('UI-TEAMPRUEFUNG-WEG') : t('ST-VER-07')}
                 </button>
               ))}
             </div>
@@ -104,6 +106,8 @@ export function Pruefung({ gate }: { gate?: boolean }) {
         <Page className="flex-1">
           {state.facePassed ? (
             <Banner kind="ok">{t('ST-VER-22')}</Banner>
+          ) : state.reviewFace ? (
+            <Banner kind="info">{t('UI-TEAMPRUEFUNG-LAEUFT')}</Banner>
           ) : (
             <>
               <p className="mb-4">{t('ST-VER-21')}</p>
@@ -116,7 +120,7 @@ export function Pruefung({ gate }: { gate?: boolean }) {
           )}
           {err && <Banner kind="error">{err}</Banner>}
         </Page>
-        {!state.facePassed && (
+        {!state.facePassed && !state.reviewFace && (
           <BottomBar>
             <button className="btn-primary" disabled={!faceConsent || busy} onClick={() => run(() => startCheck('face', state.methods.face[0] ?? 'selfie', weiter, true))}>
               {t('UI-PRUEFUNG-STARTEN')}
@@ -165,11 +169,6 @@ export function Pruefung({ gate }: { gate?: boolean }) {
               </label>
             ))}
           </div>
-          {state.provider === 'mock' && (
-            <div className="mt-4">
-              <Banner kind="warn">{t('UI-PRUEFUNG-ATTRAPPE')}</Banner>
-            </div>
-          )}
           {err && (
             <div className="mt-3">
               <Banner kind="error">{err}</Banner>
@@ -408,6 +407,102 @@ export function PruefungAusweis() {
       <BottomBar>
         <button className="btn-primary" disabled={!vorne || state === 'laeuft'} onClick={send}>
           {state === 'laeuft' ? t('UI-AUSWEIS-LAEUFT-JETZT') : t('UI-AUSWEIS-SENDEN')}
+        </button>
+      </BottomBar>
+    </div>
+  );
+}
+
+/** Ohne Prüfpartner: Stufe 2 (Ausweis + Selfie) bzw. Fotoprüfung (Selfie) prüft ein Mensch aus dem Team. */
+export function PruefungTeam() {
+  const [params] = useSearchParams();
+  const nav = useNavigate();
+  const stored = JSON.parse(sessionStorage.getItem('pruefung') ?? 'null');
+  const sid = params.get('s') ?? stored?.sessionId;
+  const weiter: string = stored?.weiter ?? '/ich/profil';
+  const [info, setInfo] = useState<{ kind: 'age2' | 'face'; state: string; pose: { label: string } | null; hours: number } | null>(null);
+  const [ausweis, setAusweis] = useState<File | null>(null);
+  const [selfie, setSelfie] = useState<File | null>(null);
+  const [sending, setSending] = useState(false);
+  const [sent, setSent] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (sid) api.get(`/api/verify/team/${sid}`).then(setInfo).catch((e) => setErr(errText(e)));
+  }, [sid]);
+
+  const send = async () => {
+    if (!sid || !info || !selfie || (info.kind === 'age2' && !ausweis)) return;
+    setErr(null);
+    setSending(true);
+    try {
+      const fd = new FormData();
+      if (info.kind === 'age2' && ausweis) fd.append('ausweis', ausweis, 'ausweis.jpg');
+      fd.append('selfie', selfie, 'selfie.jpg');
+      await api.post(`/api/verify/team/${sid}`, fd);
+      setSent(true);
+    } catch (e) {
+      setErr(errText(e));
+    } finally {
+      setSending(false);
+    }
+  };
+
+  const done = () => {
+    sessionStorage.removeItem('pruefung');
+    nav(weiter, { replace: true });
+  };
+
+  const picker = (label: string, file: File | null, set: (f: File | null) => void, capture: 'user' | 'environment') => (
+    <label className="card p-4 flex items-center gap-3 cursor-pointer">
+      <input type="file" accept="image/*" capture={capture} className="sr-only" onChange={(e) => { set(e.target.files?.[0] ?? null); e.target.value = ''; }} />
+      <span className={`w-10 h-10 rounded-full grid place-items-center ${file ? 'bg-gut text-grund' : 'bg-flaeche2'}`} aria-hidden>
+        {file ? '✓' : '+'}
+      </span>
+      <span className="flex-1">
+        <span className="block">{label}</span>
+        <span className="block text-sm muted">{file ? file.name : t('UI-FOTO-HINZU')}</span>
+      </span>
+    </label>
+  );
+
+  if (!sid) return <Page><Banner kind="warn">{t('UI-LINK-UNGUELTIG')}</Banner></Page>;
+  if (!info) return <Page>{err ? <Banner kind="error">{err}</Banner> : <p className="muted">…</p>}</Page>;
+
+  if (sent || info.state === 'review') {
+    return (
+      <Page>
+        <Banner kind="info">{sent ? t('UI-TEAMPRUEFUNG-GESENDET', { stunden: info.hours }) : t('UI-TEAMPRUEFUNG-LAEUFT')}</Banner>
+        <button className="btn-primary w-full mt-4" onClick={done}>
+          {t('ST-KON-12')}
+        </button>
+      </Page>
+    );
+  }
+
+  return (
+    <div className="min-h-screen flex flex-col">
+      <Header title={t('UI-TEAMPRUEFUNG-TITEL')} back={`/pruefung?art=${info.kind}`} />
+      <Page className="flex-1">
+        <p className="mb-4">{t(info.kind === 'age2' ? 'UI-TEAMPRUEFUNG-ERKL-STUFE2' : 'UI-TEAMPRUEFUNG-ERKL-FOTO', { stunden: info.hours })}</p>
+        {info.pose && (
+          <div className="card p-4 mb-4 border-akzent/50">
+            <p className="font-display text-lg font-semibold">{t('UI-TEAMPRUEFUNG-GESTE', { geste: info.pose.label })}</p>
+          </div>
+        )}
+        <div className="flex flex-col gap-2">
+          {info.kind === 'age2' && picker(t('UI-TEAMPRUEFUNG-AUSWEIS'), ausweis, setAusweis, 'environment')}
+          {picker(t('UI-TEAMPRUEFUNG-SELFIE'), selfie, setSelfie, 'user')}
+        </div>
+        {err && (
+          <div className="mt-3">
+            <Banner kind="error">{err}</Banner>
+          </div>
+        )}
+      </Page>
+      <BottomBar>
+        <button className="btn-primary" disabled={!selfie || (info.kind === 'age2' && !ausweis) || sending} onClick={send}>
+          {sending ? t('UI-AUSWEIS-LAEUFT-JETZT') : t('UI-TEAMPRUEFUNG-SENDEN')}
         </button>
       </BottomBar>
     </div>

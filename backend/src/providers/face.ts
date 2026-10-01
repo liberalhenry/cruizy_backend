@@ -6,7 +6,10 @@
  *  * Gespeichert werden ausschließlich Ergebnis, Anbieter und Zeitpunkt (date_access).
  *  * Vorher ausdrückliche Einwilligung (date_access.biometric_consent_at).
  *
- * TODO(Betrieb): Anbieter wählen (EU-Verarbeitung, AV-Vertrag, keine Speicherung von Templates)
+ * Ohne Anbieter (DATE_FACE_PROVIDER=none) vergleicht das Team Selfie und erstes Foto im Werkzeug
+ * („Bestätigen“); das Selfie liegt bis zur Entscheidung verschlüsselt in der Ablage „idcheck“.
+ *
+ * Betrieb: Anbieter wählen (EU-Verarbeitung, AV-Vertrag, keine Speicherung von Templates)
  * und DATE_FACE_PROVIDER=http mit DATE_FACE_URL/DATE_FACE_HEADERS setzen.
  */
 import { env } from '../config/env.js';
@@ -26,18 +29,6 @@ export interface FaceVerificationProvider {
   readonly name: string;
   available(): boolean;
   verify(input: FaceVerificationInput): Promise<FaceVerificationResult>;
-}
-
-/** Attrappe: nur im Testbetrieb, stimmt immer zu. */
-class StubProvider implements FaceVerificationProvider {
-  readonly name = 'stub';
-  available() {
-    return env().OPERATION_MODE !== 'live';
-  }
-  async verify(): Promise<FaceVerificationResult> {
-    if (!this.available()) throw new Error('Gesichtsverifizierung: Attrappe im Echtbetrieb gesperrt');
-    return { match: true, livenessOk: true, confidence: 1 };
-  }
 }
 
 class HttpProvider implements FaceVerificationProvider {
@@ -83,6 +74,5 @@ export function faceProvider(): FaceVerificationProvider {
   if (override) return override;
   const k = env().DATE_FACE_PROVIDER;
   if (k === 'http') return new HttpProvider();
-  if (k === 'stub') return new StubProvider();
   return new NoneProvider();
 }

@@ -27,18 +27,6 @@
   "s": "ENTWURF",
   "t": "Das Abo startet später. Bis dahin ist alles kostenlos."
  },
- "UI-ABO-TEST": {
-  "s": "ENTWURF",
-  "t": "PLUS im Testbetrieb 7 Tage ausprobieren"
- },
- "UI-ABO-TEST-AKTIV": {
-  "s": "ENTWURF",
-  "t": "PLUS ist aktiv bis {datum}."
- },
- "UI-ABO-TEST-BEENDEN": {
-  "s": "ENTWURF",
-  "t": "PLUS beenden"
- },
  "UI-ABSICHT-ERNEUERN": {
   "s": "ENTWURF",
   "t": "„{absicht}“ erneuern"
@@ -602,6 +590,10 @@
  "UI-CODE-NEU": {
   "s": "ENTWURF",
   "t": "Der Code ist abgelaufen. Lass dir einen neuen schicken."
+ },
+ "UI-CODE-OHNE-VERSAND": {
+  "s": "ENTWURF",
+  "t": "Wir können gerade keine Codes verschicken. Ein Mensch aus unserem Team bestätigt deine Angabe — meist innerhalb weniger Stunden. Diese Seite geht dann von selbst weiter. Du kannst sie auch schließen und dich später einfach anmelden."
  },
  "UI-CODE-WARTEN": {
   "s": "ENTWURF",
@@ -1279,6 +1271,10 @@
   "s": "ENTWURF",
   "t": "Du erscheinst bei der Person weiter oben."
  },
+ "UI-DATE-TEAM-PRUEFT": {
+  "s": "ENTWURF",
+  "t": "Unser Team vergleicht dein Selfie mit deinem ersten Foto, meist innerhalb von {stunden} Stunden. Du bekommst eine Mitteilung."
+ },
  "UI-DATE-TEIL-FOTOS": {
   "s": "ENTWURF",
   "t": "Fotos"
@@ -1809,11 +1805,11 @@
  },
  "UI-FAQ-04-A": {
   "s": "ENTWURF",
-  "t": "Die Prüfung macht ein Prüfpartner. Wir erhalten nur das Ergebnis. Was der Partner speichert und wie lange, steht in unserer Datenschutzerklärung."
+  "t": "Solange kein Prüfpartner angebunden ist, schaut sich ein Mensch aus unserem Team dein Selfie an — nur um zu entscheiden, ob es passt. Danach löschen wir es. Gespeichert bleibt nur das Ergebnis und der Zeitpunkt."
  },
  "UI-FAQ-04-F": {
   "s": "ENTWURF",
-  "t": "Was passiert mit meinem Selfie bei der Altersprüfung?"
+  "t": "Was passiert mit meinem Selfie bei der Prüfung?"
  },
  "UI-FAQ-05-A": {
   "s": "ENTWURF",
@@ -2143,6 +2139,10 @@
   "s": "ENTWURF",
   "t": "Ortsdaten: GeoNames (CC BY 4.0)"
  },
+ "UI-GERAET-OHNE-VERSAND": {
+  "s": "ENTWURF",
+  "t": "Wir können gerade keinen Code an deine Nummer schicken. Ein Mensch aus unserem Team bestätigt die Anmeldung auf diesem Gerät. Diese Seite geht dann von selbst weiter."
+ },
  "UI-GRUPPE-SCHLIESST": {
   "s": "ENTWURF",
   "t": "Die Gruppe verschwindet am {zeit}."
@@ -2458,10 +2458,6 @@
  "UI-KONTO-EINGESCHRAENKT": {
   "s": "ENTWURF",
   "t": "Dein Konto ist eingeschränkt. Du kannst lesen, aber nichts senden."
- },
- "UI-KONTO-EINLADUNG": {
-  "s": "ENTWURF",
-  "t": "Einladungscode"
  },
  "UI-KONTO-EMAIL": {
   "s": "ENTWURF",
@@ -2821,7 +2817,7 @@
  },
  "UI-MODZEIT-HASH-AUS": {
   "s": "ENTWURF",
-  "t": "Der Abgleich mit bekannten Missbrauchsdarstellungen ist noch nicht eingeschaltet — deshalb läuft nur ein Testbetrieb mit erfundenen Daten."
+  "t": "Der Abgleich mit bekannten Missbrauchsdarstellungen ist noch nicht angebunden — deshalb prüft ein Mensch aus unserem Team jedes Profilbild, bevor es sichtbar wird."
  },
  "UI-MODZEIT-KETTE": {
   "s": "ENTWURF",
@@ -3275,10 +3271,6 @@
   "s": "ENTWURF",
   "t": "Dieses Profil gibt es nicht mehr."
  },
- "UI-PRUEFUNG-ATTRAPPE": {
-  "s": "ENTWURF",
-  "t": "Testbetrieb: Es ist noch kein Prüfpartner angebunden. Die Prüfung wird nur nachgestellt."
- },
  "UI-PRUEFUNG-LAEUFT": {
   "s": "ENTWURF",
   "t": "Die Prüfung läuft noch …"
@@ -3438,6 +3430,10 @@
  "UI-REISEN-VON": {
   "s": "ENTWURF",
   "t": "Anreise"
+ },
+ "UI-RESET-OHNE-VERSAND": {
+  "s": "ENTWURF",
+  "t": "Wir können gerade keine Codes verschicken. Schreib uns über die Hilfe — wir helfen dir, wieder in dein Konto zu kommen."
  },
  "UI-RICHTUNG-N": {
   "s": "ENTWURF",
@@ -4027,6 +4023,90 @@
   "s": "ENTWURF",
   "t": "Das neue Passwort muss sich vom alten unterscheiden."
  },
+ "UI-TEAM-WARTET": {
+  "s": "ENTWURF",
+  "t": "Unser Team hat noch nicht bestätigt."
+ },
+ "UI-TEAM-WARTET-KURZ": {
+  "s": "ENTWURF",
+  "t": "Wartet auf unser Team …"
+ },
+ "UI-TEAMPRUEFUNG-AUSWEIS": {
+  "s": "ENTWURF",
+  "t": "Foto vom Ausweis"
+ },
+ "UI-TEAMPRUEFUNG-DATE-NEIN": {
+  "s": "ENTWURF",
+  "t": "Dein Selfie passte nicht eindeutig zu deinem ersten Date-Foto. Du kannst es noch einmal versuchen."
+ },
+ "UI-TEAMPRUEFUNG-DATE-OK": {
+  "s": "ENTWURF",
+  "t": "Dein Selfie ist bestätigt — du kannst dein Date-Profil jetzt fertigstellen."
+ },
+ "UI-TEAMPRUEFUNG-DATE-TITEL": {
+  "s": "ENTWURF",
+  "t": "Cruizy Date"
+ },
+ "UI-TEAMPRUEFUNG-ERKL-FOTO": {
+  "s": "ENTWURF",
+  "t": "Mach ein Selfie mit der Geste unten. Ein Mensch aus unserem Team vergleicht es mit deinen Profilfotos, meist innerhalb von {stunden} Stunden. Danach löschen wir das Selfie."
+ },
+ "UI-TEAMPRUEFUNG-ERKL-STUFE2": {
+  "s": "ENTWURF",
+  "t": "Fotografiere die Seite deines Ausweises mit dem Geburtsdatum (Name, Adresse und Nummer darfst du abdecken) und mach ein Selfie mit der Geste unten. Ein Mensch aus unserem Team prüft beides, meist innerhalb von {stunden} Stunden. Danach löschen wir die Bilder."
+ },
+ "UI-TEAMPRUEFUNG-FOTO-NEIN": {
+  "s": "ENTWURF",
+  "t": "Dein Selfie passte nicht eindeutig zu deinen Profilfotos. Du kannst es noch einmal versuchen."
+ },
+ "UI-TEAMPRUEFUNG-FOTO-OK": {
+  "s": "ENTWURF",
+  "t": "Deine Fotoprüfung ist bestanden — dein Profil trägt jetzt das Prüfzeichen."
+ },
+ "UI-TEAMPRUEFUNG-FOTO-TITEL": {
+  "s": "ENTWURF",
+  "t": "Fotoprüfung"
+ },
+ "UI-TEAMPRUEFUNG-GESENDET": {
+  "s": "ENTWURF",
+  "t": "Danke! Unser Team prüft deine Bilder, meist innerhalb von {stunden} Stunden. Du bekommst eine Mitteilung."
+ },
+ "UI-TEAMPRUEFUNG-GESTE": {
+  "s": "ENTWURF",
+  "t": "Zeig auf dem Selfie: {geste}"
+ },
+ "UI-TEAMPRUEFUNG-LAEUFT": {
+  "s": "ENTWURF",
+  "t": "Deine Bilder liegen bei unserem Team. Du bekommst eine Mitteilung, sobald entschieden ist."
+ },
+ "UI-TEAMPRUEFUNG-SELFIE": {
+  "s": "ENTWURF",
+  "t": "Selfie mit Geste"
+ },
+ "UI-TEAMPRUEFUNG-SENDEN": {
+  "s": "ENTWURF",
+  "t": "An unser Team senden"
+ },
+ "UI-TEAMPRUEFUNG-STUFE2-NEIN": {
+  "s": "ENTWURF",
+  "t": "Wir konnten Stufe 2 anhand deiner Bilder nicht bestätigen. Du kannst es mit neuen Bildern noch einmal versuchen."
+ },
+ "UI-TEAMPRUEFUNG-STUFE2-OK": {
+  "s": "ENTWURF",
+  "t": "Deine Prüfung für Stufe 2 ist bestanden."
+ },
+ "UI-TEAMPRUEFUNG-STUFE2-TITEL": {
+  "s": "ENTWURF",
+  "t": "Stufe 2"
+ },
+ "UI-TEAMPRUEFUNG-TITEL": {
+  "s": "ENTWURF",
+  "t": "Prüfung durch unser Team"
+ },
+ "UI-TEAMPRUEFUNG-WEG": {
+  "s": "ENTWURF",
+  "t": "Prüfung durch unser Team"
+ },
  "UI-TEST-AKTIVIEREN": {
   "s": "ENTWURF",
   "t": "Erinnerung einschalten"
@@ -4118,14 +4198,6 @@
  "UI-TEST-WOCHE": {
   "s": "ENTWURF",
   "t": "In einer Woche erinnern"
- },
- "UI-TESTBETRIEB-EINLADUNG": {
-  "s": "ENTWURF",
-  "t": "Wir sind gerade im Testbetrieb. Zum Registrieren brauchst du einen Einladungscode."
- },
- "UI-TESTBETRIEB-HINWEIS": {
-  "s": "ENTWURF",
-  "t": "Testbetrieb — bitte nur erfundene Angaben und keine echten Fotos von dir."
  },
  "UI-TG-CHECKIN-HINWEIS": {
   "s": "ENTWURF",
@@ -4899,10 +4971,6 @@
   "s": "ENTWURF",
   "t": "Vorbei"
  },
- "UI-VA-TESTGAESTE": {
-  "s": "ENTWURF",
-  "t": "Davon {zahl} erfundene Testgäste (Testbetrieb)."
- },
  "UI-VA-TEXT-LANG": {
   "s": "ENTWURF",
   "t": "Die Beschreibung darf höchstens {zeichen} Zeichen haben."
@@ -5322,5 +5390,9 @@
  "UI-ZU-VIELE": {
   "s": "ENTWURF",
   "t": "Das waren gerade zu viele Versuche. Bitte warte einen Moment."
+ },
+ "UI-ZWEITER-WEG-OHNE-VERSAND": {
+  "s": "ENTWURF",
+  "t": "Wir können gerade keine Codes verschicken. Unser Team bestätigt die neue Angabe; sie erscheint dann hier von selbst."
  }
 }

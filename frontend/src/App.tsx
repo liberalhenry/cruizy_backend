@@ -15,7 +15,7 @@ import { DateEinstellungen, DateHome, DateOnboarding, DateProfil, DateUser } fro
 import { Veranstalter, VeranstalterVerifizieren, VeranstaltungBearbeiten, VeranstaltungChat, VeranstaltungVerwalten } from './screens/veranstalter';
 import { FotoHinzufuegen, ProfilEditor, ProfilEigen, ProfilFremd } from './screens/profil';
 import { AlbumAnsicht, AlbumBearbeiten, Alben, Chat, Chats } from './screens/chats';
-import { Pruefung, PruefungAusweis, PruefungFertig } from './screens/pruefung';
+import { Pruefung, PruefungAusweis, PruefungFertig, PruefungTeam } from './screens/pruefung';
 import { Ereignis, Heute, Ort } from './screens/heute';
 import { Abo, Blockiert, CheckIn, Daten, Einstellungen, Hilfe, Ich, KontoSichern, Meldungen, Merkliste, Mitteilungen, Sicherheit, Treffpunkt, Verstecken } from './screens/ich';
 import { MeldenOhneKonto, Moderationszeiten, OrtBeanspruchen, OrtBestaetigen, Rechtliches } from './screens/oeffentlich';
@@ -172,6 +172,7 @@ export default function App() {
       <Route path="/wiederherstellung-abbrechen" element={<WiederherstellungAbbrechen />} />
       <Route path="/pruefung/fertig" element={<PruefungFertig />} />
       <Route path="/pruefung/ausweis" element={<PruefungAusweis />} />
+      <Route path="/pruefung/team" element={<PruefungTeam />} />
     </>
   );
 

@@ -6,11 +6,12 @@ import { resetRateLimits } from '../src/lib/rate.js';
 import { Client, lastCode, member, testApp } from './helpers.js';
 
 describe('Registrierung und Anmeldung', () => {
-  it('verlangt im Testbetrieb den Einladungscode (AK-M02-11)', async () => {
+  it('registriert ohne Einladungscode — es gibt keinen Testbetrieb mehr', async () => {
+    resetRateLimits();
     const c = new Client(await testApp());
-    const r = await c.post('/api/auth/register', { method: 'email', email: 'x-ohne@example.invalid', password: 'ein-langes-testpasswort' });
-    expect(r.status).toBe(403);
-    expect(r.body.fehler).toBe('UI-TESTBETRIEB-EINLADUNG');
+    const r = await c.post('/api/auth/register', { method: 'email', email: `x-ohne-${Date.now()}@example.invalid`, password: 'ein-langes-testpasswort' });
+    expect(r.status).toBe(200);
+    expect(r.body.next).toBe('code');
   });
 
   it('antwortet bei vorhandener Adresse gleich und schickt keine Mail (AK-F02-02)', async () => {
@@ -18,7 +19,7 @@ describe('Registrierung und Anmeldung', () => {
     resetRateLimits();
     const c = new Client(await testApp());
     const before = sentMails.length;
-    const r = await c.post('/api/auth/register', { method: 'email', email: m.email, password: 'ein-anderes-passwort', invite: 'einladung' });
+    const r = await c.post('/api/auth/register', { method: 'email', email: m.email, password: 'ein-anderes-passwort' });
     expect(r.status).toBe(200);
     expect(r.body.next).toBe('code');
     expect(typeof r.body.token).toBe('string');
@@ -35,7 +36,7 @@ describe('Registrierung und Anmeldung', () => {
     resetRateLimits();
     const c = new Client(await testApp());
     const email = `wh-${Date.now()}@example.invalid`;
-    const r = await c.post('/api/auth/register', { method: 'email', email, password: 'ein-langes-testpasswort', invite: 'einladung' });
+    const r = await c.post('/api/auth/register', { method: 'email', email, password: 'ein-langes-testpasswort' });
     await c.post('/api/auth/verify', { token: r.body.token, code: lastCode(email) });
     const first = await c.post('/api/auth/consent', { accept: true, version: CONSENT_VERSION });
     expect(first.body.recoveryCode).toMatch(/^[A-Z0-9]{5}(-[A-Z0-9]{5}){3}$/);
@@ -66,10 +67,11 @@ describe('Registrierung und Anmeldung', () => {
     expect(a.body).toEqual(b.body);
   });
 
-  it('jede Antwort trägt die Betriebskennzeichnung', async () => {
+  it('keine Betriebskennzeichnung und kein Einladungscode mehr in der Konfiguration', async () => {
     const c = new Client(await testApp());
     const r = await c.get('/api/config');
-    expect(r.headers['x-betrieb']).toBe('test');
-    expect(r.body.inviteRequired).toBe(true);
+    expect(r.headers['x-betrieb']).toBeUndefined();
+    expect(r.body.inviteRequired).toBeUndefined();
+    expect(r.body.mode).toBeUndefined();
   });
 });

@@ -1,8 +1,7 @@
 /** Altersprüfung per Ausweisbild (Issue #7): nur das Geburtsdatum, unsicher → Team. */
 import { readdirSync } from 'node:fs';
 import sharp from 'sharp';
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { resetEnvCache } from '../src/config/env.js';
+import { describe, expect, it } from 'vitest';
 import { one, q } from '../src/db/pool.js';
 import { storeDir } from '../src/lib/files.js';
 import { JOBS } from '../src/jobs/index.js';
@@ -96,15 +95,6 @@ function front(birth: string) {
 const ocr = await ocrAvailable();
 
 describe.skipIf(!ocr)('Ablauf: Ausweis hochladen (Issue #7)', () => {
-  beforeAll(() => {
-    process.env.AGE_PROVIDER = 'ausweis';
-    resetEnvCache();
-  });
-  afterAll(() => {
-    process.env.AGE_PROVIDER = 'mock';
-    resetEnvCache();
-  });
-
   async function startCheck(m: Awaited<ReturnType<typeof member>>) {
     const st = await m.c.get('/api/verify/state');
     expect(st.body.methods.age1).toEqual(['ausweis']);

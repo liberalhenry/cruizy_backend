@@ -68,9 +68,7 @@ export async function buildApp(): Promise<FastifyInstance> {
   });
   await app.register(websocket, { options: { maxPayload: 64 * 1024 } });
 
-  // Kennzeichnung des Testbetriebs (AK-M02-11): jede Antwort sagt, dass nur erfundene Daten zulässig sind.
   app.addHook('onSend', async (_req, reply) => {
-    reply.header('x-betrieb', e.OPERATION_MODE);
     reply.header('cache-control', reply.getHeader('cache-control') ?? 'no-store');
     reply.header('referrer-policy', 'no-referrer');
     reply.header('x-content-type-options', 'nosniff');

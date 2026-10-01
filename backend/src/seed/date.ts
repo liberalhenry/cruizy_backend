@@ -1,5 +1,5 @@
 /**
- * Cruizy-Date-Beispielnutzer für den Testbetrieb (Issue #34). Wird von testdaten.ts aufgerufen.
+ * Cruizy-Date-Beispielnutzer für die Entwicklung (Issue #34). Wird von testdaten.ts aufgerufen.
  *
  * Jedes Beispielkonto bekommt ein vollständiges, freigeschaltetes Date-Profil: Intention, drei
  * jugendfreie Testbilder (abstrakt, keine Person), Beruf, Interessen, Werte, drei Prompts, Voice-Intro

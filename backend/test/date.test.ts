@@ -7,7 +7,7 @@ import { execFileSync } from 'node:child_process';
 import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { resetEnvCache } from '../src/config/env.js';
 import { setParam } from '../src/config/params.js';
 import { one, q } from '../src/db/pool.js';
@@ -15,7 +15,7 @@ import { destination } from '../src/lib/geo.js';
 import { audioAvailable } from '../src/lib/audio.js';
 import { setFaceProvider } from '../src/providers/face.js';
 import { autoPauseDate, compatibility, dateDay, type DateCandidate } from '../src/services/date.js';
-import { Client, jpeg, member, multipart, staff, upload, type Member } from './helpers.js';
+import { Client, jpeg, member, multipart, staff, upload, type Member, grantPlus } from './helpers.js';
 
 const HH = { lat: 53.5507, lng: 9.993 };
 
@@ -61,7 +61,10 @@ async function dateMember(opts: { name?: string; pos?: { lat: number; lng: numbe
   return m;
 }
 
-afterEach(() => setFaceProvider(null));
+/** Anbieter, der jedem Selfie recht gibt — nur in den Tests (ohne Anbieter prüft das Team, siehe unten). */
+const passFace = { name: 'test', available: () => true, verify: async () => ({ match: true, livenessOk: true }) };
+beforeEach(() => setFaceProvider(passFace));
+afterEach(() => setFaceProvider(passFace));
 
 describe.skipIf(!(await audioAvailable()))('Cruizy Date', () => {
   it('Nicht-Mitglieder: Landing-Daten, aber keine Date-Profile — auch nicht über die Schnittstelle', async () => {
@@ -97,11 +100,11 @@ describe.skipIf(!(await audioAvailable()))('Cruizy Date', () => {
     expect((await m.c.post('/api/date/verification/challenge')).body.code).toBe('einwilligung_noetig');
     setFaceProvider({ name: 'test', available: () => true, verify: async () => ({ match: false, livenessOk: true }) });
     expect((await verify(m)).body).toEqual({ ok: false, reason: 'abgleich' });
-    setFaceProvider(null);
+    setFaceProvider(passFace);
     expect((await verify(m)).body.ok).toBe(true);
     // nur Ergebnis und Zeitpunkt gespeichert
     const acc = await one(`SELECT verified_at, verification_provider, verification_result FROM date_access WHERE account_id = $1`, [m.id]);
-    expect(acc).toMatchObject({ verification_provider: 'stub', verification_result: 'bestanden' });
+    expect(acc).toMatchObject({ verification_provider: 'test', verification_result: 'bestanden' });
     await m.c.put('/api/date/profile', { job: 'Pfleger', interests: ['Lesen', 'Yoga', 'Kochen'], values: {} });
     await m.c.put('/api/date/prompts', { prompts: [{ key: 'schwach', answer: 'Schokolade' }, { key: 'zusammen', answer: 'Reisen' }] });
     r = await m.c.post('/api/date/activate');
@@ -117,6 +120,31 @@ describe.skipIf(!(await audioAvailable()))('Cruizy Date', () => {
     const ids = own.body.view.photos.map((x: { id: string }) => x.id);
     const re = await m.c.put('/api/date/photos/order', { ids: [ids[1], ids[0], ids[2]] });
     expect(re.body.reverify).toBe(true);
+  });
+
+  it('ohne Anbieter vergleicht das Team Selfie und erstes Date-Foto', async () => {
+    setFaceProvider(null); // DATE_FACE_PROVIDER ist nicht gesetzt → kein Anbieter
+    const m = await member({ pos: HH });
+    await m.c.post('/api/date/start');
+    await m.c.put('/api/date/intention', { intention: 'offen' });
+    for (const color of ['#135', '#246', '#357']) await upload(m.c, '/api/date/photos', await jpeg({ color }));
+    const r = await verify(m);
+    expect(r.body).toMatchObject({ ok: false, review: true });
+    expect((await m.c.get('/api/date/me')).body.verificationReview).toBe(true);
+    // während der Prüfung keine neue Geste
+    expect((await m.c.post('/api/date/verification/challenge')).status).toBe(409);
+    const s = await staff();
+    const item = (await s.c.get('/mod-api/id-reviews?kind=date_face')).body.items.find((x: { number: string }) => x.number === r.body.number);
+    const open = await s.c.post(`/mod-api/id-reviews/${item.id}/open`, {});
+    expect(open.body.references).toHaveLength(1);
+    expect(open.body.pose).toBeTruthy();
+    expect((await s.c.post(`/mod-api/id-reviews/${item.id}/decide`, { decision: 'passt' })).status).toBe(200);
+    const acc = await one(`SELECT verified_at, verification_provider, verification_result FROM date_access WHERE account_id = $1`, [m.id]);
+    expect(acc).toMatchObject({ verification_provider: 'team', verification_result: 'bestanden' });
+    expect(acc!.verified_at).not.toBeNull();
+    const me = await m.c.get('/api/date/me');
+    expect(me.body.verified).toBe(true);
+    expect(me.body.verificationReview).toBe(false);
   });
 
   it('Tagesvorschläge: begrenzt, kompatibel, ohne Deal-Breaker und Blockierte', async () => {
@@ -189,7 +217,7 @@ describe.skipIf(!(await audioAvailable()))('Cruizy Date', () => {
     expect(likes.body.count).toBeGreaterThanOrEqual(1);
     expect((await b.c.get(likes.body.previews[0])).status).toBe(200);
     // mit Premium: wer, worauf, welcher Kommentar
-    await b.c.post('/api/premium/test');
+    await grantPlus(b.id);
     const full = await b.c.get('/api/date/likes');
     const mine = full.body.likes.find((x: { from: { id: string } }) => x.from.id === a.id);
     expect(mine).toMatchObject({ comment: 'Frühstück klingt gut!', element: { kind: 'prompt', answer: 'Lange frühstücken.' } });
@@ -296,7 +324,7 @@ describe.skipIf(!(await audioAvailable()))('Cruizy Date', () => {
       await b.c.put('/api/date/settings', { nsfwReceive: 'ja' });
       expect((await upload(a.c, `/api/conversations/${conv}/images`, await jpeg())).status).toBe(200);
     } finally {
-      process.env.CLASSIFIER = 'mock-allow';
+      delete process.env.CLASSIFIER;
       resetEnvCache();
     }
   });

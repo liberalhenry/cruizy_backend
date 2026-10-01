@@ -13,7 +13,7 @@ import { reactivateAfterLogin } from '../services/date.js';
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import { z } from 'zod';
 import { createRemoteJWKSet, jwtVerify } from 'jose';
-import { env, isTestMode } from '../config/env.js';
+import { env } from '../config/env.js';
 import { p } from '../config/params.js';
 import { one, q, tx } from '../db/pool.js';
 import {
@@ -46,7 +46,7 @@ import { AppError, bad, tooMany } from '../lib/errors.js';
 import { body, ipKey } from '../lib/http.js';
 import { hit } from '../lib/rate.js';
 import { t } from '../lib/texts.js';
-import { checkCode, issueCode, lastCodeAt, mailCode, mayMail, phoneCode } from '../services/codes.js';
+import { canDeliver, checkCode, issueCode, lastCodeAt, mailCode, mayMail, needsTeam, phoneCode } from '../services/codes.js';
 import { createNotice } from '../services/notify.js';
 import { sendMail } from '../providers/mail.js';
 import { discord } from '../services/discord.js';
@@ -75,13 +75,6 @@ function readPending(token: string, kind: PendingToken['k']): PendingToken {
   const tok = openToken<PendingToken>(token);
   if (!tok || tok.k !== kind || tok.e < Date.now()) throw bad('UI-CODE-FALSCH', {}, 'code_falsch');
   return tok;
-}
-
-function checkInvite(invite: string | undefined) {
-  const e = env();
-  if (e.OPERATION_MODE === 'test' && e.TEST_INVITE_CODE && invite !== e.TEST_INVITE_CODE) {
-    throw new AppError(403, 'UI-TESTBETRIEB-EINLADUNG', {}, 'einladung_noetig');
-  }
 }
 
 const password = z.string().min(1).max(512);
@@ -134,10 +127,8 @@ export default async function authRoutes(app: FastifyInstance) {
         email: z.string().email().max(254).optional(),
         phone: z.string().max(32).optional(),
         password,
-        invite: z.string().optional(),
       }),
     );
-    checkInvite(b.invite);
     if (b.password.length < p('P-PW-MIN')) throw bad('UI-PASSWORT-KURZ', { zahl: p('P-PW-MIN') }, 'passwort_kurz');
     if (!hit('register', ipKey(req), p('P-REGISTRIERUNGEN-JE-NETZ'), 24 * HOUR)) throw tooMany();
 
@@ -148,7 +139,7 @@ export default async function authRoutes(app: FastifyInstance) {
       const existing = await one(`SELECT id, status, email_verified_at FROM accounts WHERE email_hash = $1`, [h]);
       if (existing && existing.email_verified_at) {
         // AK-F02-02: gleiche Antwort, keine E-Mail
-        return { token: pending(null, 'verify_email'), next: 'code' };
+        return { token: pending(null, 'verify_email'), next: 'code', ohneVersand: needsTeam('verify_email') };
       }
       const pwHash = await hashPassword(b.password);
       let accountId: string;
@@ -157,9 +148,9 @@ export default async function authRoutes(app: FastifyInstance) {
         await q(`UPDATE accounts SET password_hash = $2 WHERE id = $1`, [accountId, pwHash]);
       } else {
         const row = await one(
-          `INSERT INTO accounts (primary_method, email_hash, email_enc, password_hash, is_test_data)
-           VALUES ('email', $1, $2, $3, $4) RETURNING id`,
-          [h, encStr('pii', email, 'email'), pwHash, isTestMode()],
+          `INSERT INTO accounts (primary_method, email_hash, email_enc, password_hash)
+           VALUES ('email', $1, $2, $3) RETURNING id`,
+          [h, encStr('pii', email, 'email'), pwHash],
         );
         accountId = row!.id;
       }
@@ -168,7 +159,7 @@ export default async function authRoutes(app: FastifyInstance) {
         const code = await issueCode({ accountId, purpose: 'verify_email' });
         await mailCode(email, code);
       }
-      return { token: pending(accountId, 'verify_email'), next: 'code' };
+      return { token: pending(accountId, 'verify_email'), next: 'code', ohneVersand: needsTeam('verify_email') };
     }
 
     if (!b.phone) throw bad('UI-EINGABE-PRUEFEN');
@@ -176,7 +167,7 @@ export default async function authRoutes(app: FastifyInstance) {
     if (!phone) throw bad('UI-NUMMER-UNGUELTIG', {}, 'nummer_ungueltig');
     const h = blindIndex('phone', phone);
     const existing = await one(`SELECT id, phone_verified_at FROM accounts WHERE phone_hash = $1`, [h]);
-    if (existing && existing.phone_verified_at) return { token: pending(null, 'verify_phone'), next: 'code', telegram: botLink() };
+    if (existing && existing.phone_verified_at) return { token: pending(null, 'verify_phone'), next: 'code', telegram: botLink(), ohneVersand: needsTeam('verify_phone') };
     const pwHash = await hashPassword(b.password);
     let accountId: string;
     if (existing) {
@@ -184,15 +175,15 @@ export default async function authRoutes(app: FastifyInstance) {
       await q(`UPDATE accounts SET password_hash = $2 WHERE id = $1`, [accountId, pwHash]);
     } else {
       const row = await one(
-        `INSERT INTO accounts (primary_method, phone_hash, phone_enc, password_hash, is_test_data)
-         VALUES ('phone', $1, $2, $3, $4) RETURNING id`,
-        [h, encStr('pii', phone, 'phone'), pwHash, isTestMode()],
+        `INSERT INTO accounts (primary_method, phone_hash, phone_enc, password_hash)
+         VALUES ('phone', $1, $2, $3) RETURNING id`,
+        [h, encStr('pii', phone, 'phone'), pwHash],
       );
       accountId = row!.id;
     }
     const code = await issueCode({ accountId, purpose: 'verify_phone' });
     await phoneCode(phone, code, 'anlegen');
-    return { token: pending(accountId, 'verify_phone'), next: 'code', telegram: botLink() };
+    return { token: pending(accountId, 'verify_phone'), next: 'code', telegram: botLink(), ohneVersand: needsTeam('verify_phone') };
   });
 
   app.post('/api/auth/verify', async (req, reply) => {
@@ -204,6 +195,7 @@ export default async function authRoutes(app: FastifyInstance) {
     if (!tok.a) throw bad('UI-CODE-FALSCH', {}, 'code_falsch');
     const res = await checkCode(tok.a, tok.k, b.code.trim());
     if (!res.ok) {
+      if (res.reason === 'wartet') throw new AppError(409, 'UI-TEAM-WARTET', {}, 'wartet');
       if (res.reason === 'abgelaufen' || res.reason === 'zu_viele') throw bad('UI-CODE-NEU', {}, 'code_neu_noetig');
       throw bad('UI-CODE-FALSCH', {}, 'code_falsch');
     }
@@ -244,13 +236,13 @@ export default async function authRoutes(app: FastifyInstance) {
     if (found.kind === 'email' && !acc.email_verified_at) {
       const code = await issueCode({ accountId: acc.id, purpose: 'verify_email' });
       await mailCode(found.value, code);
-      return { next: 'code', token: pending(acc.id, 'verify_email') };
+      return { next: 'code', token: pending(acc.id, 'verify_email'), ohneVersand: needsTeam('verify_email') };
     }
     if (found.kind === 'phone') {
       if (!acc.phone_verified_at) {
         const code = await issueCode({ accountId: acc.id, purpose: 'verify_phone' });
         await phoneCode(found.value, code, 'anlegen');
-        return { next: 'code', token: pending(acc.id, 'verify_phone'), telegram: botLink() };
+        return { next: 'code', token: pending(acc.id, 'verify_phone'), telegram: botLink(), ohneVersand: needsTeam('verify_phone') };
       }
       // Z-10: Code bei der Anmeldung auf einem neuen Gerät — per Telegram (Issue #32)
       const d = deviceId(req, reply);
@@ -258,7 +250,7 @@ export default async function authRoutes(app: FastifyInstance) {
       if (!known) {
         const code = await issueCode({ accountId: acc.id, purpose: 'login_phone' });
         await phoneCode(found.value, code, 'neues_geraet');
-        return { next: 'geraet', token: pending(acc.id, 'login_phone'), telegram: botLink() };
+        return { next: 'geraet', token: pending(acc.id, 'login_phone'), telegram: botLink(), ohneVersand: needsTeam('login_phone') };
       }
     }
     return finishLogin(req, reply, acc.id);
@@ -269,6 +261,7 @@ export default async function authRoutes(app: FastifyInstance) {
     const tok = readPending(b.token, 'login_phone');
     if (!tok.a) throw bad('UI-CODE-FALSCH');
     const res = await checkCode(tok.a, 'login_phone', b.code.trim());
+    if (!res.ok && res.reason === 'wartet') throw new AppError(409, 'UI-TEAM-WARTET', {}, 'wartet');
     if (!res.ok) throw bad(res.reason === 'falsch' ? 'UI-CODE-FALSCH' : 'UI-CODE-NEU', {}, 'code_falsch');
     return finishLogin(req, reply, tok.a);
   });
@@ -310,7 +303,13 @@ export default async function authRoutes(app: FastifyInstance) {
       }
     }
     // gleiche Antwort in jedem Fall
-    return { ok: true, weg: found.kind === 'phone' ? 'telegram' : 'mail', telegram: found.kind === 'phone' ? botLink() : null };
+    // Ohne Versandweg kann niemand beweisen, dass ihm Adresse oder Nummer gehört → Support (Hilfe)
+    return {
+      ok: true,
+      weg: found.kind === 'phone' ? 'telegram' : 'mail',
+      telegram: found.kind === 'phone' ? botLink() : null,
+      ohneVersand: !canDeliver(found.kind === 'phone' ? 'phone' : 'mail'),
+    };
   });
 
   app.post('/api/auth/reset/complete', async (req, reply) => {
@@ -541,7 +540,7 @@ export default async function authRoutes(app: FastifyInstance) {
       const code = await issueCode({ accountId: a.id, purpose: 'add_email', targetHash: h, targetEnc: encStr('pii', email, 'email') });
       await mailCode(email, code);
     }
-    return { ok: true };
+    return { ok: true, ohneVersand: needsTeam('add_email') };
   });
 
   app.post('/api/auth/add/phone', async (req) => {
@@ -555,7 +554,7 @@ export default async function authRoutes(app: FastifyInstance) {
       const code = await issueCode({ accountId: a.id, purpose: 'add_phone', targetHash: h, targetEnc: encStr('pii', phone, 'phone') });
       await phoneCode(phone, code, 'anlegen');
     }
-    return { ok: true, telegram: botLink() };
+    return { ok: true, telegram: botLink(), ohneVersand: needsTeam('add_phone') };
   });
 
   app.post('/api/auth/add/confirm', async (req) => {
@@ -563,6 +562,7 @@ export default async function authRoutes(app: FastifyInstance) {
     const b = body(req, z.object({ kind: z.enum(['email', 'phone']), code: z.string().max(12) }));
     const purpose = b.kind === 'email' ? 'add_email' : 'add_phone';
     const res = await checkCode(a.id, purpose, b.code.trim());
+    if (!res.ok && res.reason === 'wartet') throw new AppError(409, 'UI-TEAM-WARTET', {}, 'wartet');
     if (!res.ok || !res.targetHash) throw bad('UI-CODE-FALSCH', {}, 'code_falsch');
     try {
       if (b.kind === 'email') {
@@ -605,10 +605,9 @@ export default async function authRoutes(app: FastifyInstance) {
   app.get('/api/auth/apple/start', async (req, reply) => {
     const e = env();
     if (!e.APPLE_CLIENT_ID || !e.APPLE_REDIRECT_URI) throw bad('UI-APPLE-AUS', {}, 'apple_aus');
-    const invite = String((req.query as { invite?: string }).invite ?? '');
     const state = randomToken(16);
     const nonce = randomToken(16);
-    reply.setCookie('apple_flow', sealToken({ state, nonce, invite, e: Date.now() + 10 * 60_000 }), {
+    reply.setCookie('apple_flow', sealToken({ state, nonce, e: Date.now() + 10 * 60_000 }), {
       ...cookieOptions(600),
       sameSite: 'none', // Apple sendet per form_post von fremder Adresse zurück
       secure: true,
@@ -628,7 +627,7 @@ export default async function authRoutes(app: FastifyInstance) {
   app.post('/api/auth/apple/callback', async (req, reply) => {
     const e = env();
     const b = req.body as { id_token?: string; state?: string; error?: string };
-    const flow = openToken<{ state: string; nonce: string; invite: string; e: number }>(req.cookies['apple_flow'] ?? '');
+    const flow = openToken<{ state: string; nonce: string; e: number }>(req.cookies['apple_flow'] ?? '');
     reply.clearCookie('apple_flow', { path: '/' });
     const back = (path: string) => reply.redirect(`${e.APP_URL}${path}`);
     // Abbruch im Apple-Dialog → zurück ohne Fehlermeldung
@@ -647,16 +646,13 @@ export default async function authRoutes(app: FastifyInstance) {
     const subHash = blindIndex('apple', sub);
     let acc = await one(`SELECT id FROM accounts WHERE apple_sub_hash = $1`, [subHash]);
     if (!acc) {
-      if (e.OPERATION_MODE === 'test' && e.TEST_INVITE_CODE && flow.invite !== e.TEST_INVITE_CODE) {
-        return back('/anmelden?fehler=einladung');
-      }
       const email = typeof payload.email === 'string' ? normalizeEmail(payload.email) : null;
       const emailHash = email ? blindIndex('email', email) : null;
       const clash = emailHash ? await one(`SELECT id FROM accounts WHERE email_hash = $1`, [emailHash]) : null;
       acc = await one(
-        `INSERT INTO accounts (primary_method, apple_sub_hash, email_hash, email_enc, email_verified_at, is_test_data)
-         VALUES ('apple', $1, $2, $3, CASE WHEN $2::bytea IS NULL THEN NULL ELSE now() END, $4) RETURNING id`,
-        [subHash, clash ? null : emailHash, clash || !email ? null : encStr('pii', email, 'email'), isTestMode()],
+        `INSERT INTO accounts (primary_method, apple_sub_hash, email_hash, email_enc, email_verified_at)
+         VALUES ('apple', $1, $2, $3, CASE WHEN $2::bytea IS NULL THEN NULL ELSE now() END) RETURNING id`,
+        [subHash, clash ? null : emailHash, clash || !email ? null : encStr('pii', email, 'email')],
       );
     }
     const res = await finishLogin(req, reply, acc!.id);
